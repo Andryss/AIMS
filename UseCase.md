@@ -16,7 +16,7 @@ rectangle "Alien Incident Management System" {
 
 (Создание инцидента) as UC1
 (Изменение статуса инцидента) as UC2
-(Назначение ответственного) as UC3
+(Назначение ответственного за инцидент) as UC3
 (Просмотр истории инцидента) as UC4
 
 (Создание записи в базе знаний) as UC5
@@ -33,8 +33,8 @@ rectangle "Alien Incident Management System" {
 (Выбор победителя тендера) as UC14
 (Изменение тендера) as UC15
 
-(Создание заявки на заключение) as UC16
-(Изменение заявки на заключение) as UC17
+(Создание заявки на заключение под стражу) as UC16
+(Изменение заявки на заключение под стражу) as UC17
 
 (Создание отчета по очистке следов) as UC18
 (Прикрепление файлов к отчету по очистке следов) as UC19
@@ -51,16 +51,20 @@ rectangle "Alien Incident Management System" {
 Operator --> UC1
 Operator --> UC2
 
+Analyst --> UC2
 Analyst --> UC5
 Analyst --> UC6
 Analyst --> UC7
 Analyst --> UC8
 Analyst --> UC23
 Analyst --> UC24
+Analyst --> UC25
 
 Agent --> UC2
 Agent --> UC3
 Agent --> UC9
+Agent --> UC16
+Agent --> UC25
 
 Storekeeper --> UC10
 Storekeeper --> UC11
@@ -70,17 +74,15 @@ Procurement --> UC13
 Procurement --> UC14
 Procurement --> UC15
 
-Agent --> UC16
 Guard --> UC17
 
+Cleaner --> UC2
 Cleaner --> UC18
 Cleaner --> UC19
 
+Management --> UC4
 Management --> UC20
 Management --> UC21
 Management --> UC22
-
-Analyst --> UC25
-Agent --> UC25
 
 @enduml
