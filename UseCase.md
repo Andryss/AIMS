@@ -48,41 +48,41 @@ rectangle "Alien Incident Management System" {
 (Выполнение автоматического формирование плана реагирования) as UC25
 }
 
-Operator --> UC1
-Operator --> UC2
+Operator -- UC1
+Operator -- UC2
 
-Analyst --> UC2
-Analyst --> UC5
-Analyst --> UC6
-Analyst --> UC7
-Analyst --> UC8
-Analyst --> UC23
-Analyst --> UC24
-Analyst --> UC25
+Analyst -- UC2
+Analyst -- UC5
+Analyst -- UC6
+Analyst -- UC7
+Analyst -- UC8
+Analyst -- UC23
+Analyst -- UC24
+Analyst -- UC25
 
-Agent --> UC2
-Agent --> UC3
-Agent --> UC9
-Agent --> UC16
-Agent --> UC25
+Agent -- UC2
+Agent -- UC3
+Agent -- UC9
+Agent -- UC16
+Agent -- UC25
 
-Storekeeper --> UC10
-Storekeeper --> UC11
+Storekeeper -- UC10
+Storekeeper -- UC11
 
-Procurement --> UC12
-Procurement --> UC13
-Procurement --> UC14
-Procurement --> UC15
+Procurement -- UC12
+Procurement -- UC13
+Procurement -- UC14
+Procurement -- UC15
 
-Guard --> UC17
+Guard -- UC17
 
-Cleaner --> UC2
-Cleaner --> UC18
-Cleaner --> UC19
+Cleaner -- UC2
+Cleaner -- UC18
+Cleaner -- UC19
 
-Management --> UC4
-Management --> UC20
-Management --> UC21
-Management --> UC22
+Management -- UC4
+Management -- UC20
+Management -- UC21
+Management -- UC22
 
 @enduml
