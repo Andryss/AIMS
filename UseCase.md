@@ -17,7 +17,7 @@ rectangle "Alien Incident Management System" {
 
 package "Инциденты" {
 
-(Создание инцидента) as UC33
+(Создание инцидента) as UC11
 (Изменение статуса инцидента) as UC12
 (Просмотр истории инцидента) as UC13
 (Назначение ответственного за инцидент) as UC14
@@ -76,7 +76,7 @@ package "Очистка следов" {
 
 }
 
-UC33 -- Operator
+UC11 -- Operator
 UC12 -- Operator
 
 Analyst -- UC12
