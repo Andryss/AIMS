@@ -1,0 +1,35 @@
+name: Backend Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-test.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-test-${{ hashFiles('backend/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-test-
+
+      - name: Run tests
+        run: ./mvnw test
+        working-directory: backend
