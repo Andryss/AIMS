@@ -31,5 +31,5 @@ jobs:
             ${{ runner.os }}-maven-test-
 
       - name: Run tests
-        run: ./mvnw test
+        run: ./mvnw verify
         working-directory: backend
