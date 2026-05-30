@@ -1,0 +1,171 @@
+openapi: 3.0.3
+info:
+  title: AIMS API
+  description: API for AIMS backend
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: auth
+    description: Authentication API
+
+paths:
+  /api/v1/auth/signin:
+    post:
+      summary: Sign in with login and password
+      operationId: signIn
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignInRequest"
+      responses:
+        200:
+          description: Signed in successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignInResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        401:
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+
+  /api/v1/auth/me:
+    get:
+      summary: Get current authenticated user profile
+      operationId: getAuthMe
+      tags:
+        - auth
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthMeResponse"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Login:
+      type: string
+      description: User login
+      minLength: 1
+      maxLength: 100
+      example: "agent"
+
+    Password:
+      type: string
+      description: User password
+      minLength: 1
+      maxLength: 200
+      example: "secret"
+
+    AccessToken:
+      type: string
+      description: JWT access token (Bearer)
+      example: "eyJhbGciOiJIUzI1NiJ9..."
+
+    RoleName:
+      type: string
+      description: Role name
+      example: "OPERATOR"
+
+    PermissionCode:
+      type: string
+      description: Permission code
+      example: "INCIDENT_READ"
+
+    SignInRequest:
+      description: Request body for sign in
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          $ref: "#/components/schemas/Login"
+        password:
+          $ref: "#/components/schemas/Password"
+
+    SignInResponse:
+      description: Response after successful sign in
+      type: object
+      required:
+        - accessToken
+      properties:
+        accessToken:
+          $ref: "#/components/schemas/AccessToken"
+
+    AuthMeResponse:
+      description: Current authenticated user profile
+      type: object
+      required:
+        - login
+        - roles
+        - permissions
+      properties:
+        login:
+          $ref: "#/components/schemas/Login"
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoleName"
+        permissions:
+          type: array
+          items:
+            $ref: "#/components/schemas/PermissionCode"
+
+    ErrorObject:
+      description: Error response object
+      type: object
+      properties:
+        code:
+          description: Numeric error code
+          type: integer
+          format: int32
+        message:
+          description: Unique text identifier of the error
+          type: string
+        humanMessage:
+          description: Human-readable error description
+          type: string
