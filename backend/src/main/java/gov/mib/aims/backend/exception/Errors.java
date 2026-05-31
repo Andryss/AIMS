@@ -31,6 +31,17 @@ public final class Errors {
     }
 
     /**
+     * Доступ запрещён.
+     */
+    public static BaseException accessDenied() {
+        return BaseException.builder()
+                .code(403)
+                .message("auth.access_denied")
+                .humanMessage("Access denied")
+                .build();
+    }
+
+    /**
      * Пользователь не найден.
      */
     public static BaseException userNotFound(String login) {

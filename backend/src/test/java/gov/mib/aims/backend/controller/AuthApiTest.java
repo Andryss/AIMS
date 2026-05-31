@@ -21,6 +21,7 @@ class AuthApiTest extends BaseApiTest {
 
     private static final String SIGNIN_URL = "/api/v1/auth/signin";
     private static final String ME_URL = "/api/v1/auth/me";
+    private static final String UNKNOWN_API_URL = "/api/v1/unknown";
 
     @Test
     void signInWithValidCredentialsReturnsToken() throws Exception {
@@ -58,6 +59,23 @@ class AuthApiTest extends BaseApiTest {
         mockMvc.perform(get(ME_URL))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value(401));
+    }
+
+    @Test
+    void getUnknownApiUrlWithoutTokenReturns401() throws Exception {
+        mockMvc.perform(get(UNKNOWN_API_URL))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.message").value("auth.unauthorized"));
+    }
+
+    @Test
+    void getUnknownApiUrlWithValidTokenReturns403() throws Exception {
+        String token = signInAndGetToken("agent", "secret");
+        mockMvc.perform(get(UNKNOWN_API_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(403))
+                .andExpect(jsonPath("$.message").value("auth.access_denied"));
     }
 
     @Test
