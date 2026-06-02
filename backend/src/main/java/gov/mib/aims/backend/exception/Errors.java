@@ -75,6 +75,28 @@ public final class Errors {
     }
 
     /**
+     * Файл не найден.
+     */
+    public static BaseException fileNotFound() {
+        return BaseException.builder()
+                .code(404)
+                .message("file.not_found")
+                .humanMessage("File not found")
+                .build();
+    }
+
+    /**
+     * Пустой или отсутствующий файл в запросе.
+     */
+    public static BaseException fileEmpty() {
+        return BaseException.builder()
+                .code(400)
+                .message("file.empty")
+                .humanMessage("File must not be empty")
+                .build();
+    }
+
+    /**
      * Необработанная ошибка.
      */
     public static BaseException unhandledExceptionError() {

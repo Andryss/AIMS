@@ -10,6 +10,8 @@ servers:
 tags:
   - name: auth
     description: Authentication API
+  - name: files
+    description: File upload and download API
 
 paths:
   /api/v1/auth/signin:
@@ -67,6 +69,94 @@ paths:
                 $ref: "#/components/schemas/AuthMeResponse"
         401:
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+
+  /api/v1/files:
+    post:
+      summary: Upload a file
+      operationId: uploadFile
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileUploadResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+
+  /api/v1/files/{id}:
+    get:
+      summary: Download file content by id
+      operationId: downloadFile
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: File content
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        404:
+          description: File not found
           content:
             application/json:
               schema:
@@ -154,6 +244,35 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PermissionCode"
+
+    FileUploadResponse:
+      description: Metadata of uploaded file
+      type: object
+      required:
+        - id
+        - fileName
+        - contentType
+        - fileSize
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Numeric file identifier
+        fileName:
+          type: string
+          description: Original file name
+        contentType:
+          type: string
+          description: MIME type
+        fileSize:
+          type: integer
+          format: int64
+          description: Size in bytes
+        createdAt:
+          type: string
+          format: date-time
+          description: Upload timestamp (UTC)
 
     ErrorObject:
       description: Error response object
