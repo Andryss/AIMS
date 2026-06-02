@@ -1,16 +1,12 @@
 package gov.mib.aims.backend.service;
 
-import gov.mib.aims.backend.entity.AppUserEntity;
 import gov.mib.aims.backend.entity.StoredFileEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.generated.model.FileUploadResponse;
-import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.StoredFileRepository;
 import gov.mib.aims.backend.storage.FileDescriptor;
 import gov.mib.aims.backend.storage.FileStorage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +24,7 @@ public class FileService {
 
     private final FileStorage fileStorage;
     private final StoredFileRepository storedFileRepository;
-    private final AppUserRepository appUserRepository;
+    private final CurrentUserService currentUserService;
 
     /**
      * Сохраняет файл в хранилище и записывает метаданные в БД.
@@ -39,7 +35,7 @@ public class FileService {
     @Transactional
     public FileUploadResponse upload(MultipartFile file) {
         validateUpload(file);
-        Long userId = resolveCurrentUserId();
+        Long userId = currentUserService.getCurrentUserId();
         String fileName = file.getOriginalFilename() != null ? file.getOriginalFilename() : "file";
         String contentType = file.getContentType() != null ? file.getContentType() : "application/octet-stream";
         long size = file.getSize();
@@ -87,18 +83,4 @@ public class FileService {
         }
     }
 
-    private Long resolveCurrentUserId() {
-        String login = getCurrentLogin();
-        AppUserEntity user = appUserRepository.findByLogin(login)
-                .orElseThrow(() -> Errors.userNotFound(login));
-        return user.getId();
-    }
-
-    private String getCurrentLogin() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication.getName() == null) {
-            throw Errors.unauthorized();
-        }
-        return authentication.getName();
-    }
 }
