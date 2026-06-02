@@ -1,4 +1,4 @@
-package gov.mib.aims.backend.service;
+package gov.mib.aims.backend.services;
 
 import gov.mib.aims.backend.entity.AppUserEntity;
 import gov.mib.aims.backend.exception.Errors;

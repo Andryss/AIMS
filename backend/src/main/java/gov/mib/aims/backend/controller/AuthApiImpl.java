@@ -4,7 +4,7 @@ import gov.mib.aims.backend.generated.api.AuthApi;
 import gov.mib.aims.backend.generated.model.AuthMeResponse;
 import gov.mib.aims.backend.generated.model.SignInRequest;
 import gov.mib.aims.backend.generated.model.SignInResponse;
-import gov.mib.aims.backend.service.AuthService;
+import gov.mib.aims.backend.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;

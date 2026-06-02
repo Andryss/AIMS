@@ -1,8 +1,9 @@
-package gov.mib.aims.backend.storage;
+package gov.mib.aims.backend.services;
 
 import gov.mib.aims.backend.config.StorageProperties;
+import gov.mib.aims.backend.model.FileDescriptor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +16,7 @@ import java.util.UUID;
 /**
  * Хранение файлов на локальном диске.
  */
-@Component
+@Service
 @RequiredArgsConstructor
 public class LocalDiskFileStorage implements FileStorage {
 

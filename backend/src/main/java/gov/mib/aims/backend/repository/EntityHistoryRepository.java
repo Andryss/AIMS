@@ -1,6 +1,6 @@
 package gov.mib.aims.backend.repository;
 
-import gov.mib.aims.backend.domain.EntityType;
+import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.entity.EntityHistoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 

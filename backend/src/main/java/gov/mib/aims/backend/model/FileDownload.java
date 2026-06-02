@@ -1,4 +1,4 @@
-package gov.mib.aims.backend.service;
+package gov.mib.aims.backend.model;
 
 /**
  * Содержимое файла для отдачи клиенту.

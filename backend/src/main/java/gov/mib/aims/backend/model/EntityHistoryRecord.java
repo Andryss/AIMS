@@ -1,6 +1,4 @@
-package gov.mib.aims.backend.history;
-
-import gov.mib.aims.backend.domain.EntityType;
+package gov.mib.aims.backend.model;
 
 import java.time.Instant;
 

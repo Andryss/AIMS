@@ -1,4 +1,4 @@
-package gov.mib.aims.backend.storage;
+package gov.mib.aims.backend.model;
 
 import java.time.Instant;
 

@@ -2,8 +2,8 @@ package gov.mib.aims.backend.controller;
 
 import gov.mib.aims.backend.generated.api.FilesApi;
 import gov.mib.aims.backend.generated.model.FileUploadResponse;
-import gov.mib.aims.backend.service.FileDownload;
-import gov.mib.aims.backend.service.FileService;
+import gov.mib.aims.backend.model.FileDownload;
+import gov.mib.aims.backend.services.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;

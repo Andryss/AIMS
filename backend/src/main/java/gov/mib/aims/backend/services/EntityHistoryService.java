@@ -1,6 +1,7 @@
-package gov.mib.aims.backend.history;
+package gov.mib.aims.backend.services;
 
-import gov.mib.aims.backend.domain.EntityType;
+import gov.mib.aims.backend.model.EntityHistoryRecord;
+import gov.mib.aims.backend.model.EntityType;
 
 import java.util.List;
 

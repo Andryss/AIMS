@@ -1,4 +1,4 @@
-package gov.mib.aims.backend.domain;
+package gov.mib.aims.backend.model;
 
 /**
  * Тип сущности для записи в истории изменений.

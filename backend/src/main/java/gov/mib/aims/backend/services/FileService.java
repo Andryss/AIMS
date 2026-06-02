@@ -1,11 +1,11 @@
-package gov.mib.aims.backend.service;
+package gov.mib.aims.backend.services;
 
 import gov.mib.aims.backend.entity.StoredFileEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.generated.model.FileUploadResponse;
+import gov.mib.aims.backend.model.FileDescriptor;
+import gov.mib.aims.backend.model.FileDownload;
 import gov.mib.aims.backend.repository.StoredFileRepository;
-import gov.mib.aims.backend.storage.FileDescriptor;
-import gov.mib.aims.backend.storage.FileStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,5 +82,4 @@ public class FileService {
             throw Errors.fileEmpty();
         }
     }
-
 }

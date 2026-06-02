@@ -1,12 +1,12 @@
-package gov.mib.aims.backend.history;
+package gov.mib.aims.backend.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.mib.aims.backend.domain.EntityType;
 import gov.mib.aims.backend.entity.EntityHistoryEntity;
 import gov.mib.aims.backend.exception.Errors;
+import gov.mib.aims.backend.model.EntityHistoryRecord;
+import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.repository.EntityHistoryRepository;
-import gov.mib.aims.backend.service.CurrentUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

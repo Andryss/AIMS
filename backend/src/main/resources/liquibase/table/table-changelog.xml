@@ -11,5 +11,6 @@
     <include file="user_role.sql" relativeToChangelogFile="true"/>
     <include file="stored_file.sql" relativeToChangelogFile="true"/>
     <include file="entity_history.sql" relativeToChangelogFile="true"/>
+    <include file="notification.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

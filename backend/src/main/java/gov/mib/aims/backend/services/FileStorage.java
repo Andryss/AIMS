@@ -1,4 +1,6 @@
-package gov.mib.aims.backend.storage;
+package gov.mib.aims.backend.services;
+
+import gov.mib.aims.backend.model.FileDescriptor;
 
 import java.io.InputStream;
 import java.util.Optional;

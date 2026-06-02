@@ -97,6 +97,30 @@ public final class Errors {
     }
 
     /**
+     * Уведомление не найдено.
+     */
+    public static BaseException notificationNotFound() {
+        return BaseException.builder()
+                .code(404)
+                .message("notification.not_found")
+                .humanMessage("Notification not found")
+                .build();
+    }
+
+    /**
+     * Некорректная ссылка на связанную сущность.
+     *
+     * @param ref строка ссылки
+     */
+    public static BaseException invalidRelatedEntity(String ref) {
+        return BaseException.builder()
+                .code(400)
+                .message("notification.invalid_related_entity")
+                .humanMessage("Invalid related entity reference: " + ref)
+                .build();
+    }
+
+    /**
      * Необработанная ошибка.
      */
     public static BaseException unhandledExceptionError() {

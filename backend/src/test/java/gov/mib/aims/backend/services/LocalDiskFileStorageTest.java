@@ -1,6 +1,7 @@
-package gov.mib.aims.backend.storage;
+package gov.mib.aims.backend.services;
 
 import gov.mib.aims.backend.config.StorageProperties;
+import gov.mib.aims.backend.model.FileDescriptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
