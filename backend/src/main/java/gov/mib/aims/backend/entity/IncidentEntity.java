@@ -1,0 +1,71 @@
+package gov.mib.aims.backend.entity;
+
+import gov.mib.aims.backend.model.IncidentStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Инцидент.
+ */
+@Entity
+@Table(name = "incident")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
+public class IncidentEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private IncidentStatus status;
+
+    @Column(name = "event_type", nullable = false)
+    private int eventType;
+
+    @Column(nullable = false)
+    private String location;
+
+    @Column(name = "detected_at", nullable = false)
+    private LocalDateTime detectedAt;
+
+    @Column(nullable = false)
+    private String description;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "attachment_file_ids", nullable = false)
+    @Builder.Default
+    private List<Long> attachmentFileIds = new ArrayList<>();
+
+    @Column(name = "created_by_user_id", nullable = false)
+    private Long createdByUserId;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+}

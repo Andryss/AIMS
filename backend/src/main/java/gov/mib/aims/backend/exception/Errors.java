@@ -121,6 +121,63 @@ public final class Errors {
     }
 
     /**
+     * Инцидент не найден.
+     */
+    public static BaseException incidentNotFound() {
+        return BaseException.builder()
+                .code(404)
+                .message("incident.not_found")
+                .humanMessage("Incident not found")
+                .build();
+    }
+
+    /**
+     * Недопустимый переход статуса инцидента.
+     */
+    public static BaseException invalidStatusTransition() {
+        return BaseException.builder()
+                .code(400)
+                .message("incident.invalid_status_transition")
+                .humanMessage("Invalid incident status transition")
+                .build();
+    }
+
+    /**
+     * Предусловие перехода статуса не выполнено.
+     *
+     * @param message описание
+     */
+    public static BaseException transitionPreconditionFailed(String message) {
+        return BaseException.builder()
+                .code(400)
+                .message("incident.transition_precondition_failed")
+                .humanMessage(message != null ? message : "Status transition precondition failed")
+                .build();
+    }
+
+    /**
+     * Некорректный тип события инцидента.
+     */
+    public static BaseException invalidEventType() {
+        return BaseException.builder()
+                .code(400)
+                .message("incident.invalid_event_type")
+                .humanMessage("Invalid incident event type")
+                .build();
+    }
+
+    /**
+     * Вложение инцидента не найдено.
+     */
+    public static BaseException attachmentNotFound() {
+        return BaseException.builder()
+                .code(404)
+                .message("incident.attachment_not_found")
+                .humanMessage("Attachment file not found")
+                .build();
+    }
+
+    /**
      * Необработанная ошибка.
      */
     public static BaseException unhandledExceptionError() {

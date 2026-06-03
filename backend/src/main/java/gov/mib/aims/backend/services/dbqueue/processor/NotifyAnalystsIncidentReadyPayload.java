@@ -7,15 +7,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Payload для тестовой очереди DUMMY_TASK.
+ * Payload задачи уведомления аналитиков о готовности инцидента.
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DummyTaskPayload extends QueuePayload {
+public class NotifyAnalystsIncidentReadyPayload extends QueuePayload {
 
-    public static final String QUEUE_NAME = "DUMMY_TASK";
+    public static final String QUEUE_NAME = "NOTIFY_ANALYSTS_INCIDENT_READY";
 
-    private String message;
+    private long incidentId;
 }

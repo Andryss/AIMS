@@ -14,6 +14,8 @@ tags:
     description: File upload and download API
   - name: notifications
     description: Notifications API
+  - name: incidents
+    description: Incidents API
 
 paths:
   /api/v1/auth/signin:
@@ -281,6 +283,158 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
 
+  /api/v1/incidents:
+    post:
+      summary: Create incident
+      operationId: createIncident
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateIncidentRequest"
+      responses:
+        200:
+          description: Incident created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+
+  /api/v1/incidents/{id}:
+    get:
+      summary: Get incident by id
+      operationId: getIncident
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Incident
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentResponse"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        404:
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+
+  /api/v1/incidents/{id}/status:
+    post:
+      summary: Change incident status
+      operationId: changeIncidentStatus
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeIncidentStatusRequest"
+      responses:
+        200:
+          description: Incident status changed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        404:
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -455,6 +609,85 @@ components:
           type: string
           format: date-time
           description: Upload timestamp (UTC)
+
+    IncidentStatusApi:
+      type: string
+      enum:
+        - DRAFT
+        - READY_FOR_ANALYSIS
+
+    CreateIncidentRequest:
+      type: object
+      required:
+        - eventType
+        - location
+        - detectedAt
+        - description
+        - attachmentFileIds
+      properties:
+        eventType:
+          type: integer
+          format: int32
+        location:
+          type: string
+        detectedAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        attachmentFileIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+
+    ChangeIncidentStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: "#/components/schemas/IncidentStatusApi"
+
+    IncidentResponse:
+      type: object
+      required:
+        - id
+        - status
+        - eventType
+        - location
+        - detectedAt
+        - description
+        - attachmentFileIds
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+        status:
+          $ref: "#/components/schemas/IncidentStatusApi"
+        eventType:
+          type: integer
+          format: int32
+        location:
+          type: string
+        detectedAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        attachmentFileIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
 
     ErrorObject:
       description: Error response object
