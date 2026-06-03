@@ -5,5 +5,6 @@ package gov.mib.aims.backend.model;
  */
 public enum EntityType {
 
+    /** Инцидент. */
     INCIDENT
 }

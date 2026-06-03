@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -80,6 +81,19 @@ public class ControllerExceptionHandler {
     public ErrorObject handleConstraintViolation(ConstraintViolationException ex) {
         log.warn("Constraint violation: {}", ex.getMessage());
         return createErrorObject(Errors.validationError(ex.getMessage()));
+    }
+
+    /**
+     * Обрабатывает невалидное тело запроса (JSON, enum, формат полей).
+     *
+     * @param ex исключение
+     * @return тело ошибки
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public ErrorObject handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        log.warn("Malformed request body: {}", ex.getMessage());
+        return createErrorObject(Errors.validationError("Invalid request body"));
     }
 
     /**

@@ -4,7 +4,7 @@
 create table incident (
     id bigserial primary key,
     status text not null,
-    event_type int not null,
+    event_type text not null,
     location text not null,
     detected_at timestamp not null,
     description text not null,

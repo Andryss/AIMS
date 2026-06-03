@@ -42,17 +42,6 @@ public final class Errors {
     }
 
     /**
-     * Пользователь не найден.
-     */
-    public static BaseException userNotFound(String login) {
-        return BaseException.builder()
-                .code(401)
-                .message("auth.user_not_found")
-                .humanMessage("User not found: " + login)
-                .build();
-    }
-
-    /**
      * Ошибка валидации.
      */
     public static BaseException validationError(String message) {
@@ -139,30 +128,6 @@ public final class Errors {
                 .code(400)
                 .message("incident.invalid_status_transition")
                 .humanMessage("Invalid incident status transition")
-                .build();
-    }
-
-    /**
-     * Предусловие перехода статуса не выполнено.
-     *
-     * @param message описание
-     */
-    public static BaseException transitionPreconditionFailed(String message) {
-        return BaseException.builder()
-                .code(400)
-                .message("incident.transition_precondition_failed")
-                .humanMessage(message != null ? message : "Status transition precondition failed")
-                .build();
-    }
-
-    /**
-     * Некорректный тип события инцидента.
-     */
-    public static BaseException invalidEventType() {
-        return BaseException.builder()
-                .code(400)
-                .message("incident.invalid_event_type")
-                .humanMessage("Invalid incident event type")
                 .build();
     }
 

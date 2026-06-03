@@ -4,8 +4,6 @@ import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.model.IncidentStatus;
 import gov.mib.aims.backend.services.incident.status.postaction.EnqueueNotifyAnalystsPostAction;
 import gov.mib.aims.backend.services.incident.status.precondition.AttachmentsExistPrecondition;
-import gov.mib.aims.backend.services.incident.status.precondition.RequiredFieldsPrecondition;
-import gov.mib.aims.backend.services.incident.status.precondition.ValidEventTypePrecondition;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,8 +23,6 @@ public class IncidentStatusTransitionGraph {
      * Регистрирует переходы UC1 и строит индекс по паре from/to.
      */
     public IncidentStatusTransitionGraph(
-            RequiredFieldsPrecondition requiredFieldsPrecondition,
-            ValidEventTypePrecondition validEventTypePrecondition,
             AttachmentsExistPrecondition attachmentsExistPrecondition,
             EnqueueNotifyAnalystsPostAction enqueueNotifyAnalystsPostAction
     ) {
@@ -34,11 +30,7 @@ public class IncidentStatusTransitionGraph {
                 IncidentStatusTransition.<IncidentEntity>builder()
                         .from(IncidentStatus.DRAFT)
                         .to(IncidentStatus.READY_FOR_ANALYSIS)
-                        .preconditions(List.of(
-                                requiredFieldsPrecondition,
-                                validEventTypePrecondition,
-                                attachmentsExistPrecondition
-                        ))
+                        .preconditions(List.of(attachmentsExistPrecondition))
                         .postActions(List.of(enqueueNotifyAnalystsPostAction))
                         .build()
         );

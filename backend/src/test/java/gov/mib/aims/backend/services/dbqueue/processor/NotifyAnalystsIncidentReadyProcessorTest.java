@@ -3,6 +3,7 @@ package gov.mib.aims.backend.services.dbqueue.processor;
 import gov.mib.aims.backend.BaseDbTest;
 import gov.mib.aims.backend.config.TestClockConfig;
 import gov.mib.aims.backend.entity.IncidentEntity;
+import gov.mib.aims.backend.model.IncidentEventType;
 import gov.mib.aims.backend.model.IncidentStatus;
 import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
@@ -40,7 +41,7 @@ class NotifyAnalystsIncidentReadyProcessorTest extends BaseDbTest {
         LocalDateTime now = TestClockConfig.FIXED_LOCAL_DATE_TIME;
         IncidentEntity incident = incidentRepository.save(IncidentEntity.builder()
                 .status(IncidentStatus.READY_FOR_ANALYSIS)
-                .eventType(1)
+                .eventType(IncidentEventType.UNIDENTIFIED_SIGHTING)
                 .location("Test location")
                 .detectedAt(now)
                 .description("Test description")

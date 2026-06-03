@@ -5,6 +5,7 @@ import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
+import gov.mib.aims.backend.generated.model.IncidentEventTypeApi;
 import gov.mib.aims.backend.generated.model.IncidentStatusApi;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.IncidentEventType;
@@ -39,12 +40,11 @@ public class IncidentServiceImpl implements IncidentService {
     @Override
     @Transactional
     public IncidentResponse create(CreateIncidentRequest request) {
-        validateCreateRequest(request);
-        validateAttachmentIds(request.getAttachmentFileIds());
+        assertAttachmentsExist(request.getAttachmentFileIds());
         LocalDateTime now = LocalDateTime.now(clock);
         IncidentEntity entity = IncidentEntity.builder()
                 .status(IncidentStatus.DRAFT)
-                .eventType(request.getEventType())
+                .eventType(toModelEventType(request.getEventType()))
                 .location(request.getLocation().trim())
                 .detectedAt(request.getDetectedAt().toLocalDateTime())
                 .description(request.getDescription().trim())
@@ -61,12 +61,6 @@ public class IncidentServiceImpl implements IncidentService {
     @Override
     @Transactional
     public IncidentResponse changeStatus(Long id, ChangeIncidentStatusRequest request) {
-        if (id == null) {
-            throw Errors.validationError("id is required");
-        }
-        if (request == null || request.getStatus() == null) {
-            throw Errors.validationError("status is required");
-        }
         IncidentEntity entity = incidentRepository.findById(id)
                 .orElseThrow(Errors::incidentNotFound);
         IncidentStatus target = toModelStatus(request.getStatus());
@@ -78,44 +72,39 @@ public class IncidentServiceImpl implements IncidentService {
     @Override
     @Transactional(readOnly = true)
     public IncidentResponse getById(Long id) {
-        if (id == null) {
-            throw Errors.validationError("id is required");
-        }
         IncidentEntity entity = incidentRepository.findById(id)
                 .orElseThrow(Errors::incidentNotFound);
         return toResponse(entity);
     }
 
-    private void validateCreateRequest(CreateIncidentRequest request) {
-        if (request == null) {
-            throw Errors.validationError("request is required");
-        }
-        if (request.getEventType() == null) {
-            throw Errors.validationError("eventType is required");
-        }
-        if (IncidentEventType.fromCode(request.getEventType()).isEmpty()) {
-            throw Errors.invalidEventType();
-        }
-        if (request.getLocation() == null || request.getLocation().isBlank()) {
-            throw Errors.validationError("location is required");
-        }
-        if (request.getDetectedAt() == null) {
-            throw Errors.validationError("detectedAt is required");
-        }
-        if (request.getDescription() == null || request.getDescription().isBlank()) {
-            throw Errors.validationError("description is required");
-        }
-        if (request.getAttachmentFileIds() == null || request.getAttachmentFileIds().isEmpty()) {
-            throw Errors.validationError("attachmentFileIds is required");
-        }
-    }
-
-    private void validateAttachmentIds(List<Long> attachmentFileIds) {
+    private void assertAttachmentsExist(List<Long> attachmentFileIds) {
         for (Long fileId : attachmentFileIds) {
-            if (fileId == null || !storedFileRepository.existsById(fileId)) {
+            if (!storedFileRepository.existsById(fileId)) {
                 throw Errors.attachmentNotFound();
             }
         }
+    }
+
+    private IncidentEventType toModelEventType(IncidentEventTypeApi dto) {
+        return switch (dto) {
+            case UNIDENTIFIED_SIGHTING -> IncidentEventType.UNIDENTIFIED_SIGHTING;
+            case CONTACT_SUSPECT -> IncidentEventType.CONTACT_SUSPECT;
+            case ILLEGAL_UFO_LANDING -> IncidentEventType.ILLEGAL_UFO_LANDING;
+            case MEMORY_ANOMALY -> IncidentEventType.MEMORY_ANOMALY;
+            case ALIEN_ARTIFACT -> IncidentEventType.ALIEN_ARTIFACT;
+            case ALIEN_CAPTURE -> IncidentEventType.ALIEN_CAPTURE;
+        };
+    }
+
+    private IncidentEventTypeApi toApiEventType(IncidentEventType eventType) {
+        return switch (eventType) {
+            case UNIDENTIFIED_SIGHTING -> IncidentEventTypeApi.UNIDENTIFIED_SIGHTING;
+            case CONTACT_SUSPECT -> IncidentEventTypeApi.CONTACT_SUSPECT;
+            case ILLEGAL_UFO_LANDING -> IncidentEventTypeApi.ILLEGAL_UFO_LANDING;
+            case MEMORY_ANOMALY -> IncidentEventTypeApi.MEMORY_ANOMALY;
+            case ALIEN_ARTIFACT -> IncidentEventTypeApi.ALIEN_ARTIFACT;
+            case ALIEN_CAPTURE -> IncidentEventTypeApi.ALIEN_CAPTURE;
+        };
     }
 
     private IncidentStatus toModelStatus(IncidentStatusApi dto) {
@@ -136,7 +125,7 @@ public class IncidentServiceImpl implements IncidentService {
         return new IncidentResponse()
                 .id(entity.getId())
                 .status(toApiStatus(entity.getStatus()))
-                .eventType(entity.getEventType())
+                .eventType(toApiEventType(entity.getEventType()))
                 .location(entity.getLocation())
                 .detectedAt(entity.getDetectedAt().atOffset(ZoneOffset.UTC))
                 .description(entity.getDescription())

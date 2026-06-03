@@ -2,6 +2,7 @@ package gov.mib.aims.backend.controller;
 
 import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
+import gov.mib.aims.backend.generated.model.IncidentEventTypeApi;
 import gov.mib.aims.backend.generated.model.IncidentStatusApi;
 import gov.mib.aims.backend.generated.model.SignInRequest;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyAnalystsIncidentReadyPayload;
@@ -44,7 +45,7 @@ class IncidentsApiTest extends BaseApiTest {
         long fileId = uploadFile(operatorToken);
 
         CreateIncidentRequest createRequest = new CreateIncidentRequest()
-                .eventType(1)
+                .eventType(IncidentEventTypeApi.UNIDENTIFIED_SIGHTING)
                 .location("Area 51 perimeter")
                 .detectedAt(OffsetDateTime.of(2025, 6, 1, 12, 0, 0, 0, ZoneOffset.UTC))
                 .description("Bright object hovering")
@@ -150,14 +151,22 @@ class IncidentsApiTest extends BaseApiTest {
     void createWithInvalidEventTypeReturns400() throws Exception {
         String token = signInAndGetToken("agent", "secret");
         long fileId = uploadFile(token);
-        CreateIncidentRequest request = minimalCreateRequest(fileId).eventType(999);
+        String body = """
+                {
+                  "eventType": "UNKNOWN_EVENT",
+                  "location": "Test location",
+                  "detectedAt": "2025-06-01T10:00:00Z",
+                  "description": "Test description",
+                  "attachmentFileIds": [%d]
+                }
+                """.formatted(fileId);
 
         mockMvc.perform(post(INCIDENTS_URL)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(body))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("incident.invalid_event_type"));
+                .andExpect(jsonPath("$.code").value(400));
     }
 
     @Test
@@ -194,7 +203,7 @@ class IncidentsApiTest extends BaseApiTest {
 
     private CreateIncidentRequest minimalCreateRequest(long fileId) {
         return new CreateIncidentRequest()
-                .eventType(1)
+                .eventType(IncidentEventTypeApi.UNIDENTIFIED_SIGHTING)
                 .location("Test location")
                 .detectedAt(OffsetDateTime.of(2025, 6, 1, 10, 0, 0, 0, ZoneOffset.UTC))
                 .description("Test description")

@@ -1,5 +1,6 @@
 package gov.mib.aims.backend.entity;
 
+import gov.mib.aims.backend.model.IncidentEventType;
 import gov.mib.aims.backend.model.IncidentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,8 +44,9 @@ public class IncidentEntity {
     @Column(nullable = false)
     private IncidentStatus status;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "event_type", nullable = false)
-    private int eventType;
+    private IncidentEventType eventType;
 
     @Column(nullable = false)
     private String location;

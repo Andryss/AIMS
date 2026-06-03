@@ -17,11 +17,8 @@ public class AttachmentsExistPrecondition implements StatusTransitionPreconditio
 
     @Override
     public void check(IncidentEntity context) {
-        if (context.getAttachmentFileIds() == null || context.getAttachmentFileIds().isEmpty()) {
-            throw Errors.transitionPreconditionFailed("attachmentFileIds must not be empty");
-        }
         for (Long fileId : context.getAttachmentFileIds()) {
-            if (fileId == null || !storedFileRepository.existsById(fileId)) {
+            if (!storedFileRepository.existsById(fileId)) {
                 throw Errors.attachmentNotFound();
             }
         }

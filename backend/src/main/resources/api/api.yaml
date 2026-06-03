@@ -616,6 +616,16 @@ components:
         - DRAFT
         - READY_FOR_ANALYSIS
 
+    IncidentEventTypeApi:
+      type: string
+      enum:
+        - UNIDENTIFIED_SIGHTING
+        - CONTACT_SUSPECT
+        - ILLEGAL_UFO_LANDING
+        - MEMORY_ANOMALY
+        - ALIEN_ARTIFACT
+        - ALIEN_CAPTURE
+
     CreateIncidentRequest:
       type: object
       required:
@@ -626,17 +636,19 @@ components:
         - attachmentFileIds
       properties:
         eventType:
-          type: integer
-          format: int32
+          $ref: "#/components/schemas/IncidentEventTypeApi"
         location:
           type: string
+          minLength: 1
         detectedAt:
           type: string
           format: date-time
         description:
           type: string
+          minLength: 1
         attachmentFileIds:
           type: array
+          minItems: 1
           items:
             type: integer
             format: int64
@@ -668,8 +680,7 @@ components:
         status:
           $ref: "#/components/schemas/IncidentStatusApi"
         eventType:
-          type: integer
-          format: int32
+          $ref: "#/components/schemas/IncidentEventTypeApi"
         location:
           type: string
         detectedAt:

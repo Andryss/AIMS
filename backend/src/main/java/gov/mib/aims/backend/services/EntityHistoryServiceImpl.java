@@ -2,7 +2,6 @@ package gov.mib.aims.backend.services;
 
 import gov.mib.aims.backend.entity.EntityHistoryEntity;
 import gov.mib.aims.backend.exception.Errors;
-import gov.mib.aims.backend.model.EntityHistoryRecord;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.repository.EntityHistoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.List;
 
 /**
  * Реализация {@link EntityHistoryService}.
@@ -33,7 +31,7 @@ public class EntityHistoryServiceImpl implements EntityHistoryService {
     @Transactional
     public void recordChange(EntityType entityType, Long entityId, Object newState, Long changedByUserId) {
         validateRecordRequest(entityType, entityId, newState, changedByUserId);
-        String snapshot = serializeSnapshot(newState);
+        String snapshot = objectMapper.writeValueAsStringOrThrow(newState);
         EntityHistoryEntity entity = EntityHistoryEntity.builder()
                 .entityType(entityType)
                 .entityId(entityId)
@@ -42,21 +40,6 @@ public class EntityHistoryServiceImpl implements EntityHistoryService {
                 .changedAt(Instant.now())
                 .build();
         entityHistoryRepository.save(entity);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<EntityHistoryRecord> getHistory(EntityType entityType, Long entityId) {
-        if (entityType == null) {
-            throw Errors.validationError("entityType is required");
-        }
-        if (entityId == null) {
-            throw Errors.validationError("entityId is required");
-        }
-        return entityHistoryRepository.findByEntityTypeAndEntityIdOrderByChangedAtDesc(entityType, entityId)
-                .stream()
-                .map(this::toRecord)
-                .toList();
     }
 
     private void validateRecordRequest(
@@ -77,20 +60,5 @@ public class EntityHistoryServiceImpl implements EntityHistoryService {
         if (changedByUserId == null) {
             throw Errors.validationError("changedByUserId is required");
         }
-    }
-
-    private String serializeSnapshot(Object newState) {
-        return objectMapper.writeValueAsStringOrThrow(newState);
-    }
-
-    private EntityHistoryRecord toRecord(EntityHistoryEntity entity) {
-        return new EntityHistoryRecord(
-                entity.getId(),
-                entity.getEntityType(),
-                entity.getEntityId(),
-                entity.getSnapshot(),
-                entity.getChangedByUserId(),
-                entity.getChangedAt()
-        );
     }
 }

@@ -1,12 +1,9 @@
 package gov.mib.aims.backend.services;
 
-import gov.mib.aims.backend.model.EntityHistoryRecord;
 import gov.mib.aims.backend.model.EntityType;
 
-import java.util.List;
-
 /**
- * Сервис записи и чтения истории изменений сущностей.
+ * Сервис записи истории изменений сущностей.
  */
 public interface EntityHistoryService {
 
@@ -28,13 +25,4 @@ public interface EntityHistoryService {
      * @param changedByUserId идентификатор пользователя, выполнившего изменение
      */
     void recordChange(EntityType entityType, Long entityId, Object newState, Long changedByUserId);
-
-    /**
-     * Возвращает историю изменений сущности от новых к старым.
-     *
-     * @param entityType тип сущности
-     * @param entityId идентификатор сущности
-     * @return записи истории
-     */
-    List<EntityHistoryRecord> getHistory(EntityType entityType, Long entityId);
 }
