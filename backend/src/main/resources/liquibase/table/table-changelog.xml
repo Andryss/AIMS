@@ -12,5 +12,6 @@
     <include file="stored_file.sql" relativeToChangelogFile="true"/>
     <include file="entity_history.sql" relativeToChangelogFile="true"/>
     <include file="notification.sql" relativeToChangelogFile="true"/>
+    <include file="queue_tasks.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

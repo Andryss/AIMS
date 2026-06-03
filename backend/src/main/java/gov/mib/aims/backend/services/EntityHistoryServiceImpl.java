@@ -1,7 +1,5 @@
 package gov.mib.aims.backend.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.mib.aims.backend.entity.EntityHistoryEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.model.EntityHistoryRecord;
@@ -22,7 +20,7 @@ import java.util.List;
 public class EntityHistoryServiceImpl implements EntityHistoryService {
 
     private final EntityHistoryRepository entityHistoryRepository;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapperWrapper objectMapper;
     private final CurrentUserService currentUserService;
 
     @Override
@@ -82,11 +80,7 @@ public class EntityHistoryServiceImpl implements EntityHistoryService {
     }
 
     private String serializeSnapshot(Object newState) {
-        try {
-            return objectMapper.writeValueAsString(newState);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Failed to serialize entity snapshot", e);
-        }
+        return objectMapper.writeValueAsStringOrThrow(newState);
     }
 
     private EntityHistoryRecord toRecord(EntityHistoryEntity entity) {

@@ -28,6 +28,7 @@
         <openapi-generator-plugin.package>gov.mib.aims.backend.generated</openapi-generator-plugin.package>
         <jacoco-plugin.version>0.8.11</jacoco-plugin.version>
         <jacoco.minimum.line.coverage>0.70</jacoco.minimum.line.coverage>
+        <db-queue.version>15.1.0</db-queue.version>
     </properties>
 
     <dependencies>
@@ -104,6 +105,18 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.yoomoney.tech</groupId>
+            <artifactId>db-queue-core</artifactId>
+            <version>${db-queue.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.yoomoney.tech</groupId>
+            <artifactId>db-queue-spring</artifactId>
+            <version>${db-queue.version}</version>
         </dependency>
 
         <!-- TEST DEPENDENCIES -->

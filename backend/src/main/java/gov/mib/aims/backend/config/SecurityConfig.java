@@ -1,7 +1,7 @@
 package gov.mib.aims.backend.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.mib.aims.backend.exception.BaseException;
+import gov.mib.aims.backend.services.ObjectMapperWrapper;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.generated.model.ErrorObject;
 import gov.mib.aims.backend.security.JwtAuthenticationFilter;
@@ -37,7 +37,7 @@ public class SecurityConfig {
      * @return точка входа аутентификации
      */
     @Bean
-    public AuthenticationEntryPoint authenticationEntryPoint(ObjectMapper objectMapper) {
+    public AuthenticationEntryPoint authenticationEntryPoint(ObjectMapperWrapper objectMapper) {
         return (request, response, authException) ->
                 writeErrorObject(response, Errors.unauthorized(), objectMapper);
     }
@@ -49,7 +49,7 @@ public class SecurityConfig {
      * @return обработчик отказа в доступе
      */
     @Bean
-    public AccessDeniedHandler accessDeniedHandler(ObjectMapper objectMapper) {
+    public AccessDeniedHandler accessDeniedHandler(ObjectMapperWrapper objectMapper) {
         return (request, response, accessDeniedException) ->
                 writeErrorObject(response, Errors.accessDenied(), objectMapper);
     }
@@ -100,7 +100,7 @@ public class SecurityConfig {
     private static void writeErrorObject(
             HttpServletResponse response,
             BaseException error,
-            ObjectMapper objectMapper
+            ObjectMapperWrapper objectMapper
     ) throws IOException {
         ErrorObject body = new ErrorObject()
                 .code(error.getCode())

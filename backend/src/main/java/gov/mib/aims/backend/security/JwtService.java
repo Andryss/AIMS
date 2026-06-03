@@ -25,8 +25,8 @@ public class JwtService {
      * @param jwtProperties параметры JWT
      */
     public JwtService(JwtProperties jwtProperties) {
-        this.secretKey = Keys.hmacShaKeyFor(jwtProperties.secret().getBytes(StandardCharsets.UTF_8));
-        this.expirationMs = jwtProperties.expirationMs();
+        this.secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
+        this.expirationMs = jwtProperties.getExpirationMs();
     }
 
     /**
