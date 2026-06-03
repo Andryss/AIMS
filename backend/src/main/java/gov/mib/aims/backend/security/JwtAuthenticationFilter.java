@@ -1,5 +1,8 @@
 package gov.mib.aims.backend.security;
 
+import java.io.IOException;
+import java.util.List;
+
 import gov.mib.aims.backend.entity.AppUserEntity;
 import gov.mib.aims.backend.entity.PermissionEntity;
 import gov.mib.aims.backend.repository.AppUserRepository;
@@ -10,14 +13,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Фильтр аутентификации по JWT в заголовке Authorization.
@@ -34,9 +35,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String token = resolveToken(request);
         if (token != null && jwtService.isTokenValid(token)
@@ -53,8 +54,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .map(PermissionEntity::getCode)
                 .map(SimpleGrantedAuthority::new)
                 .toList();
+        UserInfo userInfo = new UserInfo(user.getId(), user.getLogin());
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                user.getLogin(),
+                userInfo,
                 token,
                 authorities
         );

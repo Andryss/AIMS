@@ -1,21 +1,23 @@
 package gov.mib.aims.backend.services;
 
-import gov.mib.aims.backend.entity.AppUserEntity;
-import gov.mib.aims.backend.exception.Errors;
-import gov.mib.aims.backend.repository.AppUserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import gov.mib.aims.backend.security.UserInfo;
+import gov.mib.aims.backend.security.SecurityContextUserInfo;
 import org.springframework.stereotype.Service;
 
 /**
  * Сервис текущего аутентифицированного пользователя.
  */
 @Service
-@RequiredArgsConstructor
 public class CurrentUserService {
 
-    private final AppUserRepository appUserRepository;
+    /**
+     * Возвращает данные текущего пользователя из SecurityContext.
+     *
+     * @return id и login
+     */
+    public UserInfo getCurrentUserInfo() {
+        return SecurityContextUserInfo.requireCurrentUserInfo();
+    }
 
     /**
      * Возвращает id текущего пользователя.
@@ -23,17 +25,15 @@ public class CurrentUserService {
      * @return идентификатор пользователя
      */
     public Long getCurrentUserId() {
-        String login = getCurrentLogin();
-        AppUserEntity user = appUserRepository.findByLogin(login)
-                .orElseThrow(() -> Errors.userNotFound(login));
-        return user.getId();
+        return getCurrentUserInfo().id();
     }
 
-    private String getCurrentLogin() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication.getName() == null) {
-            throw Errors.unauthorized();
-        }
-        return authentication.getName();
+    /**
+     * Возвращает login текущего пользователя.
+     *
+     * @return логин
+     */
+    public String getCurrentLogin() {
+        return getCurrentUserInfo().login();
     }
 }

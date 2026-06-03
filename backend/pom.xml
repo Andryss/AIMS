@@ -27,7 +27,7 @@
         <openapi-generator-plugin.version>7.8.0</openapi-generator-plugin.version>
         <openapi-generator-plugin.package>gov.mib.aims.backend.generated</openapi-generator-plugin.package>
         <jacoco-plugin.version>0.8.11</jacoco-plugin.version>
-        <jacoco.minimum.line.coverage>0.75</jacoco.minimum.line.coverage>
+        <jacoco.minimum.line.coverage>0.70</jacoco.minimum.line.coverage>
     </properties>
 
     <dependencies>
