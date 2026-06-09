@@ -26,7 +26,7 @@ class FilesApiTest extends BaseApiTest {
 
     @Test
     void uploadAndDownloadRoundtrip() throws Exception {
-        String token = signInAndGetToken("agent", "secret");
+        String token = signInAndGetToken("operator", "operator");
         byte[] payload = "alien sighting photo".getBytes();
         MockMultipartFile file = new MockMultipartFile(
                 "file",
@@ -70,7 +70,7 @@ class FilesApiTest extends BaseApiTest {
 
     @Test
     void downloadUnknownIdReturns404() throws Exception {
-        String token = signInAndGetToken("agent", "secret");
+        String token = signInAndGetToken("operator", "operator");
         mockMvc.perform(get(FILES_URL + "/999999")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isNotFound())

@@ -68,6 +68,12 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!-- COMMON DEPENDENCIES -->
 
         <dependency>
@@ -240,6 +246,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/generated/**</exclude>
+                        <exclude>**/bootstrap/**</exclude>
                     </excludes>
                     <rules>
                         <rule>

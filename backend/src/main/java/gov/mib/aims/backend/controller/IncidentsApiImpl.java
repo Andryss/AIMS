@@ -3,6 +3,7 @@ package gov.mib.aims.backend.controller;
 import gov.mib.aims.backend.generated.api.IncidentsApi;
 import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
+import gov.mib.aims.backend.generated.model.IncidentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
 import gov.mib.aims.backend.services.IncidentService;
 import jakarta.validation.Valid;
@@ -22,6 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class IncidentsApiImpl implements IncidentsApi {
 
     private final IncidentService incidentService;
+
+    @Override
+    @PreAuthorize("hasAuthority('INCIDENT_READ')")
+    public IncidentListResponse listIncidents(Integer page, Integer size) {
+        int pageNumber = page != null ? page : 0;
+        int pageSize = size != null ? size : 20;
+        log.info("GET /api/v1/incidents page={} size={}", pageNumber, pageSize);
+        return incidentService.list(pageNumber, pageSize);
+    }
 
     @Override
     @PreAuthorize("hasAuthority('INCIDENT_CREATE')")

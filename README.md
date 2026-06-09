@@ -6,8 +6,6 @@
 
 ## Авторы
 
-## Авторы
-
 - [Кривошеев Андрей](https://github.com/Andryss)
 - [Трофимченко Владислав](https://github.com/TivM)
 - [Тучин Артем](https://github.com/artem00475)

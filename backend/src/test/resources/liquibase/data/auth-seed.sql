@@ -27,15 +27,21 @@ from role r, permission p
 where r.name = 'ADMIN' and p.code in ('INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE');
 
 insert into app_user (login, password_hash) values
-    ('agent', '$2a$10$LArEHlxdvPz42xMgLOLMLu2H9ZtkqH0Oge920nnSSL8Bowo4KJIKa'),
-    ('analyst', '$2a$10$LArEHlxdvPz42xMgLOLMLu2H9ZtkqH0Oge920nnSSL8Bowo4KJIKa');
+    ('operator', '$2a$10$3Lk4s75nd2Q0G1E8UWTmFu05efZd8lnw6OUw8yiJMvkN4fjhMKSfi'),
+    ('analyst', '$2a$10$4jOz4wa0A4i9xlzxtJX5du72d2cbNfCjHt3TwPyDF6OlDXtIxK56W'),
+    ('admin', '$2a$10$3ikPsa0.oG0Rolvk8W65Ke02QdCf1NguC9DxvAijlbu.54Vp/Wpb2');
 
 insert into user_role (user_id, role_id)
 select u.id, r.id
 from app_user u, role r
-where u.login = 'agent' and r.name = 'OPERATOR';
+where u.login = 'operator' and r.name = 'OPERATOR';
 
 insert into user_role (user_id, role_id)
 select u.id, r.id
 from app_user u, role r
 where u.login = 'analyst' and r.name = 'ANALYST';
+
+insert into user_role (user_id, role_id)
+select u.id, r.id
+from app_user u, role r
+where u.login = 'admin' and r.name = 'ADMIN';

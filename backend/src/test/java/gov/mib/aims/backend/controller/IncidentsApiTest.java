@@ -41,7 +41,7 @@ class IncidentsApiTest extends BaseApiTest {
 
     @Test
     void operatorCreatesIncidentAndAnalystReceivesNotificationAfterStatusChange() throws Exception {
-        String operatorToken = signInAndGetToken("agent", "secret");
+        String operatorToken = signInAndGetToken("operator", "operator");
         long fileId = uploadFile(operatorToken);
 
         CreateIncidentRequest createRequest = new CreateIncidentRequest()
@@ -91,10 +91,28 @@ class IncidentsApiTest extends BaseApiTest {
 
         notifyAnalystsProcessor.execute(new NotifyAnalystsIncidentReadyPayload(incidentId));
 
-        String analystToken = signInAndGetToken("analyst", "secret");
+        String analystToken = signInAndGetToken("analyst", "analyst");
         mockMvc.perform(get(UNREAD_COUNT_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.count").value(1));
+    }
+
+    @Test
+    void listIncidentsReturnsPaginatedResults() throws Exception {
+        String operatorToken = signInAndGetToken("operator", "operator");
+        long fileId = uploadFile(operatorToken);
+        createIncident(operatorToken, fileId);
+
+        mockMvc.perform(get(INCIDENTS_URL + "?page=0&size=10")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + operatorToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page").value(0))
+                .andExpect(jsonPath("$.size").value(10))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.items").isArray())
+                .andExpect(jsonPath("$.items.length()").value(1))
+                .andExpect(jsonPath("$.items[0].status").value("DRAFT"));
     }
 
     @Test
@@ -109,9 +127,9 @@ class IncidentsApiTest extends BaseApiTest {
 
     @Test
     void analystCannotCreateIncidentReturns403() throws Exception {
-        String operatorToken = signInAndGetToken("agent", "secret");
+        String operatorToken = signInAndGetToken("operator", "operator");
         long fileId = uploadFile(operatorToken);
-        String analystToken = signInAndGetToken("analyst", "secret");
+        String analystToken = signInAndGetToken("analyst", "analyst");
 
         mockMvc.perform(post(INCIDENTS_URL)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken)
@@ -123,9 +141,9 @@ class IncidentsApiTest extends BaseApiTest {
 
     @Test
     void analystCannotChangeStatusReturns403() throws Exception {
-        String operatorToken = signInAndGetToken("agent", "secret");
+        String operatorToken = signInAndGetToken("operator", "operator");
         long incidentId = createIncident(operatorToken, uploadFile(operatorToken));
-        String analystToken = signInAndGetToken("analyst", "secret");
+        String analystToken = signInAndGetToken("analyst", "analyst");
 
         ChangeIncidentStatusRequest statusRequest = new ChangeIncidentStatusRequest()
                 .status(IncidentStatusApi.READY_FOR_ANALYSIS);
@@ -140,7 +158,7 @@ class IncidentsApiTest extends BaseApiTest {
 
     @Test
     void getUnknownIncidentReturns404() throws Exception {
-        String token = signInAndGetToken("agent", "secret");
+        String token = signInAndGetToken("operator", "operator");
         mockMvc.perform(get(INCIDENTS_URL + "/999999")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isNotFound())
@@ -149,7 +167,7 @@ class IncidentsApiTest extends BaseApiTest {
 
     @Test
     void createWithInvalidEventTypeReturns400() throws Exception {
-        String token = signInAndGetToken("agent", "secret");
+        String token = signInAndGetToken("operator", "operator");
         long fileId = uploadFile(token);
         String body = """
                 {
@@ -171,7 +189,7 @@ class IncidentsApiTest extends BaseApiTest {
 
     @Test
     void changeStatusWithInvalidTransitionReturns400() throws Exception {
-        String token = signInAndGetToken("agent", "secret");
+        String token = signInAndGetToken("operator", "operator");
         long incidentId = createIncident(token, uploadFile(token));
 
         ChangeIncidentStatusRequest statusRequest = new ChangeIncidentStatusRequest()

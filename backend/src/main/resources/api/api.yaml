@@ -284,6 +284,56 @@ paths:
                 $ref: "#/components/schemas/ErrorObject"
 
   /api/v1/incidents:
+    get:
+      summary: List incidents
+      operationId: listIncidents
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+            minimum: 0
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+            minimum: 1
+            maximum: 100
+      responses:
+        200:
+          description: Paginated incident list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentListResponse"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
     post:
       summary: Create incident
       operationId: createIncident
@@ -448,14 +498,14 @@ components:
       description: User login
       minLength: 1
       maxLength: 100
-      example: "agent"
+      example: "operator"
 
     Password:
       type: string
       description: User password
       minLength: 1
       maxLength: 200
-      example: "secret"
+      example: "operator"
 
     AccessToken:
       type: string
@@ -699,6 +749,33 @@ components:
         updatedAt:
           type: string
           format: date-time
+
+    IncidentListResponse:
+      description: Paginated incidents
+      type: object
+      required:
+        - items
+        - page
+        - size
+        - totalElements
+        - totalPages
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/IncidentResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
 
     ErrorObject:
       description: Error response object

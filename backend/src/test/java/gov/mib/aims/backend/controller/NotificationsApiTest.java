@@ -36,19 +36,19 @@ class NotificationsApiTest extends BaseApiTest {
     @Autowired
     private AppUserRepository appUserRepository;
 
-    private Long agentUserId;
+    private Long operatorUserId;
     private Long otherUserId;
     private Long notificationId;
 
     @BeforeEach
     void setUp() {
-        agentUserId = appUserRepository.findByLogin("agent").orElseThrow().getId();
+        operatorUserId = appUserRepository.findByLogin("operator").orElseThrow().getId();
         otherUserId = appUserRepository.save(AppUserEntity.builder()
                 .login("other")
                 .passwordHash("$2a$10$LArEHlxdvPz42xMgLOLMLu2H9ZtkqH0Oge920nnSSL8Bowo4KJIKa")
                 .build()).getId();
         var record = notificationService.send(
-                agentUserId,
+                operatorUserId,
                 "Incident ready for analysis",
                 List.of(EntityRef.format(EntityType.INCIDENT, 612L))
         );
@@ -57,7 +57,7 @@ class NotificationsApiTest extends BaseApiTest {
 
     @Test
     void listUnreadCountAndMarkRead() throws Exception {
-        String token = signInAndGetToken("agent", "secret");
+        String token = signInAndGetToken("operator", "operator");
 
         mockMvc.perform(get(UNREAD_COUNT_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isOk())
@@ -98,7 +98,7 @@ class NotificationsApiTest extends BaseApiTest {
                 List.of(EntityRef.format(EntityType.INCIDENT, 1L))
         ).id();
 
-        String token = signInAndGetToken("agent", "secret");
+        String token = signInAndGetToken("operator", "operator");
         mockMvc.perform(patch(NOTIFICATIONS_URL + "/" + foreignNotificationId + "/read")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isNotFound())

@@ -2,6 +2,7 @@ package gov.mib.aims.backend.services;
 
 import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
+import gov.mib.aims.backend.generated.model.IncidentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
 
 /**
@@ -33,4 +34,13 @@ public interface IncidentService {
      * @return инцидент
      */
     IncidentResponse getById(Long id);
+
+    /**
+     * Возвращает страницу инцидентов.
+     *
+     * @param page номер страницы (с нуля)
+     * @param size размер страницы
+     * @return список инцидентов с метаданными пагинации
+     */
+    IncidentListResponse list(int page, int size);
 }

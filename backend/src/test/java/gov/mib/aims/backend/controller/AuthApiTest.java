@@ -25,7 +25,7 @@ class AuthApiTest extends BaseApiTest {
 
     @Test
     void signInWithValidCredentialsReturnsToken() throws Exception {
-        SignInRequest request = new SignInRequest().login("agent").password("secret");
+        SignInRequest request = new SignInRequest().login("operator").password("operator");
         mockMvc.perform(post(SIGNIN_URL)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -35,7 +35,7 @@ class AuthApiTest extends BaseApiTest {
 
     @Test
     void signInWithWrongPasswordReturns401() throws Exception {
-        SignInRequest request = new SignInRequest().login("agent").password("wrong");
+        SignInRequest request = new SignInRequest().login("operator").password("wrong");
         mockMvc.perform(post(SIGNIN_URL)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -71,7 +71,7 @@ class AuthApiTest extends BaseApiTest {
 
     @Test
     void getUnknownApiUrlWithValidTokenReturns403() throws Exception {
-        String token = signInAndGetToken("agent", "secret");
+        String token = signInAndGetToken("operator", "operator");
         mockMvc.perform(get(UNKNOWN_API_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value(403))
@@ -80,10 +80,10 @@ class AuthApiTest extends BaseApiTest {
 
     @Test
     void getAuthMeWithValidTokenReturnsLoginRolesAndPermissions() throws Exception {
-        String token = signInAndGetToken("agent", "secret");
+        String token = signInAndGetToken("operator", "operator");
         mockMvc.perform(get(ME_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.login").value("agent"))
+                .andExpect(jsonPath("$.login").value("operator"))
                 .andExpect(jsonPath("$.roles", hasSize(1)))
                 .andExpect(jsonPath("$.roles[0]").value("OPERATOR"))
                 .andExpect(jsonPath("$.permissions", hasSize(3)))

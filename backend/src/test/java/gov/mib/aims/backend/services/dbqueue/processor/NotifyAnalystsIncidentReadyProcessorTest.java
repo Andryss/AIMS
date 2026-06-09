@@ -36,7 +36,7 @@ class NotifyAnalystsIncidentReadyProcessorTest extends BaseDbTest {
 
     @Test
     void executeSendsNotificationToAnalyst() {
-        Long operatorId = appUserRepository.findByLogin("agent").orElseThrow().getId();
+        Long operatorId = appUserRepository.findByLogin("operator").orElseThrow().getId();
         Long analystId = appUserRepository.findByLogin("analyst").orElseThrow().getId();
         LocalDateTime now = TestClockConfig.FIXED_LOCAL_DATE_TIME;
         IncidentEntity incident = incidentRepository.save(IncidentEntity.builder()

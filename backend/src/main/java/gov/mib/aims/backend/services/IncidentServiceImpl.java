@@ -4,6 +4,7 @@ import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
+import gov.mib.aims.backend.generated.model.IncidentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
 import gov.mib.aims.backend.generated.model.IncidentEventTypeApi;
 import gov.mib.aims.backend.generated.model.IncidentStatusApi;
@@ -14,6 +15,8 @@ import gov.mib.aims.backend.repository.IncidentRepository;
 import gov.mib.aims.backend.repository.StoredFileRepository;
 import gov.mib.aims.backend.services.incident.status.IncidentStatusWorkflow;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,6 +78,20 @@ public class IncidentServiceImpl implements IncidentService {
         IncidentEntity entity = incidentRepository.findById(id)
                 .orElseThrow(Errors::incidentNotFound);
         return toResponse(entity);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public IncidentListResponse list(int page, int size) {
+        Page<IncidentEntity> result = incidentRepository.findAllByOrderByCreatedAtDesc(
+                PageRequest.of(page, size)
+        );
+        return new IncidentListResponse()
+                .items(result.getContent().stream().map(this::toResponse).toList())
+                .page(result.getNumber())
+                .size(result.getSize())
+                .totalElements(result.getTotalElements())
+                .totalPages(result.getTotalPages());
     }
 
     private void assertAttachmentsExist(List<Long> attachmentFileIds) {
