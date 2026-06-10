@@ -4,6 +4,7 @@ import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
 import gov.mib.aims.backend.generated.model.IncidentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
+import gov.mib.aims.backend.generated.model.LinkIncidentAlienRequest;
 
 /**
  * Сервис инцидентов.
@@ -43,4 +44,13 @@ public interface IncidentService {
      * @return список инцидентов с метаданными пагинации
      */
     IncidentListResponse list(int page, int size);
+
+    /**
+     * Привязывает тип инопланетянина к инциденту.
+     *
+     * @param id идентификатор инцидента
+     * @param request id записи справочника
+     * @return обновлённый инцидент
+     */
+    IncidentResponse linkAlien(Long id, LinkIncidentAlienRequest request);
 }

@@ -86,6 +86,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/files", "/api/v1/files/**").authenticated()
                         .requestMatchers("/api/v1/notifications", "/api/v1/notifications/**").authenticated()
                         .requestMatchers("/api/v1/incidents", "/api/v1/incidents/**").authenticated()
+                        .requestMatchers("/api/v1/aliens", "/api/v1/aliens/**").authenticated()
                         .requestMatchers("/api/v1/**").denyAll())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

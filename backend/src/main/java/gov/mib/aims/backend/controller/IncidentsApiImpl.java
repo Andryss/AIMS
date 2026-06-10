@@ -5,6 +5,7 @@ import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
 import gov.mib.aims.backend.generated.model.IncidentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
+import gov.mib.aims.backend.generated.model.LinkIncidentAlienRequest;
 import gov.mib.aims.backend.services.IncidentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -55,5 +56,12 @@ public class IncidentsApiImpl implements IncidentsApi {
     ) {
         log.info("POST /api/v1/incidents/{}/status", id);
         return incidentService.changeStatus(id, changeIncidentStatusRequest);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('INCIDENT_ALIEN_LINK')")
+    public IncidentResponse linkIncidentAlien(Long id, @Valid LinkIncidentAlienRequest linkIncidentAlienRequest) {
+        log.info("PUT /api/v1/incidents/{}/alien", id);
+        return incidentService.linkAlien(id, linkIncidentAlienRequest);
     }
 }

@@ -140,7 +140,7 @@ class IncidentsApiTest extends BaseApiTest {
     }
 
     @Test
-    void analystCannotChangeStatusReturns403() throws Exception {
+    void analystCannotSubmitDraftToAnalysisReturns400() throws Exception {
         String operatorToken = signInAndGetToken("operator", "operator");
         long incidentId = createIncident(operatorToken, uploadFile(operatorToken));
         String analystToken = signInAndGetToken("analyst", "analyst");
@@ -152,8 +152,8 @@ class IncidentsApiTest extends BaseApiTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(statusRequest)))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value("auth.access_denied"));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("incident.invalid_status_transition"));
     }
 
     @Test

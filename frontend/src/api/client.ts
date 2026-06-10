@@ -1,4 +1,6 @@
 import {
+  Alien,
+  AlienSearchResponse,
   AuthMeResponse,
   ChangeIncidentStatusRequest,
   CreateIncidentRequest,
@@ -139,6 +141,34 @@ export function changeIncidentStatus(
     {
       method: 'POST',
       body: JSON.stringify(payload),
+    },
+    token,
+  );
+}
+
+export function searchAliens(token: string, q: string): Promise<AlienSearchResponse> {
+  const params = new URLSearchParams({ q });
+  return requestJson<AlienSearchResponse>(
+    `/aliens/search?${params.toString()}`,
+    { method: 'GET' },
+    token,
+  );
+}
+
+export function getAlien(token: string, id: number): Promise<Alien> {
+  return requestJson<Alien>(`/aliens/${id}`, { method: 'GET' }, token);
+}
+
+export function putIncidentAlien(
+  token: string,
+  incidentId: number,
+  alienId: number,
+): Promise<IncidentResponse> {
+  return requestJson<IncidentResponse>(
+    `/incidents/${incidentId}/alien`,
+    {
+      method: 'PUT',
+      body: JSON.stringify({ alienId }),
     },
     token,
   );

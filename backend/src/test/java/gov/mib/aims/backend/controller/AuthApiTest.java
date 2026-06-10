@@ -91,6 +91,18 @@ class AuthApiTest extends BaseApiTest {
                         "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE")));
     }
 
+    @Test
+    void analystHasAlienLinkAndStatusChangePermissions() throws Exception {
+        String token = signInAndGetToken("analyst", "analyst");
+        mockMvc.perform(get(ME_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.login").value("analyst"))
+                .andExpect(jsonPath("$.roles[0]").value("ANALYST"))
+                .andExpect(jsonPath("$.permissions", hasSize(4)))
+                .andExpect(jsonPath("$.permissions", containsInAnyOrder(
+                        "INCIDENT_READ", "INCIDENT_STATUS_CHANGE", "INCIDENT_ALIEN_LINK", "ALIEN_READ")));
+    }
+
     private String signInAndGetToken(String login, String password) throws Exception {
         SignInRequest request = new SignInRequest().login(login).password(password);
         MvcResult result = mockMvc.perform(post(SIGNIN_URL)

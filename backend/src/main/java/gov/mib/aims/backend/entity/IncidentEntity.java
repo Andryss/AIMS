@@ -62,6 +62,9 @@ public class IncidentEntity {
     @Builder.Default
     private List<Long> attachmentFileIds = new ArrayList<>();
 
+    @Column(name = "alien_id")
+    private Long alienId;
+
     @Column(name = "created_by_user_id", nullable = false)
     private Long createdByUserId;
 

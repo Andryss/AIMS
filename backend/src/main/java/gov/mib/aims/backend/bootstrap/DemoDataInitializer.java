@@ -33,18 +33,24 @@ public class DemoDataInitializer implements ApplicationRunner {
     private static final Map<String, String> PERMISSIONS = Map.of(
             "INCIDENT_READ", "Read incidents",
             "INCIDENT_CREATE", "Create incidents",
-            "INCIDENT_STATUS_CHANGE", "Change incident status"
+            "INCIDENT_STATUS_CHANGE", "Change incident status",
+            "INCIDENT_ALIEN_LINK", "Link alien type to incident",
+            "ALIEN_READ", "Read and search aliens in knowledge base"
     );
 
     private static final Map<String, List<String>> ROLE_PERMISSIONS = Map.of(
             RoleNames.OPERATOR, List.of("INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE"),
-            RoleNames.ANALYST, List.of("INCIDENT_READ"),
-            RoleNames.ADMIN, List.of("INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE")
+            RoleNames.ANALYST, List.of("INCIDENT_READ", "INCIDENT_STATUS_CHANGE", "INCIDENT_ALIEN_LINK", "ALIEN_READ"),
+            RoleNames.AGENT, List.of("INCIDENT_READ"),
+            RoleNames.ADMIN, List.of(
+                    "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_ALIEN_LINK", "ALIEN_READ"
+            )
     );
 
     private static final Map<String, String> ROLE_DESCRIPTIONS = Map.of(
             RoleNames.OPERATOR, "Incident operator",
             RoleNames.ANALYST, "Incident analyst",
+            RoleNames.AGENT, "Field agent",
             RoleNames.ADMIN, "Administrator"
     );
 
@@ -53,6 +59,7 @@ public class DemoDataInitializer implements ApplicationRunner {
     static {
         DEMO_USERS.put("operator", RoleNames.OPERATOR);
         DEMO_USERS.put("analyst", RoleNames.ANALYST);
+        DEMO_USERS.put("agent", RoleNames.AGENT);
         DEMO_USERS.put("admin", RoleNames.ADMIN);
     }
 
@@ -74,6 +81,7 @@ public class DemoDataInitializer implements ApplicationRunner {
         Map<String, RoleEntity> rolesByName = seedRoles();
         linkRolePermissions(permissionsByCode, rolesByName);
         seedUsers(rolesByName);
+        seedAliens();
 
         log.info("Demo data initialized: users {}", DEMO_USERS.keySet());
     }
@@ -129,5 +137,15 @@ public class DemoDataInitializer implements ApplicationRunner {
                     rolesByName.get(roleName).getId()
             );
         });
+    }
+
+    private void seedAliens() {
+        jdbcTemplate.update(
+                """
+                INSERT INTO alien (name, description, threat_level, created_at) VALUES
+                ('Слизень', 'Небольшое слизистое существо', 3, CURRENT_TIMESTAMP),
+                ('Слизистый червь', 'Крупный червеобразный инопланетянин', 6, CURRENT_TIMESTAMP)
+                """
+        );
     }
 }

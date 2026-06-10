@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { MIB_LOGO_PATH } from '../constants';
 import { NotificationsPanel } from './NotificationsPanel';
 import { UserAvatar } from './UserAvatar';
@@ -9,13 +10,9 @@ interface AppHeaderProps {
   unreadCount: number;
   notificationsOpen: boolean;
   showIncidentsTab: boolean;
-  profileActive: boolean;
-  incidentsActive: boolean;
   onToggleNotifications: () => void;
   onCloseNotifications: () => void;
   onUnreadChange: (count: number) => void;
-  onLoginClick: () => void;
-  onIncidentsTabClick: () => void;
   onNavigateToIncident?: (incidentId: number) => void;
 }
 
@@ -25,13 +22,9 @@ export function AppHeader({
   unreadCount,
   notificationsOpen,
   showIncidentsTab,
-  profileActive,
-  incidentsActive,
   onToggleNotifications,
   onCloseNotifications,
   onUnreadChange,
-  onLoginClick,
-  onIncidentsTabClick,
   onNavigateToIncident,
 }: AppHeaderProps) {
   return (
@@ -42,13 +35,12 @@ export function AppHeader({
 
       {showIncidentsTab && (
         <nav className="app-header-tabs" aria-label="Разделы">
-          <button
-            type="button"
-            className={incidentsActive ? 'header-tab active' : 'header-tab'}
-            onClick={onIncidentsTabClick}
+          <NavLink
+            to="/incidents"
+            className={({ isActive }) => (isActive ? 'header-tab active' : 'header-tab')}
           >
             Инциденты
-          </button>
+          </NavLink>
         </nav>
       )}
 
@@ -71,14 +63,15 @@ export function AppHeader({
             onNavigateToIncident={onNavigateToIncident}
           />
         </div>
-        <button
-          type="button"
-          className={profileActive ? 'profile-login-btn active' : 'profile-login-btn'}
-          onClick={onLoginClick}
+        <NavLink
+          to="/profile"
+          className={({ isActive }) =>
+            isActive ? 'profile-login-btn active' : 'profile-login-btn'
+          }
         >
           {login && <UserAvatar login={login} size={28} />}
           <span>{login}</span>
-        </button>
+        </NavLink>
       </div>
     </header>
   );

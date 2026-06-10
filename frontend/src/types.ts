@@ -6,7 +6,11 @@ export type IncidentEventType =
   | 'ALIEN_ARTIFACT'
   | 'ALIEN_CAPTURE';
 
-export type IncidentStatus = 'DRAFT' | 'READY_FOR_ANALYSIS';
+export type IncidentStatus =
+  | 'DRAFT'
+  | 'READY_FOR_ANALYSIS'
+  | 'READY_FOR_EXECUTION'
+  | 'CLARIFICATION_REQUIRED';
 
 export interface SignInRequest {
   login: string;
@@ -39,6 +43,7 @@ export interface IncidentResponse {
   detectedAt: string;
   description: string;
   attachmentFileIds: number[];
+  alienId?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -53,6 +58,17 @@ export interface IncidentListResponse {
   size: number;
   totalElements: number;
   totalPages: number;
+}
+
+export interface Alien {
+  id: number;
+  name: string;
+  description: string;
+  threatLevel: number;
+}
+
+export interface AlienSearchResponse {
+  items: Alien[];
 }
 
 export interface FileUploadResponse {

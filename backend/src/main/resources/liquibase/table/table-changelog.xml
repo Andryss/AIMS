@@ -14,5 +14,6 @@
     <include file="notification.sql" relativeToChangelogFile="true"/>
     <include file="queue_tasks.sql" relativeToChangelogFile="true"/>
     <include file="incident.sql" relativeToChangelogFile="true"/>
+    <include file="alien.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

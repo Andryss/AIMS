@@ -1,28 +1,27 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as api from '../api/client';
 import { EVENT_TYPE_LABELS } from '../incidentLabels';
 import { IncidentResponse } from '../types';
 import { CreateIncidentModal } from './CreateIncidentModal';
 import { IncidentStatusSelect } from './IncidentStatusSelect';
-import { IncidentViewModal } from './IncidentViewModal';
 
 const PAGE_SIZE = 10;
 
 interface IncidentsTabProps {
   token: string;
+  roles: string[];
   canCreate: boolean;
   canChangeStatus: boolean;
-  openIncidentId?: number | null;
-  onOpenIncidentHandled?: () => void;
 }
 
 export function IncidentsTab({
   token,
+  roles,
   canCreate,
   canChangeStatus,
-  openIncidentId,
-  onOpenIncidentHandled,
 }: IncidentsTabProps) {
+  const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [items, setItems] = useState<IncidentResponse[]>([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -30,7 +29,6 @@ export function IncidentsTab({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [viewIncidentId, setViewIncidentId] = useState<number | null>(null);
 
   const loadPage = useCallback(
     async (pageNumber: number) => {
@@ -55,14 +53,6 @@ export function IncidentsTab({
   useEffect(() => {
     loadPage(0);
   }, [loadPage]);
-
-  useEffect(() => {
-    if (openIncidentId == null) {
-      return;
-    }
-    setViewIncidentId(openIncidentId);
-    onOpenIncidentHandled?.();
-  }, [openIncidentId, onOpenIncidentHandled]);
 
   const handleCreated = () => {
     loadPage(0);
@@ -115,13 +105,14 @@ export function IncidentsTab({
                 <tr
                   key={incident.id}
                   className="incidents-table-row"
-                  onClick={() => setViewIncidentId(incident.id)}
+                  onClick={() => navigate(`/incidents/${incident.id}`)}
                 >
                   <td>#{incident.id}</td>
                   <td>
                     <IncidentStatusSelect
                       token={token}
                       incident={incident}
+                      roles={roles}
                       canChange={canChangeStatus}
                       onStatusChanged={handleStatusChanged}
                     />
@@ -165,15 +156,6 @@ export function IncidentsTab({
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onCreated={handleCreated}
-      />
-
-      <IncidentViewModal
-        token={token}
-        incidentId={viewIncidentId}
-        open={viewIncidentId != null}
-        canChangeStatus={canChangeStatus}
-        onStatusChanged={handleStatusChanged}
-        onClose={() => setViewIncidentId(null)}
       />
     </section>
   );

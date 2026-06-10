@@ -16,6 +16,7 @@ interface IncidentViewModalProps {
   token: string;
   incidentId: number | null;
   open: boolean;
+  roles: string[];
   canChangeStatus: boolean;
   onClose: () => void;
   onStatusChanged?: (updated: IncidentResponse) => void;
@@ -25,6 +26,7 @@ export function IncidentViewModal({
   token,
   incidentId,
   open,
+  roles,
   canChangeStatus,
   onClose,
   onStatusChanged,
@@ -115,6 +117,7 @@ export function IncidentViewModal({
                   <IncidentStatusSelect
                     token={token}
                     incident={incident}
+                    roles={roles}
                     canChange={canChangeStatus}
                     className="status-select-wrap-modal"
                     onStatusChanged={(updated) => {

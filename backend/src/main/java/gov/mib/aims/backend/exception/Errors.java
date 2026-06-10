@@ -132,6 +132,28 @@ public final class Errors {
     }
 
     /**
+     * Запись справочника инопланетян не найдена.
+     */
+    public static BaseException alienNotFound() {
+        return BaseException.builder()
+                .code(404)
+                .message("alien.not_found")
+                .humanMessage("Alien not found")
+                .build();
+    }
+
+    /**
+     * Привязка типа инопланетянина недопустима в текущем состоянии инцидента.
+     */
+    public static BaseException invalidAlienLink() {
+        return BaseException.builder()
+                .code(400)
+                .message("incident.invalid_alien_link")
+                .humanMessage("Cannot link alien type in current incident state")
+                .build();
+    }
+
+    /**
      * Вложение инцидента не найдено.
      */
     public static BaseException attachmentNotFound() {

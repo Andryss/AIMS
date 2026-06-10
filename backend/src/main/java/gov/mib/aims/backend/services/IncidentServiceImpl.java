@@ -8,9 +8,11 @@ import gov.mib.aims.backend.generated.model.IncidentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
 import gov.mib.aims.backend.generated.model.IncidentEventTypeApi;
 import gov.mib.aims.backend.generated.model.IncidentStatusApi;
+import gov.mib.aims.backend.generated.model.LinkIncidentAlienRequest;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.IncidentEventType;
 import gov.mib.aims.backend.model.IncidentStatus;
+import gov.mib.aims.backend.repository.AlienRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
 import gov.mib.aims.backend.repository.StoredFileRepository;
 import gov.mib.aims.backend.services.incident.status.IncidentStatusWorkflow;
@@ -34,6 +36,7 @@ import java.util.List;
 public class IncidentServiceImpl implements IncidentService {
 
     private final IncidentRepository incidentRepository;
+    private final AlienRepository alienRepository;
     private final StoredFileRepository storedFileRepository;
     private final CurrentUserService currentUserService;
     private final EntityHistoryService entityHistoryService;
@@ -77,6 +80,25 @@ public class IncidentServiceImpl implements IncidentService {
     public IncidentResponse getById(Long id) {
         IncidentEntity entity = incidentRepository.findById(id)
                 .orElseThrow(Errors::incidentNotFound);
+        return toResponse(entity);
+    }
+
+    @Override
+    @Transactional
+    public IncidentResponse linkAlien(Long id, LinkIncidentAlienRequest request) {
+        IncidentEntity entity = incidentRepository.findById(id)
+                .orElseThrow(Errors::incidentNotFound);
+        if (entity.getStatus() != IncidentStatus.READY_FOR_ANALYSIS) {
+            throw Errors.invalidAlienLink();
+        }
+        Long alienId = request.getAlienId();
+        if (!alienRepository.existsById(alienId)) {
+            throw Errors.alienNotFound();
+        }
+        entity.setAlienId(alienId);
+        entity.setUpdatedAt(LocalDateTime.now(clock));
+        entity = incidentRepository.save(entity);
+        entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
         return toResponse(entity);
     }
 
@@ -128,6 +150,8 @@ public class IncidentServiceImpl implements IncidentService {
         return switch (dto) {
             case DRAFT -> IncidentStatus.DRAFT;
             case READY_FOR_ANALYSIS -> IncidentStatus.READY_FOR_ANALYSIS;
+            case READY_FOR_EXECUTION -> IncidentStatus.READY_FOR_EXECUTION;
+            case CLARIFICATION_REQUIRED -> IncidentStatus.CLARIFICATION_REQUIRED;
         };
     }
 
@@ -135,6 +159,8 @@ public class IncidentServiceImpl implements IncidentService {
         return switch (status) {
             case DRAFT -> IncidentStatusApi.DRAFT;
             case READY_FOR_ANALYSIS -> IncidentStatusApi.READY_FOR_ANALYSIS;
+            case READY_FOR_EXECUTION -> IncidentStatusApi.READY_FOR_EXECUTION;
+            case CLARIFICATION_REQUIRED -> IncidentStatusApi.CLARIFICATION_REQUIRED;
         };
     }
 
@@ -148,6 +174,7 @@ public class IncidentServiceImpl implements IncidentService {
                 .description(entity.getDescription())
                 .attachmentFileIds(new ArrayList<>(entity.getAttachmentFileIds()))
                 .createdAt(entity.getCreatedAt().atOffset(ZoneOffset.UTC))
-                .updatedAt(entity.getUpdatedAt().atOffset(ZoneOffset.UTC));
+                .updatedAt(entity.getUpdatedAt().atOffset(ZoneOffset.UTC))
+                .alienId(entity.getAlienId());
     }
 }
