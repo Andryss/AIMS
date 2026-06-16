@@ -28,32 +28,34 @@ export function AppHeader({
   onNavigateToIncident,
 }: AppHeaderProps) {
   return (
-    <header className="app-header-bar">
-      <div className="app-header-brand">
-        <img src={MIB_LOGO_PATH} alt="MIB" className="app-logo-image" />
+    <header className="app-header">
+      <div className="app-header__brand">
+        <img src={MIB_LOGO_PATH} alt="MIB" className="app-header__logo" />
       </div>
 
       {showIncidentsTab && (
-        <nav className="app-header-tabs" aria-label="Разделы">
+        <nav className="app-header__nav" aria-label="Разделы">
           <NavLink
             to="/incidents"
-            className={({ isActive }) => (isActive ? 'header-tab active' : 'header-tab')}
+            className={({ isActive }) =>
+              isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'
+            }
           >
             Инциденты
           </NavLink>
         </nav>
       )}
 
-      <div className="app-header-actions">
-        <div className="notifications-wrapper">
+      <div className="app-header__actions">
+        <div className="notifications">
           <button
             type="button"
-            className="icon-button bell-button"
+            className="btn btn--ghost app-header__bell"
             onClick={onToggleNotifications}
             aria-label="Уведомления"
           >
             🔔
-            {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
+            {unreadCount > 0 && <span className="app-header__badge">{unreadCount}</span>}
           </button>
           <NotificationsPanel
             token={token}
@@ -66,7 +68,7 @@ export function AppHeader({
         <NavLink
           to="/profile"
           className={({ isActive }) =>
-            isActive ? 'profile-login-btn active' : 'profile-login-btn'
+            isActive ? 'app-header__profile app-header__profile--active' : 'app-header__profile'
           }
         >
           {login && <UserAvatar login={login} size={28} />}

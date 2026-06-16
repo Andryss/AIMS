@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
-import './App.css';
 import * as api from './api/client';
 import { AppHeader } from './components/AppHeader';
 import { IncidentDetailPage } from './components/IncidentDetailPage';
@@ -112,14 +111,14 @@ function App() {
   if (!accessToken) {
     return (
       <div className="app">
-        {error && <div className="alert alert-error app-alert">{error}</div>}
+        {error && <div className="alert alert--error app__alert">{error}</div>}
         <LoginPage loading={loading} onSignIn={handleSignIn} />
       </div>
     );
   }
 
   return (
-    <div className="app app-authenticated">
+    <div className="app app--authenticated">
       <AppHeader
         token={accessToken}
         login={profile?.login ?? ''}
@@ -132,7 +131,7 @@ function App() {
         onNavigateToIncident={showIncidentsTab ? handleNavigateToIncident : undefined}
       />
 
-      {error && <div className="alert alert-error app-alert">{error}</div>}
+      {error && <div className="alert alert--error app__alert">{error}</div>}
 
       <main className="main-content">
         <Routes>
@@ -152,7 +151,7 @@ function App() {
               profile ? (
                 <ProfileTab profile={profile} onSignOut={handleSignOut} />
               ) : (
-                <p className="panel-muted">Загрузка…</p>
+                <p className="text-muted">Загрузка…</p>
               )
             }
           />

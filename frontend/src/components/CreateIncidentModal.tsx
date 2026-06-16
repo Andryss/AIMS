@@ -80,13 +80,13 @@ export function CreateIncidentModal({
         role="dialog"
         aria-labelledby="create-incident-title"
       >
-        <div className="modal-header">
+        <div className="modal__header">
           <h2 id="create-incident-title">Создать инцидент</h2>
-          <button type="button" className="icon-button" onClick={onClose} aria-label="Закрыть">
+          <button type="button" className="btn btn--ghost" onClick={onClose} aria-label="Закрыть">
             ×
           </button>
         </div>
-        {error && <div className="alert alert-error">{error}</div>}
+        {error && <div className="alert alert--error">{error}</div>}
         <form onSubmit={handleSubmit} className="form">
           <label>
             Тип события
@@ -134,10 +134,10 @@ export function CreateIncidentModal({
             disabled={loading}
           />
           <div className="modal-actions">
-            <button type="button" className="secondary" onClick={onClose}>
+            <button type="button" className="btn btn--secondary" onClick={onClose}>
               Отмена
             </button>
-            <button type="submit" disabled={loading}>
+            <button type="submit" className="btn btn--primary" disabled={loading}>
               {loading ? 'Создание…' : 'Создать'}
             </button>
           </div>

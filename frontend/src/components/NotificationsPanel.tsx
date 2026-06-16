@@ -90,26 +90,26 @@ export function NotificationsPanel({
   }
 
   return (
-    <div className="notifications-panel" ref={panelRef}>
-      <div className="notifications-panel-header">
+    <div className="notifications__panel" ref={panelRef}>
+      <div className="notifications__header">
         <h3>Уведомления</h3>
-        <button type="button" className="icon-button" onClick={onClose} aria-label="Закрыть">
+        <button type="button" className="btn btn--ghost" onClick={onClose} aria-label="Закрыть">
           ×
         </button>
       </div>
-      {loading && <p className="panel-muted">Загрузка…</p>}
-      {error && <p className="panel-error">{error}</p>}
+      {loading && <p className="text-muted">Загрузка…</p>}
+      {error && <p className="text-error">{error}</p>}
       {!loading && !error && items.length === 0 && (
-        <p className="panel-muted">Нет уведомлений</p>
+        <p className="text-muted">Нет уведомлений</p>
       )}
-      <ul className="notifications-list">
+      <ul className="notifications__list">
         {items.map((item) => {
           const incidentIds = extractIncidentIds(item.relatedEntities);
 
           return (
             <li
               key={item.id}
-              className={item.read ? 'notification-read' : 'notification-unread'}
+              className={item.read ? 'notifications__item--read' : 'notifications__item--unread'}
               onClick={() => handleMarkRead(item.id)}
               onKeyDown={(event) => {
                 if (!item.read && (event.key === 'Enter' || event.key === ' ')) {
@@ -121,14 +121,14 @@ export function NotificationsPanel({
               tabIndex={item.read ? undefined : 0}
               aria-disabled={item.read || markingId === item.id}
             >
-              <p className="notification-message">{item.message}</p>
+              <p className="notifications__message">{item.message}</p>
               {incidentIds.length > 0 && onNavigateToIncident && (
-                <div className="notification-actions">
+                <div className="notifications__actions">
                   {incidentIds.map((incidentId) => (
                     <button
                       key={incidentId}
                       type="button"
-                      className="outline-button"
+                      className="btn btn--outline btn--sm"
                       onClick={(event) => {
                         event.stopPropagation();
                         onNavigateToIncident(incidentId);

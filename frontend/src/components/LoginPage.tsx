@@ -18,7 +18,7 @@ export function LoginPage({ loading, onSignIn }: LoginPageProps) {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1 className="login-title">{SYSTEM_NAME}</h1>
+        <h1 className="login-card__title">{SYSTEM_NAME}</h1>
         <form onSubmit={handleSubmit} className="form">
           <label>
             Логин
@@ -39,7 +39,7 @@ export function LoginPage({ loading, onSignIn }: LoginPageProps) {
               required
             />
           </label>
-          <button type="submit" disabled={loading}>
+          <button type="submit" className="btn btn--primary" disabled={loading}>
             {loading ? 'Вход…' : 'Войти'}
           </button>
         </form>

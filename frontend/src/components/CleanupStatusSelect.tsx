@@ -68,11 +68,11 @@ export function CleanupStatusSelect({
   const canEdit = canChange && allowedTargets.length > 0;
 
   if (displayStatus == null && !canEdit) {
-    return <span className="panel-muted">—</span>;
+    return <span className="text-muted">—</span>;
   }
 
   const statusClass = displayStatus
-    ? `cleanup-status-${displayStatus.toLowerCase()}`
+    ? `status-chip--cleanup_${displayStatus.toLowerCase()}`
     : '';
 
   return (
@@ -97,12 +97,12 @@ export function CleanupStatusSelect({
           ))}
         </select>
       ) : (
-        <span className={`status-badge ${statusClass}`}>
+        <span className={`status-chip ${statusClass}`}>
           {displayStatus != null ? CLEANUP_STATUS_LABELS[displayStatus] : '—'}
         </span>
       )}
-      {loading && <span className="status-select-loading">…</span>}
-      {error && <span className="status-select-error" title={error}>!</span>}
+      {loading && <span className="status-select__loading">…</span>}
+      {error && <span className="status-select__error" title={error}>!</span>}
     </div>
   );
 }

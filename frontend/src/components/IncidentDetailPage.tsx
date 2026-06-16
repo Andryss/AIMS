@@ -567,22 +567,22 @@ export function IncidentDetailPage({
   };
 
   return (
-    <section className="tab-panel incident-detail-page">
-      <div className="tab-panel-header">
+    <section className="card incident-detail-page">
+      <div className="card__header">
         <h2>{incident ? `Инцидент #${incident.id}` : 'Инцидент'}</h2>
-        <Link to="/incidents" className="outline-button">
+        <Link to="/incidents" className="btn btn--outline">
           ← К списку
         </Link>
       </div>
 
-      {error && <div className="alert alert-error">{error}</div>}
-      {loading && <p className="panel-muted">Загрузка…</p>}
+      {error && <div className="alert alert--error">{error}</div>}
+      {loading && <p className="text-muted">Загрузка…</p>}
 
       {incident && !loading && (
         <>
-          <div className="incident-view">
-            <dl className="incident-view-fields">
-              <div className="incident-view-row">
+          <section className="section">
+            <dl className="data-list">
+              <div className="data-list__row">
                 <dt>Статус</dt>
                 <dd>
                   <IncidentStatusSelect
@@ -591,7 +591,7 @@ export function IncidentDetailPage({
                     roles={roles}
                     currentUserId={currentUserId}
                     canChange={canChangeStatus}
-                    className="status-select-wrap-modal"
+                    className="status-select-wrap status-select-wrap--modal"
                     onStatusChanged={(updated) => {
                       setIncident(updated);
                       if (updated.status !== 'READY_FOR_ANALYSIS') {
@@ -605,40 +605,40 @@ export function IncidentDetailPage({
                   />
                 </dd>
               </div>
-              <div className="incident-view-row">
+              <div className="data-list__row">
                 <dt>Тип события</dt>
                 <dd>{EVENT_TYPE_LABELS[incident.eventType] ?? incident.eventType}</dd>
               </div>
-              <div className="incident-view-row">
+              <div className="data-list__row">
                 <dt>Место</dt>
                 <dd>{incident.location}</dd>
               </div>
-              <div className="incident-view-row">
+              <div className="data-list__row">
                 <dt>Время обнаружения</dt>
                 <dd>{formatDate(incident.detectedAt)}</dd>
               </div>
-              <div className="incident-view-row">
+              <div className="data-list__row">
                 <dt>Описание</dt>
-                <dd className="incident-view-description">{incident.description}</dd>
+                <dd className="text-pre-wrap">{incident.description}</dd>
               </div>
 
               {(canReadAliens && (canLinkAlien || linkedAlien)) && (
-                <div className="incident-view-row">
+                <div className="data-list__row">
                   <dt>Тип инопланетянина</dt>
                   <dd>
                     {linkedAlien ? (
                       <div className="alien-linked">
                         <strong>{linkedAlien.name}</strong>
-                        <span className="panel-muted">
+                        <span className="text-muted">
                           {' '}
                           (угроза {linkedAlien.threatLevel}/10)
                         </span>
-                        <p className="incident-view-description">{linkedAlien.description}</p>
+                        <p className="text-pre-wrap">{linkedAlien.description}</p>
                       </div>
                     ) : canLinkAlien && incident.status === 'READY_FOR_ANALYSIS' ? (
                       <button
                         type="button"
-                        className="alien-picker-trigger"
+                        className="btn btn--outline"
                         onClick={() => setAlienDrawerOpen(true)}
                       >
                         Выбрать
@@ -651,14 +651,14 @@ export function IncidentDetailPage({
               )}
 
               {showCleanupStatusRow && (
-                <div className="incident-view-row">
+                <div className="data-list__row">
                   <dt>Статус очистки</dt>
                   <dd>
                     <CleanupStatusSelect
                       token={token}
                       incident={incident}
                       canChange={canChangeCleanupStatus}
-                      className="status-select-wrap-modal"
+                      className="status-select-wrap status-select-wrap--modal"
                       onStatusChanged={(updated) => {
                         setIncident(updated);
                         if (historyLoaded) {
@@ -671,13 +671,13 @@ export function IncidentDetailPage({
               )}
 
               {showCleanupReportRow && (
-                <div className="incident-view-row">
+                <div className="data-list__row">
                   <dt>Отчёт об очистке</dt>
                   <dd>
                     {incident.cleanupReportId != null ? (
                       <button
                         type="button"
-                        className="alien-picker-trigger"
+                        className="btn btn--outline"
                         onClick={() => {
                           setCleanupDrawerMode('view');
                           setCleanupDrawerOpen(true);
@@ -688,7 +688,7 @@ export function IncidentDetailPage({
                     ) : canCreateCleanupReport ? (
                       <button
                         type="button"
-                        className="alien-picker-trigger"
+                        className="btn btn--outline"
                         onClick={() => {
                           setCleanupDrawerMode('create');
                           setCleanupDrawerOpen(true);
@@ -704,7 +704,7 @@ export function IncidentDetailPage({
               )}
 
               {showResponsibleRow && (
-                <div className="incident-view-row">
+                <div className="data-list__row">
                   <dt>Ответственный</dt>
                   <dd
                     className={
@@ -727,7 +727,7 @@ export function IncidentDetailPage({
                     tabIndex={canEditAssignment && !responsibleEditing ? 0 : undefined}
                   >
                     {usersLoading && incident.responsibleUserId != null && !responsibleEditing && (
-                      <span className="panel-muted">Загрузка… </span>
+                      <span className="text-muted">Загрузка… </span>
                     )}
                     {responsibleEditing ? (
                       <div ref={responsibleEditRef} className="executors-edit-box">
@@ -740,7 +740,7 @@ export function IncidentDetailPage({
                               onRemove={toggleResponsibleRemoved}
                             />
                           ) : (
-                            <span className="panel-muted">Назначьте ответственного</span>
+                            <span className="text-muted">Назначьте ответственного</span>
                           )}
                         </div>
                         {!responsibleDraftAssigned && (
@@ -764,7 +764,7 @@ export function IncidentDetailPage({
                           <UserChip login={userLoginFromMap(incident.responsibleUserId, usersMap)} />
                         ) : (
                           canEditAssignment && (
-                            <span className="panel-muted">Нажмите, чтобы назначить ответственного</span>
+                            <span className="text-muted">Нажмите, чтобы назначить ответственного</span>
                           )
                         )}
                       </div>
@@ -774,7 +774,7 @@ export function IncidentDetailPage({
               )}
 
               {showExecutorsRow && (
-                <div className="incident-view-row">
+                <div className="data-list__row">
                   <dt>Исполнители</dt>
                 <dd
                   className={
@@ -797,13 +797,13 @@ export function IncidentDetailPage({
                   tabIndex={canEditAssignment && !executorsEditing ? 0 : undefined}
                 >
                   {usersLoading && (incident.executorUserIds ?? []).length > 0 && !executorsEditing && (
-                    <span className="panel-muted">Загрузка… </span>
+                    <span className="text-muted">Загрузка… </span>
                   )}
                   {executorsEditing ? (
                     <div ref={executorEditRef} className="executors-edit-box">
                       <div className="user-chip-group">
                         {executorDraftIds.length === 0 && (
-                          <span className="panel-muted">Добавьте исполнителей</span>
+                          <span className="text-muted">Добавьте исполнителей</span>
                         )}
                         {executorDraftIds.map((userId) => (
                           <UserChip
@@ -832,7 +832,7 @@ export function IncidentDetailPage({
                     <div className="user-chip-group">
                       {(incident.executorUserIds ?? []).length === 0 ? (
                         canEditAssignment ? (
-                          <span className="panel-muted">Нажмите, чтобы назначить исполнителей</span>
+                          <span className="text-muted">Нажмите, чтобы назначить исполнителей</span>
                         ) : (
                           '—'
                         )
@@ -850,7 +850,7 @@ export function IncidentDetailPage({
               </div>
               )}
 
-              <div className="incident-view-row">
+              <div className="data-list__row">
                 <dt>Вложения</dt>
                 <dd>
                   {incident.attachmentFileIds.length === 0 ? (
@@ -864,26 +864,27 @@ export function IncidentDetailPage({
                   )}
                 </dd>
               </div>
-              <div className="incident-view-row">
+              <div className="data-list__row">
                 <dt>Создан</dt>
                 <dd>{formatDate(incident.createdAt)}</dd>
               </div>
-              <div className="incident-view-row">
+              <div className="data-list__row">
                 <dt>Обновлён</dt>
                 <dd>{formatDate(incident.updatedAt)}</dd>
               </div>
             </dl>
-          </div>
+          </section>
 
-          <div className="incident-tabs">
-            <div className="incident-tabs-bar" role="tablist" aria-label="Комментарии и история">
+          <section className="section">
+          <div className="tabs">
+            <div className="tabs__bar" role="tablist" aria-label="Комментарии и история">
               <button
                 type="button"
                 role="tab"
                 id="incident-tab-comments"
                 aria-selected={activeTab === 'comments'}
                 aria-controls="incident-tab-panel-comments"
-                className={activeTab === 'comments' ? 'incident-tab is-active' : 'incident-tab'}
+                className={activeTab === 'comments' ? 'tabs__tab tabs__tab--active' : 'tabs__tab'}
                 onClick={() => setActiveTab('comments')}
               >
                 Комментарии
@@ -894,7 +895,7 @@ export function IncidentDetailPage({
                 id="incident-tab-history"
                 aria-selected={activeTab === 'history'}
                 aria-controls="incident-tab-panel-history"
-                className={activeTab === 'history' ? 'incident-tab is-active' : 'incident-tab'}
+                className={activeTab === 'history' ? 'tabs__tab tabs__tab--active' : 'tabs__tab'}
                 onClick={() => setActiveTab('history')}
               >
                 История
@@ -904,22 +905,22 @@ export function IncidentDetailPage({
             {activeTab === 'comments' && (
               <div
                 id="incident-tab-panel-comments"
-                className="incident-tab-panel"
+                className="tabs__panel"
                 role="tabpanel"
                 aria-labelledby="incident-tab-comments"
               >
-                {commentsLoading && <p className="panel-muted">Загрузка комментариев…</p>}
+                {commentsLoading && <p className="text-muted">Загрузка комментариев…</p>}
                 {!commentsLoading && comments.length === 0 && (
-                  <p className="panel-muted">Комментариев пока нет.</p>
+                  <p className="text-muted">Комментариев пока нет.</p>
                 )}
                 <ul className="comment-list">
                   {comments.map((comment) => (
-                    <li key={comment.id} className="comment-list-item">
-                      <div className="comment-list-meta">
+                    <li key={comment.id} className="comment-list__item">
+                      <div className="comment-list__meta">
                         <UserChip login={userLoginFromMap(comment.authorUserId, usersMap)} size={24} />
-                        <span className="panel-muted">{formatDate(comment.createdAt)}</span>
+                        <span className="text-muted">{formatDate(comment.createdAt)}</span>
                       </div>
-                      <p className="comment-list-text">{comment.text}</p>
+                      <p className="comment-list__text">{comment.text}</p>
                     </li>
                   ))}
                 </ul>
@@ -934,7 +935,11 @@ export function IncidentDetailPage({
                       rows={3}
                       disabled={commentSubmitting}
                     />
-                    <button type="submit" disabled={commentSubmitting || !commentText.trim()}>
+                    <button
+                      type="submit"
+                      className="btn btn--primary"
+                      disabled={commentSubmitting || !commentText.trim()}
+                    >
                       {commentSubmitting ? 'Отправка…' : 'Отправить'}
                     </button>
                   </form>
@@ -945,20 +950,20 @@ export function IncidentDetailPage({
             {activeTab === 'history' && (
               <div
                 id="incident-tab-panel-history"
-                className="incident-tab-panel"
+                className="tabs__panel"
                 role="tabpanel"
                 aria-labelledby="incident-tab-history"
               >
-                {historyLoading && <p className="panel-muted">Загрузка истории…</p>}
+                {historyLoading && <p className="text-muted">Загрузка истории…</p>}
                 {!historyLoading && historyDiffs.length === 0 && (
-                  <p className="panel-muted">История изменений пуста.</p>
+                  <p className="text-muted">История изменений пуста.</p>
                 )}
                 <ol className="history-timeline">
                   {historyDiffs.map((block) => (
-                    <li key={block.entry.id} className="history-timeline-item">
-                      <div className="history-timeline-header">
+                    <li key={block.entry.id} className="history-timeline__item">
+                      <div className="history-timeline__header">
                         {block.isCreation ? 'Создание инцидента · ' : ''}
-                        <span className="history-timeline-when">{formatDate(block.entry.changedAt)}</span>
+                        <span className="history-timeline__when">{formatDate(block.entry.changedAt)}</span>
                         <span aria-hidden>·</span>
                         <UserChip
                           login={userLoginFromMap(block.entry.changedByUserId, usersMap)}
@@ -966,12 +971,12 @@ export function IncidentDetailPage({
                         />
                       </div>
                       {block.rows.length === 0 && !block.isCreation && (
-                        <p className="panel-muted">Без изменений полей</p>
+                        <p className="text-muted">Без изменений полей</p>
                       )}
                       <ul className="history-diff-list">
                         {block.rows.map((row) => (
-                          <li key={`${block.entry.id}-${row.label}`} className="history-diff-row">
-                            <span className="history-diff-label">{row.label}:</span>
+                          <li key={`${block.entry.id}-${row.label}`} className="history-diff__row">
+                            <span className="history-diff__label">{row.label}:</span>
                             {block.isCreation ? (
                               <span>{enrichAlienDiffValue(row.label, row.newValue)}</span>
                             ) : (
@@ -990,6 +995,7 @@ export function IncidentDetailPage({
               </div>
             )}
           </div>
+          </section>
         </>
       )}
 
@@ -1049,8 +1055,8 @@ export function IncidentDetailPage({
 
       {!loading && !incident && !error && (
         <>
-          <p className="panel-muted incident-not-found">Инцидент не найден.</p>
-          <button type="button" className="outline-button" onClick={() => navigate('/incidents')}>
+          <p className="text-muted incident-not-found">Инцидент не найден.</p>
+          <button type="button" className="btn btn--outline" onClick={() => navigate('/incidents')}>
             Вернуться к списку
           </button>
         </>

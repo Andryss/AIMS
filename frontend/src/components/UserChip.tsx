@@ -26,12 +26,12 @@ export function UserChip({
 
   return (
     <span className={classes}>
-      <UserAvatar login={login} size={size} className="user-chip-avatar" />
-      <span className="user-chip-login">{login}</span>
+      <UserAvatar login={login} size={size} className="user-chip__avatar" />
+      <span className="user-chip__login">{login}</span>
       {removable && (
         <button
           type="button"
-          className="user-chip-remove"
+          className="user-chip__remove btn btn--ghost"
           aria-label={`Убрать ${login}`}
           onClick={(e) => {
             e.stopPropagation();

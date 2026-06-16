@@ -26,18 +26,18 @@ export function PickerDrawerShell({
   return (
     <div className="drawer-overlay" onClick={onClose} role="presentation">
       <div
-        className="drawer drawer-bottom"
+        className="drawer"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-labelledby={titleId}
         aria-modal="true"
       >
-        <div className="drawer-content">
-          <div className="drawer-header">
+        <div className="drawer__content">
+          <div className="drawer__header">
             <h2 id={titleId}>{title}</h2>
             <button
               type="button"
-              className="icon-button"
+              className="btn btn--ghost"
               onClick={onClose}
               disabled={selecting}
               aria-label="Закрыть"

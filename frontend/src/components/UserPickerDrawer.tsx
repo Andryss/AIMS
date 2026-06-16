@@ -96,10 +96,10 @@ export function UserPickerDrawer({
       selecting={selecting}
       onClose={onClose}
       footer={(
-        <div className="drawer-footer">
+        <div className="drawer__footer">
           <button
             type="button"
-            className="drawer-confirm-button"
+            className="btn btn--primary btn--block"
             disabled={selecting || selectedUser == null}
             onClick={handleConfirm}
           >
@@ -108,15 +108,15 @@ export function UserPickerDrawer({
         </div>
       )}
     >
-      <div className="drawer-search">
-        <label className="drawer-search-box" htmlFor="user-picker-search">
-          <span className="drawer-search-icon" aria-hidden>
+      <div className="drawer__search">
+        <label className="drawer__search-box" htmlFor="user-picker-search">
+          <span className="drawer__search-icon" aria-hidden>
             ⌕
           </span>
           <input
             id="user-picker-search"
             type="search"
-            className="drawer-search-input"
+            className="drawer__search-input"
             placeholder="Поиск агента (мин. 2 символа)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -127,13 +127,13 @@ export function UserPickerDrawer({
         </label>
       </div>
 
-      <div className="drawer-body">
-        {searchLoading && <p className="panel-muted">Поиск…</p>}
+      <div className="drawer__body">
+        {searchLoading && <p className="text-muted">Поиск…</p>}
         {!searchLoading && searchQuery.trim().length < 2 && (
-          <p className="panel-muted">Введите минимум 2 символа для поиска</p>
+          <p className="text-muted">Введите минимум 2 символа для поиска</p>
         )}
         {!searchLoading && searchQuery.trim().length >= 2 && searchResults.length === 0 && (
-          <p className="panel-muted">Ничего не найдено</p>
+          <p className="text-muted">Ничего не найдено</p>
         )}
         <ul className="picker-card-list">
           {searchResults.map((user) => {
@@ -142,13 +142,13 @@ export function UserPickerDrawer({
               <li key={user.id}>
                 <button
                   type="button"
-                  className={`picker-card user-picker-card${isSelected ? ' picker-card-selected' : ''}`}
+                  className={`picker-card user-picker-card${isSelected ? ' picker-card--selected' : ''}`}
                   disabled={selecting}
                   aria-pressed={isSelected}
                   onClick={() => setSelectedUserId(user.id)}
                 >
                   <UserAvatar login={user.login} size={40} />
-                  <span className="user-picker-card-login">{user.login}</span>
+                  <span className="user-picker-card__login">{user.login}</span>
                 </button>
               </li>
             );

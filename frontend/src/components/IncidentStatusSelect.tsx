@@ -138,7 +138,7 @@ export function IncidentStatusSelect({
   return (
     <div className={wrapClassName} onClick={(e) => e.stopPropagation()}>
       <select
-        className={`status-select status-${incident.status.toLowerCase()}${loading ? ' is-loading' : ''}`}
+        className={`status-select status-chip--${incident.status.toLowerCase()}${loading ? ' is-loading' : ''}`}
         value={incident.status}
         disabled={loading || !canEdit}
         onChange={(e) => handleStatusChange(e.target.value as IncidentStatus)}
@@ -150,9 +150,9 @@ export function IncidentStatusSelect({
           </option>
         ))}
       </select>
-      {loading && <span className="status-select-loading">…</span>}
+      {loading && <span className="status-select__loading">…</span>}
       {error && !modalOpen && (
-        <span className="status-select-error" title={error}>!</span>
+        <span className="status-select__error" title={error}>!</span>
       )}
 
       {modalOpen && pendingStatus && (
@@ -167,24 +167,25 @@ export function IncidentStatusSelect({
             <h3 id="status-change-title">
               Смена статуса на «{STATUS_LABELS[pendingStatus]}»
             </h3>
-            <label className="status-change-comment-label" htmlFor="status-change-comment">
+            <label className="status-change-modal__label" htmlFor="status-change-comment">
               Комментарий (обязательно)
             </label>
             <textarea
               id="status-change-comment"
-              className="status-change-comment-input"
+              className="status-change-modal__input"
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
               rows={4}
               disabled={loading}
             />
-            {error && <div className="alert alert-error">{error}</div>}
-            <div className="status-change-modal-actions">
-              <button type="button" className="secondary" onClick={closeModal} disabled={loading}>
+            {error && <div className="alert alert--error">{error}</div>}
+            <div className="status-change-modal__actions">
+              <button type="button" className="btn btn--secondary" onClick={closeModal} disabled={loading}>
                 Отмена
               </button>
               <button
                 type="button"
+                className="btn btn--primary"
                 onClick={confirmStatusChange}
                 disabled={loading || !canConfirm}
               >

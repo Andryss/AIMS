@@ -7,29 +7,33 @@ interface AttachmentDownloadListProps {
   fileLabel?: (fileId: number) => string;
 }
 
+function defaultFileLabel(fileId: number): string {
+  return `Вложение №${fileId}`;
+}
+
 export function AttachmentDownloadList({
   fileIds,
   downloadingId,
   onDownload,
-  fileLabel = (fileId) => `Вложение №${fileId}`,
+  fileLabel = defaultFileLabel,
 }: AttachmentDownloadListProps) {
   if (fileIds.length === 0) {
     return null;
   }
 
   return (
-    <ul className="attachment-download-list">
+    <ul className="attachment-list">
       {fileIds.map((fileId) => {
         const busy = downloadingId === fileId;
         return (
-          <li key={fileId} className="attachment-download-card">
-            <span className="attachment-download-name">{fileLabel(fileId)}</span>
+          <li key={fileId} className="attachment-card">
+            <span className="attachment-card__name">{fileLabel(fileId)}</span>
             <button
               type="button"
-              className="attachment-download-button"
-              disabled={busy}
+              className="attachment-card__download btn btn--outline btn--sm"
               onClick={() => onDownload(fileId)}
-              aria-label={busy ? `Скачивание ${fileLabel(fileId)}` : `Скачать ${fileLabel(fileId)}`}
+              disabled={busy}
+              aria-label={`Скачать ${fileLabel(fileId)}`}
             >
               {busy ? '…' : '↓'}
             </button>

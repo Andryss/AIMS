@@ -1,0 +1,145 @@
+.status-select-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.status-select-wrap--modal .status-select {
+  width: 15rem;
+}
+
+.status-select,
+.status-chip {
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  padding: 0.28rem 0.55rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid #d8e0ec;
+  background: #f0f4f8;
+  color: #4a5568;
+}
+
+.status-select {
+  cursor: pointer;
+  width: 15rem;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.status-chip {
+  display: inline-block;
+}
+
+.status-select:disabled {
+  opacity: 0.85;
+  cursor: default;
+}
+
+.status-select.is-loading:disabled {
+  cursor: wait;
+}
+
+.status-select__loading {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.status-select__error {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: var(--radius-full);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+}
+
+/* Incident statuses */
+.status-select.status-chip--draft,
+.status-chip.status-chip--draft {
+  background: #fff3e0;
+  color: #e65100;
+  border-color: #ffcc80;
+}
+
+.status-select.status-chip--ready_for_analysis,
+.status-chip.status-chip--ready_for_analysis {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #a5d6a7;
+}
+
+.status-select.status-chip--ready_for_execution,
+.status-chip.status-chip--ready_for_execution {
+  background: #e3f2fd;
+  color: #1565c0;
+  border-color: #90caf9;
+}
+
+.status-select.status-chip--preparation_for_execution,
+.status-chip.status-chip--preparation_for_execution {
+  background: #fff8e1;
+  color: #f57f17;
+  border-color: #ffe082;
+}
+
+.status-select.status-chip--prepared_for_execution,
+.status-chip.status-chip--prepared_for_execution {
+  background: #e8eaf6;
+  color: #3949ab;
+  border-color: #9fa8da;
+}
+
+.status-select.status-chip--executing,
+.status-chip.status-chip--executing {
+  background: #e1f5fe;
+  color: #0277bd;
+  border-color: #81d4fa;
+}
+
+.status-select.status-chip--execution_completed,
+.status-chip.status-chip--execution_completed {
+  background: #e8f5e9;
+  color: #1b5e20;
+  border-color: #81c784;
+}
+
+.status-select.status-chip--clarification_required,
+.status-chip.status-chip--clarification_required {
+  background: #fce4ec;
+  color: #ad1457;
+  border-color: #f48fb1;
+}
+
+.status-select.status-chip--reanalysis_required,
+.status-chip.status-chip--reanalysis_required {
+  background: #f3e5f5;
+  color: #6a1b9a;
+  border-color: #ce93d8;
+}
+
+/* Cleanup statuses */
+.status-select.status-chip--cleanup_preparation,
+.status-chip.status-chip--cleanup_preparation {
+  background: #fff8e1;
+  color: #f57f17;
+  border-color: #ffe082;
+}
+
+.status-select.status-chip--cleanup_execution,
+.status-chip.status-chip--cleanup_execution {
+  background: #e3f2fd;
+  color: #1565c0;
+  border-color: #90caf9;
+}
+
+.status-select.status-chip--cleanup_completed,
+.status-chip.status-chip--cleanup_completed {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #a5d6a7;
+}

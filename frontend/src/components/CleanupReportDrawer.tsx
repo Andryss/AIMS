@@ -80,7 +80,7 @@ export function CleanupReportDrawer({
     >
       {isCreate ? (
         <>
-          {error && <div className="alert alert-error">{error}</div>}
+          {error && <div className="alert alert--error">{error}</div>}
           <form onSubmit={(event) => void handleSubmit(event)} className="form drawer-form">
             <label>
               Описание выполнения
@@ -99,10 +99,10 @@ export function CleanupReportDrawer({
               disabled={busy}
             />
             <div className="modal-actions">
-              <button type="button" className="secondary" onClick={onClose} disabled={busy}>
+              <button type="button" className="btn btn--secondary" onClick={onClose} disabled={busy}>
                 Отмена
               </button>
-              <button type="submit" disabled={busy}>
+              <button type="submit" className="btn btn--primary" disabled={busy}>
                 {busy ? 'Сохранение…' : 'Сохранить'}
               </button>
             </div>
@@ -110,12 +110,12 @@ export function CleanupReportDrawer({
         </>
       ) : report ? (
         <div className="cleanup-report-view">
-          <section className="cleanup-report-section">
-            <h3 className="cleanup-report-section-title">Описание выполнения</h3>
-            <p className="cleanup-report-description">{report.description}</p>
+          <section className="section">
+            <h3 className="section__title">Описание выполнения</h3>
+            <p className="cleanup-report-view__description">{report.description}</p>
           </section>
-          <section className="cleanup-report-section">
-            <h3 className="cleanup-report-section-title">Материалы</h3>
+          <section className="section">
+            <h3 className="section__title">Материалы</h3>
             {report.attachmentFileIds.length > 0 ? (
               <AttachmentDownloadList
                 fileIds={report.attachmentFileIds}
@@ -123,17 +123,17 @@ export function CleanupReportDrawer({
                 onDownload={onDownloadFile}
               />
             ) : (
-              <p className="panel-muted">Вложений нет</p>
+              <p className="text-muted">Вложений нет</p>
             )}
           </section>
-          <div className="modal-actions cleanup-report-view-actions">
-            <button type="button" className="secondary" onClick={onClose}>
+          <div className="modal-actions cleanup-report-view__actions">
+            <button type="button" className="btn btn--secondary" onClick={onClose}>
               Закрыть
             </button>
           </div>
         </div>
       ) : (
-        <p className="panel-muted">Загрузка отчёта…</p>
+        <p className="text-muted">Загрузка отчёта…</p>
       )}
     </PickerDrawerShell>
   );

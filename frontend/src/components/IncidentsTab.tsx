@@ -71,21 +71,21 @@ export function IncidentsTab({
   };
 
   return (
-    <section className="tab-panel">
-      <div className="tab-panel-header">
+    <section className="card">
+      <div className="card__header">
         <h2>Инциденты</h2>
         {canCreate && (
-          <button type="button" onClick={() => setCreateModalOpen(true)}>
+          <button type="button" className="btn btn--primary" onClick={() => setCreateModalOpen(true)}>
             Создать инцидент
           </button>
         )}
       </div>
 
-      {error && <div className="alert alert-error">{error}</div>}
-      {loading && <p className="panel-muted">Загрузка…</p>}
+      {error && <div className="alert alert--error">{error}</div>}
+      {loading && <p className="text-muted">Загрузка…</p>}
 
       {!loading && items.length === 0 && (
-        <p className="panel-muted">Инцидентов пока нет</p>
+        <p className="text-muted">Инцидентов пока нет</p>
       )}
 
       {!loading && items.length > 0 && (
@@ -104,7 +104,7 @@ export function IncidentsTab({
               {items.map((incident) => (
                 <tr
                   key={incident.id}
-                  className="incidents-table-row"
+                  className="incidents-table__row"
                   onClick={() => navigate(`/incidents/${incident.id}`)}
                 >
                   <td>#{incident.id}</td>
@@ -131,18 +131,18 @@ export function IncidentsTab({
         <div className="pagination">
           <button
             type="button"
-            className="secondary"
+            className="btn btn--secondary"
             disabled={page <= 0 || loading}
             onClick={() => loadPage(page - 1)}
           >
             ← Предыдущая
           </button>
-          <span className="pagination-info">
+          <span className="pagination__info">
             Страница {page + 1} из {totalPages} ({totalElements} всего)
           </span>
           <button
             type="button"
-            className="secondary"
+            className="btn btn--secondary"
             disabled={page >= totalPages - 1 || loading}
             onClick={() => loadPage(page + 1)}
           >

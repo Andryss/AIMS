@@ -92,27 +92,27 @@ export function IncidentViewModal({
   return (
     <div className="modal-overlay" onClick={onClose} role="presentation">
       <div
-        className="modal incident-view-modal"
+        className="modal modal--narrow"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-labelledby="incident-view-title"
       >
-        <div className="modal-header">
+        <div className="modal__header">
           <h2 id="incident-view-title">
             {incident ? `Инцидент #${incident.id}` : 'Инцидент'}
           </h2>
-          <button type="button" className="icon-button" onClick={onClose} aria-label="Закрыть">
+          <button type="button" className="btn btn--ghost" onClick={onClose} aria-label="Закрыть">
             ×
           </button>
         </div>
 
-        {error && <div className="alert alert-error">{error}</div>}
-        {loading && <p className="panel-muted">Загрузка…</p>}
+        {error && <div className="alert alert--error">{error}</div>}
+        {loading && <p className="text-muted">Загрузка…</p>}
 
         {incident && !loading && (
-          <div className="incident-view">
-            <dl className="incident-view-fields">
-              <div className="incident-view-row">
+          <section className="section">
+            <dl className="data-list">
+              <div className="data-list__row">
                 <dt>Статус</dt>
                 <dd>
                   <IncidentStatusSelect
@@ -120,7 +120,7 @@ export function IncidentViewModal({
                     incident={incident}
                     roles={roles}
                     canChange={canChangeStatus}
-                    className="status-select-wrap-modal"
+                    className="status-select-wrap status-select-wrap--modal"
                     onStatusChanged={(updated) => {
                       setIncident(updated);
                       onStatusChanged?.(updated);
@@ -128,23 +128,23 @@ export function IncidentViewModal({
                   />
                 </dd>
               </div>
-              <div className="incident-view-row">
+              <div className="data-list__row">
                 <dt>Тип события</dt>
                 <dd>{EVENT_TYPE_LABELS[incident.eventType] ?? incident.eventType}</dd>
               </div>
-              <div className="incident-view-row">
+              <div className="data-list__row">
                 <dt>Место</dt>
                 <dd>{incident.location}</dd>
               </div>
-              <div className="incident-view-row">
+              <div className="data-list__row">
                 <dt>Время обнаружения</dt>
                 <dd>{formatDate(incident.detectedAt)}</dd>
               </div>
-              <div className="incident-view-row">
+              <div className="data-list__row">
                 <dt>Описание</dt>
-                <dd className="incident-view-description">{incident.description}</dd>
+                <dd className="text-pre-wrap">{incident.description}</dd>
               </div>
-              <div className="incident-view-row">
+              <div className="data-list__row">
                 <dt>Вложения</dt>
                 <dd>
                   {incident.attachmentFileIds.length === 0 ? (
@@ -158,20 +158,20 @@ export function IncidentViewModal({
                   )}
                 </dd>
               </div>
-              <div className="incident-view-row">
+              <div className="data-list__row">
                 <dt>Создан</dt>
                 <dd>{formatDate(incident.createdAt)}</dd>
               </div>
-              <div className="incident-view-row">
+              <div className="data-list__row">
                 <dt>Обновлён</dt>
                 <dd>{formatDate(incident.updatedAt)}</dd>
               </div>
             </dl>
-          </div>
+          </section>
         )}
 
         <div className="modal-actions">
-          <button type="button" className="secondary" onClick={onClose}>
+          <button type="button" className="btn btn--secondary" onClick={onClose}>
             Закрыть
           </button>
         </div>

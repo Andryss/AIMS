@@ -79,14 +79,14 @@ export function FileUploadField({
   };
 
   return (
-    <div className="file-upload-field">
-      <span className="file-upload-label">{label}</span>
+    <div className="file-upload">
+      <span className="file-upload__label">{label}</span>
       <input
         ref={inputRef}
         id={inputId}
         type="file"
         multiple
-        className="file-upload-input"
+        className="file-upload__input"
         disabled={disabled}
         onChange={(e) => {
           if (e.target.files) {
@@ -98,8 +98,8 @@ export function FileUploadField({
       <div
         className={
           dragActive
-            ? 'file-upload-dropzone file-upload-dropzone-active'
-            : 'file-upload-dropzone'
+            ? 'file-upload__dropzone file-upload__dropzone--active'
+            : 'file-upload__dropzone'
         }
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -115,27 +115,27 @@ export function FileUploadField({
         tabIndex={disabled ? -1 : 0}
         aria-disabled={disabled}
       >
-        <span className="file-upload-icon" aria-hidden>
+        <span className="file-upload__icon" aria-hidden>
           +
         </span>
-        <span className="file-upload-hint">
+        <span className="file-upload__hint">
           Перетащите файлы сюда или нажмите для выбора
         </span>
-        <span className="file-upload-subhint">Можно выбрать несколько файлов</span>
+        <span className="file-upload__subhint">Можно выбрать несколько файлов</span>
       </div>
       {files.length > 0 && (
-        <ul className="file-upload-list">
+        <ul className="file-upload__list">
           {files.map((file, index) => (
-            <li key={fileKey(file)} className="file-upload-item">
-              <div className="file-upload-item-info">
-                <span className="file-upload-item-name" title={file.name}>
+            <li key={fileKey(file)} className="file-upload__item">
+              <div className="file-upload__item-info">
+                <span className="file-upload__item-name" title={file.name}>
                   {file.name}
                 </span>
-                <span className="file-upload-item-size">{formatFileSize(file.size)}</span>
+                <span className="file-upload__item-size">{formatFileSize(file.size)}</span>
               </div>
               <button
                 type="button"
-                className="file-upload-remove"
+                className="file-upload__remove btn btn--ghost"
                 onClick={() => removeFile(index)}
                 disabled={disabled}
                 aria-label={`Удалить ${file.name}`}
