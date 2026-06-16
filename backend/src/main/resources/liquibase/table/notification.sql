@@ -10,11 +10,5 @@ create table notification (
     created_at timestamptz not null default now()
 );
 
-create index idx_notification_recipient_created
-    on notification (recipient_user_id, created_at desc);
-
-create index idx_notification_recipient_unread
-    on notification (recipient_user_id) where read_at is null;
-
 comment on table notification is 'In-app notifications for users';
 comment on column notification.related_entities is 'JSON array of entity refs, e.g. INCIDENT:612';

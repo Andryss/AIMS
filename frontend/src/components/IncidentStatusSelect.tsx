@@ -27,8 +27,15 @@ function allowedTargetsForUser(
   if (status === 'READY_FOR_ANALYSIS') {
     return hasRole(roles, 'ANALYST') ? fromGraph : [];
   }
-  if (status === 'CLARIFICATION_REQUIRED') {
+  if (status === 'CLARIFICATION_REQUIRED' || status === 'REANALYSIS_REQUIRED') {
     return hasRole(roles, 'OPERATOR') ? fromGraph : [];
+  }
+  if (
+    status === 'READY_FOR_EXECUTION'
+    || status === 'PREPARATION_FOR_EXECUTION'
+    || status === 'PREPARED_FOR_EXECUTION'
+  ) {
+    return hasRole(roles, 'AGENT') ? fromGraph : [];
   }
   return [];
 }
@@ -53,7 +60,8 @@ export function IncidentStatusSelect({
   );
   const options: IncidentStatus[] = [incident.status, ...allowedTargets];
 
-  const commentRequired = pendingStatus === 'CLARIFICATION_REQUIRED';
+  const commentRequired =
+    pendingStatus === 'CLARIFICATION_REQUIRED' || pendingStatus === 'REANALYSIS_REQUIRED';
   const canConfirm = !commentRequired || commentText.trim().length > 0;
 
   const applyStatusChange = async (nextStatus: IncidentStatus, comment?: string) => {
@@ -83,7 +91,7 @@ export function IncidentStatusSelect({
     if (nextStatus === incident.status || loading || !allowedTargets.includes(nextStatus)) {
       return;
     }
-    if (nextStatus === 'CLARIFICATION_REQUIRED') {
+    if (nextStatus === 'CLARIFICATION_REQUIRED' || nextStatus === 'REANALYSIS_REQUIRED') {
       setPendingStatus(nextStatus);
       setCommentText('');
       setError(null);

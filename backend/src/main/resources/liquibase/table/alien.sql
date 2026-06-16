@@ -9,11 +9,7 @@ create table alien (
     created_at timestamp not null default now()
 );
 
-create index idx_alien_name_lower on alien (lower(name));
-
 comment on table alien is 'Alien knowledge base entries';
 
 --changeset aims:add-incident-alien-id
 alter table incident add column alien_id bigint references alien(id);
-
-create index idx_incident_alien_id on incident(alien_id);

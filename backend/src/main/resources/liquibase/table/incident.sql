@@ -10,11 +10,12 @@ create table incident (
     description text not null,
     attachment_file_ids jsonb not null default '[]',
     created_by_user_id bigint not null references app_user(id),
+    responsible_user_id bigint references app_user(id),
+    executor_user_ids jsonb not null default '[]',
     created_at timestamp not null default now(),
     updated_at timestamp not null default now()
 );
 
-create index idx_incident_status on incident(status);
-create index idx_incident_detected_at on incident(detected_at);
-
 comment on table incident is 'Alien incident records';
+comment on column incident.responsible_user_id is 'Assigned responsible agent user id';
+comment on column incident.executor_user_ids is 'Assigned executor agent user ids (json array)';

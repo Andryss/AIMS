@@ -1,6 +1,5 @@
 package gov.mib.aims.backend.services;
 
-import gov.mib.aims.backend.entity.AppUserEntity;
 import gov.mib.aims.backend.entity.EntityHistoryEntity;
 import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.exception.Errors;
@@ -12,7 +11,6 @@ import gov.mib.aims.backend.generated.model.IncidentStatusApi;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.IncidentEventType;
 import gov.mib.aims.backend.model.IncidentStatus;
-import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.EntityHistoryRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * Реализация {@link EntityHistoryQueryService}.
@@ -39,7 +34,6 @@ public class EntityHistoryQueryServiceImpl implements EntityHistoryQueryService 
 
     private final EntityHistoryRepository entityHistoryRepository;
     private final IncidentRepository incidentRepository;
-    private final AppUserRepository appUserRepository;
     private final ObjectMapperWrapper objectMapper;
 
     @Override
@@ -54,12 +48,9 @@ public class EntityHistoryQueryServiceImpl implements EntityHistoryQueryService 
                 incidentId,
                 PageRequest.of(page, pageSize)
         );
-        Map<Long, String> loginsByUserId = resolveLogins(result.getContent().stream()
-                .map(EntityHistoryEntity::getChangedByUserId)
-                .collect(Collectors.toSet()));
         return new IncidentHistoryListResponse()
                 .items(result.getContent().stream()
-                        .map(entity -> toEntry(entity, loginsByUserId))
+                        .map(this::toEntry)
                         .toList())
                 .page(result.getNumber())
                 .size(result.getSize())
@@ -67,27 +58,19 @@ public class EntityHistoryQueryServiceImpl implements EntityHistoryQueryService 
                 .totalPages(result.getTotalPages());
     }
 
-    private Map<Long, String> resolveLogins(Set<Long> userIds) {
-        if (userIds.isEmpty()) {
-            return Map.of();
-        }
-        Map<Long, String> logins = new HashMap<>();
-        for (AppUserEntity user : appUserRepository.findAllById(userIds)) {
-            logins.put(user.getId(), user.getLogin());
-        }
-        return logins;
-    }
-
-    private IncidentHistoryEntry toEntry(EntityHistoryEntity entity, Map<Long, String> loginsByUserId) {
+    private IncidentHistoryEntry toEntry(EntityHistoryEntity entity) {
         IncidentEntity snapshotEntity = objectMapper.readValue(entity.getSnapshot(), IncidentEntity.class);
         return new IncidentHistoryEntry()
                 .id(entity.getId())
                 .changedAt(entity.getChangedAt().atOffset(ZoneOffset.UTC))
-                .changedByLogin(loginsByUserId.getOrDefault(entity.getChangedByUserId(), "unknown"))
+                .changedByUserId(entity.getChangedByUserId())
                 .snapshot(toSnapshot(snapshotEntity));
     }
 
     private IncidentHistorySnapshot toSnapshot(IncidentEntity entity) {
+        List<Long> executorIds = entity.getExecutorUserIds() != null
+                ? new ArrayList<>(entity.getExecutorUserIds())
+                : List.of();
         return new IncidentHistorySnapshot()
                 .status(toApiStatus(entity.getStatus()))
                 .eventType(toApiEventType(entity.getEventType()))
@@ -95,7 +78,9 @@ public class EntityHistoryQueryServiceImpl implements EntityHistoryQueryService 
                 .detectedAt(entity.getDetectedAt().atOffset(ZoneOffset.UTC))
                 .description(entity.getDescription())
                 .attachmentFileIds(new ArrayList<>(entity.getAttachmentFileIds()))
-                .alienId(entity.getAlienId());
+                .alienId(entity.getAlienId())
+                .responsibleUserId(entity.getResponsibleUserId())
+                .executorUserIds(executorIds);
     }
 
     private IncidentStatusApi toApiStatus(IncidentStatus status) {
@@ -104,6 +89,9 @@ public class EntityHistoryQueryServiceImpl implements EntityHistoryQueryService 
             case READY_FOR_ANALYSIS -> IncidentStatusApi.READY_FOR_ANALYSIS;
             case READY_FOR_EXECUTION -> IncidentStatusApi.READY_FOR_EXECUTION;
             case CLARIFICATION_REQUIRED -> IncidentStatusApi.CLARIFICATION_REQUIRED;
+            case PREPARATION_FOR_EXECUTION -> IncidentStatusApi.PREPARATION_FOR_EXECUTION;
+            case PREPARED_FOR_EXECUTION -> IncidentStatusApi.PREPARED_FOR_EXECUTION;
+            case REANALYSIS_REQUIRED -> IncidentStatusApi.REANALYSIS_REQUIRED;
         };
     }
 

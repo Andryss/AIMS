@@ -65,6 +65,14 @@ public class IncidentEntity {
     @Column(name = "alien_id")
     private Long alienId;
 
+    @Column(name = "responsible_user_id")
+    private Long responsibleUserId;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "executor_user_ids", nullable = false)
+    @Builder.Default
+    private List<Long> executorUserIds = new ArrayList<>();
+
     @Column(name = "created_by_user_id", nullable = false)
     private Long createdByUserId;
 

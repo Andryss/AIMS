@@ -9,11 +9,4 @@ create table incident_comment (
     created_at timestamptz not null default now()
 );
 
-create index idx_incident_comment_incident_created
-    on incident_comment (incident_id, created_at desc);
-
 comment on table incident_comment is 'User comments on incidents';
-
---changeset aims:entity-history-list-index
-create index idx_entity_history_entity_changed
-    on entity_history (entity_type, entity_id, changed_at);

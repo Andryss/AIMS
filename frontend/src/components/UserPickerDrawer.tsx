@@ -1,34 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import * as api from '../api/client';
-import { Alien } from '../types';
+import { UserSummary } from '../types';
 import { PickerDrawerShell } from './PickerDrawerShell';
+import { UserAvatar } from './UserAvatar';
 
-interface AlienPickerDrawerProps {
+interface UserPickerDrawerProps {
   token: string;
   open: boolean;
+  title: string;
   selecting: boolean;
   onClose: () => void;
-  onSelect: (alienId: number) => void;
+  onSelect: (user: UserSummary) => void;
 }
 
-export function AlienPickerDrawer({
+export function UserPickerDrawer({
   token,
   open,
+  title,
   selecting,
   onClose,
   onSelect,
-}: AlienPickerDrawerProps) {
+}: UserPickerDrawerProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<Alien[]>([]);
+  const [searchResults, setSearchResults] = useState<UserSummary[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
-  const [selectedAlienId, setSelectedAlienId] = useState<number | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!open) {
       setSearchQuery('');
       setSearchResults([]);
       setSearchLoading(false);
-      setSelectedAlienId(null);
+      setSelectedUserId(null);
     }
   }, [open]);
 
@@ -41,7 +44,7 @@ export function AlienPickerDrawer({
     if (query.length < 2) {
       setSearchResults([]);
       setSearchLoading(false);
-      setSelectedAlienId(null);
+      setSelectedUserId(null);
       return;
     }
 
@@ -49,19 +52,19 @@ export function AlienPickerDrawer({
     const timer = window.setTimeout(() => {
       setSearchLoading(true);
       api
-        .searchAliens(token, query)
+        .searchUsers(token, query, 'AGENT')
         .then((response) => {
           if (!cancelled) {
             setSearchResults(response.items);
-            setSelectedAlienId((prev) => (
-              prev != null && response.items.some((alien) => alien.id === prev) ? prev : null
+            setSelectedUserId((prev) => (
+              prev != null && response.items.some((user) => user.id === prev) ? prev : null
             ));
           }
         })
         .catch(() => {
           if (!cancelled) {
             setSearchResults([]);
-            setSelectedAlienId(null);
+            setSelectedUserId(null);
           }
         })
         .finally(() => {
@@ -77,16 +80,18 @@ export function AlienPickerDrawer({
     };
   }, [open, searchQuery, token]);
 
+  const selectedUser = searchResults.find((user) => user.id === selectedUserId) ?? null;
+
   const handleConfirm = () => {
-    if (selectedAlienId != null) {
-      onSelect(selectedAlienId);
+    if (selectedUser) {
+      onSelect(selectedUser);
     }
   };
 
   return (
     <PickerDrawerShell
-      title="Выбор типа инопланетянина"
-      titleId="alien-picker-title"
+      title={title}
+      titleId="user-picker-title"
       open={open}
       selecting={selecting}
       onClose={onClose}
@@ -95,7 +100,7 @@ export function AlienPickerDrawer({
           <button
             type="button"
             className="drawer-confirm-button"
-            disabled={selecting || selectedAlienId == null}
+            disabled={selecting || selectedUser == null}
             onClick={handleConfirm}
           >
             Выбрать
@@ -104,18 +109,18 @@ export function AlienPickerDrawer({
       )}
     >
       <div className="drawer-search">
-        <label className="drawer-search-box" htmlFor="alien-picker-search">
+        <label className="drawer-search-box" htmlFor="user-picker-search">
           <span className="drawer-search-icon" aria-hidden>
             ⌕
           </span>
           <input
-            id="alien-picker-search"
+            id="user-picker-search"
             type="search"
             className="drawer-search-input"
-            placeholder="Поиск по названию…"
+            placeholder="Поиск агента (мин. 2 символа)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="Поиск типа инопланетянина"
+            aria-label="Поиск агента"
             disabled={selecting}
             autoFocus
           />
@@ -131,22 +136,19 @@ export function AlienPickerDrawer({
           <p className="panel-muted">Ничего не найдено</p>
         )}
         <ul className="picker-card-list">
-          {searchResults.map((alien) => {
-            const isSelected = alien.id === selectedAlienId;
+          {searchResults.map((user) => {
+            const isSelected = user.id === selectedUserId;
             return (
-              <li key={alien.id}>
+              <li key={user.id}>
                 <button
                   type="button"
-                  className={`picker-card alien-picker-card${isSelected ? ' picker-card-selected' : ''}`}
+                  className={`picker-card user-picker-card${isSelected ? ' picker-card-selected' : ''}`}
                   disabled={selecting}
                   aria-pressed={isSelected}
-                  onClick={() => setSelectedAlienId(alien.id)}
+                  onClick={() => setSelectedUserId(user.id)}
                 >
-                  <div className="picker-card-content">
-                    <p className="alien-card-name">{alien.name}</p>
-                    <p className="alien-card-meta">Угроза {alien.threatLevel}/10</p>
-                    <p className="alien-card-description">{alien.description}</p>
-                  </div>
+                  <UserAvatar login={user.login} size={40} />
+                  <span className="user-picker-card-login">{user.login}</span>
                 </button>
               </li>
             );

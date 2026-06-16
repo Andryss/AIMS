@@ -30,26 +30,32 @@ import java.util.Map;
 @Slf4j
 public class DemoDataInitializer implements ApplicationRunner {
 
-    private static final Map<String, String> PERMISSIONS = Map.of(
-            "INCIDENT_READ", "Read incidents",
-            "INCIDENT_CREATE", "Create incidents",
-            "INCIDENT_STATUS_CHANGE", "Change incident status",
-            "INCIDENT_COMMENT", "Add comments to incidents",
-            "INCIDENT_ALIEN_LINK", "Link alien type to incident",
-            "ALIEN_READ", "Read and search aliens in knowledge base"
+    private static final Map<String, String> PERMISSIONS = Map.ofEntries(
+            Map.entry("INCIDENT_READ", "Read incidents"),
+            Map.entry("INCIDENT_CREATE", "Create incidents"),
+            Map.entry("INCIDENT_STATUS_CHANGE", "Change incident status"),
+            Map.entry("INCIDENT_COMMENT", "Add comments to incidents"),
+            Map.entry("INCIDENT_ALIEN_LINK", "Link alien type to incident"),
+            Map.entry("ALIEN_READ", "Read and search aliens in knowledge base"),
+            Map.entry("USER_READ", "Search and batch-read users"),
+            Map.entry("INCIDENT_ASSIGN", "Assign responsible and executors on incidents")
     );
 
     private static final Map<String, List<String>> ROLE_PERMISSIONS = Map.of(
             RoleNames.OPERATOR, List.of(
-                    "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT"
+                    "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT", "USER_READ"
             ),
             RoleNames.ANALYST, List.of(
-                    "INCIDENT_READ", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT", "INCIDENT_ALIEN_LINK", "ALIEN_READ"
+                    "INCIDENT_READ", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT", "INCIDENT_ALIEN_LINK", "ALIEN_READ",
+                    "USER_READ"
             ),
-            RoleNames.AGENT, List.of("INCIDENT_READ"),
+            RoleNames.AGENT, List.of(
+                    "INCIDENT_READ", "USER_READ", "INCIDENT_ASSIGN", "INCIDENT_STATUS_CHANGE",
+                    "INCIDENT_COMMENT", "ALIEN_READ"
+            ),
             RoleNames.ADMIN, List.of(
                     "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT",
-                    "INCIDENT_ALIEN_LINK", "ALIEN_READ"
+                    "INCIDENT_ALIEN_LINK", "ALIEN_READ", "USER_READ", "INCIDENT_ASSIGN"
             )
     );
 
@@ -66,6 +72,7 @@ public class DemoDataInitializer implements ApplicationRunner {
         DEMO_USERS.put("operator", RoleNames.OPERATOR);
         DEMO_USERS.put("analyst", RoleNames.ANALYST);
         DEMO_USERS.put("agent", RoleNames.AGENT);
+        DEMO_USERS.put("agent2", RoleNames.AGENT);
         DEMO_USERS.put("admin", RoleNames.ADMIN);
     }
 

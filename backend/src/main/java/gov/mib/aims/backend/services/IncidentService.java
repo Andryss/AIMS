@@ -5,6 +5,8 @@ import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
 import gov.mib.aims.backend.generated.model.IncidentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
 import gov.mib.aims.backend.generated.model.LinkIncidentAlienRequest;
+import gov.mib.aims.backend.generated.model.SetIncidentExecutorsRequest;
+import gov.mib.aims.backend.generated.model.SetIncidentResponsibleRequest;
 
 /**
  * Сервис инцидентов.
@@ -53,4 +55,22 @@ public interface IncidentService {
      * @return обновлённый инцидент
      */
     IncidentResponse linkAlien(Long id, LinkIncidentAlienRequest request);
+
+    /**
+     * Назначает или снимает ответственного агента.
+     *
+     * @param id идентификатор инцидента
+     * @param request id пользователя или null для снятия
+     * @return обновлённый инцидент
+     */
+    IncidentResponse setResponsible(Long id, SetIncidentResponsibleRequest request);
+
+    /**
+     * Полностью заменяет список исполнителей.
+     *
+     * @param id идентификатор инцидента
+     * @param request список id исполнителей
+     * @return обновлённый инцидент
+     */
+    IncidentResponse setExecutors(Long id, SetIncidentExecutorsRequest request);
 }

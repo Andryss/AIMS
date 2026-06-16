@@ -11,6 +11,7 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -68,6 +69,19 @@ public class ControllerExceptionHandler {
         String message = fieldError != null ? fieldError.getDefaultMessage() : "Validation error";
         log.warn("Validation error: {}", message);
         return createErrorObject(Errors.validationError(message));
+    }
+
+    /**
+     * Обрабатывает отсутствующий обязательный query/path параметр.
+     *
+     * @param ex исключение
+     * @return тело ошибки
+     */
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public ErrorObject handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
+        log.warn("Missing request parameter: {}", ex.getMessage());
+        return createErrorObject(Errors.validationError(ex.getMessage()));
     }
 
     /**

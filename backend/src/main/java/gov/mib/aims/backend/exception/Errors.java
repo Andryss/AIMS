@@ -165,6 +165,39 @@ public final class Errors {
     }
 
     /**
+     * Недопустимое назначение ответственного или исполнителей.
+     */
+    public static BaseException invalidAssignment() {
+        return BaseException.builder()
+                .code(400)
+                .message("incident.invalid_assignment")
+                .humanMessage("Cannot assign users in current incident state")
+                .build();
+    }
+
+    /**
+     * Пользователь не найден.
+     */
+    public static BaseException userNotFound() {
+        return BaseException.builder()
+                .code(404)
+                .message("user.not_found")
+                .humanMessage("User not found")
+                .build();
+    }
+
+    /**
+     * Пользователь не является агентом.
+     */
+    public static BaseException userNotAgent() {
+        return BaseException.builder()
+                .code(400)
+                .message("user.not_agent")
+                .humanMessage("User must have AGENT role")
+                .build();
+    }
+
+    /**
      * Необработанная ошибка.
      */
     public static BaseException unhandledExceptionError() {

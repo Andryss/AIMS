@@ -86,9 +86,10 @@ class AuthApiTest extends BaseApiTest {
                 .andExpect(jsonPath("$.login").value("operator"))
                 .andExpect(jsonPath("$.roles", hasSize(1)))
                 .andExpect(jsonPath("$.roles[0]").value("OPERATOR"))
-                .andExpect(jsonPath("$.permissions", hasSize(4)))
+                .andExpect(jsonPath("$.permissions", hasSize(5)))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
-                        "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT")));
+                        "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT",
+                        "USER_READ")));
     }
 
     @Test
@@ -98,10 +99,22 @@ class AuthApiTest extends BaseApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login").value("analyst"))
                 .andExpect(jsonPath("$.roles[0]").value("ANALYST"))
-                .andExpect(jsonPath("$.permissions", hasSize(5)))
+                .andExpect(jsonPath("$.permissions", hasSize(6)))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
                         "INCIDENT_READ", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT",
-                        "INCIDENT_ALIEN_LINK", "ALIEN_READ")));
+                        "INCIDENT_ALIEN_LINK", "ALIEN_READ", "USER_READ")));
+    }
+
+    @Test
+    void agentHasUserReadAndAssignPermissions() throws Exception {
+        String token = signInAndGetToken("agent", "agent");
+        mockMvc.perform(get(ME_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.login").value("agent"))
+                .andExpect(jsonPath("$.roles[0]").value("AGENT"))
+                .andExpect(jsonPath("$.permissions", containsInAnyOrder(
+                        "INCIDENT_READ", "USER_READ", "INCIDENT_ASSIGN", "INCIDENT_STATUS_CHANGE",
+                        "INCIDENT_COMMENT", "ALIEN_READ")));
     }
 
     private String signInAndGetToken(String login, String password) throws Exception {

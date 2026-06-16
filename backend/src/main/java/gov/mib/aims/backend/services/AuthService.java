@@ -63,6 +63,7 @@ public class AuthService {
                 .toList();
         List<String> permissions = getCurrentPermissionCodes();
         return new AuthMeResponse()
+                .userId(userId)
                 .login(login)
                 .roles(roles)
                 .permissions(permissions);

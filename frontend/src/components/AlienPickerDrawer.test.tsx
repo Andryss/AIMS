@@ -54,6 +54,7 @@ describe('AlienPickerDrawer', () => {
       expect(screen.getByText('Грей')).toBeInTheDocument();
     });
 
+    await userEvent.click(screen.getByRole('button', { name: /Грей/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Выбрать' }));
     expect(onSelect).toHaveBeenCalledWith(2);
   });

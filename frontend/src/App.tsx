@@ -34,6 +34,7 @@ function App() {
   const canReadAliens = profile?.permissions.includes('ALIEN_READ') ?? false;
   const canLinkAlien = profile?.permissions.includes('INCIDENT_ALIEN_LINK') ?? false;
   const canComment = profile?.permissions.includes('INCIDENT_COMMENT') ?? false;
+  const canAssign = profile?.permissions.includes('INCIDENT_ASSIGN') ?? false;
   const roles = profile?.roles ?? [];
 
   const loadProfile = useCallback(async (token: string) => {
@@ -174,6 +175,7 @@ function App() {
                     canReadAliens={canReadAliens}
                     canLinkAlien={canLinkAlien}
                     canComment={canComment}
+                    canAssign={canAssign}
                   />
                 }
               />

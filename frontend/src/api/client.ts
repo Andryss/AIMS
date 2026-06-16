@@ -2,6 +2,8 @@ import {
   Alien,
   AlienSearchResponse,
   AuthMeResponse,
+  BatchUsersRequest,
+  BatchUsersResponse,
   ChangeIncidentStatusRequest,
   CreateIncidentCommentRequest,
   CreateIncidentRequest,
@@ -14,9 +16,13 @@ import {
   IncidentResponse,
   IncidentStatus,
   NotificationListResponse,
+  RoleName,
+  SetIncidentExecutorsRequest,
+  SetIncidentResponsibleRequest,
   SignInRequest,
   SignInResponse,
   UnreadCountResponse,
+  UserSearchResponse,
 } from '../types';
 
 const API_PREFIX = '/api/v1';
@@ -270,6 +276,63 @@ export function markNotificationRead(token: string, id: number): Promise<void> {
   return requestJson<void>(
     `/notifications/${id}/read`,
     { method: 'PATCH' },
+    token,
+  );
+}
+
+export function searchUsers(
+  token: string,
+  q: string,
+  role: RoleName,
+): Promise<UserSearchResponse> {
+  const params = new URLSearchParams({ q, role });
+  return requestJson<UserSearchResponse>(
+    `/users/search?${params.toString()}`,
+    { method: 'GET' },
+    token,
+  );
+}
+
+export function batchUsers(token: string, ids: number[]): Promise<BatchUsersResponse> {
+  const payload: BatchUsersRequest = { ids };
+  return requestJson<BatchUsersResponse>(
+    '/users/batch',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+    token,
+  );
+}
+
+export function setIncidentResponsible(
+  token: string,
+  incidentId: number,
+  userId: number | null,
+): Promise<IncidentResponse> {
+  const payload: SetIncidentResponsibleRequest = { userId };
+  return requestJson<IncidentResponse>(
+    `/incidents/${incidentId}/responsible`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    },
+    token,
+  );
+}
+
+export function setIncidentExecutors(
+  token: string,
+  incidentId: number,
+  userIds: number[],
+): Promise<IncidentResponse> {
+  const payload: SetIncidentExecutorsRequest = { userIds };
+  return requestJson<IncidentResponse>(
+    `/incidents/${incidentId}/executors`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    },
     token,
   );
 }

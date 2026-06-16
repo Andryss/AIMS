@@ -203,7 +203,7 @@ class IncidentAlienApiTest extends BaseApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements").value(1))
                 .andExpect(jsonPath("$.items[0].text").value("Нужны координаты места"))
-                .andExpect(jsonPath("$.items[0].authorLogin").value("analyst"));
+                .andExpect(jsonPath("$.items[0].authorUserId").exists());
     }
 
     @Test

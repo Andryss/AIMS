@@ -19,12 +19,23 @@ const listIncidentComments = api.listIncidentComments as jest.MockedFunction<
 const listIncidentHistory = api.listIncidentHistory as jest.MockedFunction<
   typeof api.listIncidentHistory
 >;
+const batchUsers = api.batchUsers as jest.MockedFunction<typeof api.batchUsers>;
 
 function renderAt(
   path: string,
-  options: { canReadAliens?: boolean; canLinkAlien?: boolean; canComment?: boolean } = {},
+  options: {
+    canReadAliens?: boolean;
+    canLinkAlien?: boolean;
+    canComment?: boolean;
+    canAssign?: boolean;
+  } = {},
 ) {
-  const { canReadAliens = true, canLinkAlien = true, canComment = true } = options;
+  const {
+    canReadAliens = true,
+    canLinkAlien = true,
+    canComment = true,
+    canAssign = false,
+  } = options;
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
@@ -38,6 +49,7 @@ function renderAt(
               canReadAliens={canReadAliens}
               canLinkAlien={canLinkAlien}
               canComment={canComment}
+              canAssign={canAssign}
             />
           }
         />
@@ -63,6 +75,7 @@ describe('IncidentDetailPage', () => {
       totalElements: 0,
       totalPages: 0,
     });
+    batchUsers.mockResolvedValue({ items: [] });
   });
 
   it('loads incident and linked alien', async () => {
@@ -88,7 +101,7 @@ describe('IncidentDetailPage', () => {
         {
           id: 10,
           incidentId: 7,
-          authorLogin: 'analyst',
+          authorUserId: 2,
           text: 'Проверено',
           createdAt: '2025-06-02T12:00:00Z',
         },
@@ -103,7 +116,7 @@ describe('IncidentDetailPage', () => {
         {
           id: 1,
           changedAt: '2025-06-01T10:00:00Z',
-          changedByLogin: 'operator',
+          changedByUserId: 1,
           snapshot: {
             status: 'DRAFT',
             eventType: 'UNIDENTIFIED_SIGHTING',
@@ -112,6 +125,8 @@ describe('IncidentDetailPage', () => {
             description: 'Desc',
             attachmentFileIds: [],
             alienId: null,
+            responsibleUserId: null,
+            executorUserIds: [],
           },
         },
       ],
@@ -121,9 +136,12 @@ describe('IncidentDetailPage', () => {
       totalPages: 1,
     });
 
+    batchUsers.mockResolvedValue({ items: [{ id: 2, login: 'analyst' }] });
+
     renderAt('/incidents/7');
 
     await waitFor(() => {
+      expect(screen.getByText('analyst')).toBeInTheDocument();
       expect(screen.getByText('Проверено')).toBeInTheDocument();
     });
     expect(listIncidentHistory).not.toHaveBeenCalled();
@@ -187,6 +205,7 @@ describe('IncidentDetailPage', () => {
     });
 
     const dialog = screen.getByRole('dialog', { name: 'Выбор типа инопланетянина' });
+    await userEvent.click(within(dialog).getByRole('button', { name: /Грей/ }));
     await userEvent.click(within(dialog).getByRole('button', { name: 'Выбрать' }));
 
     await waitFor(() => {
@@ -267,6 +286,7 @@ describe('IncidentDetailPage', () => {
     });
 
     const dialog = screen.getByRole('dialog', { name: 'Выбор типа инопланетянина' });
+    await userEvent.click(within(dialog).getByRole('button', { name: /Грей/ }));
     await userEvent.click(within(dialog).getByRole('button', { name: 'Выбрать' }));
 
     await waitFor(() => {

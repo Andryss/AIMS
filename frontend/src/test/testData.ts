@@ -14,6 +14,7 @@ export const mockIncident = (overrides: Partial<IncidentResponse> = {}): Inciden
   detectedAt: '2025-06-01T12:00:00Z',
   description: 'Test incident',
   attachmentFileIds: [10],
+  executorUserIds: [],
   createdAt: '2025-06-01T12:00:00Z',
   updatedAt: '2025-06-01T12:00:00Z',
   ...overrides,
@@ -31,6 +32,7 @@ export const mockIncidentList = (
 });
 
 export const mockProfile = (overrides: Partial<AuthMeResponse> = {}): AuthMeResponse => ({
+  userId: 1,
   login: 'operator',
   roles: ['OPERATOR'],
   permissions: ['INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE'],

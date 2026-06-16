@@ -10,7 +10,12 @@ export type IncidentStatus =
   | 'DRAFT'
   | 'READY_FOR_ANALYSIS'
   | 'READY_FOR_EXECUTION'
-  | 'CLARIFICATION_REQUIRED';
+  | 'PREPARATION_FOR_EXECUTION'
+  | 'PREPARED_FOR_EXECUTION'
+  | 'CLARIFICATION_REQUIRED'
+  | 'REANALYSIS_REQUIRED';
+
+export type RoleName = 'OPERATOR' | 'ANALYST' | 'ADMIN' | 'AGENT';
 
 export interface SignInRequest {
   login: string;
@@ -22,6 +27,7 @@ export interface SignInResponse {
 }
 
 export interface AuthMeResponse {
+  userId: number;
   login: string;
   roles: string[];
   permissions: string[];
@@ -44,6 +50,8 @@ export interface IncidentResponse {
   description: string;
   attachmentFileIds: number[];
   alienId?: number;
+  responsibleUserId?: number | null;
+  executorUserIds: number[];
   createdAt: string;
   updatedAt: string;
 }
@@ -60,7 +68,7 @@ export interface CreateIncidentCommentRequest {
 export interface IncidentComment {
   id: number;
   incidentId: number;
-  authorLogin: string;
+  authorUserId: number;
   text: string;
   createdAt: string;
 }
@@ -81,13 +89,40 @@ export interface IncidentHistorySnapshot {
   description: string;
   attachmentFileIds: number[];
   alienId?: number | null;
+  responsibleUserId?: number | null;
+  executorUserIds: number[];
 }
 
 export interface IncidentHistoryEntry {
   id: number;
   changedAt: string;
-  changedByLogin: string;
+  changedByUserId: number;
   snapshot: IncidentHistorySnapshot;
+}
+
+export interface UserSummary {
+  id: number;
+  login: string;
+}
+
+export interface UserSearchResponse {
+  items: UserSummary[];
+}
+
+export interface BatchUsersRequest {
+  ids: number[];
+}
+
+export interface BatchUsersResponse {
+  items: UserSummary[];
+}
+
+export interface SetIncidentResponsibleRequest {
+  userId: number | null;
+}
+
+export interface SetIncidentExecutorsRequest {
+  userIds: number[];
 }
 
 export interface IncidentHistoryListResponse {

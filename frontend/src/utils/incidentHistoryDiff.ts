@@ -16,7 +16,7 @@ export interface HistoryDiffBlock {
 
 type SnapshotField = {
   label: string;
-  format: (snapshot: IncidentHistorySnapshot) => string;
+  format: (snapshot: IncidentHistorySnapshot, usersMap: Map<number, string>) => string;
   compare: (prev: IncidentHistorySnapshot, curr: IncidentHistorySnapshot) => boolean;
 };
 
@@ -40,6 +40,23 @@ function formatAlienId(alienId: number | null | undefined): string {
     return '—';
   }
   return `#${alienId}`;
+}
+
+function formatUserId(
+  userId: number | null | undefined,
+  usersMap: Map<number, string>,
+): string {
+  if (userId == null) {
+    return '—';
+  }
+  return usersMap.get(userId) ?? `#${userId}`;
+}
+
+function formatUserIds(userIds: number[], usersMap: Map<number, string>): string {
+  if (userIds.length === 0) {
+    return '—';
+  }
+  return userIds.map((id) => usersMap.get(id) ?? `#${id}`).join(', ');
 }
 
 const SNAPSHOT_FIELDS: SnapshotField[] = [
@@ -79,16 +96,34 @@ const SNAPSHOT_FIELDS: SnapshotField[] = [
     format: (s) => formatAlienId(s.alienId),
     compare: (prev, curr) => (prev.alienId ?? null) !== (curr.alienId ?? null),
   },
+  {
+    label: 'Ответственный',
+    format: (s, usersMap) => formatUserId(s.responsibleUserId, usersMap),
+    compare: (prev, curr) => (prev.responsibleUserId ?? null) !== (curr.responsibleUserId ?? null),
+  },
+  {
+    label: 'Исполнители',
+    format: (s, usersMap) => formatUserIds(s.executorUserIds ?? [], usersMap),
+    compare: (prev, curr) =>
+      JSON.stringify(prev.executorUserIds ?? []) !== JSON.stringify(curr.executorUserIds ?? []),
+  },
 ];
 
-function blockTitle(entry: IncidentHistoryEntry): string {
+export function formatHistoryEntryHeader(
+  entry: IncidentHistoryEntry,
+  usersMap: Map<number, string>,
+): string {
   const when = formatDate(entry.changedAt);
-  return `${when} · ${entry.changedByLogin}`;
+  const who = usersMap.get(entry.changedByUserId) ?? `#${entry.changedByUserId}`;
+  return `${when} · ${who}`;
 }
 
-export function buildIncidentHistoryDiffs(entries: IncidentHistoryEntry[]): HistoryDiffBlock[] {
+export function buildIncidentHistoryDiffs(
+  entries: IncidentHistoryEntry[],
+  usersMap: Map<number, string> = new Map(),
+): HistoryDiffBlock[] {
   return entries.map((entry, index) => {
-    const title = blockTitle(entry);
+    const title = formatHistoryEntryHeader(entry, usersMap);
     if (index === 0) {
       return {
         entry,
@@ -97,7 +132,7 @@ export function buildIncidentHistoryDiffs(entries: IncidentHistoryEntry[]): Hist
         rows: SNAPSHOT_FIELDS.map((field) => ({
           label: field.label,
           oldValue: '—',
-          newValue: field.format(entry.snapshot),
+          newValue: field.format(entry.snapshot, usersMap),
         })),
       };
     }
@@ -107,8 +142,8 @@ export function buildIncidentHistoryDiffs(entries: IncidentHistoryEntry[]): Hist
     const rows = SNAPSHOT_FIELDS.filter((field) => field.compare(previous, current)).map(
       (field) => ({
         label: field.label,
-        oldValue: field.format(previous),
-        newValue: field.format(current),
+        oldValue: field.format(previous, usersMap),
+        newValue: field.format(current, usersMap),
       }),
     );
 

@@ -6,7 +6,9 @@ import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
 import gov.mib.aims.backend.generated.model.IncidentEventTypeApi;
 import gov.mib.aims.backend.generated.model.IncidentStatusApi;
 import gov.mib.aims.backend.generated.model.SignInRequest;
+import gov.mib.aims.backend.repository.AppUserRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -33,11 +35,15 @@ class IncidentCommentApiTest extends BaseApiTest {
     private static final String FILES_URL = "/api/v1/files";
     private static final String INCIDENTS_URL = "/api/v1/incidents";
 
+    @Autowired
+    private AppUserRepository appUserRepository;
+
     @Test
     void analystCreatesAndListsCommentsOldestFirst() throws Exception {
         String operatorToken = signInAndGetToken("operator", "operator");
         String analystToken = signInAndGetToken("analyst", "analyst");
         long incidentId = createDraftIncident(operatorToken);
+        long analystUserId = appUserRepository.findByLogin("analyst").orElseThrow().getId();
 
         CreateIncidentCommentRequest first = new CreateIncidentCommentRequest().text("Первый комментарий");
         mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/comments")
@@ -45,7 +51,7 @@ class IncidentCommentApiTest extends BaseApiTest {
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(first)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.authorLogin").value("analyst"))
+                .andExpect(jsonPath("$.authorUserId").value(analystUserId))
                 .andExpect(jsonPath("$.text").value("Первый комментарий"));
 
         CreateIncidentCommentRequest second = new CreateIncidentCommentRequest().text("Второй комментарий");
@@ -64,18 +70,19 @@ class IncidentCommentApiTest extends BaseApiTest {
     }
 
     @Test
-    void agentCannotCreateComment() throws Exception {
+    void agentCanCreateComment() throws Exception {
         String operatorToken = signInAndGetToken("operator", "operator");
         String agentToken = signInAndGetToken("agent", "agent");
         long incidentId = createDraftIncident(operatorToken);
+        long agentUserId = appUserRepository.findByLogin("agent").orElseThrow().getId();
 
-        CreateIncidentCommentRequest request = new CreateIncidentCommentRequest().text("Forbidden");
+        CreateIncidentCommentRequest request = new CreateIncidentCommentRequest().text("Agent note");
         mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/comments")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + agentToken)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value("auth.access_denied"));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.authorUserId").value(agentUserId));
     }
 
     @Test
@@ -91,8 +98,9 @@ class IncidentCommentApiTest extends BaseApiTest {
     }
 
     @Test
-    void historyReturnsChronologicalEntriesWithLogin() throws Exception {
+    void historyReturnsChronologicalEntriesWithUserId() throws Exception {
         String operatorToken = signInAndGetToken("operator", "operator");
+        long operatorUserId = appUserRepository.findByLogin("operator").orElseThrow().getId();
         long incidentId = createDraftIncident(operatorToken);
 
         ChangeIncidentStatusRequest statusRequest = new ChangeIncidentStatusRequest()
@@ -107,9 +115,9 @@ class IncidentCommentApiTest extends BaseApiTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + operatorToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements").value(2))
-                .andExpect(jsonPath("$.items[0].changedByLogin").value("operator"))
+                .andExpect(jsonPath("$.items[0].changedByUserId").value(operatorUserId))
                 .andExpect(jsonPath("$.items[0].snapshot.status").value("DRAFT"))
-                .andExpect(jsonPath("$.items[1].changedByLogin").value("operator"))
+                .andExpect(jsonPath("$.items[1].changedByUserId").value(operatorUserId))
                 .andExpect(jsonPath("$.items[1].snapshot.status").value("READY_FOR_ANALYSIS"));
     }
 

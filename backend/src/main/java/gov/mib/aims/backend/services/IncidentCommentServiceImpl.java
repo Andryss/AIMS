@@ -1,12 +1,10 @@
 package gov.mib.aims.backend.services;
 
-import gov.mib.aims.backend.entity.AppUserEntity;
 import gov.mib.aims.backend.entity.IncidentCommentEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.generated.model.CreateIncidentCommentRequest;
 import gov.mib.aims.backend.generated.model.IncidentCommentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentCommentResponse;
-import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.IncidentCommentRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Реализация {@link IncidentCommentService}.
@@ -34,7 +28,6 @@ public class IncidentCommentServiceImpl implements IncidentCommentService {
 
     private final IncidentCommentRepository incidentCommentRepository;
     private final IncidentRepository incidentRepository;
-    private final AppUserRepository appUserRepository;
     private final CurrentUserService currentUserService;
     private final Clock clock;
 
@@ -64,12 +57,9 @@ public class IncidentCommentServiceImpl implements IncidentCommentService {
                 incidentId,
                 PageRequest.of(page, pageSize)
         );
-        Map<Long, String> loginsByUserId = resolveLogins(result.getContent().stream()
-                .map(IncidentCommentEntity::getAuthorUserId)
-                .collect(Collectors.toSet()));
         return new IncidentCommentListResponse()
                 .items(result.getContent().stream()
-                        .map(entity -> toResponse(entity, loginsByUserId))
+                        .map(this::toResponse)
                         .toList())
                 .page(result.getNumber())
                 .size(result.getSize())
@@ -93,29 +83,11 @@ public class IncidentCommentServiceImpl implements IncidentCommentService {
         }
     }
 
-    private Map<Long, String> resolveLogins(Set<Long> userIds) {
-        if (userIds.isEmpty()) {
-            return Map.of();
-        }
-        Map<Long, String> logins = new HashMap<>();
-        for (AppUserEntity user : appUserRepository.findAllById(userIds)) {
-            logins.put(user.getId(), user.getLogin());
-        }
-        return logins;
-    }
-
     private IncidentCommentResponse toResponse(IncidentCommentEntity entity) {
-        String login = appUserRepository.findById(entity.getAuthorUserId())
-                .map(AppUserEntity::getLogin)
-                .orElse("unknown");
-        return toResponse(entity, Map.of(entity.getAuthorUserId(), login));
-    }
-
-    private IncidentCommentResponse toResponse(IncidentCommentEntity entity, Map<Long, String> loginsByUserId) {
         return new IncidentCommentResponse()
                 .id(entity.getId())
                 .incidentId(entity.getIncidentId())
-                .authorLogin(loginsByUserId.getOrDefault(entity.getAuthorUserId(), "unknown"))
+                .authorUserId(entity.getAuthorUserId())
                 .text(entity.getText())
                 .createdAt(entity.getCreatedAt().atOffset(ZoneOffset.UTC));
     }

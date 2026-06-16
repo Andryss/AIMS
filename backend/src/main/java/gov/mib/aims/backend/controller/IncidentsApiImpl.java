@@ -10,6 +10,8 @@ import gov.mib.aims.backend.generated.model.IncidentHistoryListResponse;
 import gov.mib.aims.backend.generated.model.IncidentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
 import gov.mib.aims.backend.generated.model.LinkIncidentAlienRequest;
+import gov.mib.aims.backend.generated.model.SetIncidentExecutorsRequest;
+import gov.mib.aims.backend.generated.model.SetIncidentResponsibleRequest;
 import gov.mib.aims.backend.services.EntityHistoryQueryService;
 import gov.mib.aims.backend.services.IncidentCommentService;
 import gov.mib.aims.backend.services.IncidentService;
@@ -99,5 +101,25 @@ public class IncidentsApiImpl implements IncidentsApi {
         int pageSize = size != null ? size : 50;
         log.info("GET /api/v1/incidents/{}/history page={} size={}", id, pageNumber, pageSize);
         return entityHistoryQueryService.listIncidentHistory(id, pageNumber, pageSize);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('INCIDENT_ASSIGN')")
+    public IncidentResponse setIncidentResponsible(
+            Long id,
+            @Valid SetIncidentResponsibleRequest setIncidentResponsibleRequest
+    ) {
+        log.info("PUT /api/v1/incidents/{}/responsible", id);
+        return incidentService.setResponsible(id, setIncidentResponsibleRequest);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('INCIDENT_ASSIGN')")
+    public IncidentResponse setIncidentExecutors(
+            Long id,
+            @Valid SetIncidentExecutorsRequest setIncidentExecutorsRequest
+    ) {
+        log.info("PUT /api/v1/incidents/{}/executors", id);
+        return incidentService.setExecutors(id, setIncidentExecutorsRequest);
     }
 }
