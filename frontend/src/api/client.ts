@@ -4,7 +4,11 @@ import {
   AuthMeResponse,
   BatchUsersRequest,
   BatchUsersResponse,
+  ChangeCleanupStatusRequest,
   ChangeIncidentStatusRequest,
+  CleanupReportResponse,
+  CleanupStatus,
+  CreateCleanupReportRequest,
   CreateIncidentCommentRequest,
   CreateIncidentRequest,
   ErrorObject,
@@ -331,6 +335,50 @@ export function setIncidentExecutors(
     `/incidents/${incidentId}/executors`,
     {
       method: 'PUT',
+      body: JSON.stringify(payload),
+    },
+    token,
+  );
+}
+
+export function getCleanupReport(
+  token: string,
+  incidentId: number,
+): Promise<CleanupReportResponse> {
+  return requestJson<CleanupReportResponse>(
+    `/incidents/${incidentId}/cleanup-report`,
+    { method: 'GET' },
+    token,
+  );
+}
+
+export function createCleanupReport(
+  token: string,
+  incidentId: number,
+  description: string,
+  attachmentFileIds: number[],
+): Promise<CleanupReportResponse> {
+  const payload: CreateCleanupReportRequest = { description, attachmentFileIds };
+  return requestJson<CleanupReportResponse>(
+    `/incidents/${incidentId}/cleanup-report`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+    token,
+  );
+}
+
+export function changeCleanupStatus(
+  token: string,
+  incidentId: number,
+  status: CleanupStatus,
+): Promise<IncidentResponse> {
+  const payload: ChangeCleanupStatusRequest = { status };
+  return requestJson<IncidentResponse>(
+    `/incidents/${incidentId}/cleanup-status`,
+    {
+      method: 'POST',
       body: JSON.stringify(payload),
     },
     token,

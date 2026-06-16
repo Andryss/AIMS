@@ -3,7 +3,7 @@ package gov.mib.aims.backend.services.dbqueue.processor;
 import gov.mib.aims.backend.entity.AppUserEntity;
 import gov.mib.aims.backend.model.EntityRef;
 import gov.mib.aims.backend.model.EntityType;
-import gov.mib.aims.backend.model.RoleNames;
+import gov.mib.aims.backend.model.Role;
 import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
 import gov.mib.aims.backend.services.NotificationService;
@@ -42,7 +42,7 @@ public class NotifyAnalystsReanalysisRequiredProcessor
             message += ": " + payload.getCommentExcerpt();
         }
         String relatedRef = EntityRef.format(EntityType.INCIDENT, incidentId);
-        List<AppUserEntity> analysts = appUserRepository.findAllByRoleName(RoleNames.ANALYST);
+        List<AppUserEntity> analysts = appUserRepository.findAllByRoleName(Role.ANALYST.getCode());
         for (AppUserEntity analyst : analysts) {
             notificationService.send(analyst.getId(), message, List.of(relatedRef));
         }

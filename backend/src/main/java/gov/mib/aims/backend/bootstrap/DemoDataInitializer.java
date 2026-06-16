@@ -3,7 +3,8 @@ package gov.mib.aims.backend.bootstrap;
 import gov.mib.aims.backend.entity.AppUserEntity;
 import gov.mib.aims.backend.entity.PermissionEntity;
 import gov.mib.aims.backend.entity.RoleEntity;
-import gov.mib.aims.backend.model.RoleNames;
+import gov.mib.aims.backend.model.Permission;
+import gov.mib.aims.backend.model.Role;
 import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.PermissionRepository;
 import gov.mib.aims.backend.repository.RoleRepository;
@@ -17,8 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,50 +31,15 @@ import java.util.Map;
 @Slf4j
 public class DemoDataInitializer implements ApplicationRunner {
 
-    private static final Map<String, String> PERMISSIONS = Map.ofEntries(
-            Map.entry("INCIDENT_READ", "Read incidents"),
-            Map.entry("INCIDENT_CREATE", "Create incidents"),
-            Map.entry("INCIDENT_STATUS_CHANGE", "Change incident status"),
-            Map.entry("INCIDENT_COMMENT", "Add comments to incidents"),
-            Map.entry("INCIDENT_ALIEN_LINK", "Link alien type to incident"),
-            Map.entry("ALIEN_READ", "Read and search aliens in knowledge base"),
-            Map.entry("USER_READ", "Search and batch-read users"),
-            Map.entry("INCIDENT_ASSIGN", "Assign responsible and executors on incidents")
-    );
-
-    private static final Map<String, List<String>> ROLE_PERMISSIONS = Map.of(
-            RoleNames.OPERATOR, List.of(
-                    "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT", "USER_READ"
-            ),
-            RoleNames.ANALYST, List.of(
-                    "INCIDENT_READ", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT", "INCIDENT_ALIEN_LINK", "ALIEN_READ",
-                    "USER_READ"
-            ),
-            RoleNames.AGENT, List.of(
-                    "INCIDENT_READ", "USER_READ", "INCIDENT_ASSIGN", "INCIDENT_STATUS_CHANGE",
-                    "INCIDENT_COMMENT", "ALIEN_READ"
-            ),
-            RoleNames.ADMIN, List.of(
-                    "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT",
-                    "INCIDENT_ALIEN_LINK", "ALIEN_READ", "USER_READ", "INCIDENT_ASSIGN"
-            )
-    );
-
-    private static final Map<String, String> ROLE_DESCRIPTIONS = Map.of(
-            RoleNames.OPERATOR, "Incident operator",
-            RoleNames.ANALYST, "Incident analyst",
-            RoleNames.AGENT, "Field agent",
-            RoleNames.ADMIN, "Administrator"
-    );
-
-    private static final Map<String, String> DEMO_USERS = new LinkedHashMap<>();
+    private static final Map<String, Role> DEMO_USERS = new LinkedHashMap<>();
 
     static {
-        DEMO_USERS.put("operator", RoleNames.OPERATOR);
-        DEMO_USERS.put("analyst", RoleNames.ANALYST);
-        DEMO_USERS.put("agent", RoleNames.AGENT);
-        DEMO_USERS.put("agent2", RoleNames.AGENT);
-        DEMO_USERS.put("admin", RoleNames.ADMIN);
+        DEMO_USERS.put("operator", Role.OPERATOR);
+        DEMO_USERS.put("analyst", Role.ANALYST);
+        DEMO_USERS.put("agent", Role.AGENT);
+        DEMO_USERS.put("agent2", Role.AGENT);
+        DEMO_USERS.put("cleaner", Role.CLEANER);
+        DEMO_USERS.put("admin", Role.ADMIN);
     }
 
     private final AppUserRepository appUserRepository;
@@ -101,34 +67,34 @@ public class DemoDataInitializer implements ApplicationRunner {
 
     private Map<String, PermissionEntity> seedPermissions() {
         Map<String, PermissionEntity> result = new LinkedHashMap<>();
-        PERMISSIONS.forEach((code, description) -> {
+        Arrays.stream(Permission.values()).forEach(permission -> {
             PermissionEntity entity = permissionRepository.save(PermissionEntity.builder()
-                    .code(code)
-                    .description(description)
+                    .code(permission.getCode())
+                    .description(permission.getDescription())
                     .build());
-            result.put(code, entity);
+            result.put(permission.getCode(), entity);
         });
         return result;
     }
 
     private Map<String, RoleEntity> seedRoles() {
         Map<String, RoleEntity> result = new LinkedHashMap<>();
-        ROLE_DESCRIPTIONS.forEach((name, description) -> {
+        Arrays.stream(Role.values()).forEach(role -> {
             RoleEntity entity = roleRepository.save(RoleEntity.builder()
-                    .name(name)
-                    .description(description)
+                    .name(role.getCode())
+                    .description(role.getDescription())
                     .build());
-            result.put(name, entity);
+            result.put(role.getCode(), entity);
         });
         return result;
     }
 
     private void linkRolePermissions(Map<String, PermissionEntity> permissionsByCode,
                                    Map<String, RoleEntity> rolesByName) {
-        ROLE_PERMISSIONS.forEach((roleName, permissionCodes) -> {
-            Long roleId = rolesByName.get(roleName).getId();
-            for (String permissionCode : permissionCodes) {
-                Long permissionId = permissionsByCode.get(permissionCode).getId();
+        Arrays.stream(Role.values()).forEach(role -> {
+            Long roleId = rolesByName.get(role.getCode()).getId();
+            for (Permission permission : role.getPermissions()) {
+                Long permissionId = permissionsByCode.get(permission.getCode()).getId();
                 jdbcTemplate.update(
                         "INSERT INTO role_permission (role_id, permission_id) VALUES (?, ?)",
                         roleId,
@@ -139,7 +105,7 @@ public class DemoDataInitializer implements ApplicationRunner {
     }
 
     private void seedUsers(Map<String, RoleEntity> rolesByName) {
-        DEMO_USERS.forEach((login, roleName) -> {
+        DEMO_USERS.forEach((login, role) -> {
             AppUserEntity user = appUserRepository.save(AppUserEntity.builder()
                     .login(login)
                     .passwordHash(passwordEncoder.encode(login))
@@ -147,7 +113,7 @@ public class DemoDataInitializer implements ApplicationRunner {
             jdbcTemplate.update(
                     "INSERT INTO user_role (user_id, role_id) VALUES (?, ?)",
                     user.getId(),
-                    rolesByName.get(roleName).getId()
+                    rolesByName.get(role.getCode()).getId()
             );
         });
     }

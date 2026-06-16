@@ -3,7 +3,7 @@ package gov.mib.aims.backend.services.dbqueue.processor;
 import gov.mib.aims.backend.entity.AppUserEntity;
 import gov.mib.aims.backend.model.EntityRef;
 import gov.mib.aims.backend.model.EntityType;
-import gov.mib.aims.backend.model.RoleNames;
+import gov.mib.aims.backend.model.Role;
 import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
 import gov.mib.aims.backend.services.NotificationService;
@@ -38,7 +38,7 @@ public class NotifyAgentsIncidentReadyProcessor implements DbQueueProcessor<Noti
         }
         String message = "Инцидент №" + incidentId + " готов к выполнению";
         String relatedRef = EntityRef.format(EntityType.INCIDENT, incidentId);
-        List<AppUserEntity> agents = appUserRepository.findAllByRoleName(RoleNames.AGENT);
+        List<AppUserEntity> agents = appUserRepository.findAllByRoleName(Role.AGENT.getCode());
         for (AppUserEntity agent : agents) {
             notificationService.send(agent.getId(), message, List.of(relatedRef));
         }

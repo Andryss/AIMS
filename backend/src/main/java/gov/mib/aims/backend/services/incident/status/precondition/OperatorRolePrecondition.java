@@ -2,7 +2,7 @@ package gov.mib.aims.backend.services.incident.status.precondition;
 
 import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.exception.Errors;
-import gov.mib.aims.backend.model.RoleNames;
+import gov.mib.aims.backend.model.Role;
 import gov.mib.aims.backend.services.CurrentUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public class OperatorRolePrecondition implements StatusTransitionPrecondition<In
 
     @Override
     public void check(IncidentEntity context) {
-        if (!currentUserService.hasAnyRole(RoleNames.OPERATOR, RoleNames.ADMIN)) {
+        if (!currentUserService.hasAnyRole(Role.OPERATOR, Role.ADMIN)) {
             throw Errors.invalidStatusTransition();
         }
     }

@@ -2,23 +2,26 @@ package gov.mib.aims.backend.services.incident.status.precondition;
 
 import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.exception.Errors;
-import gov.mib.aims.backend.model.Role;
 import gov.mib.aims.backend.services.CurrentUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * Переход доступен аналитику или администратору.
+ * Переход доступен только назначенному ответственному агенту.
  */
 @Component
 @RequiredArgsConstructor
-public class AnalystRolePrecondition implements StatusTransitionPrecondition<IncidentEntity> {
+public class ResponsibleAgentPrecondition implements StatusTransitionPrecondition<IncidentEntity> {
 
     private final CurrentUserService currentUserService;
 
     @Override
     public void check(IncidentEntity context) {
-        if (!currentUserService.hasAnyRole(Role.ANALYST, Role.ADMIN)) {
+        Long responsibleUserId = context.getResponsibleUserId();
+        if (responsibleUserId == null) {
+            throw Errors.validationError("Responsible agent must be assigned");
+        }
+        if (!responsibleUserId.equals(currentUserService.getCurrentUserId())) {
             throw Errors.invalidStatusTransition();
         }
     }

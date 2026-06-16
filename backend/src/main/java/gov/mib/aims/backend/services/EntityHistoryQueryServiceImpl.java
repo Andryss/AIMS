@@ -8,6 +8,8 @@ import gov.mib.aims.backend.generated.model.IncidentHistoryEntry;
 import gov.mib.aims.backend.generated.model.IncidentHistoryListResponse;
 import gov.mib.aims.backend.generated.model.IncidentHistorySnapshot;
 import gov.mib.aims.backend.generated.model.IncidentStatusApi;
+import gov.mib.aims.backend.generated.model.CleanupStatusApi;
+import gov.mib.aims.backend.model.CleanupStatus;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.IncidentEventType;
 import gov.mib.aims.backend.model.IncidentStatus;
@@ -80,7 +82,20 @@ public class EntityHistoryQueryServiceImpl implements EntityHistoryQueryService 
                 .attachmentFileIds(new ArrayList<>(entity.getAttachmentFileIds()))
                 .alienId(entity.getAlienId())
                 .responsibleUserId(entity.getResponsibleUserId())
-                .executorUserIds(executorIds);
+                .executorUserIds(executorIds)
+                .cleanupStatus(toApiCleanupStatus(entity.getCleanupStatus()))
+                .cleanupReportId(entity.getCleanupReportId());
+    }
+
+    private CleanupStatusApi toApiCleanupStatus(CleanupStatus status) {
+        if (status == null) {
+            return null;
+        }
+        return switch (status) {
+            case PREPARATION -> CleanupStatusApi.PREPARATION;
+            case EXECUTION -> CleanupStatusApi.EXECUTION;
+            case COMPLETED -> CleanupStatusApi.COMPLETED;
+        };
     }
 
     private IncidentStatusApi toApiStatus(IncidentStatus status) {
@@ -91,6 +106,8 @@ public class EntityHistoryQueryServiceImpl implements EntityHistoryQueryService 
             case CLARIFICATION_REQUIRED -> IncidentStatusApi.CLARIFICATION_REQUIRED;
             case PREPARATION_FOR_EXECUTION -> IncidentStatusApi.PREPARATION_FOR_EXECUTION;
             case PREPARED_FOR_EXECUTION -> IncidentStatusApi.PREPARED_FOR_EXECUTION;
+            case EXECUTING -> IncidentStatusApi.EXECUTING;
+            case EXECUTION_COMPLETED -> IncidentStatusApi.EXECUTION_COMPLETED;
             case REANALYSIS_REQUIRED -> IncidentStatusApi.REANALYSIS_REQUIRED;
         };
     }

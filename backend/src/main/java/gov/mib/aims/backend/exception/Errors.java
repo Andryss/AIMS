@@ -198,6 +198,50 @@ public final class Errors {
     }
 
     /**
+     * Отчёт об очистке не найден.
+     */
+    public static BaseException cleanupReportNotFound() {
+        return BaseException.builder()
+                .code(404)
+                .message("cleanup_report.not_found")
+                .humanMessage("Cleanup report not found")
+                .build();
+    }
+
+    /**
+     * Отчёт об очистке уже существует для инцидента.
+     */
+    public static BaseException cleanupReportAlreadyExists() {
+        return BaseException.builder()
+                .code(409)
+                .message("cleanup_report.already_exists")
+                .humanMessage("Cleanup report already exists for this incident")
+                .build();
+    }
+
+    /**
+     * Недопустимый переход статуса очистки.
+     */
+    public static BaseException invalidCleanupStatusTransition() {
+        return BaseException.builder()
+                .code(400)
+                .message("cleanup.invalid_status_transition")
+                .humanMessage("Invalid cleanup status transition")
+                .build();
+    }
+
+    /**
+     * Операция очистки недоступна в текущем статусе инцидента.
+     */
+    public static BaseException cleanupNotAllowed() {
+        return BaseException.builder()
+                .code(400)
+                .message("cleanup.not_allowed")
+                .humanMessage("Cleanup operations are not allowed in current incident state")
+                .build();
+    }
+
+    /**
      * Необработанная ошибка.
      */
     public static BaseException unhandledExceptionError() {

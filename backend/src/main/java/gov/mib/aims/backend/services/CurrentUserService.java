@@ -1,6 +1,7 @@
 package gov.mib.aims.backend.services;
 
 import gov.mib.aims.backend.entity.RoleEntity;
+import gov.mib.aims.backend.model.Role;
 import gov.mib.aims.backend.repository.RoleRepository;
 import gov.mib.aims.backend.security.UserInfo;
 import gov.mib.aims.backend.security.SecurityContextUserInfo;
@@ -45,6 +46,16 @@ public class CurrentUserService {
      */
     public String getCurrentLogin() {
         return getCurrentUserInfo().login();
+    }
+
+    /**
+     * Проверяет, есть ли у текущего пользователя хотя бы одна из указанных ролей.
+     *
+     * @param roles роли
+     * @return true, если роль найдена
+     */
+    public boolean hasAnyRole(Role... roles) {
+        return hasAnyRole(Arrays.stream(roles).map(Role::getCode).toArray(String[]::new));
     }
 
     /**

@@ -17,6 +17,10 @@ public enum IncidentStatus {
     PREPARATION_FOR_EXECUTION,
     /** Подготовлен к выполнению. */
     PREPARED_FOR_EXECUTION,
+    /** Выполняется ответственным агентом. */
+    EXECUTING,
+    /** Выполнение завершено. */
+    EXECUTION_COMPLETED,
     /** Требуется повторный анализ. */
     REANALYSIS_REQUIRED
 }

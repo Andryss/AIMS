@@ -1027,6 +1027,175 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
 
+  /api/v1/incidents/{id}/cleanup-report:
+    get:
+      summary: Get cleanup report for incident
+      operationId: getIncidentCleanupReport
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Cleanup report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CleanupReportResponse"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        404:
+          description: Incident or cleanup report not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+    post:
+      summary: Create cleanup report for incident
+      operationId: createIncidentCleanupReport
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCleanupReportRequest"
+      responses:
+        201:
+          description: Cleanup report created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CleanupReportResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        404:
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        409:
+          description: Cleanup report already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+
+  /api/v1/incidents/{id}/cleanup-status:
+    post:
+      summary: Change cleanup status for incident
+      operationId: changeIncidentCleanupStatus
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeCleanupStatusRequest"
+      responses:
+        200:
+          description: Incident with updated cleanup status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        404:
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1215,7 +1384,16 @@ components:
         - CLARIFICATION_REQUIRED
         - PREPARATION_FOR_EXECUTION
         - PREPARED_FOR_EXECUTION
+        - EXECUTING
+        - EXECUTION_COMPLETED
         - REANALYSIS_REQUIRED
+
+    CleanupStatusApi:
+      type: string
+      enum:
+        - PREPARATION
+        - EXECUTION
+        - COMPLETED
 
     UserSummary:
       type: object
@@ -1370,6 +1548,60 @@ components:
           maxLength: 4000
           description: Optional comment saved together with status change
 
+    ChangeCleanupStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: "#/components/schemas/CleanupStatusApi"
+
+    CreateCleanupReportRequest:
+      type: object
+      required:
+        - description
+        - attachmentFileIds
+      properties:
+        description:
+          type: string
+          minLength: 1
+        attachmentFileIds:
+          type: array
+          minItems: 1
+          items:
+            type: integer
+            format: int64
+
+    CleanupReportResponse:
+      type: object
+      required:
+        - id
+        - incidentId
+        - description
+        - attachmentFileIds
+        - createdByUserId
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+        incidentId:
+          type: integer
+          format: int64
+        description:
+          type: string
+        attachmentFileIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        createdByUserId:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
+
     CreateIncidentCommentRequest:
       type: object
       required:
@@ -1471,6 +1703,13 @@ components:
           items:
             type: integer
             format: int64
+        cleanupStatus:
+          $ref: "#/components/schemas/CleanupStatusApi"
+          nullable: true
+        cleanupReportId:
+          type: integer
+          format: int64
+          nullable: true
 
     IncidentHistoryEntry:
       type: object
@@ -1569,6 +1808,13 @@ components:
           items:
             type: integer
             format: int64
+        cleanupStatus:
+          $ref: "#/components/schemas/CleanupStatusApi"
+          nullable: true
+        cleanupReportId:
+          type: integer
+          format: int64
+          nullable: true
 
     IncidentListResponse:
       description: Paginated incidents

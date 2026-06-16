@@ -128,13 +128,13 @@ export function NotificationsPanel({
                     <button
                       key={incidentId}
                       type="button"
-                      className="link-button notification-incident-link"
+                      className="outline-button"
                       onClick={(event) => {
                         event.stopPropagation();
                         onNavigateToIncident(incidentId);
                       }}
                     >
-                      Перейти к инциденту
+                      Инцидент №{incidentId}
                     </button>
                   ))}
                 </div>

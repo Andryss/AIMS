@@ -1,5 +1,6 @@
 package gov.mib.aims.backend.entity;
 
+import gov.mib.aims.backend.model.CleanupStatus;
 import gov.mib.aims.backend.model.IncidentEventType;
 import gov.mib.aims.backend.model.IncidentStatus;
 import jakarta.persistence.Column;
@@ -64,6 +65,13 @@ public class IncidentEntity {
 
     @Column(name = "alien_id")
     private Long alienId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "cleanup_status")
+    private CleanupStatus cleanupStatus;
+
+    @Column(name = "cleanup_report_id")
+    private Long cleanupReportId;
 
     @Column(name = "responsible_user_id")
     private Long responsibleUserId;

@@ -11,10 +11,12 @@ import gov.mib.aims.backend.generated.model.IncidentStatusApi;
 import gov.mib.aims.backend.generated.model.LinkIncidentAlienRequest;
 import gov.mib.aims.backend.generated.model.SetIncidentExecutorsRequest;
 import gov.mib.aims.backend.generated.model.SetIncidentResponsibleRequest;
+import gov.mib.aims.backend.generated.model.CleanupStatusApi;
+import gov.mib.aims.backend.model.CleanupStatus;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.IncidentEventType;
 import gov.mib.aims.backend.model.IncidentStatus;
-import gov.mib.aims.backend.model.RoleNames;
+import gov.mib.aims.backend.model.Role;
 import gov.mib.aims.backend.repository.AlienRepository;
 import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
@@ -188,7 +190,7 @@ public class IncidentServiceImpl implements IncidentService {
         if (!appUserRepository.existsById(userId)) {
             throw Errors.userNotFound();
         }
-        if (!appUserRepository.hasRole(userId, RoleNames.AGENT)) {
+        if (!appUserRepository.hasRole(userId, Role.AGENT.getCode())) {
             throw Errors.userNotAgent();
         }
     }
@@ -231,6 +233,8 @@ public class IncidentServiceImpl implements IncidentService {
             case CLARIFICATION_REQUIRED -> IncidentStatus.CLARIFICATION_REQUIRED;
             case PREPARATION_FOR_EXECUTION -> IncidentStatus.PREPARATION_FOR_EXECUTION;
             case PREPARED_FOR_EXECUTION -> IncidentStatus.PREPARED_FOR_EXECUTION;
+            case EXECUTING -> IncidentStatus.EXECUTING;
+            case EXECUTION_COMPLETED -> IncidentStatus.EXECUTION_COMPLETED;
             case REANALYSIS_REQUIRED -> IncidentStatus.REANALYSIS_REQUIRED;
         };
     }
@@ -243,6 +247,8 @@ public class IncidentServiceImpl implements IncidentService {
             case CLARIFICATION_REQUIRED -> IncidentStatusApi.CLARIFICATION_REQUIRED;
             case PREPARATION_FOR_EXECUTION -> IncidentStatusApi.PREPARATION_FOR_EXECUTION;
             case PREPARED_FOR_EXECUTION -> IncidentStatusApi.PREPARED_FOR_EXECUTION;
+            case EXECUTING -> IncidentStatusApi.EXECUTING;
+            case EXECUTION_COMPLETED -> IncidentStatusApi.EXECUTION_COMPLETED;
             case REANALYSIS_REQUIRED -> IncidentStatusApi.REANALYSIS_REQUIRED;
         };
     }
@@ -263,6 +269,19 @@ public class IncidentServiceImpl implements IncidentService {
                 .updatedAt(entity.getUpdatedAt().atOffset(ZoneOffset.UTC))
                 .alienId(entity.getAlienId())
                 .responsibleUserId(entity.getResponsibleUserId())
-                .executorUserIds(executorIds);
+                .executorUserIds(executorIds)
+                .cleanupStatus(toApiCleanupStatus(entity.getCleanupStatus()))
+                .cleanupReportId(entity.getCleanupReportId());
+    }
+
+    private CleanupStatusApi toApiCleanupStatus(CleanupStatus status) {
+        if (status == null) {
+            return null;
+        }
+        return switch (status) {
+            case PREPARATION -> CleanupStatusApi.PREPARATION;
+            case EXECUTION -> CleanupStatusApi.EXECUTION;
+            case COMPLETED -> CleanupStatusApi.COMPLETED;
+        };
     }
 }

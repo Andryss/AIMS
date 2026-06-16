@@ -3,6 +3,7 @@ import * as api from '../api/client';
 import { EVENT_TYPE_LABELS } from '../incidentLabels';
 import { IncidentResponse } from '../types';
 import { IncidentStatusSelect } from './IncidentStatusSelect';
+import { AttachmentDownloadList } from './AttachmentDownloadList';
 
 function formatDate(iso: string): string {
   try {
@@ -149,22 +150,11 @@ export function IncidentViewModal({
                   {incident.attachmentFileIds.length === 0 ? (
                     '—'
                   ) : (
-                    <ul className="incident-view-attachments">
-                      {incident.attachmentFileIds.map((fileId) => (
-                        <li key={fileId}>
-                          <button
-                            type="button"
-                            className="link-button"
-                            disabled={downloadingId === fileId}
-                            onClick={() => handleDownload(fileId)}
-                          >
-                            {downloadingId === fileId
-                              ? `Скачивание #${fileId}…`
-                              : `Файл #${fileId}`}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                    <AttachmentDownloadList
+                      fileIds={incident.attachmentFileIds}
+                      downloadingId={downloadingId}
+                      onDownload={handleDownload}
+                    />
                   )}
                 </dd>
               </div>

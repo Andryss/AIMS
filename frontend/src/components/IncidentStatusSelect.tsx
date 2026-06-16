@@ -7,6 +7,7 @@ interface IncidentStatusSelectProps {
   token: string;
   incident: IncidentResponse;
   roles: string[];
+  currentUserId?: number;
   canChange: boolean;
   onStatusChanged: (updated: IncidentResponse) => void;
   className?: string;
@@ -16,9 +17,17 @@ function hasRole(roles: string[], name: string): boolean {
   return roles.includes(name) || roles.includes('ADMIN');
 }
 
+function isResponsibleAgent(incident: IncidentResponse, currentUserId?: number): boolean {
+  return incident.responsibleUserId != null
+    && currentUserId != null
+    && incident.responsibleUserId === currentUserId;
+}
+
 function allowedTargetsForUser(
   status: IncidentStatus,
   roles: string[],
+  incident: IncidentResponse,
+  currentUserId?: number,
 ): IncidentStatus[] {
   const fromGraph = STATUS_TRANSITIONS[status];
   if (status === 'DRAFT') {
@@ -30,11 +39,13 @@ function allowedTargetsForUser(
   if (status === 'CLARIFICATION_REQUIRED' || status === 'REANALYSIS_REQUIRED') {
     return hasRole(roles, 'OPERATOR') ? fromGraph : [];
   }
-  if (
-    status === 'READY_FOR_EXECUTION'
-    || status === 'PREPARATION_FOR_EXECUTION'
-    || status === 'PREPARED_FOR_EXECUTION'
-  ) {
+  if (status === 'PREPARED_FOR_EXECUTION' || status === 'EXECUTING') {
+    if (!hasRole(roles, 'AGENT')) {
+      return [];
+    }
+    return isResponsibleAgent(incident, currentUserId) ? fromGraph : [];
+  }
+  if (status === 'READY_FOR_EXECUTION' || status === 'PREPARATION_FOR_EXECUTION') {
     return hasRole(roles, 'AGENT') ? fromGraph : [];
   }
   return [];
@@ -44,6 +55,7 @@ export function IncidentStatusSelect({
   token,
   incident,
   roles,
+  currentUserId,
   canChange,
   onStatusChanged,
   className,
@@ -55,8 +67,8 @@ export function IncidentStatusSelect({
   const [commentText, setCommentText] = useState('');
 
   const allowedTargets = useMemo(
-    () => allowedTargetsForUser(incident.status, roles),
-    [incident.status, roles],
+    () => allowedTargetsForUser(incident.status, roles, incident, currentUserId),
+    [incident, roles, currentUserId],
   );
   const options: IncidentStatus[] = [incident.status, ...allowedTargets];
 

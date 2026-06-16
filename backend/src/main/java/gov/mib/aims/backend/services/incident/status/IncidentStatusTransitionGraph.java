@@ -13,6 +13,7 @@ import gov.mib.aims.backend.services.incident.status.precondition.AnalystRolePre
 import gov.mib.aims.backend.services.incident.status.precondition.AssignmentCompletePrecondition;
 import gov.mib.aims.backend.services.incident.status.precondition.AttachmentsExistPrecondition;
 import gov.mib.aims.backend.services.incident.status.precondition.OperatorRolePrecondition;
+import gov.mib.aims.backend.services.incident.status.precondition.ResponsibleAgentPrecondition;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -42,7 +43,8 @@ public class IncidentStatusTransitionGraph {
             EnqueueNotifyAgentsPostAction enqueueNotifyAgentsPostAction,
             EnqueueNotifyOperatorClarificationPostAction enqueueNotifyOperatorClarificationPostAction,
             EnqueueNotifyAnalystsReanalysisPostAction enqueueNotifyAnalystsReanalysisPostAction,
-            EnqueueNotifyIncidentPreparedPostAction enqueueNotifyIncidentPreparedPostAction
+            EnqueueNotifyIncidentPreparedPostAction enqueueNotifyIncidentPreparedPostAction,
+            ResponsibleAgentPrecondition responsibleAgentPrecondition
     ) {
         List<IncidentStatusTransition<IncidentEntity>> transitionList = List.of(
                 IncidentStatusTransition.<IncidentEntity>builder()
@@ -110,6 +112,18 @@ public class IncidentStatusTransitionGraph {
                         .to(IncidentStatus.READY_FOR_ANALYSIS)
                         .preconditions(List.of(analystRolePrecondition))
                         .postActions(List.of(enqueueNotifyAnalystsPostAction))
+                        .build(),
+                IncidentStatusTransition.<IncidentEntity>builder()
+                        .from(IncidentStatus.PREPARED_FOR_EXECUTION)
+                        .to(IncidentStatus.EXECUTING)
+                        .preconditions(List.of(responsibleAgentPrecondition))
+                        .postActions(List.of())
+                        .build(),
+                IncidentStatusTransition.<IncidentEntity>builder()
+                        .from(IncidentStatus.EXECUTING)
+                        .to(IncidentStatus.EXECUTION_COMPLETED)
+                        .preconditions(List.of(responsibleAgentPrecondition))
+                        .postActions(List.of())
                         .build()
         );
         this.transitions = transitionList.stream()

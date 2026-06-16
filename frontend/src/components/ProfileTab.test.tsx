@@ -15,7 +15,7 @@ describe('ProfileTab', () => {
     );
 
     expect(screen.getByRole('heading', { name: 'operator' })).toBeInTheDocument();
-    expect(screen.getByText('OPERATOR')).toBeInTheDocument();
+    expect(screen.getByText('Оператор')).toBeInTheDocument();
     expect(screen.getByText('INCIDENT_READ')).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: /Выйти/i }));

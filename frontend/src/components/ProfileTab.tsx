@@ -1,6 +1,14 @@
 import React from 'react';
+import { ROLE_LABELS } from '../constants';
 import { AuthMeResponse } from '../types';
 import { UserAvatar } from './UserAvatar';
+
+function formatRoles(roles: string[]): string {
+  if (roles.length === 0) {
+    return '—';
+  }
+  return roles.map((role) => ROLE_LABELS[role] ?? role).join(', ');
+}
 
 interface ProfileTabProps {
   profile: AuthMeResponse;
@@ -24,7 +32,7 @@ export function ProfileTab({ profile, onSignOut }: ProfileTabProps) {
         </div>
         <div>
           <dt>Роли</dt>
-          <dd>{profile.roles.join(', ') || '—'}</dd>
+          <dd>{formatRoles(profile.roles)}</dd>
         </div>
         <div>
           <dt>Разрешения</dt>

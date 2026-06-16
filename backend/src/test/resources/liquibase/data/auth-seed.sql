@@ -2,38 +2,42 @@
 
 --changeset aims:seed-auth-data
 insert into permission (code, description) values
-    ('INCIDENT_READ', 'Read incidents'),
-    ('INCIDENT_CREATE', 'Create incidents'),
-    ('INCIDENT_STATUS_CHANGE', 'Change incident status'),
-    ('INCIDENT_COMMENT', 'Add comments to incidents'),
-    ('INCIDENT_ALIEN_LINK', 'Link alien type to incident'),
-    ('ALIEN_READ', 'Read and search aliens in knowledge base'),
-    ('USER_READ', 'Search and batch-read users'),
-    ('INCIDENT_ASSIGN', 'Assign responsible and executors on incidents')
+    ('INCIDENT_READ', 'Просмотр карточек и списка инцидентов'),
+    ('INCIDENT_CREATE', 'Создание инцидентов'),
+    ('INCIDENT_STATUS_CHANGE', 'Смена статуса инцидента'),
+    ('INCIDENT_COMMENT', 'Добавление комментариев к инциденту'),
+    ('INCIDENT_ALIEN_LINK', 'Привязка типа инопланетянина к инциденту'),
+    ('ALIEN_READ', 'Просмотр и поиск в справочнике инопланетян'),
+    ('USER_READ', 'Поиск пользователей и пакетное чтение профилей'),
+    ('INCIDENT_ASSIGN', 'Назначение ответственного и исполнителей на инцидент'),
+    ('CLEANUP_REPORT_READ', 'Просмотр отчёта об очистке'),
+    ('CLEANUP_REPORT_CREATE', 'Создание отчёта об очистке'),
+    ('CLEANUP_STATUS_CHANGE', 'Смена статуса очистки')
 on conflict (code) do nothing;
 
 insert into role (name, description) values
-    ('OPERATOR', 'Incident operator'),
-    ('ANALYST', 'Incident analyst'),
-    ('ADMIN', 'Administrator'),
-    ('AGENT', 'Field agent');
+    ('OPERATOR', 'Оператор'),
+    ('ANALYST', 'Аналитик'),
+    ('ADMIN', 'Администратор'),
+    ('AGENT', 'Оперативный агент'),
+    ('CLEANER', 'Специалист по прикрытию');
 
 insert into role_permission (role_id, permission_id)
 select r.id, p.id
 from role r, permission p
-where r.name = 'OPERATOR' and p.code in ('INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT', 'USER_READ');
+where r.name = 'OPERATOR' and p.code in ('INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT', 'USER_READ', 'CLEANUP_REPORT_READ');
 
 insert into role_permission (role_id, permission_id)
 select r.id, p.id
 from role r, permission p
-where r.name = 'ANALYST' and p.code in ('INCIDENT_READ', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT', 'INCIDENT_ALIEN_LINK', 'ALIEN_READ', 'USER_READ');
+where r.name = 'ANALYST' and p.code in ('INCIDENT_READ', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT', 'INCIDENT_ALIEN_LINK', 'ALIEN_READ', 'USER_READ', 'CLEANUP_REPORT_READ');
 
 insert into role_permission (role_id, permission_id)
 select r.id, p.id
 from role r, permission p
 where r.name = 'ADMIN' and p.code in (
     'INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT',
-    'INCIDENT_ALIEN_LINK', 'ALIEN_READ', 'USER_READ', 'INCIDENT_ASSIGN'
+    'INCIDENT_ALIEN_LINK', 'ALIEN_READ', 'USER_READ', 'INCIDENT_ASSIGN', 'CLEANUP_REPORT_READ'
 );
 
 insert into role_permission (role_id, permission_id)
@@ -41,7 +45,15 @@ select r.id, p.id
 from role r, permission p
 where r.name = 'AGENT' and p.code in (
     'INCIDENT_READ', 'USER_READ', 'INCIDENT_ASSIGN', 'INCIDENT_STATUS_CHANGE',
-    'INCIDENT_COMMENT', 'ALIEN_READ'
+    'INCIDENT_COMMENT', 'ALIEN_READ', 'CLEANUP_REPORT_READ'
+);
+
+insert into role_permission (role_id, permission_id)
+select r.id, p.id
+from role r, permission p
+where r.name = 'CLEANER' and p.code in (
+    'INCIDENT_READ', 'USER_READ', 'INCIDENT_COMMENT', 'ALIEN_READ',
+    'CLEANUP_REPORT_READ', 'CLEANUP_REPORT_CREATE', 'CLEANUP_STATUS_CHANGE'
 );
 
 insert into app_user (login, password_hash) values
@@ -49,7 +61,8 @@ insert into app_user (login, password_hash) values
     ('analyst', '$2a$10$4jOz4wa0A4i9xlzxtJX5du72d2cbNfCjHt3TwPyDF6OlDXtIxK56W'),
     ('admin', '$2a$10$3ikPsa0.oG0Rolvk8W65Ke02QdCf1NguC9DxvAijlbu.54Vp/Wpb2'),
     ('agent', '$2a$10$6KMyGyv/5dg7pb9EROtxzeyLowuW/RhvFP/ZUy53PuhoSrkTIR7U2'),
-    ('agent2', '$2y$10$PzesjIfh8erxGjUyrlVlMOWKVIC0Eezbyy2lAHHUB.dAjPjU3P7Ke');
+    ('agent2', '$2y$10$PzesjIfh8erxGjUyrlVlMOWKVIC0Eezbyy2lAHHUB.dAjPjU3P7Ke'),
+    ('cleaner', '$2y$10$X6NQQD/q6eihp.rlpGjFAenVE2o0rqpNMI8.urRcNFQWv5u4eRRRS');
 
 insert into user_role (user_id, role_id)
 select u.id, r.id
@@ -75,3 +88,8 @@ insert into user_role (user_id, role_id)
 select u.id, r.id
 from app_user u, role r
 where u.login = 'agent2' and r.name = 'AGENT';
+
+insert into user_role (user_id, role_id)
+select u.id, r.id
+from app_user u, role r
+where u.login = 'cleaner' and r.name = 'CLEANER';

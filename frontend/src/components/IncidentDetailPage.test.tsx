@@ -20,6 +20,7 @@ const listIncidentHistory = api.listIncidentHistory as jest.MockedFunction<
   typeof api.listIncidentHistory
 >;
 const batchUsers = api.batchUsers as jest.MockedFunction<typeof api.batchUsers>;
+const getCleanupReport = api.getCleanupReport as jest.MockedFunction<typeof api.getCleanupReport>;
 
 function renderAt(
   path: string,
@@ -28,6 +29,9 @@ function renderAt(
     canLinkAlien?: boolean;
     canComment?: boolean;
     canAssign?: boolean;
+    canReadCleanupReport?: boolean;
+    canCreateCleanupReport?: boolean;
+    canChangeCleanupStatus?: boolean;
   } = {},
 ) {
   const {
@@ -35,6 +39,9 @@ function renderAt(
     canLinkAlien = true,
     canComment = true,
     canAssign = false,
+    canReadCleanupReport = false,
+    canCreateCleanupReport = false,
+    canChangeCleanupStatus = false,
   } = options;
   return render(
     <MemoryRouter initialEntries={[path]}>
@@ -50,6 +57,9 @@ function renderAt(
               canLinkAlien={canLinkAlien}
               canComment={canComment}
               canAssign={canAssign}
+              canReadCleanupReport={canReadCleanupReport}
+              canCreateCleanupReport={canCreateCleanupReport}
+              canChangeCleanupStatus={canChangeCleanupStatus}
             />
           }
         />
@@ -234,10 +244,10 @@ describe('IncidentDetailPage', () => {
     renderAt('/incidents/2');
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Файл #15' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Скачать Вложение №15' })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole('button', { name: 'Файл #15' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Скачать Вложение №15' }));
 
     await waitFor(() => {
       expect(screen.getByText('Download failed')).toBeInTheDocument();
@@ -301,13 +311,70 @@ describe('IncidentDetailPage', () => {
     renderAt('/incidents/2');
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Файл #15' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Скачать Вложение №15' })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole('button', { name: 'Файл #15' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Скачать Вложение №15' }));
 
     await waitFor(() => {
       expect(downloadFile).toHaveBeenCalledWith('tok', 15, 'attachment-15');
     });
+  });
+
+  it('loads cleanup report when cleanupReportId is set', async () => {
+    getIncident.mockResolvedValue(
+      mockIncident({
+        id: 11,
+        status: 'EXECUTING',
+        cleanupReportId: 99,
+      }),
+    );
+    getCleanupReport.mockResolvedValue({
+      id: 99,
+      incidentId: 11,
+      description: 'Убраны следы',
+      attachmentFileIds: [3],
+      createdByUserId: 5,
+      createdAt: '2025-06-03T10:00:00Z',
+    });
+
+    renderAt('/incidents/11', { canReadCleanupReport: true });
+
+    await waitFor(() => {
+      expect(getCleanupReport).toHaveBeenCalledWith('tok', 11);
+    });
+    expect(screen.getByText('Отчёт об очистке')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Открыть' })).toBeInTheDocument();
+  });
+
+  it('shows attach report button for cleaner on executing incident', async () => {
+    getIncident.mockResolvedValue(
+      mockIncident({ id: 12, status: 'EXECUTING', cleanupReportId: null }),
+    );
+
+    renderAt('/incidents/12', { canCreateCleanupReport: true });
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Прикрепить отчёт' })).toBeInTheDocument();
+    });
+    expect(getCleanupReport).not.toHaveBeenCalled();
+  });
+
+  it('hides cleanup block before executing status', async () => {
+    getIncident.mockResolvedValue(
+      mockIncident({ id: 13, status: 'PREPARED_FOR_EXECUTION' }),
+    );
+
+    renderAt('/incidents/13', {
+      canReadCleanupReport: true,
+      canCreateCleanupReport: true,
+      canChangeCleanupStatus: true,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Инцидент #13' })).toBeInTheDocument();
+    });
+    expect(screen.queryByText('Статус очистки')).not.toBeInTheDocument();
+    expect(screen.queryByText('Отчёт об очистке')).not.toBeInTheDocument();
   });
 });

@@ -40,7 +40,7 @@ describe('buildIncidentHistoryDiffs', () => {
 
     expect(blocks).toHaveLength(1);
     expect(blocks[0].isCreation).toBe(true);
-    expect(blocks[0].rows).toHaveLength(9);
+    expect(blocks[0].rows).toHaveLength(11);
     expect(blocks[0].rows.find((r) => r.label === 'Статус')?.newValue).toBe('Черновик');
     expect(blocks[0].title).toContain('operator');
   });

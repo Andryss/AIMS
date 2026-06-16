@@ -10,8 +10,12 @@ import gov.mib.aims.backend.generated.model.IncidentHistoryListResponse;
 import gov.mib.aims.backend.generated.model.IncidentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
 import gov.mib.aims.backend.generated.model.LinkIncidentAlienRequest;
+import gov.mib.aims.backend.generated.model.ChangeCleanupStatusRequest;
+import gov.mib.aims.backend.generated.model.CreateCleanupReportRequest;
+import gov.mib.aims.backend.generated.model.CleanupReportResponse;
 import gov.mib.aims.backend.generated.model.SetIncidentExecutorsRequest;
 import gov.mib.aims.backend.generated.model.SetIncidentResponsibleRequest;
+import gov.mib.aims.backend.services.CleanupService;
 import gov.mib.aims.backend.services.EntityHistoryQueryService;
 import gov.mib.aims.backend.services.IncidentCommentService;
 import gov.mib.aims.backend.services.IncidentService;
@@ -34,6 +38,7 @@ public class IncidentsApiImpl implements IncidentsApi {
     private final IncidentService incidentService;
     private final IncidentCommentService incidentCommentService;
     private final EntityHistoryQueryService entityHistoryQueryService;
+    private final CleanupService cleanupService;
 
     @Override
     @PreAuthorize("hasAuthority('INCIDENT_READ')")
@@ -121,5 +126,32 @@ public class IncidentsApiImpl implements IncidentsApi {
     ) {
         log.info("PUT /api/v1/incidents/{}/executors", id);
         return incidentService.setExecutors(id, setIncidentExecutorsRequest);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('CLEANUP_REPORT_READ')")
+    public CleanupReportResponse getIncidentCleanupReport(Long id) {
+        log.info("GET /api/v1/incidents/{}/cleanup-report", id);
+        return cleanupService.getReport(id);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('CLEANUP_REPORT_CREATE')")
+    public CleanupReportResponse createIncidentCleanupReport(
+            Long id,
+            @Valid CreateCleanupReportRequest createCleanupReportRequest
+    ) {
+        log.info("POST /api/v1/incidents/{}/cleanup-report", id);
+        return cleanupService.createReport(id, createCleanupReportRequest);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('CLEANUP_STATUS_CHANGE')")
+    public IncidentResponse changeIncidentCleanupStatus(
+            Long id,
+            @Valid ChangeCleanupStatusRequest changeCleanupStatusRequest
+    ) {
+        log.info("POST /api/v1/incidents/{}/cleanup-status", id);
+        return cleanupService.changeCleanupStatus(id, changeCleanupStatusRequest);
     }
 }

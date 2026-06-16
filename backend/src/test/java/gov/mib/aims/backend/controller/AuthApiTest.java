@@ -86,10 +86,10 @@ class AuthApiTest extends BaseApiTest {
                 .andExpect(jsonPath("$.login").value("operator"))
                 .andExpect(jsonPath("$.roles", hasSize(1)))
                 .andExpect(jsonPath("$.roles[0]").value("OPERATOR"))
-                .andExpect(jsonPath("$.permissions", hasSize(5)))
+                .andExpect(jsonPath("$.permissions", hasSize(6)))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
                         "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT",
-                        "USER_READ")));
+                        "USER_READ", "CLEANUP_REPORT_READ")));
     }
 
     @Test
@@ -99,10 +99,10 @@ class AuthApiTest extends BaseApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login").value("analyst"))
                 .andExpect(jsonPath("$.roles[0]").value("ANALYST"))
-                .andExpect(jsonPath("$.permissions", hasSize(6)))
+                .andExpect(jsonPath("$.permissions", hasSize(7)))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
                         "INCIDENT_READ", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT",
-                        "INCIDENT_ALIEN_LINK", "ALIEN_READ", "USER_READ")));
+                        "INCIDENT_ALIEN_LINK", "ALIEN_READ", "USER_READ", "CLEANUP_REPORT_READ")));
     }
 
     @Test
@@ -114,7 +114,19 @@ class AuthApiTest extends BaseApiTest {
                 .andExpect(jsonPath("$.roles[0]").value("AGENT"))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
                         "INCIDENT_READ", "USER_READ", "INCIDENT_ASSIGN", "INCIDENT_STATUS_CHANGE",
-                        "INCIDENT_COMMENT", "ALIEN_READ")));
+                        "INCIDENT_COMMENT", "ALIEN_READ", "CLEANUP_REPORT_READ")));
+    }
+
+    @Test
+    void cleanerHasAgentPermissionsPlusCleanup() throws Exception {
+        String token = signInAndGetToken("cleaner", "cleaner");
+        mockMvc.perform(get(ME_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.login").value("cleaner"))
+                .andExpect(jsonPath("$.roles[0]").value("CLEANER"))
+                .andExpect(jsonPath("$.permissions", containsInAnyOrder(
+                        "INCIDENT_READ", "USER_READ", "INCIDENT_COMMENT", "ALIEN_READ",
+                        "CLEANUP_REPORT_READ", "CLEANUP_REPORT_CREATE", "CLEANUP_STATUS_CHANGE")));
     }
 
     private String signInAndGetToken(String login, String password) throws Exception {

@@ -141,10 +141,10 @@ describe('NotificationsPanel', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Перейти к инциденту' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Инцидент №42' })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole('button', { name: 'Перейти к инциденту' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Инцидент №42' }));
     expect(onNavigateToIncident).toHaveBeenCalledWith(42);
   });
 

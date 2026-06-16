@@ -35,7 +35,11 @@ function App() {
   const canLinkAlien = profile?.permissions.includes('INCIDENT_ALIEN_LINK') ?? false;
   const canComment = profile?.permissions.includes('INCIDENT_COMMENT') ?? false;
   const canAssign = profile?.permissions.includes('INCIDENT_ASSIGN') ?? false;
+  const canReadCleanupReport = profile?.permissions.includes('CLEANUP_REPORT_READ') ?? false;
+  const canCreateCleanupReport = profile?.permissions.includes('CLEANUP_REPORT_CREATE') ?? false;
+  const canChangeCleanupStatus = profile?.permissions.includes('CLEANUP_STATUS_CHANGE') ?? false;
   const roles = profile?.roles ?? [];
+  const currentUserId = profile?.userId;
 
   const loadProfile = useCallback(async (token: string) => {
     const me = await api.getAuthMe(token);
@@ -171,11 +175,15 @@ function App() {
                   <IncidentDetailPage
                     token={accessToken}
                     roles={roles}
+                    currentUserId={currentUserId}
                     canChangeStatus={canChangeIncidentStatus}
                     canReadAliens={canReadAliens}
                     canLinkAlien={canLinkAlien}
                     canComment={canComment}
                     canAssign={canAssign}
+                    canReadCleanupReport={canReadCleanupReport}
+                    canCreateCleanupReport={canCreateCleanupReport}
+                    canChangeCleanupStatus={canChangeCleanupStatus}
                   />
                 }
               />

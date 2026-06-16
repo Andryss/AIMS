@@ -2,13 +2,16 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import * as api from '../api/client';
 import { EVENT_TYPE_LABELS } from '../incidentLabels';
-import { Alien, IncidentComment, IncidentHistoryEntry, IncidentResponse, UserSummary } from '../types';
+import { Alien, CleanupReportResponse, IncidentComment, IncidentHistoryEntry, IncidentResponse, UserSummary } from '../types';
 import { buildIncidentHistoryDiffs } from '../utils/incidentHistoryDiff';
 import {
   collectIncidentUserIds,
   loadUsersMap,
 } from '../utils/incidentUsers';
 import { AlienPickerDrawer } from './AlienPickerDrawer';
+import { AttachmentDownloadList } from './AttachmentDownloadList';
+import { CleanupReportDrawer } from './CleanupReportDrawer';
+import { CleanupStatusSelect } from './CleanupStatusSelect';
 import { IncidentStatusSelect } from './IncidentStatusSelect';
 import { UserChip } from './UserChip';
 import { UserPickerDrawer } from './UserPickerDrawer';
@@ -39,21 +42,29 @@ type DetailTab = 'comments' | 'history';
 interface IncidentDetailPageProps {
   token: string;
   roles: string[];
+  currentUserId?: number;
   canChangeStatus: boolean;
   canReadAliens: boolean;
   canLinkAlien: boolean;
   canComment: boolean;
   canAssign: boolean;
+  canReadCleanupReport: boolean;
+  canCreateCleanupReport: boolean;
+  canChangeCleanupStatus: boolean;
 }
 
 export function IncidentDetailPage({
   token,
   roles,
+  currentUserId,
   canChangeStatus,
   canReadAliens,
   canLinkAlien,
   canComment,
   canAssign,
+  canReadCleanupReport,
+  canCreateCleanupReport,
+  canChangeCleanupStatus,
 }: IncidentDetailPageProps) {
   const { id: idParam } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -61,6 +72,9 @@ export function IncidentDetailPage({
 
   const [incident, setIncident] = useState<IncidentResponse | null>(null);
   const [linkedAlien, setLinkedAlien] = useState<Alien | null>(null);
+  const [cleanupReport, setCleanupReport] = useState<CleanupReportResponse | null>(null);
+  const [cleanupDrawerOpen, setCleanupDrawerOpen] = useState(false);
+  const [cleanupDrawerMode, setCleanupDrawerMode] = useState<'create' | 'view'>('view');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
@@ -109,6 +123,17 @@ export function IncidentDetailPage({
     || incident?.status === 'PREPARATION_FOR_EXECUTION'
   );
 
+  const showCleanupBlock = incident?.status === 'EXECUTING'
+    || incident?.status === 'EXECUTION_COMPLETED';
+
+  const showCleanupStatusRow = showCleanupBlock && (
+    incident?.cleanupStatus != null || canChangeCleanupStatus
+  );
+
+  const showCleanupReportRow = showCleanupBlock && (
+    incident?.cleanupReportId != null || canCreateCleanupReport
+  );
+
   const showResponsibleRow = canEditAssignment || incident?.responsibleUserId != null;
   const showExecutorsRow = canEditAssignment || (incident?.executorUserIds ?? []).length > 0;
   const responsibleDraftAssigned = responsibleDraftId != null && !responsibleRemoved;
@@ -151,6 +176,7 @@ export function IncidentDetailPage({
       setError('Некорректный идентификатор инцидента');
       setIncident(null);
       setLinkedAlien(null);
+      setCleanupReport(null);
       setLoading(false);
       return;
     }
@@ -177,6 +203,14 @@ export function IncidentDetailPage({
         } else {
           setLinkedAlien(null);
         }
+        if (canReadCleanupReport && data.cleanupReportId != null) {
+          const report = await api.getCleanupReport(token, incidentId);
+          if (!cancelled) {
+            setCleanupReport(report);
+          }
+        } else {
+          setCleanupReport(null);
+        }
       } catch (err: unknown) {
         if (cancelled) {
           return;
@@ -185,6 +219,7 @@ export function IncidentDetailPage({
         setError(message);
         setIncident(null);
         setLinkedAlien(null);
+        setCleanupReport(null);
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -195,7 +230,7 @@ export function IncidentDetailPage({
     return () => {
       cancelled = true;
     };
-  }, [canReadAliens, incidentId, token]);
+  }, [canReadAliens, canReadCleanupReport, incidentId, token]);
 
   useEffect(() => {
     if (!incident || loading) {
@@ -535,7 +570,7 @@ export function IncidentDetailPage({
     <section className="tab-panel incident-detail-page">
       <div className="tab-panel-header">
         <h2>{incident ? `Инцидент #${incident.id}` : 'Инцидент'}</h2>
-        <Link to="/incidents" className="secondary link-button">
+        <Link to="/incidents" className="outline-button">
           ← К списку
         </Link>
       </div>
@@ -554,6 +589,7 @@ export function IncidentDetailPage({
                     token={token}
                     incident={incident}
                     roles={roles}
+                    currentUserId={currentUserId}
                     canChange={canChangeStatus}
                     className="status-select-wrap-modal"
                     onStatusChanged={(updated) => {
@@ -606,6 +642,59 @@ export function IncidentDetailPage({
                         onClick={() => setAlienDrawerOpen(true)}
                       >
                         Выбрать
+                      </button>
+                    ) : (
+                      '—'
+                    )}
+                  </dd>
+                </div>
+              )}
+
+              {showCleanupStatusRow && (
+                <div className="incident-view-row">
+                  <dt>Статус очистки</dt>
+                  <dd>
+                    <CleanupStatusSelect
+                      token={token}
+                      incident={incident}
+                      canChange={canChangeCleanupStatus}
+                      className="status-select-wrap-modal"
+                      onStatusChanged={(updated) => {
+                        setIncident(updated);
+                        if (historyLoaded) {
+                          loadHistory();
+                        }
+                      }}
+                    />
+                  </dd>
+                </div>
+              )}
+
+              {showCleanupReportRow && (
+                <div className="incident-view-row">
+                  <dt>Отчёт об очистке</dt>
+                  <dd>
+                    {incident.cleanupReportId != null ? (
+                      <button
+                        type="button"
+                        className="alien-picker-trigger"
+                        onClick={() => {
+                          setCleanupDrawerMode('view');
+                          setCleanupDrawerOpen(true);
+                        }}
+                      >
+                        Открыть
+                      </button>
+                    ) : canCreateCleanupReport ? (
+                      <button
+                        type="button"
+                        className="alien-picker-trigger"
+                        onClick={() => {
+                          setCleanupDrawerMode('create');
+                          setCleanupDrawerOpen(true);
+                        }}
+                      >
+                        Прикрепить отчёт
                       </button>
                     ) : (
                       '—'
@@ -767,22 +856,11 @@ export function IncidentDetailPage({
                   {incident.attachmentFileIds.length === 0 ? (
                     '—'
                   ) : (
-                    <ul className="incident-view-attachments">
-                      {incident.attachmentFileIds.map((fileId) => (
-                        <li key={fileId}>
-                          <button
-                            type="button"
-                            className="link-button"
-                            disabled={downloadingId === fileId}
-                            onClick={() => handleDownload(fileId)}
-                          >
-                            {downloadingId === fileId
-                              ? `Скачивание #${fileId}…`
-                              : `Файл #${fileId}`}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                    <AttachmentDownloadList
+                      fileIds={incident.attachmentFileIds}
+                      downloadingId={downloadingId}
+                      onDownload={handleDownload}
+                    />
                   )}
                 </dd>
               </div>
@@ -933,13 +1011,35 @@ export function IncidentDetailPage({
         onSelect={handleLinkAlien}
       />
 
+      {incident && (
+        <CleanupReportDrawer
+          token={token}
+          incidentId={incident.id}
+          open={cleanupDrawerOpen}
+          mode={cleanupDrawerMode}
+          report={cleanupReport}
+          onClose={() => setCleanupDrawerOpen(false)}
+          onCreated={(created) => {
+            setCleanupReport(created);
+            setIncident((prev) => (
+              prev ? { ...prev, cleanupReportId: created.id } : prev
+            ));
+            if (historyLoaded) {
+              loadHistory();
+            }
+          }}
+          onDownloadFile={handleDownload}
+          downloadingId={downloadingId}
+        />
+      )}
+
       {!loading && !incident && !error && (
-        <p className="panel-muted">
-          Инцидент не найден.{' '}
-          <button type="button" className="link-button" onClick={() => navigate('/incidents')}>
+        <>
+          <p className="panel-muted incident-not-found">Инцидент не найден.</p>
+          <button type="button" className="outline-button" onClick={() => navigate('/incidents')}>
             Вернуться к списку
           </button>
-        </p>
+        </>
       )}
     </section>
   );

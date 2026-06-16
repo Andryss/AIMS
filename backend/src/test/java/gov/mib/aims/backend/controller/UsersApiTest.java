@@ -61,13 +61,13 @@ class UsersApiTest extends BaseApiTest {
     }
 
     @Test
-    void operatorCannotSearchUsersReturns403() throws Exception {
+    void operatorCanSearchUsersWithUserReadPermission() throws Exception {
         String operatorToken = signInAndGetToken("operator", "operator");
 
         mockMvc.perform(get(USERS_SEARCH_URL + "?q=ag&role=AGENT")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + operatorToken))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value("auth.access_denied"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items").isArray());
     }
 
     @Test

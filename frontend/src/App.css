@@ -240,11 +240,10 @@ a.profile-login-btn {
 }
 
 .notification-actions {
-  margin-top: 0.35rem;
-}
-
-.notification-incident-link {
-  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
 }
 
 .panel-muted {
@@ -252,6 +251,10 @@ a.profile-login-btn {
   margin: 0;
   color: #6b7a90;
   font-size: 0.9rem;
+}
+
+.incident-not-found {
+  padding-bottom: 0.5rem;
 }
 
 .panel-error {
@@ -391,14 +394,6 @@ button.secondary {
   line-height: 1;
 }
 
-.link-button {
-  background: transparent;
-  color: #1f4fd6;
-  padding: 0;
-  font-size: 0.8rem;
-  text-decoration: underline;
-}
-
 /* Profile */
 .profile {
   margin: 0;
@@ -465,37 +460,101 @@ button.secondary {
   font: inherit;
   font-size: 0.8rem;
   font-weight: 500;
-  padding: 0.2rem 0.45rem;
-  border-radius: 4px;
-  border: 1px solid transparent;
+  padding: 0.28rem 0.55rem;
+  border-radius: 6px;
+  border: 1px solid #d8e0ec;
+  background: #f0f4f8;
+  color: #4a5568;
   cursor: pointer;
   width: 15rem;
   max-width: 100%;
   box-sizing: border-box;
 }
 
-.status-select.status-draft {
+/* Incident statuses */
+.status-select.status-draft,
+.status-badge.status-draft {
   background: #fff3e0;
   color: #e65100;
   border-color: #ffcc80;
 }
 
-.status-select.status-ready_for_analysis {
+.status-select.status-ready_for_analysis,
+.status-badge.status-ready_for_analysis {
   background: #e8f5e9;
   color: #2e7d32;
   border-color: #a5d6a7;
 }
 
-.status-select.status-ready_for_execution {
+.status-select.status-ready_for_execution,
+.status-badge.status-ready_for_execution {
   background: #e3f2fd;
   color: #1565c0;
   border-color: #90caf9;
 }
 
-.status-select.status-clarification_required {
+.status-select.status-preparation_for_execution,
+.status-badge.status-preparation_for_execution {
+  background: #fff8e1;
+  color: #f57f17;
+  border-color: #ffe082;
+}
+
+.status-select.status-prepared_for_execution,
+.status-badge.status-prepared_for_execution {
+  background: #e8eaf6;
+  color: #3949ab;
+  border-color: #9fa8da;
+}
+
+.status-select.status-executing,
+.status-badge.status-executing {
+  background: #e1f5fe;
+  color: #0277bd;
+  border-color: #81d4fa;
+}
+
+.status-select.status-execution_completed,
+.status-badge.status-execution_completed {
+  background: #e8f5e9;
+  color: #1b5e20;
+  border-color: #81c784;
+}
+
+.status-select.status-clarification_required,
+.status-badge.status-clarification_required {
   background: #fce4ec;
   color: #ad1457;
   border-color: #f48fb1;
+}
+
+.status-select.status-reanalysis_required,
+.status-badge.status-reanalysis_required {
+  background: #f3e5f5;
+  color: #6a1b9a;
+  border-color: #ce93d8;
+}
+
+/* Cleanup statuses */
+.status-select.cleanup-status-preparation,
+.status-badge.cleanup-status-preparation {
+  background: #fff8e1;
+  color: #f57f17;
+  border-color: #ffe082;
+}
+
+.status-select.cleanup-status-execution,
+.status-badge.cleanup-status-execution {
+  background: #e3f2fd;
+  color: #1565c0;
+  border-color: #90caf9;
+}
+
+.status-select.cleanup-status-completed,
+.status-badge.cleanup-status-completed {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #a5d6a7;
 }
 
 .status-select:disabled {
@@ -559,32 +618,15 @@ button.secondary {
   line-height: 1.45;
 }
 
-.incident-view-attachments {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  align-items: flex-start;
-}
-
 .status-badge {
   display: inline-block;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
+  padding: 0.28rem 0.55rem;
+  border-radius: 6px;
   font-size: 0.8rem;
   font-weight: 500;
-}
-
-.status-draft {
-  background: #fff3e0;
-  color: #e65100;
-}
-
-.status-ready_for_analysis {
-  background: #e8f5e9;
-  color: #2e7d32;
+  border: 1px solid #d8e0ec;
+  background: #f0f4f8;
+  color: #4a5568;
 }
 
 .pagination {
@@ -603,6 +645,9 @@ button.secondary {
 }
 
 /* Alien picker */
+.outline-button,
+button.outline-button,
+a.outline-button,
 .alien-picker-trigger {
   display: inline-flex;
   align-items: center;
@@ -610,16 +655,27 @@ button.secondary {
   border: 1px solid #c8d0e0;
   border-radius: 8px;
   background: #fff;
-  color: #1f4fd6;
+  color: #1a2332;
   font: inherit;
+  font-size: 0.875rem;
   font-weight: 500;
+  text-decoration: none;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
 }
 
+.outline-button:hover,
+button.outline-button:hover:not(:disabled),
+a.outline-button:hover,
 .alien-picker-trigger:hover {
   border-color: #1f4fd6;
   background: #f0f4ff;
+  color: #1f4fd6;
+}
+
+button.outline-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .alien-linked strong {
@@ -685,6 +741,109 @@ button.secondary {
   flex-shrink: 0;
   padding-top: 0.75rem;
   border-top: 1px solid #e8ecf2;
+}
+
+.drawer-form {
+  padding-top: 0.25rem;
+}
+
+.drawer-content .alert {
+  margin-bottom: 0.75rem;
+}
+
+.cleanup-report-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 0.25rem;
+}
+
+.cleanup-report-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cleanup-report-section-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a2332;
+}
+
+.cleanup-report-description {
+  margin: 0;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #e8ecf2;
+  border-radius: 8px;
+  background: #f8f9fc;
+  white-space: pre-wrap;
+  line-height: 1.45;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.cleanup-report-view-actions {
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e8ecf2;
+}
+
+.attachment-download-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.attachment-download-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #d8e0ec;
+  border-radius: 10px;
+  background: #f8f9fc;
+}
+
+.attachment-download-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1a2332;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-download-button {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid #c8d0e0;
+  border-radius: 8px;
+  background: #fff;
+  color: #1f4fd6;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.attachment-download-button:hover:not(:disabled) {
+  border-color: #1f4fd6;
+  background: #f0f4ff;
+}
+
+.attachment-download-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .drawer-confirm-button {

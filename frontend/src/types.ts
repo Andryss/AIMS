@@ -12,10 +12,14 @@ export type IncidentStatus =
   | 'READY_FOR_EXECUTION'
   | 'PREPARATION_FOR_EXECUTION'
   | 'PREPARED_FOR_EXECUTION'
+  | 'EXECUTING'
+  | 'EXECUTION_COMPLETED'
   | 'CLARIFICATION_REQUIRED'
   | 'REANALYSIS_REQUIRED';
 
-export type RoleName = 'OPERATOR' | 'ANALYST' | 'ADMIN' | 'AGENT';
+export type CleanupStatus = 'PREPARATION' | 'EXECUTION' | 'COMPLETED';
+
+export type RoleName = 'OPERATOR' | 'ANALYST' | 'ADMIN' | 'AGENT' | 'CLEANER';
 
 export interface SignInRequest {
   login: string;
@@ -52,6 +56,8 @@ export interface IncidentResponse {
   alienId?: number;
   responsibleUserId?: number | null;
   executorUserIds: number[];
+  cleanupStatus?: CleanupStatus | null;
+  cleanupReportId?: number | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -59,6 +65,24 @@ export interface IncidentResponse {
 export interface ChangeIncidentStatusRequest {
   status: IncidentStatus;
   comment?: string;
+}
+
+export interface ChangeCleanupStatusRequest {
+  status: CleanupStatus;
+}
+
+export interface CreateCleanupReportRequest {
+  description: string;
+  attachmentFileIds: number[];
+}
+
+export interface CleanupReportResponse {
+  id: number;
+  incidentId: number;
+  description: string;
+  attachmentFileIds: number[];
+  createdByUserId: number;
+  createdAt: string;
 }
 
 export interface CreateIncidentCommentRequest {
@@ -91,6 +115,8 @@ export interface IncidentHistorySnapshot {
   alienId?: number | null;
   responsibleUserId?: number | null;
   executorUserIds: number[];
+  cleanupStatus?: CleanupStatus | null;
+  cleanupReportId?: number | null;
 }
 
 export interface IncidentHistoryEntry {

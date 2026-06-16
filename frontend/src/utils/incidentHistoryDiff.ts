@@ -1,4 +1,4 @@
-import { EVENT_TYPE_LABELS, STATUS_LABELS } from '../incidentLabels';
+import { EVENT_TYPE_LABELS, CLEANUP_STATUS_LABELS, STATUS_LABELS } from '../incidentLabels';
 import { IncidentHistoryEntry, IncidentHistorySnapshot } from '../types';
 
 export interface HistoryDiffRow {
@@ -59,6 +59,20 @@ function formatUserIds(userIds: number[], usersMap: Map<number, string>): string
   return userIds.map((id) => usersMap.get(id) ?? `#${id}`).join(', ');
 }
 
+function formatCleanupStatus(status: string | null | undefined): string {
+  if (status == null) {
+    return '—';
+  }
+  return CLEANUP_STATUS_LABELS[status as keyof typeof CLEANUP_STATUS_LABELS] ?? status;
+}
+
+function formatCleanupReportId(reportId: number | null | undefined): string {
+  if (reportId == null) {
+    return '—';
+  }
+  return `#${reportId}`;
+}
+
 const SNAPSHOT_FIELDS: SnapshotField[] = [
   {
     label: 'Статус',
@@ -106,6 +120,16 @@ const SNAPSHOT_FIELDS: SnapshotField[] = [
     format: (s, usersMap) => formatUserIds(s.executorUserIds ?? [], usersMap),
     compare: (prev, curr) =>
       JSON.stringify(prev.executorUserIds ?? []) !== JSON.stringify(curr.executorUserIds ?? []),
+  },
+  {
+    label: 'Статус очистки',
+    format: (s) => formatCleanupStatus(s.cleanupStatus),
+    compare: (prev, curr) => (prev.cleanupStatus ?? null) !== (curr.cleanupStatus ?? null),
+  },
+  {
+    label: 'Отчёт об очистке',
+    format: (s) => formatCleanupReportId(s.cleanupReportId),
+    compare: (prev, curr) => (prev.cleanupReportId ?? null) !== (curr.cleanupReportId ?? null),
   },
 ];
 
