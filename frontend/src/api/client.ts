@@ -3,9 +3,13 @@ import {
   AlienSearchResponse,
   AuthMeResponse,
   ChangeIncidentStatusRequest,
+  CreateIncidentCommentRequest,
   CreateIncidentRequest,
   ErrorObject,
   FileUploadResponse,
+  IncidentComment,
+  IncidentCommentListResponse,
+  IncidentHistoryListResponse,
   IncidentListResponse,
   IncidentResponse,
   IncidentStatus,
@@ -134,14 +138,60 @@ export function changeIncidentStatus(
   token: string,
   id: number,
   status: IncidentStatus,
+  comment?: string,
 ): Promise<IncidentResponse> {
   const payload: ChangeIncidentStatusRequest = { status };
+  if (comment?.trim()) {
+    payload.comment = comment.trim();
+  }
   return requestJson<IncidentResponse>(
     `/incidents/${id}/status`,
     {
       method: 'POST',
       body: JSON.stringify(payload),
     },
+    token,
+  );
+}
+
+export function listIncidentComments(
+  token: string,
+  incidentId: number,
+  page = 0,
+  size = 50,
+): Promise<IncidentCommentListResponse> {
+  return requestJson<IncidentCommentListResponse>(
+    `/incidents/${incidentId}/comments?page=${page}&size=${size}`,
+    { method: 'GET' },
+    token,
+  );
+}
+
+export function createIncidentComment(
+  token: string,
+  incidentId: number,
+  text: string,
+): Promise<IncidentComment> {
+  const payload: CreateIncidentCommentRequest = { text };
+  return requestJson<IncidentComment>(
+    `/incidents/${incidentId}/comments`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+    token,
+  );
+}
+
+export function listIncidentHistory(
+  token: string,
+  incidentId: number,
+  page = 0,
+  size = 50,
+): Promise<IncidentHistoryListResponse> {
+  return requestJson<IncidentHistoryListResponse>(
+    `/incidents/${incidentId}/history?page=${page}&size=${size}`,
+    { method: 'GET' },
     token,
   );
 }

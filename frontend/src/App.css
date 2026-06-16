@@ -1000,3 +1000,155 @@ button.secondary {
   border: 1px solid #f5c2c0;
 }
 
+.incident-tabs {
+  margin-top: 1.5rem;
+  border-top: 1px solid #eef1f6;
+  padding-top: 1rem;
+}
+
+.incident-tabs-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.incident-tab {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid #d8dee8;
+  border-radius: 6px;
+  background: #fff;
+  color: #334155;
+  cursor: pointer;
+}
+
+.incident-tab.is-active {
+  background: #1a56db;
+  border-color: #1a56db;
+  color: #fff;
+}
+
+.incident-tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.comment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.comment-list-item {
+  border: 1px solid #eef1f6;
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: #fff;
+}
+
+.comment-list-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.875rem;
+}
+
+.comment-list-text {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.comment-form textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.history-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.history-timeline-item {
+  border-left: 3px solid #1a56db;
+  padding-left: 0.85rem;
+}
+
+.history-timeline-header {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.history-diff-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.history-diff-row {
+  font-size: 0.9rem;
+}
+
+.history-diff-label {
+  font-weight: 500;
+  margin-right: 0.35rem;
+}
+
+.status-change-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.status-change-modal {
+  width: min(100%, 28rem);
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.2);
+}
+
+.status-change-modal h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.status-change-comment-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.875rem;
+}
+
+.status-change-comment-input {
+  width: 100%;
+  resize: vertical;
+  margin-bottom: 0.75rem;
+}
+
+.status-change-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+

@@ -1,10 +1,13 @@
 package gov.mib.aims.backend.controller;
 
+import gov.mib.aims.backend.entity.NotificationEntity;
 import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
 import gov.mib.aims.backend.generated.model.IncidentEventTypeApi;
 import gov.mib.aims.backend.generated.model.IncidentStatusApi;
 import gov.mib.aims.backend.generated.model.SignInRequest;
+import gov.mib.aims.backend.repository.AppUserRepository;
+import gov.mib.aims.backend.repository.NotificationRepository;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyAgentsIncidentReadyPayload;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyAgentsIncidentReadyProcessor;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyAnalystsIncidentReadyPayload;
@@ -13,6 +16,7 @@ import gov.mib.aims.backend.services.dbqueue.processor.NotifyOperatorClarificati
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyOperatorClarificationRequiredProcessor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -22,6 +26,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -50,6 +55,12 @@ class IncidentAlienApiTest extends BaseApiTest {
 
     @Autowired
     private NotifyOperatorClarificationRequiredProcessor notifyOperatorClarificationProcessor;
+
+    @Autowired
+    private AppUserRepository appUserRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Test
     void analystLinksAlienOperatorForbidden() throws Exception {
@@ -164,12 +175,70 @@ class IncidentAlienApiTest extends BaseApiTest {
         );
 
         notifyOperatorClarificationProcessor.execute(
-                new NotifyOperatorClarificationRequiredPayload(incidentId)
+                new NotifyOperatorClarificationRequiredPayload(incidentId, null)
         );
 
         mockMvc.perform(get(UNREAD_COUNT_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + operatorToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.count").value(1));
+    }
+
+    @Test
+    void statusChangeWithCommentCreatesCommentRecord() throws Exception {
+        long incidentId = createReadyForAnalysisIncident();
+        String analystToken = signInAndGetToken("analyst", "analyst");
+
+        ChangeIncidentStatusRequest statusRequest = new ChangeIncidentStatusRequest()
+                .status(IncidentStatusApi.CLARIFICATION_REQUIRED)
+                .comment("Нужны координаты места");
+
+        mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/status")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(statusRequest)))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get(INCIDENTS_URL + "/" + incidentId + "/comments")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.items[0].text").value("Нужны координаты места"))
+                .andExpect(jsonPath("$.items[0].authorLogin").value("analyst"));
+    }
+
+    @Test
+    void clarificationNotificationContainsCommentExcerpt() throws Exception {
+        long incidentId = createReadyForAnalysisIncident();
+        String analystToken = signInAndGetToken("analyst", "analyst");
+        String excerpt = "A".repeat(130);
+        String expectedExcerpt = "A".repeat(120) + "…";
+
+        ChangeIncidentStatusRequest statusRequest = new ChangeIncidentStatusRequest()
+                .status(IncidentStatusApi.CLARIFICATION_REQUIRED)
+                .comment(excerpt);
+
+        mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/status")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(statusRequest)))
+                .andExpect(status().isOk());
+
+        assertQueueTasksCount(
+                NotifyOperatorClarificationRequiredPayload.QUEUE_NAME,
+                expectedExcerpt,
+                1
+        );
+
+        notifyOperatorClarificationProcessor.execute(
+                new NotifyOperatorClarificationRequiredPayload(incidentId, expectedExcerpt)
+        );
+
+        Long operatorId = appUserRepository.findByLogin("operator").orElseThrow().getId();
+        List<NotificationEntity> notifications = notificationRepository
+                .findByRecipientUserIdOrderByCreatedAtDesc(operatorId, Pageable.unpaged())
+                .getContent();
+        assertThat(notifications).isNotEmpty();
+        assertThat(notifications.get(0).getMessage()).contains(expectedExcerpt);
     }
 
     private long createReadyForAnalysisIncident() throws Exception {

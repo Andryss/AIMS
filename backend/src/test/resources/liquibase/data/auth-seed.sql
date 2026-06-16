@@ -5,6 +5,7 @@ insert into permission (code, description) values
     ('INCIDENT_READ', 'Read incidents'),
     ('INCIDENT_CREATE', 'Create incidents'),
     ('INCIDENT_STATUS_CHANGE', 'Change incident status'),
+    ('INCIDENT_COMMENT', 'Add comments to incidents'),
     ('INCIDENT_ALIEN_LINK', 'Link alien type to incident'),
     ('ALIEN_READ', 'Read and search aliens in knowledge base');
 
@@ -17,17 +18,17 @@ insert into role (name, description) values
 insert into role_permission (role_id, permission_id)
 select r.id, p.id
 from role r, permission p
-where r.name = 'OPERATOR' and p.code in ('INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE');
+where r.name = 'OPERATOR' and p.code in ('INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT');
 
 insert into role_permission (role_id, permission_id)
 select r.id, p.id
 from role r, permission p
-where r.name = 'ANALYST' and p.code in ('INCIDENT_READ', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_ALIEN_LINK', 'ALIEN_READ');
+where r.name = 'ANALYST' and p.code in ('INCIDENT_READ', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT', 'INCIDENT_ALIEN_LINK', 'ALIEN_READ');
 
 insert into role_permission (role_id, permission_id)
 select r.id, p.id
 from role r, permission p
-where r.name = 'ADMIN' and p.code in ('INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_ALIEN_LINK', 'ALIEN_READ');
+where r.name = 'ADMIN' and p.code in ('INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT', 'INCIDENT_ALIEN_LINK', 'ALIEN_READ');
 
 insert into role_permission (role_id, permission_id)
 select r.id, p.id

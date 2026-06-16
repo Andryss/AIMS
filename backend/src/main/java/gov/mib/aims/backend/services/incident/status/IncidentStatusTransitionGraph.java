@@ -54,6 +54,12 @@ public class IncidentStatusTransitionGraph {
                         .to(IncidentStatus.CLARIFICATION_REQUIRED)
                         .preconditions(List.of(analystRolePrecondition))
                         .postActions(List.of(enqueueNotifyOperatorClarificationPostAction))
+                        .build(),
+                IncidentStatusTransition.<IncidentEntity>builder()
+                        .from(IncidentStatus.CLARIFICATION_REQUIRED)
+                        .to(IncidentStatus.READY_FOR_ANALYSIS)
+                        .preconditions(List.of(attachmentsExistPrecondition, operatorRolePrecondition))
+                        .postActions(List.of(enqueueNotifyAnalystsPostAction))
                         .build()
         );
         this.transitions = transitionList.stream()

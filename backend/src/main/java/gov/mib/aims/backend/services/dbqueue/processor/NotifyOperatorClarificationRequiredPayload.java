@@ -18,4 +18,5 @@ public class NotifyOperatorClarificationRequiredPayload extends QueuePayload {
     public static final String QUEUE_NAME = "NOTIFY_OPERATOR_CLARIFICATION_REQUIRED";
 
     private long incidentId;
+    private String commentExcerpt;
 }

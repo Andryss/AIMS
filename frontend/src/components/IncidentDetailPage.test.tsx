@@ -13,12 +13,18 @@ const getAlien = api.getAlien as jest.MockedFunction<typeof api.getAlien>;
 const searchAliens = api.searchAliens as jest.MockedFunction<typeof api.searchAliens>;
 const putIncidentAlien = api.putIncidentAlien as jest.MockedFunction<typeof api.putIncidentAlien>;
 const downloadFile = api.downloadFile as jest.MockedFunction<typeof api.downloadFile>;
+const listIncidentComments = api.listIncidentComments as jest.MockedFunction<
+  typeof api.listIncidentComments
+>;
+const listIncidentHistory = api.listIncidentHistory as jest.MockedFunction<
+  typeof api.listIncidentHistory
+>;
 
 function renderAt(
   path: string,
-  options: { canReadAliens?: boolean; canLinkAlien?: boolean } = {},
+  options: { canReadAliens?: boolean; canLinkAlien?: boolean; canComment?: boolean } = {},
 ) {
-  const { canReadAliens = true, canLinkAlien = true } = options;
+  const { canReadAliens = true, canLinkAlien = true, canComment = true } = options;
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
@@ -31,6 +37,7 @@ function renderAt(
               canChangeStatus
               canReadAliens={canReadAliens}
               canLinkAlien={canLinkAlien}
+              canComment={canComment}
             />
           }
         />
@@ -42,6 +49,20 @@ function renderAt(
 describe('IncidentDetailPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    listIncidentComments.mockResolvedValue({
+      items: [],
+      page: 0,
+      size: 50,
+      totalElements: 0,
+      totalPages: 0,
+    });
+    listIncidentHistory.mockResolvedValue({
+      items: [],
+      page: 0,
+      size: 50,
+      totalElements: 0,
+      totalPages: 0,
+    });
   });
 
   it('loads incident and linked alien', async () => {
@@ -55,8 +76,78 @@ describe('IncidentDetailPage', () => {
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: 'Инцидент #3' })).toBeInTheDocument();
     });
+    expect(listIncidentComments).toHaveBeenCalledWith('tok', 3);
     expect(getAlien).toHaveBeenCalledWith('tok', 1);
     expect(screen.getByText('Слизень')).toBeInTheDocument();
+  });
+
+  it('loads comments on mount and history lazily on tab switch', async () => {
+    getIncident.mockResolvedValue(mockIncident({ id: 7 }));
+    listIncidentComments.mockResolvedValue({
+      items: [
+        {
+          id: 10,
+          incidentId: 7,
+          authorLogin: 'analyst',
+          text: 'Проверено',
+          createdAt: '2025-06-02T12:00:00Z',
+        },
+      ],
+      page: 0,
+      size: 50,
+      totalElements: 1,
+      totalPages: 1,
+    });
+    listIncidentHistory.mockResolvedValue({
+      items: [
+        {
+          id: 1,
+          changedAt: '2025-06-01T10:00:00Z',
+          changedByLogin: 'operator',
+          snapshot: {
+            status: 'DRAFT',
+            eventType: 'UNIDENTIFIED_SIGHTING',
+            location: 'Test',
+            detectedAt: '2025-06-01T10:00:00Z',
+            description: 'Desc',
+            attachmentFileIds: [],
+            alienId: null,
+          },
+        },
+      ],
+      page: 0,
+      size: 50,
+      totalElements: 1,
+      totalPages: 1,
+    });
+
+    renderAt('/incidents/7');
+
+    await waitFor(() => {
+      expect(screen.getByText('Проверено')).toBeInTheDocument();
+    });
+    expect(listIncidentHistory).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole('tab', { name: 'История' }));
+
+    await waitFor(() => {
+      expect(listIncidentHistory).toHaveBeenCalledWith('tok', 7);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Создание инцидента/)).toBeInTheDocument();
+    });
+  });
+
+  it('hides comment form without INCIDENT_COMMENT permission', async () => {
+    getIncident.mockResolvedValue(mockIncident({ id: 8 }));
+
+    renderAt('/incidents/8', { canComment: false });
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Инцидент #8' })).toBeInTheDocument();
+    });
+    expect(screen.queryByLabelText('Добавить комментарий')).not.toBeInTheDocument();
   });
 
   it('shows error for invalid id', async () => {

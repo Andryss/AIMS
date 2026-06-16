@@ -2,6 +2,7 @@ package gov.mib.aims.backend.services.incident.status.postaction;
 
 import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.services.dbqueue.DbQueueService;
+import gov.mib.aims.backend.services.incident.StatusChangeCommentHolder;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyOperatorClarificationRequiredPayload;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyOperatorClarificationRequiredProcessor;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,10 @@ public class EnqueueNotifyOperatorClarificationPostAction implements StatusTrans
 
     @Override
     public void execute(IncidentEntity context) {
-        NotifyOperatorClarificationRequiredPayload payload =
-                new NotifyOperatorClarificationRequiredPayload(context.getId());
+        NotifyOperatorClarificationRequiredPayload payload = new NotifyOperatorClarificationRequiredPayload(
+                context.getId(),
+                StatusChangeCommentHolder.getCommentExcerpt()
+        );
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override

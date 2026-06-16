@@ -38,6 +38,9 @@ public class NotifyOperatorClarificationRequiredProcessor
         }
         IncidentEntity incident = incidentOpt.get();
         String message = "По инциденту №" + incidentId + " требуется уточнение";
+        if (payload.getCommentExcerpt() != null && !payload.getCommentExcerpt().isBlank()) {
+            message += ": " + payload.getCommentExcerpt();
+        }
         String relatedRef = EntityRef.format(EntityType.INCIDENT, incidentId);
         notificationService.send(incident.getCreatedByUserId(), message, List.of(relatedRef));
         return TaskExecutionResult.finish();

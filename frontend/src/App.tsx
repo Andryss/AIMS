@@ -33,6 +33,7 @@ function App() {
   const canChangeIncidentStatus = profile?.permissions.includes('INCIDENT_STATUS_CHANGE') ?? false;
   const canReadAliens = profile?.permissions.includes('ALIEN_READ') ?? false;
   const canLinkAlien = profile?.permissions.includes('INCIDENT_ALIEN_LINK') ?? false;
+  const canComment = profile?.permissions.includes('INCIDENT_COMMENT') ?? false;
   const roles = profile?.roles ?? [];
 
   const loadProfile = useCallback(async (token: string) => {
@@ -172,6 +173,7 @@ function App() {
                     canChangeStatus={canChangeIncidentStatus}
                     canReadAliens={canReadAliens}
                     canLinkAlien={canLinkAlien}
+                    canComment={canComment}
                   />
                 }
               />

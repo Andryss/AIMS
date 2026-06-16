@@ -34,16 +34,22 @@ public class DemoDataInitializer implements ApplicationRunner {
             "INCIDENT_READ", "Read incidents",
             "INCIDENT_CREATE", "Create incidents",
             "INCIDENT_STATUS_CHANGE", "Change incident status",
+            "INCIDENT_COMMENT", "Add comments to incidents",
             "INCIDENT_ALIEN_LINK", "Link alien type to incident",
             "ALIEN_READ", "Read and search aliens in knowledge base"
     );
 
     private static final Map<String, List<String>> ROLE_PERMISSIONS = Map.of(
-            RoleNames.OPERATOR, List.of("INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE"),
-            RoleNames.ANALYST, List.of("INCIDENT_READ", "INCIDENT_STATUS_CHANGE", "INCIDENT_ALIEN_LINK", "ALIEN_READ"),
+            RoleNames.OPERATOR, List.of(
+                    "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT"
+            ),
+            RoleNames.ANALYST, List.of(
+                    "INCIDENT_READ", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT", "INCIDENT_ALIEN_LINK", "ALIEN_READ"
+            ),
             RoleNames.AGENT, List.of("INCIDENT_READ"),
             RoleNames.ADMIN, List.of(
-                    "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_ALIEN_LINK", "ALIEN_READ"
+                    "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT",
+                    "INCIDENT_ALIEN_LINK", "ALIEN_READ"
             )
     );
 

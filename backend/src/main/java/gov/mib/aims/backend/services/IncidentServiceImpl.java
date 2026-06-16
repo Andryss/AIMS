@@ -15,6 +15,7 @@ import gov.mib.aims.backend.model.IncidentStatus;
 import gov.mib.aims.backend.repository.AlienRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
 import gov.mib.aims.backend.repository.StoredFileRepository;
+import gov.mib.aims.backend.services.incident.StatusChangeCommentHolder;
 import gov.mib.aims.backend.services.incident.status.IncidentStatusWorkflow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -41,6 +42,7 @@ public class IncidentServiceImpl implements IncidentService {
     private final CurrentUserService currentUserService;
     private final EntityHistoryService entityHistoryService;
     private final IncidentStatusWorkflow incidentStatusWorkflow;
+    private final IncidentCommentService incidentCommentService;
     private final Clock clock;
 
     @Override
@@ -70,9 +72,18 @@ public class IncidentServiceImpl implements IncidentService {
         IncidentEntity entity = incidentRepository.findById(id)
                 .orElseThrow(Errors::incidentNotFound);
         IncidentStatus target = toModelStatus(request.getStatus());
-        entity = incidentStatusWorkflow.changeStatus(entity, target);
-        entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
-        return toResponse(entity);
+        String comment = request.getComment();
+        try {
+            StatusChangeCommentHolder.set(comment);
+            entity = incidentStatusWorkflow.changeStatus(entity, target);
+            if (comment != null && !comment.isBlank()) {
+                incidentCommentService.createFromStatusChange(id, comment);
+            }
+            entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
+            return toResponse(entity);
+        } finally {
+            StatusChangeCommentHolder.clear();
+        }
     }
 
     @Override

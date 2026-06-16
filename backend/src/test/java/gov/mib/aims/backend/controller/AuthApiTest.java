@@ -86,9 +86,9 @@ class AuthApiTest extends BaseApiTest {
                 .andExpect(jsonPath("$.login").value("operator"))
                 .andExpect(jsonPath("$.roles", hasSize(1)))
                 .andExpect(jsonPath("$.roles[0]").value("OPERATOR"))
-                .andExpect(jsonPath("$.permissions", hasSize(3)))
+                .andExpect(jsonPath("$.permissions", hasSize(4)))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
-                        "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE")));
+                        "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT")));
     }
 
     @Test
@@ -98,9 +98,10 @@ class AuthApiTest extends BaseApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login").value("analyst"))
                 .andExpect(jsonPath("$.roles[0]").value("ANALYST"))
-                .andExpect(jsonPath("$.permissions", hasSize(4)))
+                .andExpect(jsonPath("$.permissions", hasSize(5)))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
-                        "INCIDENT_READ", "INCIDENT_STATUS_CHANGE", "INCIDENT_ALIEN_LINK", "ALIEN_READ")));
+                        "INCIDENT_READ", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT",
+                        "INCIDENT_ALIEN_LINK", "ALIEN_READ")));
     }
 
     private String signInAndGetToken(String login, String password) throws Exception {

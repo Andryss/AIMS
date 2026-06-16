@@ -575,6 +575,187 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
 
+  /api/v1/incidents/{id}/comments:
+    get:
+      summary: List incident comments
+      operationId: listIncidentComments
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 50
+            maximum: 100
+      responses:
+        200:
+          description: Paginated comments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentCommentListResponse"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        404:
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+    post:
+      summary: Create incident comment
+      operationId: createIncidentComment
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateIncidentCommentRequest"
+      responses:
+        201:
+          description: Comment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentCommentResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        404:
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+
+  /api/v1/incidents/{id}/history:
+    get:
+      summary: List incident change history
+      operationId: listIncidentHistory
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 50
+            maximum: 100
+      responses:
+        200:
+          description: Paginated history entries
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentHistoryListResponse"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        404:
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+
   /api/v1/incidents/{id}/status:
     post:
       summary: Change incident status
@@ -901,6 +1082,147 @@ components:
       properties:
         status:
           $ref: "#/components/schemas/IncidentStatusApi"
+        comment:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          description: Optional comment saved together with status change
+
+    CreateIncidentCommentRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 4000
+
+    IncidentCommentResponse:
+      type: object
+      required:
+        - id
+        - incidentId
+        - authorLogin
+        - text
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+        incidentId:
+          type: integer
+          format: int64
+        authorLogin:
+          $ref: "#/components/schemas/Login"
+        text:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    IncidentCommentListResponse:
+      type: object
+      required:
+        - items
+        - page
+        - size
+        - totalElements
+        - totalPages
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/IncidentCommentResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+
+    IncidentHistorySnapshot:
+      type: object
+      description: Parsed JSON snapshot of incident state at change time
+      required:
+        - status
+        - eventType
+        - location
+        - detectedAt
+        - description
+        - attachmentFileIds
+      properties:
+        status:
+          $ref: "#/components/schemas/IncidentStatusApi"
+        eventType:
+          $ref: "#/components/schemas/IncidentEventTypeApi"
+        location:
+          type: string
+        detectedAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        attachmentFileIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        alienId:
+          type: integer
+          format: int64
+          nullable: true
+
+    IncidentHistoryEntry:
+      type: object
+      required:
+        - id
+        - changedAt
+        - changedByLogin
+        - snapshot
+      properties:
+        id:
+          type: integer
+          format: int64
+        changedAt:
+          type: string
+          format: date-time
+        changedByLogin:
+          $ref: "#/components/schemas/Login"
+        snapshot:
+          $ref: "#/components/schemas/IncidentHistorySnapshot"
+
+    IncidentHistoryListResponse:
+      type: object
+      required:
+        - items
+        - page
+        - size
+        - totalElements
+        - totalPages
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/IncidentHistoryEntry"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
 
     IncidentResponse:
       type: object

@@ -188,6 +188,38 @@ class IncidentsApiTest extends BaseApiTest {
     }
 
     @Test
+    void operatorResubmitsAfterClarificationReturnsToReadyForAnalysis() throws Exception {
+        String operatorToken = signInAndGetToken("operator", "operator");
+        long incidentId = createIncident(operatorToken, uploadFile(operatorToken));
+
+        ChangeIncidentStatusRequest toAnalysis = new ChangeIncidentStatusRequest()
+                .status(IncidentStatusApi.READY_FOR_ANALYSIS);
+        mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/status")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + operatorToken)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(toAnalysis)))
+                .andExpect(status().isOk());
+
+        String analystToken = signInAndGetToken("analyst", "analyst");
+        ChangeIncidentStatusRequest clarification = new ChangeIncidentStatusRequest()
+                .status(IncidentStatusApi.CLARIFICATION_REQUIRED)
+                .comment("Уточните место");
+        mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/status")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(clarification)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("CLARIFICATION_REQUIRED"));
+
+        mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/status")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + operatorToken)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(toAnalysis)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("READY_FOR_ANALYSIS"));
+    }
+
+    @Test
     void changeStatusWithInvalidTransitionReturns400() throws Exception {
         String token = signInAndGetToken("operator", "operator");
         long incidentId = createIncident(token, uploadFile(token));

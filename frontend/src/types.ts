@@ -50,6 +50,52 @@ export interface IncidentResponse {
 
 export interface ChangeIncidentStatusRequest {
   status: IncidentStatus;
+  comment?: string;
+}
+
+export interface CreateIncidentCommentRequest {
+  text: string;
+}
+
+export interface IncidentComment {
+  id: number;
+  incidentId: number;
+  authorLogin: string;
+  text: string;
+  createdAt: string;
+}
+
+export interface IncidentCommentListResponse {
+  items: IncidentComment[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface IncidentHistorySnapshot {
+  status: IncidentStatus;
+  eventType: IncidentEventType;
+  location: string;
+  detectedAt: string;
+  description: string;
+  attachmentFileIds: number[];
+  alienId?: number | null;
+}
+
+export interface IncidentHistoryEntry {
+  id: number;
+  changedAt: string;
+  changedByLogin: string;
+  snapshot: IncidentHistorySnapshot;
+}
+
+export interface IncidentHistoryListResponse {
+  items: IncidentHistoryEntry[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
 }
 
 export interface IncidentListResponse {
