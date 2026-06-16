@@ -4,6 +4,9 @@ import { CleanupReportResponse } from '../types';
 import { FileUploadField } from './FileUploadField';
 import { AttachmentDownloadList } from './AttachmentDownloadList';
 import { PickerDrawerShell } from './PickerDrawerShell';
+import { Button } from './ui/Button';
+import { FormField } from './ui/FormField';
+import { LoadingBlock } from './ui/LoadingBlock';
 
 interface CleanupReportDrawerProps {
   token: string;
@@ -80,10 +83,13 @@ export function CleanupReportDrawer({
     >
       {isCreate ? (
         <>
-          {error && <div className="alert alert--error">{error}</div>}
+          {error && (
+            <div className="alert alert--error" role="alert" aria-live="polite">
+              {error}
+            </div>
+          )}
           <form onSubmit={(event) => void handleSubmit(event)} className="form drawer-form">
-            <label>
-              Описание выполнения
+            <FormField label="Описание выполнения" required>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -91,7 +97,7 @@ export function CleanupReportDrawer({
                 disabled={busy}
                 required
               />
-            </label>
+            </FormField>
             <FileUploadField
               label="Материалы"
               files={attachmentFiles}
@@ -99,12 +105,12 @@ export function CleanupReportDrawer({
               disabled={busy}
             />
             <div className="modal-actions">
-              <button type="button" className="btn btn--secondary" onClick={onClose} disabled={busy}>
+              <Button type="button" variant="secondary" onClick={onClose} disabled={busy}>
                 Отмена
-              </button>
-              <button type="submit" className="btn btn--primary" disabled={busy}>
-                {busy ? 'Сохранение…' : 'Сохранить'}
-              </button>
+              </Button>
+              <Button type="submit" variant="primary" loading={busy}>
+                Сохранить
+              </Button>
             </div>
           </form>
         </>
@@ -133,7 +139,7 @@ export function CleanupReportDrawer({
           </div>
         </div>
       ) : (
-        <p className="text-muted">Загрузка отчёта…</p>
+        <LoadingBlock label="Загрузка отчёта…" inline />
       )}
     </PickerDrawerShell>
   );

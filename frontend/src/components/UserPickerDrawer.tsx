@@ -1,30 +1,53 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import * as api from '../api/client';
 import { UserSummary } from '../types';
 import { PickerDrawerShell } from './PickerDrawerShell';
 import { UserAvatar } from './UserAvatar';
 
-interface UserPickerDrawerProps {
+const EMPTY_EXCLUDE_IDS: number[] = [];
+
+interface UserPickerDrawerBaseProps {
   token: string;
   open: boolean;
   title: string;
   selecting: boolean;
   onClose: () => void;
-  onSelect: (user: UserSummary) => void;
+  /** Уже выбранные пользователи — не показываются в результатах поиска */
+  excludeUserIds?: number[];
 }
 
-export function UserPickerDrawer({
-  token,
-  open,
-  title,
-  selecting,
-  onClose,
-  onSelect,
-}: UserPickerDrawerProps) {
+interface SingleUserPickerDrawerProps extends UserPickerDrawerBaseProps {
+  multiple?: false;
+  onSelect: (user: UserSummary) => void;
+  onSelectMany?: never;
+}
+
+interface MultiUserPickerDrawerProps extends UserPickerDrawerBaseProps {
+  multiple: true;
+  onSelectMany: (users: UserSummary[]) => void;
+  onSelect?: never;
+}
+
+type UserPickerDrawerProps = SingleUserPickerDrawerProps | MultiUserPickerDrawerProps;
+
+export function UserPickerDrawer(props: UserPickerDrawerProps) {
+  const {
+    token,
+    open,
+    title,
+    selecting,
+    onClose,
+    excludeUserIds = EMPTY_EXCLUDE_IDS,
+    multiple = false,
+  } = props;
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<UserSummary[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedUsers, setSelectedUsers] = useState<Map<number, UserSummary>>(() => new Map());
+
+  const excludeKey = excludeUserIds.join(',');
+  const excludeSet = useMemo(() => new Set(excludeUserIds), [excludeKey]);
 
   useEffect(() => {
     if (!open) {
@@ -32,6 +55,7 @@ export function UserPickerDrawer({
       setSearchResults([]);
       setSearchLoading(false);
       setSelectedUserId(null);
+      setSelectedUsers(new Map());
     }
   }, [open]);
 
@@ -44,7 +68,9 @@ export function UserPickerDrawer({
     if (query.length < 2) {
       setSearchResults([]);
       setSearchLoading(false);
-      setSelectedUserId(null);
+      if (!multiple) {
+        setSelectedUserId(null);
+      }
       return;
     }
 
@@ -55,16 +81,21 @@ export function UserPickerDrawer({
         .searchUsers(token, query, 'AGENT')
         .then((response) => {
           if (!cancelled) {
-            setSearchResults(response.items);
-            setSelectedUserId((prev) => (
-              prev != null && response.items.some((user) => user.id === prev) ? prev : null
-            ));
+            const visible = response.items.filter((user) => !excludeSet.has(user.id));
+            setSearchResults(visible);
+            if (!multiple) {
+              setSelectedUserId((prev) => (
+                prev != null && visible.some((user) => user.id === prev) ? prev : null
+              ));
+            }
           }
         })
         .catch(() => {
           if (!cancelled) {
             setSearchResults([]);
-            setSelectedUserId(null);
+            if (!multiple) {
+              setSelectedUserId(null);
+            }
           }
         })
         .finally(() => {
@@ -78,15 +109,39 @@ export function UserPickerDrawer({
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [open, searchQuery, token]);
+  }, [excludeKey, multiple, open, searchQuery, token]);
 
   const selectedUser = searchResults.find((user) => user.id === selectedUserId) ?? null;
+  const selectedCount = multiple ? selectedUsers.size : (selectedUser ? 1 : 0);
+
+  const toggleMultiSelect = (user: UserSummary) => {
+    setSelectedUsers((prev) => {
+      const next = new Map(prev);
+      if (next.has(user.id)) {
+        next.delete(user.id);
+      } else {
+        next.set(user.id, user);
+      }
+      return next;
+    });
+  };
 
   const handleConfirm = () => {
+    if (props.multiple) {
+      const users = Array.from(selectedUsers.values());
+      if (users.length > 0) {
+        props.onSelectMany(users);
+      }
+      return;
+    }
     if (selectedUser) {
-      onSelect(selectedUser);
+      props.onSelect(selectedUser);
     }
   };
+
+  const confirmLabel = multiple
+    ? (selectedCount > 0 ? `Добавить (${selectedCount})` : 'Добавить')
+    : 'Выбрать';
 
   return (
     <PickerDrawerShell
@@ -100,10 +155,10 @@ export function UserPickerDrawer({
           <button
             type="button"
             className="btn btn--primary btn--block"
-            disabled={selecting || selectedUser == null}
+            disabled={selecting || selectedCount === 0}
             onClick={handleConfirm}
           >
-            Выбрать
+            {confirmLabel}
           </button>
         </div>
       )}
@@ -128,6 +183,11 @@ export function UserPickerDrawer({
       </div>
 
       <div className="drawer__body">
+        {multiple && selectedCount > 0 && (
+          <p className="picker-multi-hint text-muted">
+            Выбрано: {selectedCount}. Можно искать и отмечать нескольких агентов.
+          </p>
+        )}
         {searchLoading && <p className="text-muted">Поиск…</p>}
         {!searchLoading && searchQuery.trim().length < 2 && (
           <p className="text-muted">Введите минимум 2 символа для поиска</p>
@@ -137,7 +197,9 @@ export function UserPickerDrawer({
         )}
         <ul className="picker-card-list">
           {searchResults.map((user) => {
-            const isSelected = user.id === selectedUserId;
+            const isSelected = multiple
+              ? selectedUsers.has(user.id)
+              : user.id === selectedUserId;
             return (
               <li key={user.id}>
                 <button
@@ -145,8 +207,17 @@ export function UserPickerDrawer({
                   className={`picker-card user-picker-card${isSelected ? ' picker-card--selected' : ''}`}
                   disabled={selecting}
                   aria-pressed={isSelected}
-                  onClick={() => setSelectedUserId(user.id)}
+                  onClick={() => (
+                    multiple
+                      ? toggleMultiSelect(user)
+                      : setSelectedUserId(user.id)
+                  )}
                 >
+                  {multiple && (
+                    <span className="picker-card__check" aria-hidden>
+                      {isSelected ? '✓' : ''}
+                    </span>
+                  )}
                   <UserAvatar login={user.login} size={40} />
                   <span className="user-picker-card__login">{user.login}</span>
                 </button>

@@ -15,6 +15,11 @@ import { CleanupStatusSelect } from './CleanupStatusSelect';
 import { IncidentStatusSelect } from './IncidentStatusSelect';
 import { UserChip } from './UserChip';
 import { UserPickerDrawer } from './UserPickerDrawer';
+import { EmptyState } from './ui/EmptyState';
+import { FormField } from './ui/FormField';
+import { LoadingBlock } from './ui/LoadingBlock';
+import { Spinner } from './ui/Spinner';
+import { Button } from './ui/Button';
 
 function userLoginFromMap(userId: number, usersMap: Map<number, string>): string {
   return usersMap.get(userId) ?? `#${userId}`;
@@ -441,17 +446,29 @@ export function IncidentDetailPage({
     setResponsibleRemoved((prev) => !prev);
   };
 
-  const handleAddExecutorFromPicker = (user: UserSummary) => {
+  const handleAddExecutorsFromPicker = (users: UserSummary[]) => {
+    if (users.length === 0) {
+      return;
+    }
+
     setUsersMap((prev) => {
       const next = new Map(prev);
-      next.set(user.id, user.login);
+      users.forEach((user) => next.set(user.id, user.login));
       return next;
     });
 
-    setExecutorDraftIds((prev) => (prev.includes(user.id) ? prev : [...prev, user.id]));
+    setExecutorDraftIds((prev) => {
+      const next = [...prev];
+      users.forEach((user) => {
+        if (!next.includes(user.id)) {
+          next.push(user.id);
+        }
+      });
+      return next;
+    });
     setExecutorRemovedIds((prev) => {
       const next = new Set(prev);
-      next.delete(user.id);
+      users.forEach((user) => next.delete(user.id));
       return next;
     });
     setExecutorPickerOpen(false);
@@ -575,8 +592,12 @@ export function IncidentDetailPage({
         </Link>
       </div>
 
-      {error && <div className="alert alert--error">{error}</div>}
-      {loading && <p className="text-muted">Загрузка…</p>}
+      {error && (
+        <div className="alert alert--error" role="alert" aria-live="polite">
+          {error}
+        </div>
+      )}
+      {loading && <LoadingBlock label="Загрузка инцидента…" skeleton rows={5} />}
 
       {incident && !loading && (
         <>
@@ -727,7 +748,7 @@ export function IncidentDetailPage({
                     tabIndex={canEditAssignment && !responsibleEditing ? 0 : undefined}
                   >
                     {usersLoading && incident.responsibleUserId != null && !responsibleEditing && (
-                      <span className="text-muted">Загрузка… </span>
+                      <Spinner size="sm" label="Загрузка пользователя" />
                     )}
                     {responsibleEditing ? (
                       <div ref={responsibleEditRef} className="executors-edit-box">
@@ -797,7 +818,7 @@ export function IncidentDetailPage({
                   tabIndex={canEditAssignment && !executorsEditing ? 0 : undefined}
                 >
                   {usersLoading && (incident.executorUserIds ?? []).length > 0 && !executorsEditing && (
-                    <span className="text-muted">Загрузка… </span>
+                    <Spinner size="sm" label="Загрузка исполнителей" />
                   )}
                   {executorsEditing ? (
                     <div ref={executorEditRef} className="executors-edit-box">
@@ -909,9 +930,9 @@ export function IncidentDetailPage({
                 role="tabpanel"
                 aria-labelledby="incident-tab-comments"
               >
-                {commentsLoading && <p className="text-muted">Загрузка комментариев…</p>}
+                {commentsLoading && <LoadingBlock label="Загрузка комментариев…" inline />}
                 {!commentsLoading && comments.length === 0 && (
-                  <p className="text-muted">Комментариев пока нет.</p>
+                  <EmptyState title="Комментариев пока нет" />
                 )}
                 <ul className="comment-list">
                   {comments.map((comment) => (
@@ -927,21 +948,22 @@ export function IncidentDetailPage({
 
                 {canComment && (
                   <form className="comment-form" onSubmit={handleAddComment}>
-                    <label htmlFor="incident-comment-text">Добавить комментарий</label>
-                    <textarea
-                      id="incident-comment-text"
-                      value={commentText}
-                      onChange={(e) => setCommentText(e.target.value)}
-                      rows={3}
-                      disabled={commentSubmitting}
-                    />
-                    <button
+                    <FormField label="Добавить комментарий">
+                      <textarea
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        rows={3}
+                        disabled={commentSubmitting}
+                      />
+                    </FormField>
+                    <Button
                       type="submit"
-                      className="btn btn--primary"
-                      disabled={commentSubmitting || !commentText.trim()}
+                      variant="primary"
+                      loading={commentSubmitting}
+                      disabled={!commentText.trim()}
                     >
-                      {commentSubmitting ? 'Отправка…' : 'Отправить'}
-                    </button>
+                      Отправить
+                    </Button>
                   </form>
                 )}
               </div>
@@ -954,9 +976,9 @@ export function IncidentDetailPage({
                 role="tabpanel"
                 aria-labelledby="incident-tab-history"
               >
-                {historyLoading && <p className="text-muted">Загрузка истории…</p>}
+                {historyLoading && <LoadingBlock label="Загрузка истории…" inline />}
                 {!historyLoading && historyDiffs.length === 0 && (
-                  <p className="text-muted">История изменений пуста.</p>
+                  <EmptyState title="История изменений пуста" />
                 )}
                 <ol className="history-timeline">
                   {historyDiffs.map((block) => (
@@ -1011,10 +1033,12 @@ export function IncidentDetailPage({
       <UserPickerDrawer
         token={token}
         open={executorPickerOpen && canEditAssignment && executorsEditing}
-        title="Добавить исполнителя"
+        title="Добавить исполнителей"
         selecting={assignmentLoading}
+        multiple
+        excludeUserIds={executorDraftIds.filter((id) => !executorRemovedIds.has(id))}
         onClose={() => setExecutorPickerOpen(false)}
-        onSelect={handleAddExecutorFromPicker}
+        onSelectMany={handleAddExecutorsFromPicker}
       />
 
       <AlienPickerDrawer

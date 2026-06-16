@@ -1,4 +1,5 @@
 import React from 'react';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface PickerDrawerShellProps {
   title: string;
@@ -19,6 +20,8 @@ export function PickerDrawerShell({
   children,
   footer,
 }: PickerDrawerShellProps) {
+  const trapRef = useFocusTrap(open);
+
   if (!open) {
     return null;
   }
@@ -26,6 +29,7 @@ export function PickerDrawerShell({
   return (
     <div className="drawer-overlay" onClick={onClose} role="presentation">
       <div
+        ref={trapRef}
         className="drawer"
         onClick={(e) => e.stopPropagation()}
         role="dialog"

@@ -17,6 +17,8 @@ describe('LoginPage', () => {
 
   it('shows loading state', () => {
     render(<LoginPage loading onSignIn={jest.fn()} />);
-    expect(screen.getByRole('button', { name: /Вход…/i })).toBeDisabled();
+    const button = screen.getByRole('button', { name: /Войти/i });
+    expect(button).toBeDisabled();
+    expect(button).toHaveClass('is-loading');
   });
 });

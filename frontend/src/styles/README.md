@@ -6,21 +6,37 @@ Mini design system for the AIMS frontend: CSS custom properties, primitives, sta
 
 | File | Purpose |
 |------|---------|
-| `tokens.css` | Design tokens: colors, spacing, typography, radii, shadows |
-| `primitives.css` | Reusable UI: buttons, cards, sections, forms, text utilities |
+| `tokens.css` | Design tokens: colors (incl. status), spacing, typography, radii, shadows |
+| `primitives.css` | Reusable UI: buttons, cards, sections, forms, loading, empty states |
 | `status.css` | Incident and cleanup status selects/chips |
-| `components.css` | App shell, tables, tabs, drawers, modals, pickers |
+| `layout.css` | App shell, header, login, profile, mobile incident cards |
+| `overlays.css` | Drawers, modals, notifications, file upload |
+| `data-display.css` | Tables, tabs, comments, history, pickers, chips |
 
-Import order in `index.tsx`: `tokens` → `primitives` → `status` → `components`.
+Import order in `index.tsx`: `tokens` → `primitives` → `status` → `layout` → `overlays` → `data-display`.
+
+## Dev styleguide
+
+In development, open `/dev/ui` for a live catalog of buttons, status chips, forms, and states.
+
+## React primitives (`components/ui/`)
+
+- `Button` — variants and loading state
+- `Card` / `CardHeader`
+- `FormField` — label, control, error, a11y ids
+- `StatusChip` — read-only status display
+- `Spinner`, `LoadingBlock`, `EmptyState`
 
 ## Tokens
 
 Use CSS variables instead of hard-coded values:
 
-- **Colors:** `--color-primary`, `--color-text`, `--color-border`, `--color-bg-page`, etc.
+- **Colors:** `--color-primary`, `--color-text`, status tokens `--status-*-bg/text/border`
 - **Spacing:** `--space-1` (4px) through `--space-10` (40px), 8px grid
 - **Radius:** `--radius-sm` … `--radius-full`
 - **Shadow:** `--shadow-sm`, `--shadow-md`, `--shadow-lg`
+
+Hex literals belong only in `tokens.css` (rgba allowed in shadows/overlays elsewhere).
 
 ## Primitives
 
@@ -34,38 +50,28 @@ Every interactive button must use an explicit class (no global `button` reset):
 - `btn btn--ghost` — icon buttons, tabs, low emphasis
 - `btn btn--sm` — compact
 - `btn btn--block` — full width (e.g. drawer confirm)
+- `btn.is-loading` — in-flight action with spinner
+
+Prefer the `Button` React component for new code.
 
 ### Surfaces
 
 - `card` + `card__header` — page/list containers
-- `section` + `section__title` — blocks inside a card (no extra border/shadow)
-- `data-list` + `data-list__row` — definition lists for detail views
+- `section` + `section__title` — grouped content blocks
 
 ### Forms
 
-- `form` — vertical stack with token gaps
-- `field`, `field__label`, `field__control` — labeled inputs (optional)
+- `field` + `field__label` + `field__control` + `field__error`
+- Use `FormField` wrapper for consistent a11y
 
-### Text
+### States
 
-- `text-muted`, `text-error`, `text-pre-wrap`
+- `loading-block`, `spinner`, `skeleton` — loading feedback
+- `empty-state` — empty lists
+- `alert alert--error` — API/validation errors
 
-## Status
+## Adding new styles
 
-- Read-only: `status-chip status-chip--{status}` (e.g. `status-chip--open`)
-- Editable: `status-select status-chip--{status}` on `<select>`
-- Cleanup: `status-chip--cleanup_{status}`
-
-Wrap in `status-select-wrap` or `status-select-wrap status-select-wrap--modal` for layout.
-
-## Patterns
-
-- **List page:** one `card`, `card__header`, table, `pagination`
-- **Detail page:** one `card`, `section` for fields, `section` with `tabs` for comments/history
-- **Modal/drawer:** `modal-overlay` / `drawer-overlay` + surface + `modal-actions` or `drawer__footer`
-
-## Adding new UI
-
-1. Prefer existing primitives and tokens.
-2. If layout is screen-specific, add rules to `components.css` using tokens.
-3. Do not reintroduce global element selectors for `button`, `a`, etc.
+1. Prefer an existing token; add to `tokens.css` if missing.
+2. If layout is screen-specific, add rules to `layout.css`, `overlays.css`, or `data-display.css`.
+3. Document new patterns in the dev styleguide at `/dev/ui`.

@@ -2,10 +2,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import * as api from './api/client';
 import { AppHeader } from './components/AppHeader';
+import { DevStyleguidePage } from './components/DevStyleguidePage';
 import { IncidentDetailPage } from './components/IncidentDetailPage';
 import { IncidentsTab } from './components/IncidentsTab';
 import { LoginPage } from './components/LoginPage';
 import { ProfileTab } from './components/ProfileTab';
+import { LoadingBlock } from './components/ui/LoadingBlock';
 import { INCIDENTS_TAB_ROLES, TOKEN_STORAGE_KEY } from './constants';
 import { AuthMeResponse } from './types';
 
@@ -111,7 +113,11 @@ function App() {
   if (!accessToken) {
     return (
       <div className="app">
-        {error && <div className="alert alert--error app__alert">{error}</div>}
+        {error && (
+          <div className="alert alert--error app__alert" role="alert" aria-live="polite">
+            {error}
+          </div>
+        )}
         <LoginPage loading={loading} onSignIn={handleSignIn} />
       </div>
     );
@@ -119,6 +125,14 @@ function App() {
 
   return (
     <div className="app app--authenticated">
+      <a href="#main-content" className="skip-link">
+        Перейти к содержимому
+      </a>
+
+      <div className="visually-hidden" aria-live="polite" aria-atomic="true">
+        {error}
+      </div>
+
       <AppHeader
         token={accessToken}
         login={profile?.login ?? ''}
@@ -131,9 +145,13 @@ function App() {
         onNavigateToIncident={showIncidentsTab ? handleNavigateToIncident : undefined}
       />
 
-      {error && <div className="alert alert--error app__alert">{error}</div>}
+      {error && (
+        <div className="alert alert--error app__alert" role="alert" aria-live="polite">
+          {error}
+        </div>
+      )}
 
-      <main className="main-content">
+      <main id="main-content" className="main-content">
         <Routes>
           <Route
             path="/"
@@ -151,7 +169,7 @@ function App() {
               profile ? (
                 <ProfileTab profile={profile} onSignOut={handleSignOut} />
               ) : (
-                <p className="text-muted">Загрузка…</p>
+                <LoadingBlock label="Загрузка профиля…" />
               )
             }
           />
@@ -187,6 +205,9 @@ function App() {
                 }
               />
             </>
+          )}
+          {process.env.NODE_ENV === 'development' && (
+            <Route path="/dev/ui" element={<DevStyleguidePage />} />
           )}
           <Route
             path="*"

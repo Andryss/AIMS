@@ -1,8 +1,11 @@
 import React, { FormEvent, useState } from 'react';
 import * as api from '../api/client';
 import { EVENT_TYPE_LABELS } from '../incidentLabels';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import { CreateIncidentRequest, IncidentEventType, IncidentResponse } from '../types';
 import { FileUploadField } from './FileUploadField';
+import { Button } from './ui/Button';
+import { FormField } from './ui/FormField';
 
 const EVENT_TYPES = Object.entries(EVENT_TYPE_LABELS).map(([value, label]) => ({
   value: value as IncidentEventType,
@@ -33,6 +36,7 @@ export function CreateIncidentModal({
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const trapRef = useFocusTrap(open);
 
   if (!open) {
     return null;
@@ -75,9 +79,11 @@ export function CreateIncidentModal({
   return (
     <div className="modal-overlay" onClick={onClose} role="presentation">
       <div
+        ref={trapRef}
         className="modal"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
+        aria-modal="true"
         aria-labelledby="create-incident-title"
       >
         <div className="modal__header">
@@ -86,10 +92,13 @@ export function CreateIncidentModal({
             ×
           </button>
         </div>
-        {error && <div className="alert alert--error">{error}</div>}
+        {error && (
+          <div className="alert alert--error" role="alert" aria-live="polite">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="form">
-          <label>
-            Тип события
+          <FormField label="Тип события" required>
             <select
               value={eventType}
               onChange={(e) => setEventType(e.target.value as IncidentEventType)}
@@ -100,33 +109,30 @@ export function CreateIncidentModal({
                 </option>
               ))}
             </select>
-          </label>
-          <label>
-            Место
+          </FormField>
+          <FormField label="Место" required>
             <input
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               required
             />
-          </label>
-          <label>
-            Время обнаружения
+          </FormField>
+          <FormField label="Время обнаружения" required>
             <input
               type="datetime-local"
               value={detectedAt}
               onChange={(e) => setDetectedAt(e.target.value)}
               required
             />
-          </label>
-          <label>
-            Описание
+          </FormField>
+          <FormField label="Описание" required>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
               required
             />
-          </label>
+          </FormField>
           <FileUploadField
             label="Вложения"
             files={attachmentFiles}
@@ -134,12 +140,12 @@ export function CreateIncidentModal({
             disabled={loading}
           />
           <div className="modal-actions">
-            <button type="button" className="btn btn--secondary" onClick={onClose}>
+            <Button type="button" variant="secondary" onClick={onClose}>
               Отмена
-            </button>
-            <button type="submit" className="btn btn--primary" disabled={loading}>
-              {loading ? 'Создание…' : 'Создать'}
-            </button>
+            </Button>
+            <Button type="submit" variant="primary" loading={loading}>
+              Создать
+            </Button>
           </div>
         </form>
       </div>

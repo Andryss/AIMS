@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import * as api from '../api/client';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import { STATUS_LABELS, STATUS_TRANSITIONS } from '../incidentLabels';
 import { IncidentResponse, IncidentStatus } from '../types';
 
@@ -65,6 +66,7 @@ export function IncidentStatusSelect({
   const [modalOpen, setModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<IncidentStatus | null>(null);
   const [commentText, setCommentText] = useState('');
+  const trapRef = useFocusTrap(modalOpen);
 
   const allowedTargets = useMemo(
     () => allowedTargetsForUser(incident.status, roles, incident, currentUserId),
@@ -158,6 +160,7 @@ export function IncidentStatusSelect({
       {modalOpen && pendingStatus && (
         <div className="status-change-modal-backdrop" role="presentation" onClick={closeModal}>
           <div
+            ref={trapRef}
             className="status-change-modal"
             role="dialog"
             aria-labelledby="status-change-title"
@@ -178,7 +181,11 @@ export function IncidentStatusSelect({
               rows={4}
               disabled={loading}
             />
-            {error && <div className="alert alert--error">{error}</div>}
+            {error && (
+              <div className="alert alert--error" role="alert" aria-live="polite">
+                {error}
+              </div>
+            )}
             <div className="status-change-modal__actions">
               <button type="button" className="btn btn--secondary" onClick={closeModal} disabled={loading}>
                 Отмена

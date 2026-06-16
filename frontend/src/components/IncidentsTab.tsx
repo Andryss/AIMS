@@ -2,9 +2,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as api from '../api/client';
 import { EVENT_TYPE_LABELS } from '../incidentLabels';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { IncidentResponse } from '../types';
 import { CreateIncidentModal } from './CreateIncidentModal';
 import { IncidentStatusSelect } from './IncidentStatusSelect';
+import { Button } from './ui/Button';
+import { EmptyState } from './ui/EmptyState';
+import { LoadingBlock } from './ui/LoadingBlock';
 
 const PAGE_SIZE = 10;
 
@@ -22,6 +26,7 @@ export function IncidentsTab({
   canChangeStatus,
 }: IncidentsTabProps) {
   const navigate = useNavigate();
+  const isMobile = useMediaQuery('(max-width: 640px)');
   const [page, setPage] = useState(0);
   const [items, setItems] = useState<IncidentResponse[]>([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -71,44 +76,82 @@ export function IncidentsTab({
   };
 
   return (
-    <section className="card">
+    <section className="card" aria-busy={loading}>
       <div className="card__header">
         <h2>Инциденты</h2>
         {canCreate && (
-          <button type="button" className="btn btn--primary" onClick={() => setCreateModalOpen(true)}>
+          <Button type="button" variant="primary" onClick={() => setCreateModalOpen(true)}>
             Создать инцидент
-          </button>
+          </Button>
         )}
       </div>
 
-      {error && <div className="alert alert--error">{error}</div>}
-      {loading && <p className="text-muted">Загрузка…</p>}
+      {error && (
+        <div className="alert alert--error" role="alert" aria-live="polite">
+          {error}
+        </div>
+      )}
+      {loading && <LoadingBlock label="Загрузка инцидентов…" skeleton rows={4} />}
 
-      {!loading && items.length === 0 && (
-        <p className="text-muted">Инцидентов пока нет</p>
+      {!loading && items.length === 0 && !error && (
+        <EmptyState
+          title="Инцидентов пока нет"
+          hint={canCreate ? 'Создайте первый инцидент, чтобы начать работу.' : undefined}
+        />
       )}
 
       {!loading && items.length > 0 && (
-        <div className="incidents-table-wrapper">
-          <table className="incidents-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Статус</th>
-                <th>Тип</th>
-                <th>Место</th>
-                <th>Обнаружен</th>
-              </tr>
-            </thead>
-            <tbody>
+        <>
+          {!isMobile && (
+            <div className="incidents-table-wrapper">
+              <table className="incidents-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Статус</th>
+                    <th>Тип</th>
+                    <th>Место</th>
+                    <th>Обнаружен</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((incident) => (
+                    <tr
+                      key={incident.id}
+                      className="incidents-table__row"
+                      onClick={() => navigate(`/incidents/${incident.id}`)}
+                    >
+                      <td>#{incident.id}</td>
+                      <td>
+                        <IncidentStatusSelect
+                          token={token}
+                          incident={incident}
+                          roles={roles}
+                          canChange={canChangeStatus}
+                          onStatusChanged={handleStatusChanged}
+                        />
+                      </td>
+                      <td>{EVENT_TYPE_LABELS[incident.eventType] ?? incident.eventType}</td>
+                      <td>{incident.location}</td>
+                      <td>{formatDate(incident.detectedAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {isMobile && (
+            <div className="incidents-cards">
               {items.map((incident) => (
-                <tr
+                <button
                   key={incident.id}
-                  className="incidents-table__row"
+                  type="button"
+                  className="incidents-card"
                   onClick={() => navigate(`/incidents/${incident.id}`)}
                 >
-                  <td>#{incident.id}</td>
-                  <td>
+                  <div className="incidents-card__top">
+                    <span className="incidents-card__id">#{incident.id}</span>
                     <IncidentStatusSelect
                       token={token}
                       incident={incident}
@@ -116,15 +159,17 @@ export function IncidentsTab({
                       canChange={canChangeStatus}
                       onStatusChanged={handleStatusChanged}
                     />
-                  </td>
-                  <td>{EVENT_TYPE_LABELS[incident.eventType] ?? incident.eventType}</td>
-                  <td>{incident.location}</td>
-                  <td>{formatDate(incident.detectedAt)}</td>
-                </tr>
+                  </div>
+                  <p className="incidents-card__meta">
+                    {EVENT_TYPE_LABELS[incident.eventType] ?? incident.eventType} ·{' '}
+                    {formatDate(incident.detectedAt)}
+                  </p>
+                  <p className="incidents-card__location">{incident.location}</p>
+                </button>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          )}
+        </>
       )}
 
       {totalPages > 0 && (

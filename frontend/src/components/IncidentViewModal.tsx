@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import * as api from '../api/client';
 import { EVENT_TYPE_LABELS } from '../incidentLabels';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import { IncidentResponse } from '../types';
 import { IncidentStatusSelect } from './IncidentStatusSelect';
 import { AttachmentDownloadList } from './AttachmentDownloadList';
+import { LoadingBlock } from './ui/LoadingBlock';
 
 function formatDate(iso: string): string {
   try {
@@ -32,6 +34,7 @@ export function IncidentViewModal({
   onClose,
   onStatusChanged,
 }: IncidentViewModalProps) {
+  const trapRef = useFocusTrap(open);
   const [incident, setIncident] = useState<IncidentResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -92,9 +95,11 @@ export function IncidentViewModal({
   return (
     <div className="modal-overlay" onClick={onClose} role="presentation">
       <div
+        ref={trapRef}
         className="modal modal--narrow"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
+        aria-modal="true"
         aria-labelledby="incident-view-title"
       >
         <div className="modal__header">
@@ -106,8 +111,8 @@ export function IncidentViewModal({
           </button>
         </div>
 
-        {error && <div className="alert alert--error">{error}</div>}
-        {loading && <p className="text-muted">Загрузка…</p>}
+        {error && <div className="alert alert--error" role="alert" aria-live="polite">{error}</div>}
+        {loading && <LoadingBlock label="Загрузка инцидента…" inline />}
 
         {incident && !loading && (
           <section className="section">

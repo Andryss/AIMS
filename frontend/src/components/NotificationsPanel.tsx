@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import * as api from '../api/client';
 import { NotificationItem } from '../types';
 import { extractIncidentIds } from '../utils/relatedEntities';
+import { EmptyState } from './ui/EmptyState';
+import { LoadingBlock } from './ui/LoadingBlock';
 
 interface NotificationsPanelProps {
   token: string;
@@ -97,10 +99,14 @@ export function NotificationsPanel({
           ×
         </button>
       </div>
-      {loading && <p className="text-muted">Загрузка…</p>}
-      {error && <p className="text-error">{error}</p>}
+      {loading && <LoadingBlock label="Загрузка уведомлений…" inline />}
+      {error && (
+        <p className="text-error" role="alert" aria-live="polite">
+          {error}
+        </p>
+      )}
       {!loading && !error && items.length === 0 && (
-        <p className="text-muted">Нет уведомлений</p>
+        <EmptyState title="Нет уведомлений" hint="Здесь появятся оповещения по инцидентам." />
       )}
       <ul className="notifications__list">
         {items.map((item) => {

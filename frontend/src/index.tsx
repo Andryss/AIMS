@@ -5,7 +5,9 @@ import './index.css';
 import './styles/tokens.css';
 import './styles/primitives.css';
 import './styles/status.css';
-import './styles/components.css';
+import './styles/layout.css';
+import './styles/overlays.css';
+import './styles/data-display.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 

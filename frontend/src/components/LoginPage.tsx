@@ -1,5 +1,7 @@
 import React, { FormEvent, useState } from 'react';
 import { SYSTEM_NAME } from '../constants';
+import { Button } from './ui/Button';
+import { FormField } from './ui/FormField';
 
 interface LoginPageProps {
   loading: boolean;
@@ -20,17 +22,15 @@ export function LoginPage({ loading, onSignIn }: LoginPageProps) {
       <div className="login-card">
         <h1 className="login-card__title">{SYSTEM_NAME}</h1>
         <form onSubmit={handleSubmit} className="form">
-          <label>
-            Логин
+          <FormField label="Логин" required>
             <input
               value={login}
               onChange={(e) => setLogin(e.target.value)}
               autoComplete="username"
               required
             />
-          </label>
-          <label>
-            Пароль
+          </FormField>
+          <FormField label="Пароль" required>
             <input
               type="password"
               value={password}
@@ -38,10 +38,10 @@ export function LoginPage({ loading, onSignIn }: LoginPageProps) {
               autoComplete="current-password"
               required
             />
-          </label>
-          <button type="submit" className="btn btn--primary" disabled={loading}>
-            {loading ? 'Вход…' : 'Войти'}
-          </button>
+          </FormField>
+          <Button type="submit" variant="primary" block loading={loading}>
+            Войти
+          </Button>
         </form>
       </div>
     </div>
