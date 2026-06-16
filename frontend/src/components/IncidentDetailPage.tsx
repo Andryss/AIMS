@@ -880,7 +880,9 @@ export function IncidentDetailPage({
               <button
                 type="button"
                 role="tab"
+                id="incident-tab-comments"
                 aria-selected={activeTab === 'comments'}
+                aria-controls="incident-tab-panel-comments"
                 className={activeTab === 'comments' ? 'incident-tab is-active' : 'incident-tab'}
                 onClick={() => setActiveTab('comments')}
               >
@@ -889,7 +891,9 @@ export function IncidentDetailPage({
               <button
                 type="button"
                 role="tab"
+                id="incident-tab-history"
                 aria-selected={activeTab === 'history'}
+                aria-controls="incident-tab-panel-history"
                 className={activeTab === 'history' ? 'incident-tab is-active' : 'incident-tab'}
                 onClick={() => setActiveTab('history')}
               >
@@ -898,7 +902,12 @@ export function IncidentDetailPage({
             </div>
 
             {activeTab === 'comments' && (
-              <div className="incident-tab-panel" role="tabpanel">
+              <div
+                id="incident-tab-panel-comments"
+                className="incident-tab-panel"
+                role="tabpanel"
+                aria-labelledby="incident-tab-comments"
+              >
                 {commentsLoading && <p className="panel-muted">Загрузка комментариев…</p>}
                 {!commentsLoading && comments.length === 0 && (
                   <p className="panel-muted">Комментариев пока нет.</p>
@@ -934,7 +943,12 @@ export function IncidentDetailPage({
             )}
 
             {activeTab === 'history' && (
-              <div className="incident-tab-panel" role="tabpanel">
+              <div
+                id="incident-tab-panel-history"
+                className="incident-tab-panel"
+                role="tabpanel"
+                aria-labelledby="incident-tab-history"
+              >
                 {historyLoading && <p className="panel-muted">Загрузка истории…</p>}
                 {!historyLoading && historyDiffs.length === 0 && (
                   <p className="panel-muted">История изменений пуста.</p>
