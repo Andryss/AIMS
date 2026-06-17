@@ -9,6 +9,7 @@ import gov.mib.aims.backend.services.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.OffsetDateTime;
@@ -25,6 +26,7 @@ public class NotificationsApiImpl implements NotificationsApi {
     private final NotificationService notificationService;
 
     @Override
+    @PreAuthorize("hasAuthority('NOTIFICATION_READ')")
     public NotificationListResponse listNotifications(Integer page, Integer size) {
         int pageNumber = page != null ? page : 0;
         int pageSize = size != null ? size : 20;
@@ -39,12 +41,14 @@ public class NotificationsApiImpl implements NotificationsApi {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('NOTIFICATION_READ')")
     public UnreadCountResponse getUnreadNotificationsCount() {
         log.info("GET /api/v1/notifications/unread-count");
         return new UnreadCountResponse().count(notificationService.countUnreadForCurrentUser());
     }
 
     @Override
+    @PreAuthorize("hasAuthority('NOTIFICATION_READ')")
     public void markNotificationRead(Long id) {
         log.info("PATCH /api/v1/notifications/{}/read", id);
         notificationService.markAsRead(id);

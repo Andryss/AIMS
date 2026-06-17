@@ -42,6 +42,17 @@ public final class Errors {
     }
 
     /**
+     * Недостаточно прав для операции.
+     */
+    public static BaseException insufficientRole() {
+        return BaseException.builder()
+                .code(403)
+                .message("auth.insufficient_role")
+                .humanMessage("Insufficient role for this operation")
+                .build();
+    }
+
+    /**
      * Ошибка валидации.
      */
     public static BaseException validationError(String message) {
@@ -82,6 +93,17 @@ public final class Errors {
                 .code(400)
                 .message("file.empty")
                 .humanMessage("File must not be empty")
+                .build();
+    }
+
+    /**
+     * Ошибка сохранения загружаемого файла.
+     */
+    public static BaseException fileUploadFailed() {
+        return BaseException.builder()
+                .code(500)
+                .message("file.upload_failed")
+                .humanMessage("Failed to store uploaded file")
                 .build();
     }
 

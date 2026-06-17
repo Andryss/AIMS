@@ -16,7 +16,10 @@ public enum Role {
             Permission.INCIDENT_STATUS_CHANGE,
             Permission.INCIDENT_COMMENT,
             Permission.USER_READ,
-            Permission.CLEANUP_REPORT_READ
+            Permission.CLEANUP_REPORT_READ,
+            Permission.FILE_UPLOAD,
+            Permission.FILE_READ,
+            Permission.NOTIFICATION_READ
     ),
     ANALYST(
             "Аналитик",
@@ -26,7 +29,10 @@ public enum Role {
             Permission.INCIDENT_ALIEN_LINK,
             Permission.ALIEN_READ,
             Permission.USER_READ,
-            Permission.CLEANUP_REPORT_READ
+            Permission.CLEANUP_REPORT_READ,
+            Permission.FILE_UPLOAD,
+            Permission.FILE_READ,
+            Permission.NOTIFICATION_READ
     ),
     ADMIN(
             "Администратор",
@@ -38,7 +44,10 @@ public enum Role {
             Permission.ALIEN_READ,
             Permission.USER_READ,
             Permission.INCIDENT_ASSIGN,
-            Permission.CLEANUP_REPORT_READ
+            Permission.CLEANUP_REPORT_READ,
+            Permission.FILE_UPLOAD,
+            Permission.FILE_READ,
+            Permission.NOTIFICATION_READ
     ),
     AGENT(
             "Оперативный агент",
@@ -48,7 +57,10 @@ public enum Role {
             Permission.INCIDENT_STATUS_CHANGE,
             Permission.INCIDENT_COMMENT,
             Permission.ALIEN_READ,
-            Permission.CLEANUP_REPORT_READ
+            Permission.CLEANUP_REPORT_READ,
+            Permission.FILE_UPLOAD,
+            Permission.FILE_READ,
+            Permission.NOTIFICATION_READ
     ),
     CLEANER(
             "Специалист по прикрытию",
@@ -58,7 +70,10 @@ public enum Role {
             Permission.ALIEN_READ,
             Permission.CLEANUP_REPORT_READ,
             Permission.CLEANUP_REPORT_CREATE,
-            Permission.CLEANUP_STATUS_CHANGE
+            Permission.CLEANUP_STATUS_CHANGE,
+            Permission.FILE_UPLOAD,
+            Permission.FILE_READ,
+            Permission.NOTIFICATION_READ
     );
 
     private final String description;

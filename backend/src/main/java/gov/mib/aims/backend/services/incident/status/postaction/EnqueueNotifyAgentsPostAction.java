@@ -6,11 +6,9 @@ import gov.mib.aims.backend.services.dbqueue.processor.NotifyAgentsIncidentReady
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyAgentsIncidentReadyProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
- * Ставит задачу на уведомление оперативных агентов после commit.
+ * Ставит задачу на уведомление оперативных агентов в рамках текущей транзакции.
  */
 @Component
 @RequiredArgsConstructor
@@ -20,20 +18,9 @@ public class EnqueueNotifyAgentsPostAction implements StatusTransitionPostAction
 
     @Override
     public void execute(IncidentEntity context) {
-        NotifyAgentsIncidentReadyPayload payload = new NotifyAgentsIncidentReadyPayload(context.getId());
-        enqueueAfterCommit(payload);
-    }
-
-    private void enqueueAfterCommit(NotifyAgentsIncidentReadyPayload payload) {
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    dbQueueService.produceTask(NotifyAgentsIncidentReadyProcessor.class, payload);
-                }
-            });
-        } else {
-            dbQueueService.produceTask(NotifyAgentsIncidentReadyProcessor.class, payload);
-        }
+        dbQueueService.produceTask(
+                NotifyAgentsIncidentReadyProcessor.class,
+                new NotifyAgentsIncidentReadyPayload(context.getId())
+        );
     }
 }

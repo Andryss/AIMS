@@ -12,7 +12,10 @@ insert into permission (code, description) values
     ('INCIDENT_ASSIGN', 'Назначение ответственного и исполнителей на инцидент'),
     ('CLEANUP_REPORT_READ', 'Просмотр отчёта об очистке'),
     ('CLEANUP_REPORT_CREATE', 'Создание отчёта об очистке'),
-    ('CLEANUP_STATUS_CHANGE', 'Смена статуса очистки')
+    ('CLEANUP_STATUS_CHANGE', 'Смена статуса очистки'),
+    ('FILE_UPLOAD', 'Загрузка файлов'),
+    ('FILE_READ', 'Скачивание файлов'),
+    ('NOTIFICATION_READ', 'Просмотр уведомлений')
 on conflict (code) do nothing;
 
 insert into role (name, description) values
@@ -25,19 +28,20 @@ insert into role (name, description) values
 insert into role_permission (role_id, permission_id)
 select r.id, p.id
 from role r, permission p
-where r.name = 'OPERATOR' and p.code in ('INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT', 'USER_READ', 'CLEANUP_REPORT_READ');
+where r.name = 'OPERATOR' and p.code in ('INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT', 'USER_READ', 'CLEANUP_REPORT_READ', 'FILE_UPLOAD', 'FILE_READ', 'NOTIFICATION_READ');
 
 insert into role_permission (role_id, permission_id)
 select r.id, p.id
 from role r, permission p
-where r.name = 'ANALYST' and p.code in ('INCIDENT_READ', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT', 'INCIDENT_ALIEN_LINK', 'ALIEN_READ', 'USER_READ', 'CLEANUP_REPORT_READ');
+where r.name = 'ANALYST' and p.code in ('INCIDENT_READ', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT', 'INCIDENT_ALIEN_LINK', 'ALIEN_READ', 'USER_READ', 'CLEANUP_REPORT_READ', 'FILE_UPLOAD', 'FILE_READ', 'NOTIFICATION_READ');
 
 insert into role_permission (role_id, permission_id)
 select r.id, p.id
 from role r, permission p
 where r.name = 'ADMIN' and p.code in (
     'INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT',
-    'INCIDENT_ALIEN_LINK', 'ALIEN_READ', 'USER_READ', 'INCIDENT_ASSIGN', 'CLEANUP_REPORT_READ'
+    'INCIDENT_ALIEN_LINK', 'ALIEN_READ', 'USER_READ', 'INCIDENT_ASSIGN', 'CLEANUP_REPORT_READ',
+    'FILE_UPLOAD', 'FILE_READ', 'NOTIFICATION_READ'
 );
 
 insert into role_permission (role_id, permission_id)
@@ -45,7 +49,7 @@ select r.id, p.id
 from role r, permission p
 where r.name = 'AGENT' and p.code in (
     'INCIDENT_READ', 'USER_READ', 'INCIDENT_ASSIGN', 'INCIDENT_STATUS_CHANGE',
-    'INCIDENT_COMMENT', 'ALIEN_READ', 'CLEANUP_REPORT_READ'
+    'INCIDENT_COMMENT', 'ALIEN_READ', 'CLEANUP_REPORT_READ', 'FILE_UPLOAD', 'FILE_READ', 'NOTIFICATION_READ'
 );
 
 insert into role_permission (role_id, permission_id)
@@ -53,7 +57,8 @@ select r.id, p.id
 from role r, permission p
 where r.name = 'CLEANER' and p.code in (
     'INCIDENT_READ', 'USER_READ', 'INCIDENT_COMMENT', 'ALIEN_READ',
-    'CLEANUP_REPORT_READ', 'CLEANUP_REPORT_CREATE', 'CLEANUP_STATUS_CHANGE'
+    'CLEANUP_REPORT_READ', 'CLEANUP_REPORT_CREATE', 'CLEANUP_STATUS_CHANGE',
+    'FILE_UPLOAD', 'FILE_READ', 'NOTIFICATION_READ'
 );
 
 insert into app_user (login, password_hash) values

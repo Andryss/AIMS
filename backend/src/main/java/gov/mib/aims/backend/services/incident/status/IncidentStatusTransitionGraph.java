@@ -7,12 +7,10 @@ import gov.mib.aims.backend.services.incident.status.postaction.EnqueueNotifyAna
 import gov.mib.aims.backend.services.incident.status.postaction.EnqueueNotifyAnalystsReanalysisPostAction;
 import gov.mib.aims.backend.services.incident.status.postaction.EnqueueNotifyIncidentPreparedPostAction;
 import gov.mib.aims.backend.services.incident.status.postaction.EnqueueNotifyOperatorClarificationPostAction;
-import gov.mib.aims.backend.services.incident.status.precondition.AgentRolePrecondition;
 import gov.mib.aims.backend.services.incident.status.precondition.AlienLinkedPrecondition;
-import gov.mib.aims.backend.services.incident.status.precondition.AnalystRolePrecondition;
 import gov.mib.aims.backend.services.incident.status.precondition.AssignmentCompletePrecondition;
 import gov.mib.aims.backend.services.incident.status.precondition.AttachmentsExistPrecondition;
-import gov.mib.aims.backend.services.incident.status.precondition.OperatorRolePrecondition;
+import gov.mib.aims.backend.services.incident.status.precondition.RolePrecondition;
 import gov.mib.aims.backend.services.incident.status.precondition.ResponsibleAgentPrecondition;
 import org.springframework.stereotype.Component;
 
@@ -34,9 +32,9 @@ public class IncidentStatusTransitionGraph {
      */
     public IncidentStatusTransitionGraph(
             AttachmentsExistPrecondition attachmentsExistPrecondition,
-            OperatorRolePrecondition operatorRolePrecondition,
-            AnalystRolePrecondition analystRolePrecondition,
-            AgentRolePrecondition agentRolePrecondition,
+            RolePrecondition operatorRolePrecondition,
+            RolePrecondition analystRolePrecondition,
+            RolePrecondition agentRolePrecondition,
             AlienLinkedPrecondition alienLinkedPrecondition,
             AssignmentCompletePrecondition assignmentCompletePrecondition,
             EnqueueNotifyAnalystsPostAction enqueueNotifyAnalystsPostAction,

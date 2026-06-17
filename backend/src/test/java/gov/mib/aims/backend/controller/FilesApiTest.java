@@ -26,7 +26,7 @@ class FilesApiTest extends BaseApiTest {
 
     @Test
     void uploadAndDownloadRoundtrip() throws Exception {
-        String token = signInAndGetToken("operator", "operator");
+        String token = fixtures.signInAndGetToken("operator", "operator");
         byte[] payload = "alien sighting photo".getBytes();
         MockMultipartFile file = new MockMultipartFile(
                 "file",
@@ -70,7 +70,7 @@ class FilesApiTest extends BaseApiTest {
 
     @Test
     void downloadUnknownIdReturns404() throws Exception {
-        String token = signInAndGetToken("operator", "operator");
+        String token = fixtures.signInAndGetToken("operator", "operator");
         mockMvc.perform(get(FILES_URL + "/999999")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isNotFound())
@@ -78,13 +78,4 @@ class FilesApiTest extends BaseApiTest {
                 .andExpect(jsonPath("$.message").value("file.not_found"));
     }
 
-    private String signInAndGetToken(String login, String password) throws Exception {
-        String body = objectMapper.writeValueAsString(new SignInRequest().login(login).password(password));
-        MvcResult result = mockMvc.perform(post(SIGNIN_URL)
-                        .contentType(APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
-    }
 }

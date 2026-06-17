@@ -82,6 +82,8 @@ public class SecurityConfig {
                         .requestMatchers("/public/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/signin").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
+                        .requestMatchers("/actuator/prometheus", "/actuator/prometheus/**").denyAll()
+                        .requestMatchers("/actuator/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/auth/me").authenticated()
                         .requestMatchers("/api/v1/files", "/api/v1/files/**").authenticated()
                         .requestMatchers("/api/v1/notifications", "/api/v1/notifications/**").authenticated()

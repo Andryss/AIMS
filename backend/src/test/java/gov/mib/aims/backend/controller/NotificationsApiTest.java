@@ -57,7 +57,7 @@ class NotificationsApiTest extends BaseApiTest {
 
     @Test
     void listUnreadCountAndMarkRead() throws Exception {
-        String token = signInAndGetToken("operator", "operator");
+        String token = fixtures.signInAndGetToken("operator", "operator");
 
         mockMvc.perform(get(UNREAD_COUNT_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isOk())
@@ -98,20 +98,11 @@ class NotificationsApiTest extends BaseApiTest {
                 List.of(EntityRef.format(EntityType.INCIDENT, 1L))
         ).id();
 
-        String token = signInAndGetToken("operator", "operator");
+        String token = fixtures.signInAndGetToken("operator", "operator");
         mockMvc.perform(patch(NOTIFICATIONS_URL + "/" + foreignNotificationId + "/read")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("notification.not_found"));
     }
 
-    private String signInAndGetToken(String login, String password) throws Exception {
-        SignInRequest request = new SignInRequest().login(login).password(password);
-        MvcResult result = mockMvc.perform(post(SIGNIN_URL)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
-    }
 }

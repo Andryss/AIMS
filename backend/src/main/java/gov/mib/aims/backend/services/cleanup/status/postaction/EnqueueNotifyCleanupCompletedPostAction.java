@@ -7,11 +7,9 @@ import gov.mib.aims.backend.services.dbqueue.processor.NotifyCleanupCompletedPro
 import gov.mib.aims.backend.services.incident.status.postaction.StatusTransitionPostAction;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
- * Ставит задачу на уведомление ответственного после завершения очистки.
+ * Ставит задачу на уведомление ответственного после завершения очистки в рамках текущей транзакции.
  */
 @Component
 @RequiredArgsConstructor
@@ -21,16 +19,9 @@ public class EnqueueNotifyCleanupCompletedPostAction implements StatusTransition
 
     @Override
     public void execute(IncidentEntity context) {
-        NotifyCleanupCompletedPayload payload = new NotifyCleanupCompletedPayload(context.getId());
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    dbQueueService.produceTask(NotifyCleanupCompletedProcessor.class, payload);
-                }
-            });
-        } else {
-            dbQueueService.produceTask(NotifyCleanupCompletedProcessor.class, payload);
-        }
+        dbQueueService.produceTask(
+                NotifyCleanupCompletedProcessor.class,
+                new NotifyCleanupCompletedPayload(context.getId())
+        );
     }
 }

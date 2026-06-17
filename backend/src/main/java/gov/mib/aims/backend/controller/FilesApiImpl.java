@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,12 +23,14 @@ public class FilesApiImpl implements FilesApi {
     private final FileService fileService;
 
     @Override
+    @PreAuthorize("hasAuthority('FILE_UPLOAD')")
     public FileUploadResponse uploadFile(MultipartFile file) {
         log.info("POST /api/v1/files fileName={}", file != null ? file.getOriginalFilename() : null);
         return fileService.upload(file);
     }
 
     @Override
+    @PreAuthorize("hasAuthority('FILE_READ')")
     public Resource downloadFile(Long id) {
         log.info("GET /api/v1/files/{}", id);
         FileDownload download = fileService.download(id);

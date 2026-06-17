@@ -40,8 +40,8 @@ class IncidentCommentApiTest extends BaseApiTest {
 
     @Test
     void analystCreatesAndListsCommentsOldestFirst() throws Exception {
-        String operatorToken = signInAndGetToken("operator", "operator");
-        String analystToken = signInAndGetToken("analyst", "analyst");
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
+        String analystToken = fixtures.signInAndGetToken("analyst", "analyst");
         long incidentId = createDraftIncident(operatorToken);
         long analystUserId = appUserRepository.findByLogin("analyst").orElseThrow().getId();
 
@@ -71,8 +71,8 @@ class IncidentCommentApiTest extends BaseApiTest {
 
     @Test
     void agentCanCreateComment() throws Exception {
-        String operatorToken = signInAndGetToken("operator", "operator");
-        String agentToken = signInAndGetToken("agent", "agent");
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
         long incidentId = createDraftIncident(operatorToken);
         long agentUserId = appUserRepository.findByLogin("agent").orElseThrow().getId();
 
@@ -87,7 +87,7 @@ class IncidentCommentApiTest extends BaseApiTest {
 
     @Test
     void createCommentForMissingIncidentReturns404() throws Exception {
-        String analystToken = signInAndGetToken("analyst", "analyst");
+        String analystToken = fixtures.signInAndGetToken("analyst", "analyst");
         CreateIncidentCommentRequest request = new CreateIncidentCommentRequest().text("Ghost");
         mockMvc.perform(post(INCIDENTS_URL + "/999999/comments")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken)
@@ -99,7 +99,7 @@ class IncidentCommentApiTest extends BaseApiTest {
 
     @Test
     void historyReturnsChronologicalEntriesWithUserId() throws Exception {
-        String operatorToken = signInAndGetToken("operator", "operator");
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
         long operatorUserId = appUserRepository.findByLogin("operator").orElseThrow().getId();
         long incidentId = createDraftIncident(operatorToken);
 
@@ -122,7 +122,7 @@ class IncidentCommentApiTest extends BaseApiTest {
     }
 
     private long createDraftIncident(String operatorToken) throws Exception {
-        long fileId = uploadFile(operatorToken);
+        long fileId = fixtures.uploadFile(operatorToken);
         CreateIncidentRequest request = new CreateIncidentRequest()
                 .eventType(IncidentEventTypeApi.UNIDENTIFIED_SIGHTING)
                 .location("Test location")
@@ -138,29 +138,4 @@ class IncidentCommentApiTest extends BaseApiTest {
         return objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asLong();
     }
 
-    private long uploadFile(String token) throws Exception {
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "evidence.jpg",
-                MediaType.IMAGE_JPEG_VALUE,
-                "photo".getBytes()
-        );
-        MvcResult uploadResult = mockMvc.perform(multipart(FILES_URL)
-                        .file(file)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", not(emptyOrNullString())))
-                .andReturn();
-        return objectMapper.readTree(uploadResult.getResponse().getContentAsString()).get("id").asLong();
-    }
-
-    private String signInAndGetToken(String login, String password) throws Exception {
-        SignInRequest request = new SignInRequest().login(login).password(password);
-        MvcResult result = mockMvc.perform(post(SIGNIN_URL)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
-    }
 }

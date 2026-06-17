@@ -15,7 +15,10 @@ public enum Permission {
     INCIDENT_ASSIGN("Назначение ответственного и исполнителей на инцидент"),
     CLEANUP_REPORT_READ("Просмотр отчёта об очистке"),
     CLEANUP_REPORT_CREATE("Создание отчёта об очистке"),
-    CLEANUP_STATUS_CHANGE("Смена статуса очистки");
+    CLEANUP_STATUS_CHANGE("Смена статуса очистки"),
+    FILE_UPLOAD("Загрузка файлов"),
+    FILE_READ("Скачивание файлов"),
+    NOTIFICATION_READ("Просмотр уведомлений");
 
     private final String description;
 

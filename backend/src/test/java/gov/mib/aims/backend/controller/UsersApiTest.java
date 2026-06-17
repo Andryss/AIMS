@@ -29,7 +29,7 @@ class UsersApiTest extends BaseApiTest {
 
     @Test
     void searchWithoutRoleReturns400() throws Exception {
-        String agentToken = signInAndGetToken("agent", "agent");
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
 
         mockMvc.perform(get(USERS_SEARCH_URL + "?q=ag")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + agentToken))
@@ -39,7 +39,7 @@ class UsersApiTest extends BaseApiTest {
 
     @Test
     void agentSearchesUsersWithAgentRoleFilter() throws Exception {
-        String agentToken = signInAndGetToken("agent", "agent");
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
 
         mockMvc.perform(get(USERS_SEARCH_URL + "?q=ag&role=AGENT")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + agentToken))
@@ -52,7 +52,7 @@ class UsersApiTest extends BaseApiTest {
 
     @Test
     void searchWithShortQueryReturns400() throws Exception {
-        String agentToken = signInAndGetToken("agent", "agent");
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
 
         mockMvc.perform(get(USERS_SEARCH_URL + "?q=a&role=AGENT")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + agentToken))
@@ -62,7 +62,7 @@ class UsersApiTest extends BaseApiTest {
 
     @Test
     void operatorCanSearchUsersWithUserReadPermission() throws Exception {
-        String operatorToken = signInAndGetToken("operator", "operator");
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
 
         mockMvc.perform(get(USERS_SEARCH_URL + "?q=ag&role=AGENT")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + operatorToken))
@@ -72,7 +72,7 @@ class UsersApiTest extends BaseApiTest {
 
     @Test
     void batchUsersReturnsRequestedOrderAndOmitsMissing() throws Exception {
-        String agentToken = signInAndGetToken("agent", "agent");
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
         long agentId = appUserRepository.findByLogin("agent").orElseThrow().getId();
         long agent2Id = appUserRepository.findByLogin("agent2").orElseThrow().getId();
 
@@ -93,7 +93,7 @@ class UsersApiTest extends BaseApiTest {
 
     @Test
     void batchEmptyIdsReturnsEmptyList() throws Exception {
-        String agentToken = signInAndGetToken("agent", "agent");
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
         BatchUsersRequest request = new BatchUsersRequest().ids(java.util.List.of());
 
         mockMvc.perform(post(USERS_BATCH_URL)
@@ -104,13 +104,4 @@ class UsersApiTest extends BaseApiTest {
                 .andExpect(jsonPath("$.items", hasSize(0)));
     }
 
-    private String signInAndGetToken(String login, String password) throws Exception {
-        SignInRequest request = new SignInRequest().login(login).password(password);
-        MvcResult result = mockMvc.perform(post(SIGNIN_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
-    }
 }

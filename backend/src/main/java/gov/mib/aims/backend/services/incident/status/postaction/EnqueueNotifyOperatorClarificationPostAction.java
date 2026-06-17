@@ -2,16 +2,14 @@ package gov.mib.aims.backend.services.incident.status.postaction;
 
 import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.services.dbqueue.DbQueueService;
-import gov.mib.aims.backend.services.incident.StatusChangeCommentHolder;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyOperatorClarificationRequiredPayload;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyOperatorClarificationRequiredProcessor;
+import gov.mib.aims.backend.services.incident.StatusChangeCommentHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
- * Ставит задачу на уведомление создателя инцидента после commit.
+ * Ставит задачу на уведомление создателя инцидента в рамках текущей транзакции.
  */
 @Component
 @RequiredArgsConstructor
@@ -21,19 +19,12 @@ public class EnqueueNotifyOperatorClarificationPostAction implements StatusTrans
 
     @Override
     public void execute(IncidentEntity context) {
-        NotifyOperatorClarificationRequiredPayload payload = new NotifyOperatorClarificationRequiredPayload(
-                context.getId(),
-                StatusChangeCommentHolder.getCommentExcerpt()
+        dbQueueService.produceTask(
+                NotifyOperatorClarificationRequiredProcessor.class,
+                new NotifyOperatorClarificationRequiredPayload(
+                        context.getId(),
+                        StatusChangeCommentHolder.getCommentExcerpt()
+                )
         );
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    dbQueueService.produceTask(NotifyOperatorClarificationRequiredProcessor.class, payload);
-                }
-            });
-        } else {
-            dbQueueService.produceTask(NotifyOperatorClarificationRequiredProcessor.class, payload);
-        }
     }
 }

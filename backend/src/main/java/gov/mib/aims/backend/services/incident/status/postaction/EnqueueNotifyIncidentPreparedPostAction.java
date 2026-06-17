@@ -6,11 +6,9 @@ import gov.mib.aims.backend.services.dbqueue.processor.NotifyIncidentPreparedPay
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyIncidentPreparedProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
- * Ставит задачу на уведомление ответственного и исполнителей после commit.
+ * Ставит задачу на уведомление о готовности инцидента к исполнению в рамках текущей транзакции.
  */
 @Component
 @RequiredArgsConstructor
@@ -20,16 +18,9 @@ public class EnqueueNotifyIncidentPreparedPostAction implements StatusTransition
 
     @Override
     public void execute(IncidentEntity context) {
-        NotifyIncidentPreparedPayload payload = new NotifyIncidentPreparedPayload(context.getId());
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    dbQueueService.produceTask(NotifyIncidentPreparedProcessor.class, payload);
-                }
-            });
-        } else {
-            dbQueueService.produceTask(NotifyIncidentPreparedProcessor.class, payload);
-        }
+        dbQueueService.produceTask(
+                NotifyIncidentPreparedProcessor.class,
+                new NotifyIncidentPreparedPayload(context.getId())
+        );
     }
 }

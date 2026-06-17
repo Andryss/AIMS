@@ -65,9 +65,9 @@ class IncidentAlienApiTest extends BaseApiTest {
     @Test
     void analystLinksAlienOperatorForbidden() throws Exception {
         long incidentId = createReadyForAnalysisIncident();
-        long alienId = findAlienId("Слизень");
-        String analystToken = signInAndGetToken("analyst", "analyst");
-        String operatorToken = signInAndGetToken("operator", "operator");
+        String analystToken = fixtures.signInAndGetToken("analyst", "analyst");
+        long alienId = fixtures.findAlienId("Слизень", analystToken);
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
 
         mockMvc.perform(put(INCIDENTS_URL + "/" + incidentId + "/alien")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken)
@@ -85,8 +85,8 @@ class IncidentAlienApiTest extends BaseApiTest {
     }
 
     @Test
-    void operatorCannotChangeToAnalysisStatusReturns400() throws Exception {
-        String operatorToken = signInAndGetToken("operator", "operator");
+    void operatorCannotChangeToReadyForExecutionReturns403() throws Exception {
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
         long incidentId = createReadyForAnalysisIncident();
 
         ChangeIncidentStatusRequest statusRequest = new ChangeIncidentStatusRequest()
@@ -96,14 +96,14 @@ class IncidentAlienApiTest extends BaseApiTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + operatorToken)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(statusRequest)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("incident.invalid_status_transition"));
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value("auth.insufficient_role"));
     }
 
     @Test
     void readyForExecutionWithoutAlienReturns400() throws Exception {
         long incidentId = createReadyForAnalysisIncident();
-        String analystToken = signInAndGetToken("analyst", "analyst");
+        String analystToken = fixtures.signInAndGetToken("analyst", "analyst");
 
         ChangeIncidentStatusRequest statusRequest = new ChangeIncidentStatusRequest()
                 .status(IncidentStatusApi.READY_FOR_EXECUTION);
@@ -119,8 +119,8 @@ class IncidentAlienApiTest extends BaseApiTest {
     @Test
     void analystMovesToReadyForExecutionAgentReceivesNotification() throws Exception {
         long incidentId = createReadyForAnalysisIncident();
-        long alienId = findAlienId("Слизень");
-        String analystToken = signInAndGetToken("analyst", "analyst");
+        String analystToken = fixtures.signInAndGetToken("analyst", "analyst");
+        long alienId = fixtures.findAlienId("Слизень", analystToken);
 
         mockMvc.perform(put(INCIDENTS_URL + "/" + incidentId + "/alien")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken)
@@ -146,7 +146,7 @@ class IncidentAlienApiTest extends BaseApiTest {
 
         notifyAgentsProcessor.execute(new NotifyAgentsIncidentReadyPayload(incidentId));
 
-        String agentToken = signInAndGetToken("agent", "agent");
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
         mockMvc.perform(get(UNREAD_COUNT_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + agentToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.count").value(1));
@@ -155,8 +155,8 @@ class IncidentAlienApiTest extends BaseApiTest {
     @Test
     void clarificationRequiredNotifiesIncidentCreator() throws Exception {
         long incidentId = createReadyForAnalysisIncident();
-        String analystToken = signInAndGetToken("analyst", "analyst");
-        String operatorToken = signInAndGetToken("operator", "operator");
+        String analystToken = fixtures.signInAndGetToken("analyst", "analyst");
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
 
         ChangeIncidentStatusRequest statusRequest = new ChangeIncidentStatusRequest()
                 .status(IncidentStatusApi.CLARIFICATION_REQUIRED);
@@ -186,7 +186,7 @@ class IncidentAlienApiTest extends BaseApiTest {
     @Test
     void statusChangeWithCommentCreatesCommentRecord() throws Exception {
         long incidentId = createReadyForAnalysisIncident();
-        String analystToken = signInAndGetToken("analyst", "analyst");
+        String analystToken = fixtures.signInAndGetToken("analyst", "analyst");
 
         ChangeIncidentStatusRequest statusRequest = new ChangeIncidentStatusRequest()
                 .status(IncidentStatusApi.CLARIFICATION_REQUIRED)
@@ -209,7 +209,7 @@ class IncidentAlienApiTest extends BaseApiTest {
     @Test
     void clarificationNotificationContainsCommentExcerpt() throws Exception {
         long incidentId = createReadyForAnalysisIncident();
-        String analystToken = signInAndGetToken("analyst", "analyst");
+        String analystToken = fixtures.signInAndGetToken("analyst", "analyst");
         String excerpt = "A".repeat(130);
         String expectedExcerpt = "A".repeat(120) + "…";
 
@@ -242,9 +242,9 @@ class IncidentAlienApiTest extends BaseApiTest {
     }
 
     private long createReadyForAnalysisIncident() throws Exception {
-        String operatorToken = signInAndGetToken("operator", "operator");
-        long fileId = uploadFile(operatorToken);
-        long incidentId = createIncident(operatorToken, fileId);
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
+        long fileId = fixtures.uploadFile(operatorToken);
+        long incidentId = fixtures.createIncident(operatorToken, fileId);
 
         ChangeIncidentStatusRequest statusRequest = new ChangeIncidentStatusRequest()
                 .status(IncidentStatusApi.READY_FOR_ANALYSIS);
@@ -259,55 +259,4 @@ class IncidentAlienApiTest extends BaseApiTest {
         return incidentId;
     }
 
-    private long findAlienId(String name) throws Exception {
-        String analystToken = signInAndGetToken("analyst", "analyst");
-        MvcResult result = mockMvc.perform(get(ALIENS_URL + "/search").param("q", name)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString())
-                .get("items").get(0).get("id").asLong();
-    }
-
-    private long createIncident(String token, long fileId) throws Exception {
-        CreateIncidentRequest request = new CreateIncidentRequest()
-                .eventType(IncidentEventTypeApi.UNIDENTIFIED_SIGHTING)
-                .location("Test location")
-                .detectedAt(OffsetDateTime.of(2025, 6, 1, 10, 0, 0, 0, ZoneOffset.UTC))
-                .description("Test description")
-                .attachmentFileIds(List.of(fileId));
-        MvcResult result = mockMvc.perform(post(INCIDENTS_URL)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asLong();
-    }
-
-    private long uploadFile(String token) throws Exception {
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "evidence.jpg",
-                MediaType.IMAGE_JPEG_VALUE,
-                "photo".getBytes()
-        );
-        MvcResult uploadResult = mockMvc.perform(multipart(FILES_URL)
-                        .file(file)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", not(emptyOrNullString())))
-                .andReturn();
-        return objectMapper.readTree(uploadResult.getResponse().getContentAsString()).get("id").asLong();
-    }
-
-    private String signInAndGetToken(String login, String password) throws Exception {
-        SignInRequest request = new SignInRequest().login(login).password(password);
-        MvcResult result = mockMvc.perform(post(SIGNIN_URL)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
-    }
 }

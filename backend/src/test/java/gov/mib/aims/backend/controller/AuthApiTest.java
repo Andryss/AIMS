@@ -71,7 +71,7 @@ class AuthApiTest extends BaseApiTest {
 
     @Test
     void getUnknownApiUrlWithValidTokenReturns403() throws Exception {
-        String token = signInAndGetToken("operator", "operator");
+        String token = fixtures.signInAndGetToken("operator", "operator");
         mockMvc.perform(get(UNKNOWN_API_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value(403))
@@ -80,62 +80,57 @@ class AuthApiTest extends BaseApiTest {
 
     @Test
     void getAuthMeWithValidTokenReturnsLoginRolesAndPermissions() throws Exception {
-        String token = signInAndGetToken("operator", "operator");
+        String token = fixtures.signInAndGetToken("operator", "operator");
         mockMvc.perform(get(ME_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login").value("operator"))
                 .andExpect(jsonPath("$.roles", hasSize(1)))
                 .andExpect(jsonPath("$.roles[0]").value("OPERATOR"))
-                .andExpect(jsonPath("$.permissions", hasSize(6)))
+                .andExpect(jsonPath("$.permissions", hasSize(9)))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
                         "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT",
-                        "USER_READ", "CLEANUP_REPORT_READ")));
+                        "USER_READ", "CLEANUP_REPORT_READ",
+                        "FILE_UPLOAD", "FILE_READ", "NOTIFICATION_READ")));
     }
 
     @Test
     void analystHasAlienLinkAndStatusChangePermissions() throws Exception {
-        String token = signInAndGetToken("analyst", "analyst");
+        String token = fixtures.signInAndGetToken("analyst", "analyst");
         mockMvc.perform(get(ME_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login").value("analyst"))
                 .andExpect(jsonPath("$.roles[0]").value("ANALYST"))
-                .andExpect(jsonPath("$.permissions", hasSize(7)))
+                .andExpect(jsonPath("$.permissions", hasSize(10)))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
                         "INCIDENT_READ", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT",
-                        "INCIDENT_ALIEN_LINK", "ALIEN_READ", "USER_READ", "CLEANUP_REPORT_READ")));
+                        "INCIDENT_ALIEN_LINK", "ALIEN_READ", "USER_READ", "CLEANUP_REPORT_READ",
+                        "FILE_UPLOAD", "FILE_READ", "NOTIFICATION_READ")));
     }
 
     @Test
     void agentHasUserReadAndAssignPermissions() throws Exception {
-        String token = signInAndGetToken("agent", "agent");
+        String token = fixtures.signInAndGetToken("agent", "agent");
         mockMvc.perform(get(ME_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login").value("agent"))
                 .andExpect(jsonPath("$.roles[0]").value("AGENT"))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
                         "INCIDENT_READ", "USER_READ", "INCIDENT_ASSIGN", "INCIDENT_STATUS_CHANGE",
-                        "INCIDENT_COMMENT", "ALIEN_READ", "CLEANUP_REPORT_READ")));
+                        "INCIDENT_COMMENT", "ALIEN_READ", "CLEANUP_REPORT_READ",
+                        "FILE_UPLOAD", "FILE_READ", "NOTIFICATION_READ")));
     }
 
     @Test
     void cleanerHasAgentPermissionsPlusCleanup() throws Exception {
-        String token = signInAndGetToken("cleaner", "cleaner");
+        String token = fixtures.signInAndGetToken("cleaner", "cleaner");
         mockMvc.perform(get(ME_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login").value("cleaner"))
                 .andExpect(jsonPath("$.roles[0]").value("CLEANER"))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
                         "INCIDENT_READ", "USER_READ", "INCIDENT_COMMENT", "ALIEN_READ",
-                        "CLEANUP_REPORT_READ", "CLEANUP_REPORT_CREATE", "CLEANUP_STATUS_CHANGE")));
+                        "CLEANUP_REPORT_READ", "CLEANUP_REPORT_CREATE", "CLEANUP_STATUS_CHANGE",
+                        "FILE_UPLOAD", "FILE_READ", "NOTIFICATION_READ")));
     }
 
-    private String signInAndGetToken(String login, String password) throws Exception {
-        SignInRequest request = new SignInRequest().login(login).password(password);
-        MvcResult result = mockMvc.perform(post(SIGNIN_URL)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
-    }
 }

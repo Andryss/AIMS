@@ -7,11 +7,9 @@ import gov.mib.aims.backend.services.dbqueue.processor.NotifyAnalystsReanalysisR
 import gov.mib.aims.backend.services.incident.StatusChangeCommentHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
- * Ставит задачу на уведомление аналитиков о повторном анализе после commit.
+ * Ставит задачу на уведомление аналитиков о повторном анализе в рамках текущей транзакции.
  */
 @Component
 @RequiredArgsConstructor
@@ -21,23 +19,12 @@ public class EnqueueNotifyAnalystsReanalysisPostAction implements StatusTransiti
 
     @Override
     public void execute(IncidentEntity context) {
-        NotifyAnalystsReanalysisRequiredPayload payload = new NotifyAnalystsReanalysisRequiredPayload(
-                context.getId(),
-                StatusChangeCommentHolder.getCommentExcerpt()
+        dbQueueService.produceTask(
+                NotifyAnalystsReanalysisRequiredProcessor.class,
+                new NotifyAnalystsReanalysisRequiredPayload(
+                        context.getId(),
+                        StatusChangeCommentHolder.getCommentExcerpt()
+                )
         );
-        enqueueAfterCommit(payload);
-    }
-
-    private void enqueueAfterCommit(NotifyAnalystsReanalysisRequiredPayload payload) {
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    dbQueueService.produceTask(NotifyAnalystsReanalysisRequiredProcessor.class, payload);
-                }
-            });
-        } else {
-            dbQueueService.produceTask(NotifyAnalystsReanalysisRequiredProcessor.class, payload);
-        }
     }
 }

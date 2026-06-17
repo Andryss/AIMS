@@ -22,7 +22,7 @@ public class ResponsibleAgentPrecondition implements StatusTransitionPreconditio
             throw Errors.validationError("Responsible agent must be assigned");
         }
         if (!responsibleUserId.equals(currentUserService.getCurrentUserId())) {
-            throw Errors.invalidStatusTransition();
+            throw Errors.insufficientRole();
         }
     }
 }

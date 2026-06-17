@@ -22,7 +22,7 @@ class AliensApiTest extends BaseApiTest {
 
     @Test
     void searchAliensByPartialNameReturnsMatches() throws Exception {
-        String token = signInAndGetToken("analyst", "analyst");
+        String token = fixtures.signInAndGetToken("analyst", "analyst");
         mockMvc.perform(get(ALIENS_URL + "/search").param("q", "слиз")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isOk())
@@ -33,7 +33,7 @@ class AliensApiTest extends BaseApiTest {
 
     @Test
     void getAlienByIdReturnsRecord() throws Exception {
-        String token = signInAndGetToken("analyst", "analyst");
+        String token = fixtures.signInAndGetToken("analyst", "analyst");
         MvcResult searchResult = mockMvc.perform(get(ALIENS_URL + "/search").param("q", "Слизень")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isOk())
@@ -57,19 +57,10 @@ class AliensApiTest extends BaseApiTest {
 
     @Test
     void searchWithoutAlienReadPermissionReturns403() throws Exception {
-        String token = signInAndGetToken("operator", "operator");
+        String token = fixtures.signInAndGetToken("operator", "operator");
         mockMvc.perform(get(ALIENS_URL + "/search").param("q", "слиз")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isForbidden());
     }
 
-    private String signInAndGetToken(String login, String password) throws Exception {
-        SignInRequest request = new SignInRequest().login(login).password(password);
-        MvcResult result = mockMvc.perform(post(SIGNIN_URL)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
-    }
 }

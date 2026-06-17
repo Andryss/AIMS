@@ -43,7 +43,7 @@ public class FileService {
         try {
             descriptor = fileStorage.store(fileName, contentType, file.getInputStream(), size);
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to read upload stream", e);
+            throw Errors.fileUploadFailed();
         }
         StoredFileEntity entity = StoredFileEntity.builder()
                 .storageId(descriptor.storageId())

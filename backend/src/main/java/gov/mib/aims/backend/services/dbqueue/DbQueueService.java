@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import ru.yoomoney.tech.dbqueue.api.EnqueueParams;
 
 /**
- * Фасад для постановки задач в db-queue.
+ * Фасад для постановки задач в db-queue в рамках текущей Spring-транзакции.
  */
 @Service
 public class DbQueueService {
@@ -23,7 +23,7 @@ public class DbQueueService {
     }
 
     /**
-     * Ставит задачу в очередь для обработки.
+     * Ставит задачу в очередь для обработки в рамках активной транзакции.
      *
      * @param processorClass класс процессора
      * @param payload данные задачи

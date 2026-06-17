@@ -41,8 +41,8 @@ class IncidentsApiTest extends BaseApiTest {
 
     @Test
     void operatorCreatesIncidentAndAnalystReceivesNotificationAfterStatusChange() throws Exception {
-        String operatorToken = signInAndGetToken("operator", "operator");
-        long fileId = uploadFile(operatorToken);
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
+        long fileId = fixtures.uploadFile(operatorToken);
 
         CreateIncidentRequest createRequest = new CreateIncidentRequest()
                 .eventType(IncidentEventTypeApi.UNIDENTIFIED_SIGHTING)
@@ -91,7 +91,7 @@ class IncidentsApiTest extends BaseApiTest {
 
         notifyAnalystsProcessor.execute(new NotifyAnalystsIncidentReadyPayload(incidentId));
 
-        String analystToken = signInAndGetToken("analyst", "analyst");
+        String analystToken = fixtures.signInAndGetToken("analyst", "analyst");
         mockMvc.perform(get(UNREAD_COUNT_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.count").value(1));
@@ -99,9 +99,9 @@ class IncidentsApiTest extends BaseApiTest {
 
     @Test
     void listIncidentsReturnsPaginatedResults() throws Exception {
-        String operatorToken = signInAndGetToken("operator", "operator");
-        long fileId = uploadFile(operatorToken);
-        createIncident(operatorToken, fileId);
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
+        long fileId = fixtures.uploadFile(operatorToken);
+        fixtures.createIncident(operatorToken, fileId);
 
         mockMvc.perform(get(INCIDENTS_URL + "?page=0&size=10")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + operatorToken))
@@ -117,7 +117,7 @@ class IncidentsApiTest extends BaseApiTest {
 
     @Test
     void createWithoutTokenReturns401() throws Exception {
-        CreateIncidentRequest request = minimalCreateRequest(1L);
+        CreateIncidentRequest request = fixtures.minimalCreateRequest(1L);
         mockMvc.perform(post(INCIDENTS_URL)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -127,23 +127,23 @@ class IncidentsApiTest extends BaseApiTest {
 
     @Test
     void analystCannotCreateIncidentReturns403() throws Exception {
-        String operatorToken = signInAndGetToken("operator", "operator");
-        long fileId = uploadFile(operatorToken);
-        String analystToken = signInAndGetToken("analyst", "analyst");
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
+        long fileId = fixtures.uploadFile(operatorToken);
+        String analystToken = fixtures.signInAndGetToken("analyst", "analyst");
 
         mockMvc.perform(post(INCIDENTS_URL)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(minimalCreateRequest(fileId))))
+                        .content(objectMapper.writeValueAsString(fixtures.minimalCreateRequest(fileId))))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.message").value("auth.access_denied"));
     }
 
     @Test
-    void analystCannotSubmitDraftToAnalysisReturns400() throws Exception {
-        String operatorToken = signInAndGetToken("operator", "operator");
-        long incidentId = createIncident(operatorToken, uploadFile(operatorToken));
-        String analystToken = signInAndGetToken("analyst", "analyst");
+    void analystCannotSubmitDraftToAnalysisReturns403() throws Exception {
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
+        long incidentId = fixtures.createIncident(operatorToken, fixtures.uploadFile(operatorToken));
+        String analystToken = fixtures.signInAndGetToken("analyst", "analyst");
 
         ChangeIncidentStatusRequest statusRequest = new ChangeIncidentStatusRequest()
                 .status(IncidentStatusApi.READY_FOR_ANALYSIS);
@@ -152,13 +152,13 @@ class IncidentsApiTest extends BaseApiTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(statusRequest)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("incident.invalid_status_transition"));
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value("auth.insufficient_role"));
     }
 
     @Test
     void getUnknownIncidentReturns404() throws Exception {
-        String token = signInAndGetToken("operator", "operator");
+        String token = fixtures.signInAndGetToken("operator", "operator");
         mockMvc.perform(get(INCIDENTS_URL + "/999999")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isNotFound())
@@ -167,8 +167,8 @@ class IncidentsApiTest extends BaseApiTest {
 
     @Test
     void createWithInvalidEventTypeReturns400() throws Exception {
-        String token = signInAndGetToken("operator", "operator");
-        long fileId = uploadFile(token);
+        String token = fixtures.signInAndGetToken("operator", "operator");
+        long fileId = fixtures.uploadFile(token);
         String body = """
                 {
                   "eventType": "UNKNOWN_EVENT",
@@ -189,8 +189,8 @@ class IncidentsApiTest extends BaseApiTest {
 
     @Test
     void operatorResubmitsAfterClarificationReturnsToReadyForAnalysis() throws Exception {
-        String operatorToken = signInAndGetToken("operator", "operator");
-        long incidentId = createIncident(operatorToken, uploadFile(operatorToken));
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
+        long incidentId = fixtures.createIncident(operatorToken, fixtures.uploadFile(operatorToken));
 
         ChangeIncidentStatusRequest toAnalysis = new ChangeIncidentStatusRequest()
                 .status(IncidentStatusApi.READY_FOR_ANALYSIS);
@@ -200,7 +200,7 @@ class IncidentsApiTest extends BaseApiTest {
                         .content(objectMapper.writeValueAsString(toAnalysis)))
                 .andExpect(status().isOk());
 
-        String analystToken = signInAndGetToken("analyst", "analyst");
+        String analystToken = fixtures.signInAndGetToken("analyst", "analyst");
         ChangeIncidentStatusRequest clarification = new ChangeIncidentStatusRequest()
                 .status(IncidentStatusApi.CLARIFICATION_REQUIRED)
                 .comment("Уточните место");
@@ -221,8 +221,8 @@ class IncidentsApiTest extends BaseApiTest {
 
     @Test
     void changeStatusWithInvalidTransitionReturns400() throws Exception {
-        String token = signInAndGetToken("operator", "operator");
-        long incidentId = createIncident(token, uploadFile(token));
+        String token = fixtures.signInAndGetToken("operator", "operator");
+        long incidentId = fixtures.createIncident(token, fixtures.uploadFile(token));
 
         ChangeIncidentStatusRequest statusRequest = new ChangeIncidentStatusRequest()
                 .status(IncidentStatusApi.READY_FOR_ANALYSIS);
@@ -241,48 +241,4 @@ class IncidentsApiTest extends BaseApiTest {
                 .andExpect(jsonPath("$.message").value("incident.invalid_status_transition"));
     }
 
-    private long createIncident(String token, long fileId) throws Exception {
-        MvcResult result = mockMvc.perform(post(INCIDENTS_URL)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(minimalCreateRequest(fileId))))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asLong();
-    }
-
-    private CreateIncidentRequest minimalCreateRequest(long fileId) {
-        return new CreateIncidentRequest()
-                .eventType(IncidentEventTypeApi.UNIDENTIFIED_SIGHTING)
-                .location("Test location")
-                .detectedAt(OffsetDateTime.of(2025, 6, 1, 10, 0, 0, 0, ZoneOffset.UTC))
-                .description("Test description")
-                .attachmentFileIds(List.of(fileId));
-    }
-
-    private long uploadFile(String token) throws Exception {
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "evidence.jpg",
-                MediaType.IMAGE_JPEG_VALUE,
-                "photo".getBytes()
-        );
-        MvcResult uploadResult = mockMvc.perform(multipart(FILES_URL)
-                        .file(file)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", not(emptyOrNullString())))
-                .andReturn();
-        return objectMapper.readTree(uploadResult.getResponse().getContentAsString()).get("id").asLong();
-    }
-
-    private String signInAndGetToken(String login, String password) throws Exception {
-        SignInRequest request = new SignInRequest().login(login).password(password);
-        MvcResult result = mockMvc.perform(post(SIGNIN_URL)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
-    }
 }

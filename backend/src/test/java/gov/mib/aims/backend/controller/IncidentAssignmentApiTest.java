@@ -55,7 +55,7 @@ class IncidentAssignmentApiTest extends BaseApiTest {
     @Test
     void agentAssignsResponsibleAndExecutors() throws Exception {
         long incidentId = createReadyForExecutionIncident();
-        String agentToken = signInAndGetToken("agent", "agent");
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
         long agentId = appUserRepository.findByLogin("agent").orElseThrow().getId();
         long agent2Id = appUserRepository.findByLogin("agent2").orElseThrow().getId();
 
@@ -85,7 +85,7 @@ class IncidentAssignmentApiTest extends BaseApiTest {
                 new NotifyExecutorsAssignedPayload(incidentId, List.of(agent2Id))
         );
 
-        String agent2Token = signInAndGetToken("agent2", "agent2");
+        String agent2Token = fixtures.signInAndGetToken("agent2", "agent2");
         mockMvc.perform(get(UNREAD_COUNT_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + agent2Token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.count").value(1));
@@ -94,7 +94,7 @@ class IncidentAssignmentApiTest extends BaseApiTest {
     @Test
     void operatorCannotAssignReturns403() throws Exception {
         long incidentId = createReadyForExecutionIncident();
-        String operatorToken = signInAndGetToken("operator", "operator");
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
         long agentId = appUserRepository.findByLogin("agent").orElseThrow().getId();
 
         SetIncidentResponsibleRequest request = new SetIncidentResponsibleRequest().userId(agentId);
@@ -108,10 +108,10 @@ class IncidentAssignmentApiTest extends BaseApiTest {
 
     @Test
     void assignInDraftStatusReturns400() throws Exception {
-        String operatorToken = signInAndGetToken("operator", "operator");
-        String agentToken = signInAndGetToken("agent", "agent");
-        long fileId = uploadFile(operatorToken);
-        long incidentId = createIncident(operatorToken, fileId);
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
+        long fileId = fixtures.uploadFile(operatorToken);
+        long incidentId = fixtures.createIncident(operatorToken, fileId);
         long agentId = appUserRepository.findByLogin("agent").orElseThrow().getId();
 
         SetIncidentResponsibleRequest request = new SetIncidentResponsibleRequest().userId(agentId);
@@ -126,7 +126,7 @@ class IncidentAssignmentApiTest extends BaseApiTest {
     @Test
     void preparedStatusRequiresAssignment() throws Exception {
         long incidentId = createReadyForExecutionIncident();
-        String agentToken = signInAndGetToken("agent", "agent");
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
 
         ChangeIncidentStatusRequest preparation = new ChangeIncidentStatusRequest()
                 .status(IncidentStatusApi.PREPARATION_FOR_EXECUTION);
@@ -150,7 +150,7 @@ class IncidentAssignmentApiTest extends BaseApiTest {
     @Test
     void agentCompletesAssignmentAndMovesToPrepared() throws Exception {
         long incidentId = createReadyForExecutionIncident();
-        String agentToken = signInAndGetToken("agent", "agent");
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
         long agentId = appUserRepository.findByLogin("agent").orElseThrow().getId();
         long agent2Id = appUserRepository.findByLogin("agent2").orElseThrow().getId();
 
@@ -192,10 +192,10 @@ class IncidentAssignmentApiTest extends BaseApiTest {
     }
 
     private long createReadyForExecutionIncident() throws Exception {
-        String operatorToken = signInAndGetToken("operator", "operator");
-        String analystToken = signInAndGetToken("analyst", "analyst");
-        long fileId = uploadFile(operatorToken);
-        long incidentId = createIncident(operatorToken, fileId);
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
+        String analystToken = fixtures.signInAndGetToken("analyst", "analyst");
+        long fileId = fixtures.uploadFile(operatorToken);
+        long incidentId = fixtures.createIncident(operatorToken, fileId);
 
         mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/status")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + operatorToken)
@@ -204,7 +204,7 @@ class IncidentAssignmentApiTest extends BaseApiTest {
                                 new ChangeIncidentStatusRequest().status(IncidentStatusApi.READY_FOR_ANALYSIS))))
                 .andExpect(status().isOk());
 
-        long alienId = findAlienId("Слизень");
+        long alienId = fixtures.findAlienId("Слизень", analystToken);
         mockMvc.perform(put(INCIDENTS_URL + "/" + incidentId + "/alien")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken)
                         .contentType(APPLICATION_JSON)
@@ -221,58 +221,4 @@ class IncidentAssignmentApiTest extends BaseApiTest {
         return incidentId;
     }
 
-    private long findAlienId(String name) throws Exception {
-        String analystToken = signInAndGetToken("analyst", "analyst");
-        MvcResult result = mockMvc.perform(get(ALIENS_URL + "/search?q=" + name)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString())
-                .get("items").get(0).get("id").asLong();
-    }
-
-    private long createIncident(String token, long fileId) throws Exception {
-        MvcResult result = mockMvc.perform(post(INCIDENTS_URL)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(minimalCreateRequest(fileId))))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asLong();
-    }
-
-    private CreateIncidentRequest minimalCreateRequest(long fileId) {
-        return new CreateIncidentRequest()
-                .eventType(IncidentEventTypeApi.UNIDENTIFIED_SIGHTING)
-                .location("Test location")
-                .detectedAt(OffsetDateTime.of(2025, 6, 1, 10, 0, 0, 0, ZoneOffset.UTC))
-                .description("Test description")
-                .attachmentFileIds(List.of(fileId));
-    }
-
-    private long uploadFile(String token) throws Exception {
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "evidence.jpg",
-                MediaType.IMAGE_JPEG_VALUE,
-                "photo".getBytes()
-        );
-        MvcResult uploadResult = mockMvc.perform(multipart(FILES_URL)
-                        .file(file)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", not(emptyOrNullString())))
-                .andReturn();
-        return objectMapper.readTree(uploadResult.getResponse().getContentAsString()).get("id").asLong();
-    }
-
-    private String signInAndGetToken(String login, String password) throws Exception {
-        SignInRequest request = new SignInRequest().login(login).password(password);
-        MvcResult result = mockMvc.perform(post(SIGNIN_URL)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
-    }
 }

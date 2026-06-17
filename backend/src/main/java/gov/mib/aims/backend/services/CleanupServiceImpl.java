@@ -5,7 +5,6 @@ import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.generated.model.ChangeCleanupStatusRequest;
 import gov.mib.aims.backend.generated.model.CleanupReportResponse;
-import gov.mib.aims.backend.generated.model.CleanupStatusApi;
 import gov.mib.aims.backend.generated.model.CreateCleanupReportRequest;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
 import gov.mib.aims.backend.model.CleanupStatus;
@@ -13,17 +12,17 @@ import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.IncidentStatus;
 import gov.mib.aims.backend.repository.CleanupReportRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
-import gov.mib.aims.backend.repository.StoredFileRepository;
 import gov.mib.aims.backend.services.cleanup.status.CleanupStatusWorkflow;
+import gov.mib.aims.backend.services.mapping.CleanupMapper;
+import gov.mib.aims.backend.services.mapping.IncidentMapper;
+import gov.mib.aims.backend.services.validation.AttachmentValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Реализация {@link CleanupService}.
@@ -34,11 +33,12 @@ public class CleanupServiceImpl implements CleanupService {
 
     private final IncidentRepository incidentRepository;
     private final CleanupReportRepository cleanupReportRepository;
-    private final StoredFileRepository storedFileRepository;
     private final CurrentUserService currentUserService;
     private final EntityHistoryService entityHistoryService;
     private final CleanupStatusWorkflow cleanupStatusWorkflow;
-    private final IncidentService incidentService;
+    private final CleanupMapper cleanupMapper;
+    private final IncidentMapper incidentMapper;
+    private final AttachmentValidator attachmentValidator;
     private final Clock clock;
 
     @Override
@@ -50,21 +50,13 @@ public class CleanupServiceImpl implements CleanupService {
         if (cleanupReportRepository.existsByIncidentId(incidentId)) {
             throw Errors.cleanupReportAlreadyExists();
         }
-        String description = request.getDescription() != null ? request.getDescription().trim() : "";
-        if (description.isEmpty()) {
-            throw Errors.validationError("Description must not be empty");
-        }
-        List<Long> attachmentFileIds = request.getAttachmentFileIds();
-        if (attachmentFileIds == null || attachmentFileIds.isEmpty()) {
-            throw Errors.validationError("At least one attachment is required");
-        }
-        assertAttachmentsExist(attachmentFileIds);
+        attachmentValidator.assertAllExist(request.getAttachmentFileIds());
 
         LocalDateTime now = LocalDateTime.now(clock);
         CleanupReportEntity report = CleanupReportEntity.builder()
                 .incidentId(incidentId)
-                .description(description)
-                .attachmentFileIds(new ArrayList<>(attachmentFileIds))
+                .description(request.getDescription().trim())
+                .attachmentFileIds(new ArrayList<>(request.getAttachmentFileIds()))
                 .createdByUserId(currentUserService.getCurrentUserId())
                 .createdAt(now)
                 .build();
@@ -74,7 +66,7 @@ public class CleanupServiceImpl implements CleanupService {
         incident.setUpdatedAt(now);
         incident = incidentRepository.save(incident);
         entityHistoryService.recordChange(EntityType.INCIDENT, incident.getId(), incident);
-        return toReportResponse(report);
+        return cleanupMapper.toReportResponse(report);
     }
 
     @Override
@@ -85,7 +77,7 @@ public class CleanupServiceImpl implements CleanupService {
         }
         CleanupReportEntity report = cleanupReportRepository.findByIncidentId(incidentId)
                 .orElseThrow(Errors::cleanupReportNotFound);
-        return toReportResponse(report);
+        return cleanupMapper.toReportResponse(report);
     }
 
     @Override
@@ -93,10 +85,10 @@ public class CleanupServiceImpl implements CleanupService {
     public IncidentResponse changeCleanupStatus(Long incidentId, ChangeCleanupStatusRequest request) {
         IncidentEntity incident = incidentRepository.findById(incidentId)
                 .orElseThrow(Errors::incidentNotFound);
-        CleanupStatus target = toModelCleanupStatus(request.getStatus());
+        CleanupStatus target = cleanupMapper.toModelCleanupStatus(request.getStatus());
         incident = cleanupStatusWorkflow.changeStatus(incident, target);
         entityHistoryService.recordChange(EntityType.INCIDENT, incident.getId(), incident);
-        return incidentService.getById(incidentId);
+        return incidentMapper.toResponse(incident);
     }
 
     private void assertCleanupAllowed(IncidentEntity incident) {
@@ -104,31 +96,5 @@ public class CleanupServiceImpl implements CleanupService {
         if (status != IncidentStatus.EXECUTING && status != IncidentStatus.EXECUTION_COMPLETED) {
             throw Errors.cleanupNotAllowed();
         }
-    }
-
-    private void assertAttachmentsExist(List<Long> attachmentFileIds) {
-        for (Long fileId : attachmentFileIds) {
-            if (!storedFileRepository.existsById(fileId)) {
-                throw Errors.attachmentNotFound();
-            }
-        }
-    }
-
-    private CleanupStatus toModelCleanupStatus(CleanupStatusApi dto) {
-        return switch (dto) {
-            case PREPARATION -> CleanupStatus.PREPARATION;
-            case EXECUTION -> CleanupStatus.EXECUTION;
-            case COMPLETED -> CleanupStatus.COMPLETED;
-        };
-    }
-
-    private CleanupReportResponse toReportResponse(CleanupReportEntity entity) {
-        return new CleanupReportResponse()
-                .id(entity.getId())
-                .incidentId(entity.getIncidentId())
-                .description(entity.getDescription())
-                .attachmentFileIds(new ArrayList<>(entity.getAttachmentFileIds()))
-                .createdByUserId(entity.getCreatedByUserId())
-                .createdAt(entity.getCreatedAt().atOffset(ZoneOffset.UTC));
     }
 }

@@ -3,18 +3,13 @@ package gov.mib.aims.backend.services;
 import gov.mib.aims.backend.entity.EntityHistoryEntity;
 import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.exception.Errors;
-import gov.mib.aims.backend.generated.model.IncidentEventTypeApi;
 import gov.mib.aims.backend.generated.model.IncidentHistoryEntry;
 import gov.mib.aims.backend.generated.model.IncidentHistoryListResponse;
 import gov.mib.aims.backend.generated.model.IncidentHistorySnapshot;
-import gov.mib.aims.backend.generated.model.IncidentStatusApi;
-import gov.mib.aims.backend.generated.model.CleanupStatusApi;
-import gov.mib.aims.backend.model.CleanupStatus;
 import gov.mib.aims.backend.model.EntityType;
-import gov.mib.aims.backend.model.IncidentEventType;
-import gov.mib.aims.backend.model.IncidentStatus;
 import gov.mib.aims.backend.repository.EntityHistoryRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
+import gov.mib.aims.backend.services.mapping.IncidentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +32,7 @@ public class EntityHistoryQueryServiceImpl implements EntityHistoryQueryService 
     private final EntityHistoryRepository entityHistoryRepository;
     private final IncidentRepository incidentRepository;
     private final ObjectMapperWrapper objectMapper;
+    private final IncidentMapper incidentMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -74,8 +70,8 @@ public class EntityHistoryQueryServiceImpl implements EntityHistoryQueryService 
                 ? new ArrayList<>(entity.getExecutorUserIds())
                 : List.of();
         return new IncidentHistorySnapshot()
-                .status(toApiStatus(entity.getStatus()))
-                .eventType(toApiEventType(entity.getEventType()))
+                .status(incidentMapper.toApiStatus(entity.getStatus()))
+                .eventType(incidentMapper.toApiEventType(entity.getEventType()))
                 .location(entity.getLocation())
                 .detectedAt(entity.getDetectedAt().atOffset(ZoneOffset.UTC))
                 .description(entity.getDescription())
@@ -83,43 +79,7 @@ public class EntityHistoryQueryServiceImpl implements EntityHistoryQueryService 
                 .alienId(entity.getAlienId())
                 .responsibleUserId(entity.getResponsibleUserId())
                 .executorUserIds(executorIds)
-                .cleanupStatus(toApiCleanupStatus(entity.getCleanupStatus()))
+                .cleanupStatus(incidentMapper.toApiCleanupStatus(entity.getCleanupStatus()))
                 .cleanupReportId(entity.getCleanupReportId());
-    }
-
-    private CleanupStatusApi toApiCleanupStatus(CleanupStatus status) {
-        if (status == null) {
-            return null;
-        }
-        return switch (status) {
-            case PREPARATION -> CleanupStatusApi.PREPARATION;
-            case EXECUTION -> CleanupStatusApi.EXECUTION;
-            case COMPLETED -> CleanupStatusApi.COMPLETED;
-        };
-    }
-
-    private IncidentStatusApi toApiStatus(IncidentStatus status) {
-        return switch (status) {
-            case DRAFT -> IncidentStatusApi.DRAFT;
-            case READY_FOR_ANALYSIS -> IncidentStatusApi.READY_FOR_ANALYSIS;
-            case READY_FOR_EXECUTION -> IncidentStatusApi.READY_FOR_EXECUTION;
-            case CLARIFICATION_REQUIRED -> IncidentStatusApi.CLARIFICATION_REQUIRED;
-            case PREPARATION_FOR_EXECUTION -> IncidentStatusApi.PREPARATION_FOR_EXECUTION;
-            case PREPARED_FOR_EXECUTION -> IncidentStatusApi.PREPARED_FOR_EXECUTION;
-            case EXECUTING -> IncidentStatusApi.EXECUTING;
-            case EXECUTION_COMPLETED -> IncidentStatusApi.EXECUTION_COMPLETED;
-            case REANALYSIS_REQUIRED -> IncidentStatusApi.REANALYSIS_REQUIRED;
-        };
-    }
-
-    private IncidentEventTypeApi toApiEventType(IncidentEventType eventType) {
-        return switch (eventType) {
-            case UNIDENTIFIED_SIGHTING -> IncidentEventTypeApi.UNIDENTIFIED_SIGHTING;
-            case CONTACT_SUSPECT -> IncidentEventTypeApi.CONTACT_SUSPECT;
-            case ILLEGAL_UFO_LANDING -> IncidentEventTypeApi.ILLEGAL_UFO_LANDING;
-            case MEMORY_ANOMALY -> IncidentEventTypeApi.MEMORY_ANOMALY;
-            case ALIEN_ARTIFACT -> IncidentEventTypeApi.ALIEN_ARTIFACT;
-            case ALIEN_CAPTURE -> IncidentEventTypeApi.ALIEN_CAPTURE;
-        };
     }
 }

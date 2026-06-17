@@ -45,15 +45,12 @@ class CleanupApiTest extends BaseApiTest {
     private static final String UNREAD_COUNT_URL = "/api/v1/notifications/unread-count";
 
     @Autowired
-    private AppUserRepository appUserRepository;
-
-    @Autowired
     private NotifyCleanupCompletedProcessor notifyCleanupCompletedProcessor;
 
     @Test
     void responsibleAgentMovesToExecutingAndExecutionCompleted() throws Exception {
-        long incidentId = createPreparedIncident();
-        String agentToken = signInAndGetToken("agent", "agent");
+        long incidentId = fixtures.createPreparedIncident();
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
 
         mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/status")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + agentToken)
@@ -74,17 +71,17 @@ class CleanupApiTest extends BaseApiTest {
 
     @Test
     void nonResponsibleAgentCannotMoveToExecuting() throws Exception {
-        long incidentId = createPreparedIncident();
-        String agentToken = signInAndGetToken("agent", "agent");
-        String agent2Token = signInAndGetToken("agent2", "agent2");
+        long incidentId = fixtures.createPreparedIncident();
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
+        String agent2Token = fixtures.signInAndGetToken("agent2", "agent2");
 
         mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/status")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + agent2Token)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new ChangeIncidentStatusRequest().status(IncidentStatusApi.EXECUTING))))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("incident.invalid_status_transition"));
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value("auth.insufficient_role"));
 
         mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/status")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + agentToken)
@@ -98,7 +95,7 @@ class CleanupApiTest extends BaseApiTest {
     @Test
     void getCleanupReportReturns404WhenMissing() throws Exception {
         long incidentId = createExecutingIncident();
-        String cleanerToken = signInAndGetToken("cleaner", "cleaner");
+        String cleanerToken = fixtures.signInAndGetToken("cleaner", "cleaner");
 
         mockMvc.perform(get(INCIDENTS_URL + "/" + incidentId + "/cleanup-report")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + cleanerToken))
@@ -109,8 +106,8 @@ class CleanupApiTest extends BaseApiTest {
     @Test
     void cleanerCreatesAndReadsCleanupReport() throws Exception {
         long incidentId = createExecutingIncident();
-        String cleanerToken = signInAndGetToken("cleaner", "cleaner");
-        long fileId = uploadFile(cleanerToken);
+        String cleanerToken = fixtures.signInAndGetToken("cleaner", "cleaner");
+        long fileId = fixtures.uploadFile(cleanerToken);
 
         CreateCleanupReportRequest createRequest = new CreateCleanupReportRequest()
                 .description("Площадка очищена")
@@ -139,8 +136,8 @@ class CleanupApiTest extends BaseApiTest {
     @Test
     void duplicateCleanupReportReturns409() throws Exception {
         long incidentId = createExecutingIncident();
-        String cleanerToken = signInAndGetToken("cleaner", "cleaner");
-        long fileId = uploadFile(cleanerToken);
+        String cleanerToken = fixtures.signInAndGetToken("cleaner", "cleaner");
+        long fileId = fixtures.uploadFile(cleanerToken);
 
         CreateCleanupReportRequest createRequest = new CreateCleanupReportRequest()
                 .description("Первый отчёт")
@@ -163,8 +160,8 @@ class CleanupApiTest extends BaseApiTest {
     @Test
     void operatorCannotCreateCleanupReportReturns403() throws Exception {
         long incidentId = createExecutingIncident();
-        String operatorToken = signInAndGetToken("operator", "operator");
-        long fileId = uploadFile(operatorToken);
+        String operatorToken = fixtures.signInAndGetToken("operator", "operator");
+        long fileId = fixtures.uploadFile(operatorToken);
 
         CreateCleanupReportRequest createRequest = new CreateCleanupReportRequest()
                 .description("Отчёт")
@@ -181,8 +178,8 @@ class CleanupApiTest extends BaseApiTest {
     @Test
     void cleanupStatusWorkflowAndNotification() throws Exception {
         long incidentId = createExecutingIncident();
-        String cleanerToken = signInAndGetToken("cleaner", "cleaner");
-        long fileId = uploadFile(cleanerToken);
+        String cleanerToken = fixtures.signInAndGetToken("cleaner", "cleaner");
+        long fileId = fixtures.uploadFile(cleanerToken);
 
         mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/cleanup-status")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + cleanerToken)
@@ -232,15 +229,15 @@ class CleanupApiTest extends BaseApiTest {
         );
         notifyCleanupCompletedProcessor.execute(new NotifyCleanupCompletedPayload(incidentId));
 
-        String agentToken = signInAndGetToken("agent", "agent");
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
         mockMvc.perform(get(UNREAD_COUNT_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + agentToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.count").value(1));
     }
 
     private long createExecutingIncident() throws Exception {
-        long incidentId = createPreparedIncident();
-        String agentToken = signInAndGetToken("agent", "agent");
+        long incidentId = fixtures.createPreparedIncident();
+        String agentToken = fixtures.signInAndGetToken("agent", "agent");
         mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/status")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + agentToken)
                         .contentType(APPLICATION_JSON)
@@ -250,120 +247,4 @@ class CleanupApiTest extends BaseApiTest {
         return incidentId;
     }
 
-    private long createPreparedIncident() throws Exception {
-        String operatorToken = signInAndGetToken("operator", "operator");
-        String analystToken = signInAndGetToken("analyst", "analyst");
-        String agentToken = signInAndGetToken("agent", "agent");
-        long fileId = uploadFile(operatorToken);
-        long incidentId = createIncident(operatorToken, fileId);
-        long agentId = appUserRepository.findByLogin("agent").orElseThrow().getId();
-        long agent2Id = appUserRepository.findByLogin("agent2").orElseThrow().getId();
-
-        mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/status")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + operatorToken)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(
-                                new ChangeIncidentStatusRequest().status(IncidentStatusApi.READY_FOR_ANALYSIS))))
-                .andExpect(status().isOk());
-
-        long alienId = findAlienId("Слизень");
-        mockMvc.perform(put(INCIDENTS_URL + "/" + incidentId + "/alien")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken)
-                        .contentType(APPLICATION_JSON)
-                        .content("{\"alienId\": " + alienId + "}"))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/status")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(
-                                new ChangeIncidentStatusRequest().status(IncidentStatusApi.READY_FOR_EXECUTION))))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(put(INCIDENTS_URL + "/" + incidentId + "/responsible")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + agentToken)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(
-                                new SetIncidentResponsibleRequest().userId(agentId))))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(put(INCIDENTS_URL + "/" + incidentId + "/executors")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + agentToken)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(
-                                new SetIncidentExecutorsRequest().userIds(List.of(agent2Id)))))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/status")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + agentToken)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(
-                                new ChangeIncidentStatusRequest().status(IncidentStatusApi.PREPARATION_FOR_EXECUTION))))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(post(INCIDENTS_URL + "/" + incidentId + "/status")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + agentToken)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(
-                                new ChangeIncidentStatusRequest().status(IncidentStatusApi.PREPARED_FOR_EXECUTION))))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("PREPARED_FOR_EXECUTION"));
-
-        return incidentId;
-    }
-
-    private long findAlienId(String name) throws Exception {
-        String analystToken = signInAndGetToken("analyst", "analyst");
-        MvcResult result = mockMvc.perform(get(ALIENS_URL + "/search?q=" + name)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + analystToken))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString())
-                .get("items").get(0).get("id").asLong();
-    }
-
-    private long createIncident(String token, long fileId) throws Exception {
-        MvcResult result = mockMvc.perform(post(INCIDENTS_URL)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(minimalCreateRequest(fileId))))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asLong();
-    }
-
-    private CreateIncidentRequest minimalCreateRequest(long fileId) {
-        return new CreateIncidentRequest()
-                .eventType(IncidentEventTypeApi.UNIDENTIFIED_SIGHTING)
-                .location("Test location")
-                .detectedAt(OffsetDateTime.of(2025, 6, 1, 10, 0, 0, 0, ZoneOffset.UTC))
-                .description("Test description")
-                .attachmentFileIds(List.of(fileId));
-    }
-
-    private long uploadFile(String token) throws Exception {
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "evidence.jpg",
-                MediaType.IMAGE_JPEG_VALUE,
-                "photo".getBytes()
-        );
-        MvcResult uploadResult = mockMvc.perform(multipart(FILES_URL)
-                        .file(file)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", not(emptyOrNullString())))
-                .andReturn();
-        return objectMapper.readTree(uploadResult.getResponse().getContentAsString()).get("id").asLong();
-    }
-
-    private String signInAndGetToken(String login, String password) throws Exception {
-        SignInRequest request = new SignInRequest().login(login).password(password);
-        MvcResult result = mockMvc.perform(post(SIGNIN_URL)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andReturn();
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
-    }
 }
