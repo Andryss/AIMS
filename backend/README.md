@@ -2,6 +2,80 @@
 
 Spring Boot 3.5 / Java 17 REST API for the AIMS incident management system.
 
+See also: [project README](../README.md) · [frontend README](../frontend/README.md)
+
+## Technology stack and licenses
+
+### Runtime (shipped in the Spring Boot JAR)
+
+| Component | Version | Role |
+|-----------|---------|------|
+| [Spring Boot](https://spring.io/projects/spring-boot) | 3.5.14 | Application framework (Web, Security, JPA, Validation, Actuator) |
+| Java | 17 | Runtime |
+| [PostgreSQL JDBC](https://jdbc.postgresql.org/) | 42.7.10 | Database driver (`runtime`) |
+| [Liquibase](https://www.liquibase.com/) | 4.31.1 | Schema migrations |
+| [JJWT](https://github.com/jwtk/jjwt) | 0.12.6 | JWT creation and parsing |
+| [db-queue](https://github.com/yoomoney/db-queue) (`db-queue-core`, `db-queue-spring`) | 15.1.0 | Background task queue on PostgreSQL |
+| [Lombok](https://projectlombok.org/) | 1.18.46 | Compile-time boilerplate reduction (not required at runtime) |
+| [swagger-annotations](https://github.com/swagger-api/swagger-core) | 2.2.23 | OpenAPI annotation types for generated API |
+
+Spring Boot brings transitive dependencies (Spring Framework, Hibernate, Jackson, Logback, etc.). Generated API interfaces and models live under `target/generated-sources/openapi/` (OpenAPI Generator).
+
+**Infrastructure (Docker, not a Maven dependency):** PostgreSQL 15 (`postgres:15-alpine` in repo-root `docker-compose.yml`) — [PostgreSQL License](https://www.postgresql.org/about/licence/) (permissive).
+
+### Build, code generation, and quality (not required in production runtime)
+
+| Tool | Version | Role |
+|------|---------|------|
+| [OpenAPI Generator](https://openapi-generator.tech/) | 7.8.0 | Server stubs from `api.yaml` |
+| [Checkstyle](https://checkstyle.org/) (Maven plugin) | 3.6.0 | Style checks at `validate` |
+| [JaCoCo](https://www.jacoco.org/) | 0.8.11 | Test coverage (minimum 80% lines) |
+
+### Test scope only
+
+| Library | Version | Role |
+|---------|---------|------|
+| Spring Boot Test, Spring Security Test | BOM-managed | Integration / API tests |
+| [Zonky embedded PostgreSQL](https://github.com/zonkyio/embedded-database-spring-test) | 2.6.0 / 2.1.0 | In-memory Postgres for tests |
+
+### Licenses and commercial use
+
+This section describes **project policy** for dependency licensing. It is not legal advice; confirm requirements with your organization if needed.
+
+**Allowed in production / runtime artifacts** — commercial use OK without open-sourcing your application code:
+
+- MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, 0BSD, Unlicense
+
+**Allowed only as build or test tools** (not shipped in the deployable JAR):
+
+- EPL-1.0 / EPL-2.0 (JaCoCo; Logback is dual-licensed EPL-2.0 / LGPL-2.1 as part of Spring Boot’s default logging stack)
+- LGPL-2.1 (Checkstyle plugin; Logback’s LGPL option when used as a separate library)
+
+**Not acceptable** as deliberate runtime dependencies: GPL, AGPL, or LGPL libraries that would be distributed as part of the product without a compliant linking exception.
+
+#### Direct dependency license summary
+
+| Dependency | Version | License | Commercial use |
+|------------|---------|---------|----------------|
+| Spring Boot starters | 3.5.14 | Apache-2.0 | Yes |
+| PostgreSQL JDBC | 42.7.10 | BSD-2-Clause | Yes |
+| Liquibase | 4.31.1 | Apache-2.0 | Yes |
+| JJWT (`jjwt-api`, `jjwt-impl`, `jjwt-jackson`) | 0.12.6 | Apache-2.0 | Yes |
+| db-queue-core / db-queue-spring | 15.1.0 | MIT | Yes |
+| Lombok | 1.18.46 | MIT | Yes (compile-time) |
+| swagger-annotations | 2.2.23 | Apache-2.0 | Yes |
+
+#### Re-running the license audit
+
+Download license metadata for compile/runtime dependencies (excludes `test` scope):
+
+```bash
+cd backend
+./mvnw org.codehaus.mojo:license-maven-plugin:download-licenses -Dlicense.excludedScopes=test
+```
+
+Review `target/generated-resources/licenses.xml`.
+
 ## Prerequisites
 
 - Java 17+
