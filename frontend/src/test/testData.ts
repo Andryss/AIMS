@@ -3,6 +3,8 @@ import {
   AuthMeResponse,
   IncidentListResponse,
   IncidentResponse,
+  MonitoringAlert,
+  MonitoringAlertListResponse,
   NotificationListResponse,
 } from '../types';
 
@@ -55,5 +57,34 @@ export const mockNotificationList = (
   size: 20,
   totalElements: 0,
   totalPages: 0,
+  ...overrides,
+});
+
+export const mockMonitoringAlert = (
+  overrides: Partial<MonitoringAlert> = {},
+): MonitoringAlert => ({
+  id: 1,
+  externalEventId: 'evt-test-001',
+  sourceSystem: 'EXTERNAL_MONITORING_V1',
+  status: 'NEW',
+  eventType: 'UNIDENTIFIED_SIGHTING',
+  location: 'Nevada desert sector 7',
+  detectedAt: '2025-06-01T12:00:00Z',
+  description: 'Thermal anomaly detected by external sensors',
+  mediaUrls: ['https://example.com/evidence/photo1.jpg'],
+  incidentId: null,
+  receivedAt: '2025-06-01T12:05:00Z',
+  createdAt: '2025-06-01T12:05:00Z',
+  ...overrides,
+});
+
+export const mockMonitoringAlertList = (
+  overrides: Partial<MonitoringAlertListResponse> = {},
+): MonitoringAlertListResponse => ({
+  items: [mockMonitoringAlert()],
+  page: 0,
+  size: 12,
+  totalElements: 1,
+  totalPages: 1,
   ...overrides,
 });

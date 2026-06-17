@@ -68,6 +68,8 @@ describe('NotificationsPanel', () => {
     await waitFor(() => {
       expect(screen.getByText('Новый инцидент')).toBeInTheDocument();
     });
+    expect(screen.getByRole('time')).toHaveTextContent(/01\.06/);
+    expect(screen.getByRole('time')).toHaveAttribute('dateTime', '2025-06-01T12:00:00Z');
     expect(onUnreadChange).toHaveBeenCalledWith(1);
   });
 

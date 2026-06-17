@@ -6,5 +6,8 @@ package gov.mib.aims.backend.model;
 public enum EntityType {
 
     /** Инцидент. */
-    INCIDENT
+    INCIDENT,
+
+    /** Алерт внешнего мониторинга. */
+    MONITORING_ALERT
 }

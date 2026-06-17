@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as api from '../api/client';
-import { mockIncident } from '../test/testData';
+import { mockIncident, mockMonitoringAlert } from '../test/testData';
 import { CreateIncidentModal } from './CreateIncidentModal';
 
 jest.mock('../api/client');
@@ -88,6 +88,34 @@ describe('CreateIncidentModal', () => {
     await waitFor(() => {
       expect(screen.getByText('Server error')).toBeInTheDocument();
     });
+  });
+
+  it('shows note that external media are not auto-attached when creating from alert', async () => {
+    const alert = mockMonitoringAlert();
+    render(
+      <CreateIncidentModal
+        token="tok"
+        open
+        onClose={onClose}
+        onCreated={onCreated}
+        initialValues={{
+          eventType: alert.eventType,
+          location: alert.location,
+          detectedAt: alert.detectedAt,
+          description: alert.description,
+          monitoringAlertId: alert.id,
+          mediaUrls: alert.mediaUrls,
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'Зарегистрировать инцидент по алерту' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/не прикрепляются к инциденту автоматически/i),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /photo1\.jpg/i })).toBeInTheDocument();
   });
 
   it('closes on overlay click', async () => {

@@ -1,8 +1,7 @@
 package gov.mib.aims.backend.entity;
 
-import gov.mib.aims.backend.model.CleanupStatus;
 import gov.mib.aims.backend.model.IncidentEventType;
-import gov.mib.aims.backend.model.IncidentStatus;
+import gov.mib.aims.backend.model.MonitoringAlertStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,27 +22,34 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Инцидент.
+ * Алерт от внешней системы мониторинга.
  */
 @Entity
-@Table(name = "incident")
+@Table(name = "monitoring_alert")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class IncidentEntity {
+public class MonitoringAlertEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "external_event_id", nullable = false)
+    private String externalEventId;
+
+    @Column(name = "source_system", nullable = false)
+    private String sourceSystem;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private IncidentStatus status;
+    private MonitoringAlertStatus status;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "event_type", nullable = false)
@@ -59,37 +65,20 @@ public class IncidentEntity {
     private String description;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "attachment_file_ids", nullable = false)
+    @Column(name = "media_urls", nullable = false)
     @Builder.Default
-    private List<Long> attachmentFileIds = new ArrayList<>();
-
-    @Column(name = "alien_id")
-    private Long alienId;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "cleanup_status")
-    private CleanupStatus cleanupStatus;
-
-    @Column(name = "cleanup_report_id")
-    private Long cleanupReportId;
-
-    @Column(name = "responsible_user_id")
-    private Long responsibleUserId;
+    private List<String> mediaUrls = new ArrayList<>();
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "executor_user_ids", nullable = false)
-    @Builder.Default
-    private List<Long> executorUserIds = new ArrayList<>();
+    @Column(name = "raw_payload", nullable = false)
+    private Map<String, Object> rawPayload;
 
-    @Column(name = "created_by_user_id", nullable = false)
-    private Long createdByUserId;
+    @Column(name = "incident_id")
+    private Long incidentId;
 
-    @Column(name = "monitoring_alert_id")
-    private Long monitoringAlertId;
+    @Column(name = "received_at", nullable = false)
+    private LocalDateTime receivedAt;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
 }

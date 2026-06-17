@@ -43,6 +43,41 @@ export interface CreateIncidentRequest {
   detectedAt: string;
   description: string;
   attachmentFileIds: number[];
+  monitoringAlertId?: number;
+}
+
+export type MonitoringAlertStatus = 'NEW' | 'INCIDENT_CREATED';
+
+export interface MonitoringAlert {
+  id: number;
+  externalEventId: string;
+  sourceSystem: string;
+  status: MonitoringAlertStatus;
+  eventType: IncidentEventType;
+  location: string;
+  detectedAt: string;
+  description: string;
+  mediaUrls: string[];
+  incidentId?: number | null;
+  receivedAt: string;
+  createdAt: string;
+}
+
+export interface MonitoringAlertListResponse {
+  items: MonitoringAlert[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface CreateIncidentInitialValues {
+  eventType?: IncidentEventType;
+  location?: string;
+  detectedAt?: string;
+  description?: string;
+  monitoringAlertId?: number;
+  mediaUrls?: string[];
 }
 
 export interface IncidentResponse {
@@ -58,6 +93,7 @@ export interface IncidentResponse {
   executorUserIds: number[];
   cleanupStatus?: CleanupStatus | null;
   cleanupReportId?: number | null;
+  monitoringAlertId?: number | null;
   createdAt: string;
   updatedAt: string;
 }

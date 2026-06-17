@@ -1,9 +1,15 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import * as api from '../api/client';
 import { EVENT_TYPE_LABELS } from '../incidentLabels';
 import { useFocusTrap } from '../hooks/useFocusTrap';
-import { CreateIncidentRequest, IncidentEventType, IncidentResponse } from '../types';
+import {
+  CreateIncidentInitialValues,
+  CreateIncidentRequest,
+  IncidentEventType,
+  IncidentResponse,
+} from '../types';
 import { FileUploadField } from './FileUploadField';
+import { MonitoringAlertMediaLinks } from './MonitoringAlertMediaLinks';
 import { Button } from './ui/Button';
 import { FormField } from './ui/FormField';
 
@@ -16,11 +22,18 @@ function toUtcIsoString(localDateTime: string): string {
   return new Date(localDateTime).toISOString();
 }
 
+function toDatetimeLocalValue(iso: string): string {
+  const date = new Date(iso);
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 interface CreateIncidentModalProps {
   token: string;
   open: boolean;
   onClose: () => void;
   onCreated: (incident: IncidentResponse) => void;
+  initialValues?: CreateIncidentInitialValues | null;
 }
 
 export function CreateIncidentModal({
@@ -28,15 +41,43 @@ export function CreateIncidentModal({
   open,
   onClose,
   onCreated,
+  initialValues = null,
 }: CreateIncidentModalProps) {
   const [eventType, setEventType] = useState<IncidentEventType>('UNIDENTIFIED_SIGHTING');
   const [location, setLocation] = useState('');
   const [detectedAt, setDetectedAt] = useState('');
   const [description, setDescription] = useState('');
+  const [monitoringAlertId, setMonitoringAlertId] = useState<number | undefined>();
+  const [referenceMediaUrls, setReferenceMediaUrls] = useState<string[]>([]);
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const trapRef = useFocusTrap(open);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    if (initialValues) {
+      setEventType(initialValues.eventType ?? 'UNIDENTIFIED_SIGHTING');
+      setLocation(initialValues.location ?? '');
+      setDetectedAt(
+        initialValues.detectedAt ? toDatetimeLocalValue(initialValues.detectedAt) : '',
+      );
+      setDescription(initialValues.description ?? '');
+      setMonitoringAlertId(initialValues.monitoringAlertId);
+      setReferenceMediaUrls(initialValues.mediaUrls ?? []);
+    } else {
+      setEventType('UNIDENTIFIED_SIGHTING');
+      setLocation('');
+      setDetectedAt('');
+      setDescription('');
+      setMonitoringAlertId(undefined);
+      setReferenceMediaUrls([]);
+    }
+    setAttachmentFiles([]);
+    setError(null);
+  }, [open, initialValues]);
 
   if (!open) {
     return null;
@@ -61,13 +102,12 @@ export function CreateIncidentModal({
         description: description.trim(),
         attachmentFileIds: uploaded.map((item) => item.id),
       };
+      if (monitoringAlertId != null) {
+        payload.monitoringAlertId = monitoringAlertId;
+      }
       const incident = await api.createIncident(token, payload);
       onCreated(incident);
       onClose();
-      setLocation('');
-      setDetectedAt('');
-      setDescription('');
-      setAttachmentFiles([]);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Не удалось создать инцидент';
       setError(message);
@@ -87,7 +127,9 @@ export function CreateIncidentModal({
         aria-labelledby="create-incident-title"
       >
         <div className="modal__header">
-          <h2 id="create-incident-title">Создать инцидент</h2>
+          <h2 id="create-incident-title">
+            {monitoringAlertId != null ? 'Зарегистрировать инцидент по алерту' : 'Создать инцидент'}
+          </h2>
           <button type="button" className="btn btn--ghost" onClick={onClose} aria-label="Закрыть">
             ×
           </button>
@@ -133,6 +175,20 @@ export function CreateIncidentModal({
               required
             />
           </FormField>
+          {monitoringAlertId != null && (
+            <div className="monitoring-alert-modal-note">
+              {referenceMediaUrls.length > 0 && (
+                <MonitoringAlertMediaLinks urls={referenceMediaUrls} compact />
+              )}
+              <p className="monitoring-alert-modal-note__text">
+                Медиафайлы от внешней системы мониторинга не прикрепляются к инциденту автоматически.
+                При необходимости скачайте их по ссылкам и загрузите вручную во вложения.
+              </p>
+            </div>
+          )}
+          {monitoringAlertId == null && referenceMediaUrls.length > 0 && (
+            <MonitoringAlertMediaLinks urls={referenceMediaUrls} compact />
+          )}
           <FileUploadField
             label="Вложения"
             files={attachmentFiles}

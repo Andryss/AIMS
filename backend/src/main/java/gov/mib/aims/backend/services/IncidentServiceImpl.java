@@ -1,6 +1,7 @@
 package gov.mib.aims.backend.services;
 
 import gov.mib.aims.backend.entity.IncidentEntity;
+import gov.mib.aims.backend.entity.MonitoringAlertEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
@@ -11,10 +12,12 @@ import gov.mib.aims.backend.generated.model.SetIncidentExecutorsRequest;
 import gov.mib.aims.backend.generated.model.SetIncidentResponsibleRequest;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.IncidentStatus;
+import gov.mib.aims.backend.model.MonitoringAlertStatus;
 import gov.mib.aims.backend.model.Role;
 import gov.mib.aims.backend.repository.AlienRepository;
 import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
+import gov.mib.aims.backend.repository.MonitoringAlertRepository;
 import gov.mib.aims.backend.services.incident.ExecutorAssignmentNotifier;
 import gov.mib.aims.backend.services.incident.StatusChangeCommentHolder;
 import gov.mib.aims.backend.services.incident.status.IncidentStatusWorkflow;
@@ -39,6 +42,7 @@ import java.util.List;
 public class IncidentServiceImpl implements IncidentService {
 
     private final IncidentRepository incidentRepository;
+    private final MonitoringAlertRepository monitoringAlertRepository;
     private final AlienRepository alienRepository;
     private final AppUserRepository appUserRepository;
     private final CurrentUserService currentUserService;
@@ -54,6 +58,7 @@ public class IncidentServiceImpl implements IncidentService {
     @Transactional
     public IncidentResponse create(CreateIncidentRequest request) {
         attachmentValidator.assertAllExist(request.getAttachmentFileIds());
+        MonitoringAlertEntity linkedAlert = resolveMonitoringAlertForCreate(request.getMonitoringAlertId());
         LocalDateTime now = LocalDateTime.now(clock);
         IncidentEntity entity = IncidentEntity.builder()
                 .status(IncidentStatus.DRAFT)
@@ -64,12 +69,30 @@ public class IncidentServiceImpl implements IncidentService {
                 .attachmentFileIds(request.getAttachmentFileIds())
                 .executorUserIds(new ArrayList<>())
                 .createdByUserId(currentUserService.getCurrentUserId())
+                .monitoringAlertId(linkedAlert != null ? linkedAlert.getId() : null)
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
         entity = incidentRepository.save(entity);
+        if (linkedAlert != null) {
+            linkedAlert.setStatus(MonitoringAlertStatus.INCIDENT_CREATED);
+            linkedAlert.setIncidentId(entity.getId());
+            monitoringAlertRepository.save(linkedAlert);
+        }
         entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
         return incidentMapper.toResponse(entity);
+    }
+
+    private MonitoringAlertEntity resolveMonitoringAlertForCreate(Long monitoringAlertId) {
+        if (monitoringAlertId == null) {
+            return null;
+        }
+        MonitoringAlertEntity alert = monitoringAlertRepository.findById(monitoringAlertId)
+                .orElseThrow(Errors::monitoringAlertNotFound);
+        if (alert.getStatus() != MonitoringAlertStatus.NEW || alert.getIncidentId() != null) {
+            throw Errors.monitoringAlertNotLinkable();
+        }
+        return alert;
     }
 
     @Override

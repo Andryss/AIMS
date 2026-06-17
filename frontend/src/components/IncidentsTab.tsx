@@ -19,12 +19,7 @@ interface IncidentsTabProps {
   canChangeStatus: boolean;
 }
 
-export function IncidentsTab({
-  token,
-  roles,
-  canCreate,
-  canChangeStatus,
-}: IncidentsTabProps) {
+export function IncidentsTab({ token, roles, canCreate, canChangeStatus }: IncidentsTabProps) {
   const navigate = useNavigate();
   const isMobile = useMediaQuery('(max-width: 640px)');
   const [page, setPage] = useState(0);

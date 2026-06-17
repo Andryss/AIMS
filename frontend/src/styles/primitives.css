@@ -128,6 +128,14 @@
   margin-bottom: var(--space-4);
 }
 
+.card__subtitle {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: 1.45;
+  max-width: 36rem;
+}
+
 .card--flat {
   box-shadow: none;
 }

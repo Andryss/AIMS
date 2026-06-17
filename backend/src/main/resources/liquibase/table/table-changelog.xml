@@ -17,5 +17,6 @@
     <include file="incident_comment.sql" relativeToChangelogFile="true"/>
     <include file="alien.sql" relativeToChangelogFile="true"/>
     <include file="cleanup_report.sql" relativeToChangelogFile="true"/>
+    <include file="monitoring_alert.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

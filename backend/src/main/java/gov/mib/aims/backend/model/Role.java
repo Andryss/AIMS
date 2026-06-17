@@ -19,7 +19,8 @@ public enum Role {
             Permission.CLEANUP_REPORT_READ,
             Permission.FILE_UPLOAD,
             Permission.FILE_READ,
-            Permission.NOTIFICATION_READ
+            Permission.NOTIFICATION_READ,
+            Permission.MONITORING_ALERT_READ
     ),
     ANALYST(
             "Аналитик",

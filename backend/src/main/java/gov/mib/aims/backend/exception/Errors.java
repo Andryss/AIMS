@@ -264,6 +264,39 @@ public final class Errors {
     }
 
     /**
+     * Алерт мониторинга не найден.
+     */
+    public static BaseException monitoringAlertNotFound() {
+        return BaseException.builder()
+                .code(404)
+                .message("monitoring_alert.not_found")
+                .humanMessage("Monitoring alert not found")
+                .build();
+    }
+
+    /**
+     * Дубликат внешнего идентификатора события мониторинга.
+     */
+    public static BaseException duplicateMonitoringEvent() {
+        return BaseException.builder()
+                .code(409)
+                .message("monitoring_alert.duplicate_external_event")
+                .humanMessage("Monitoring event with this externalEventId already exists")
+                .build();
+    }
+
+    /**
+     * Алерт мониторинга уже связан с инцидентом или недоступен для привязки.
+     */
+    public static BaseException monitoringAlertNotLinkable() {
+        return BaseException.builder()
+                .code(400)
+                .message("monitoring_alert.not_linkable")
+                .humanMessage("Monitoring alert cannot be linked to a new incident")
+                .build();
+    }
+
+    /**
      * Необработанная ошибка.
      */
     public static BaseException unhandledExceptionError() {

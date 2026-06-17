@@ -4,6 +4,8 @@ import gov.mib.aims.backend.exception.BaseException;
 import gov.mib.aims.backend.services.ObjectMapperWrapper;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.generated.model.ErrorObject;
+import gov.mib.aims.backend.security.IntegrationApiKeyFilter;
+import gov.mib.aims.backend.security.IntegrationAuthentication;
 import gov.mib.aims.backend.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
@@ -69,6 +71,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
+            IntegrationApiKeyFilter integrationApiKeyFilter,
             JwtAuthenticationFilter jwtAuthenticationFilter,
             AuthenticationEntryPoint authenticationEntryPoint,
             AccessDeniedHandler accessDeniedHandler
@@ -90,7 +93,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/incidents", "/api/v1/incidents/**").authenticated()
                         .requestMatchers("/api/v1/aliens", "/api/v1/aliens/**").authenticated()
                         .requestMatchers("/api/v1/users", "/api/v1/users/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, IntegrationApiKeyFilter.INGEST_PATH)
+                        .hasAuthority(IntegrationAuthentication.INGEST_AUTHORITY)
+                        .requestMatchers("/api/v1/monitoring", "/api/v1/monitoring/**").authenticated()
                         .requestMatchers("/api/v1/**").denyAll())
+                .addFilterBefore(integrationApiKeyFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

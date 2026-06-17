@@ -59,7 +59,7 @@ Generated code is under `target/generated-sources/openapi/`.
 
 ## Security notes
 
-- `@PreAuthorize` enforces permissions on incidents, users, aliens, files, and notifications.
+- `@PreAuthorize` enforces permissions on incidents, users, aliens, files, notifications, and monitoring alerts.
 - Actuator: `/actuator/health` is public; other actuator endpoints require authentication; `/actuator/prometheus` is denied by default in `SecurityConfig`.
 
 ## Project layout
@@ -69,3 +69,24 @@ Generated code is under `target/generated-sources/openapi/`.
 - `entity/` / `repository/` — JPA persistence
 - `config/` — security, db-queue, validation
 - `src/test/java/gov/mib/aims/backend/support/ApiTestFixtures.java` — shared MockMvc helpers for API tests
+
+## External monitoring integration (UC1)
+
+Push endpoint for external systems and local testing:
+
+```bash
+curl -sS -X POST http://localhost:8080/api/v1/integration/monitoring/events \
+  -H 'Content-Type: application/json' \
+  -H 'X-Integration-Api-Key: dev-monitoring-api-key' \
+  -d '{
+    "externalEventId": "demo-event-001",
+    "sourceSystem": "EXTERNAL_MONITORING_V1",
+    "detectedAt": "2025-06-01T12:00:00Z",
+    "location": "Nevada desert sector 7",
+    "eventType": "UNIDENTIFIED_SIGHTING",
+    "description": "Thermal anomaly detected by external sensors",
+    "mediaUrls": ["https://example.com/evidence/photo1.jpg"]
+  }'
+```
+
+Dev API key: `aims.integration.monitoring.api-key` in `application-dev.properties` (override via env in production).

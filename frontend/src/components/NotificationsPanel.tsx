@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import * as api from '../api/client';
 import { NotificationItem } from '../types';
 import { extractIncidentIds } from '../utils/relatedEntities';
+import { formatNotificationTime } from '../utils/formatNotificationTime';
 import { EmptyState } from './ui/EmptyState';
 import { LoadingBlock } from './ui/LoadingBlock';
 
@@ -127,6 +128,9 @@ export function NotificationsPanel({
               tabIndex={item.read ? undefined : 0}
               aria-disabled={item.read || markingId === item.id}
             >
+              <time className="notifications__time" dateTime={item.createdAt}>
+                {formatNotificationTime(item.createdAt)}
+              </time>
               <p className="notifications__message">{item.message}</p>
               {incidentIds.length > 0 && onNavigateToIncident && (
                 <div className="notifications__actions">

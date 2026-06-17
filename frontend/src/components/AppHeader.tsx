@@ -28,6 +28,7 @@ interface AppHeaderProps {
   unreadCount: number;
   notificationsOpen: boolean;
   showIncidentsTab: boolean;
+  showMonitoringAlertsTab: boolean;
   onToggleNotifications: () => void;
   onCloseNotifications: () => void;
   onUnreadChange: (count: number) => void;
@@ -40,6 +41,7 @@ export function AppHeader({
   unreadCount,
   notificationsOpen,
   showIncidentsTab,
+  showMonitoringAlertsTab,
   onToggleNotifications,
   onCloseNotifications,
   onUnreadChange,
@@ -51,16 +53,28 @@ export function AppHeader({
         <img src={MIB_LOGO_PATH} alt="MIB" className="app-header__logo" />
       </div>
 
-      {showIncidentsTab && (
+      {(showIncidentsTab || showMonitoringAlertsTab) && (
         <nav className="app-header__nav" aria-label="Разделы">
-          <NavLink
-            to="/incidents"
-            className={({ isActive }) =>
-              isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'
-            }
-          >
-            Инциденты
-          </NavLink>
+          {showIncidentsTab && (
+            <NavLink
+              to="/incidents"
+              className={({ isActive }) =>
+                isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'
+              }
+            >
+              Инциденты
+            </NavLink>
+          )}
+          {showMonitoringAlertsTab && (
+            <NavLink
+              to="/monitoring/alerts"
+              className={({ isActive }) =>
+                isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'
+              }
+            >
+              Входящие алерты
+            </NavLink>
+          )}
         </nav>
       )}
 

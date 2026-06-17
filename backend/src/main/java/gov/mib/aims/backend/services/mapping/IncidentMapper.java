@@ -44,7 +44,8 @@ public class IncidentMapper {
                 .responsibleUserId(entity.getResponsibleUserId())
                 .executorUserIds(executorIds)
                 .cleanupStatus(toApiCleanupStatus(entity.getCleanupStatus()))
-                .cleanupReportId(entity.getCleanupReportId());
+                .cleanupReportId(entity.getCleanupReportId())
+                .monitoringAlertId(entity.getMonitoringAlertId());
     }
 
     /**

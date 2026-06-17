@@ -18,7 +18,8 @@ public enum Permission {
     CLEANUP_STATUS_CHANGE("Смена статуса очистки"),
     FILE_UPLOAD("Загрузка файлов"),
     FILE_READ("Скачивание файлов"),
-    NOTIFICATION_READ("Просмотр уведомлений");
+    NOTIFICATION_READ("Просмотр уведомлений"),
+    MONITORING_ALERT_READ("Просмотр алертов внешнего мониторинга");
 
     private final String description;
 

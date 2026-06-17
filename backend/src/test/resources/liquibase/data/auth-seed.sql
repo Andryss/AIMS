@@ -15,7 +15,8 @@ insert into permission (code, description) values
     ('CLEANUP_STATUS_CHANGE', 'Смена статуса очистки'),
     ('FILE_UPLOAD', 'Загрузка файлов'),
     ('FILE_READ', 'Скачивание файлов'),
-    ('NOTIFICATION_READ', 'Просмотр уведомлений')
+    ('NOTIFICATION_READ', 'Просмотр уведомлений'),
+    ('MONITORING_ALERT_READ', 'Просмотр алертов внешнего мониторинга')
 on conflict (code) do nothing;
 
 insert into role (name, description) values
@@ -28,7 +29,7 @@ insert into role (name, description) values
 insert into role_permission (role_id, permission_id)
 select r.id, p.id
 from role r, permission p
-where r.name = 'OPERATOR' and p.code in ('INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT', 'USER_READ', 'CLEANUP_REPORT_READ', 'FILE_UPLOAD', 'FILE_READ', 'NOTIFICATION_READ');
+where r.name = 'OPERATOR' and p.code in ('INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT', 'USER_READ', 'CLEANUP_REPORT_READ', 'FILE_UPLOAD', 'FILE_READ', 'NOTIFICATION_READ', 'MONITORING_ALERT_READ');
 
 insert into role_permission (role_id, permission_id)
 select r.id, p.id
