@@ -74,6 +74,25 @@ describe('buildIncidentHistoryDiffs', () => {
 
     expect(blocks[1].rows).toHaveLength(0);
   });
+
+  it('diffs cleanup and executor fields', () => {
+    const blocks = buildIncidentHistoryDiffs([
+      entry(1, '2025-06-01T10:00:00Z', 1, baseSnapshot),
+      entry(2, '2025-06-01T11:00:00Z', 2, {
+        ...baseSnapshot,
+        executorUserIds: [2],
+        cleanupStatus: 'IN_PROGRESS',
+        cleanupReportId: 9,
+        attachmentFileIds: [],
+      }),
+    ], usersMap);
+
+    const labels = blocks[1].rows.map((row) => row.label);
+    expect(labels).toEqual(
+      expect.arrayContaining(['Исполнители', 'Статус очистки', 'Отчёт об очистке', 'Вложения']),
+    );
+    expect(blocks[1].rows.find((row) => row.label === 'Вложения')?.newValue).toBe('—');
+  });
 });
 
 describe('formatHistoryEntryHeader', () => {
@@ -83,5 +102,13 @@ describe('formatHistoryEntryHeader', () => {
       new Map([[42, 'agent']]),
     );
     expect(header).toContain('agent');
+  });
+
+  it('falls back to user id when login is unknown', () => {
+    const header = formatHistoryEntryHeader(
+      entry(1, '2025-06-01T10:00:00Z', 99, baseSnapshot),
+      new Map<number, string>(),
+    );
+    expect(header).toContain('#99');
   });
 });

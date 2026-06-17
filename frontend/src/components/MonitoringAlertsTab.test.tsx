@@ -3,7 +3,7 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import * as api from '../api/client';
-import { mockMonitoringAlertList } from '../test/testData';
+import { mockMonitoringAlert, mockMonitoringAlertList } from '../test/testData';
 import { MonitoringAlertsTab } from './MonitoringAlertsTab';
 
 jest.mock('../api/client');
@@ -16,6 +16,91 @@ describe('MonitoringAlertsTab', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     listMonitoringAlerts.mockResolvedValue(mockMonitoringAlertList());
+  });
+
+  it('shows empty state when there are no alerts', async () => {
+    listMonitoringAlerts.mockResolvedValue(
+      mockMonitoringAlertList({ items: [], totalElements: 0, totalPages: 0 }),
+    );
+
+    render(
+      <MemoryRouter>
+        <MonitoringAlertsTab token="tok" canCreate={false} />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByText('Алерты не найдены')).toBeInTheDocument();
+  });
+
+  it('shows error when loading fails', async () => {
+    listMonitoringAlerts.mockRejectedValue(new Error('Сеть недоступна'));
+
+    render(
+      <MemoryRouter>
+        <MonitoringAlertsTab token="tok" canCreate={false} />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Сеть недоступна');
+  });
+
+  it('shows generic error for non-Error rejections', async () => {
+    listMonitoringAlerts.mockRejectedValue('boom');
+
+    render(
+      <MemoryRouter>
+        <MonitoringAlertsTab token="tok" canCreate={false} />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Не удалось загрузить алерты');
+  });
+
+  it('navigates between pages', async () => {
+    listMonitoringAlerts
+      .mockResolvedValueOnce(
+        mockMonitoringAlertList({
+          items: [mockMonitoringAlert({ id: 1, location: 'Page one' })],
+          page: 0,
+          totalElements: 24,
+          totalPages: 2,
+        }),
+      )
+      .mockResolvedValueOnce(
+        mockMonitoringAlertList({
+          items: [mockMonitoringAlert({ id: 2, location: 'Page two' })],
+          page: 1,
+          totalElements: 24,
+          totalPages: 2,
+        }),
+      )
+      .mockResolvedValueOnce(
+        mockMonitoringAlertList({
+          items: [mockMonitoringAlert({ id: 1, location: 'Page one again' })],
+          page: 0,
+          totalElements: 24,
+          totalPages: 2,
+        }),
+      );
+
+    render(
+      <MemoryRouter>
+        <MonitoringAlertsTab token="tok" canCreate={false} />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByText('Page one')).toBeInTheDocument();
+    const next = screen.getByRole('button', { name: /Следующая/i });
+    const prev = screen.getByRole('button', { name: /Предыдущая/i });
+    expect(prev).toBeDisabled();
+
+    await userEvent.click(next);
+    expect(await screen.findByText('Page two')).toBeInTheDocument();
+    expect(listMonitoringAlerts).toHaveBeenLastCalledWith('tok', 1, 12);
+
+    await userEvent.click(screen.getByRole('button', { name: /Предыдущая/i }));
+    expect(await screen.findByText('Page one again')).toBeInTheDocument();
+    expect(listMonitoringAlerts).toHaveBeenLastCalledWith('tok', 0, 12);
   });
 
   it('loads and displays alert cards with media links', async () => {

@@ -78,4 +78,40 @@ describe('FileUploadField', () => {
     });
     expect(screen.getByText(/МБ/)).toBeInTheDocument();
   });
+
+  it('shows byte size label for tiny files', async () => {
+    render(<Wrapper />);
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    await userEvent.upload(input, new File([new ArrayBuffer(10)], 'tiny.bin'));
+    expect(screen.getByText(/10 Б/)).toBeInTheDocument();
+  });
+
+  it('toggles drag-active class and opens picker from keyboard', async () => {
+    render(<Wrapper />);
+    const dropzone = screen.getByRole('button', { name: /Перетащите файлы/i });
+
+    fireEvent.dragOver(dropzone);
+    expect(dropzone).toHaveClass('file-upload__dropzone--active');
+
+    fireEvent.dragLeave(dropzone);
+    expect(dropzone).not.toHaveClass('file-upload__dropzone--active');
+
+    const clickSpy = jest.spyOn(HTMLInputElement.prototype, 'click');
+    dropzone.focus();
+    await userEvent.keyboard('{Enter}');
+    expect(clickSpy).toHaveBeenCalled();
+    clickSpy.mockRestore();
+  });
+
+  it('ignores empty drop payload', () => {
+    render(<Wrapper />);
+    const dropzone = screen.getByRole('button', { name: /Перетащите файлы/i });
+    fireEvent.drop(dropzone, {
+      dataTransfer: {
+        files: [],
+        clearData: jest.fn(),
+      },
+    });
+    expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
+  });
 });
