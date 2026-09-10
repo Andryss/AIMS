@@ -34,11 +34,16 @@ Person(employee, "Сотрудник MIB", "Пользователь веб-пр
 System_Ext(monitoring, "Внешняя система мониторинга", "Источник событий инопланетной активности")
 
 System_Boundary(aims, "AIMS") {
-  Container(frontend, "Клиентское приложение", "HTML, CSS, JavaScript", "Статический пользовательский интерфейс; маршруты /public/**")
+  !$frontendDescription = "Статический пользовательский интерфейс; маршруты /public/**"
+  Container(frontend, "Клиентское приложение", "HTML, CSS, JavaScript", $frontendDescription)
 
   Container_Boundary(backend, "Spring Boot backend") {
-    Component(api, "HTTP/API-слой", "OpenAPI, Spring MVC, Spring Security", "Контроллеры, JWT и Integration API key, раздача SPA")
-    Component(services, "Сервисный слой", "Spring Services", "Бизнес-логика, включая процессы инцидентов и очистки, переходы статусов, файлы, пользователей, уведомления и аутентификацию")
+    !$apiDescription = "Контроллеры, JWT и Integration API key, раздача SPA"
+    Component(api, "HTTP/API-слой", "OpenAPI, Spring MVC, Spring Security", $apiDescription)
+
+    !$servicesDescription = "Бизнес-логика, включая процессы инцидентов и очистки, переходы статусов, файлы, "
+    !$servicesDescription = $servicesDescription + "пользователей, уведомления и аутентификацию"
+    Component(services, "Сервисный слой", "Spring Services", $servicesDescription)
     Component(dbqueue, "Асинхронная обработка", "db-queue", "Producers, consumers, процессоры")
     Component(persistence, "Слой данных", "Spring Data JPA, Liquibase", "Repositories, entities")
   }

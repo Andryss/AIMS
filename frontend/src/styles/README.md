@@ -1,11 +1,12 @@
 # AIMS UI styles
 
-Mini design system for the AIMS frontend: CSS custom properties, primitives, status chips, and layout-specific rules. No external UI library.
+Mini design system for the AIMS frontend: CSS custom properties, primitives, status chips, and layout-specific rules. No
+external UI library.
 
 ## File layout
 
 | File | Purpose |
-|------|---------|
+| ------ | --------- |
 | `tokens.css` | Design tokens: colors (incl. status), spacing, typography, radii, shadows |
 | `primitives.css` | Reusable UI: buttons, cards, sections, forms, loading, empty states |
 | `status.css` | Incident and cleanup status selects/chips |
