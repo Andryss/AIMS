@@ -1,4 +1,4 @@
-<!-- markdownlint-disable MD041 -->
+<!-- markdownlint-disable MD013 MD041 -->
 
 ```plantuml
 @startuml aims_uc1_use_case_view
@@ -270,8 +270,7 @@ package "frontend" {
     +uploadFile(token: string, file: File): Promise<FileUploadResponse>
     +uploadFiles(token: string, files: File[]): Promise<FileUploadResponse[]>
     +createIncident(token: string, payload: CreateIncidentRequest): Promise<IncidentResponse>
-    +changeIncidentStatus(token: string, id: number, status: IncidentStatus,%n()\
-    \tcomment?: string): Promise<IncidentResponse>
+    +changeIncidentStatus(token: string, id: number, status: IncidentStatus, comment?: string): Promise<IncidentResponse>
   }
 
   interface CreateIncidentInitialValues {
@@ -321,8 +320,7 @@ package "generated API" {
 
   interface IncidentsApi {
     +createIncident(createIncidentRequest: CreateIncidentRequest): IncidentResponse
-    +changeIncidentStatus(id: Long,%n()\
-    \tchangeIncidentStatusRequest: ChangeIncidentStatusRequest): IncidentResponse
+    +changeIncidentStatus(id: Long, changeIncidentStatusRequest: ChangeIncidentStatusRequest): IncidentResponse
   }
 
   class CreateIncidentRequest <<OpenAPI DTO>> {
@@ -370,8 +368,7 @@ package "controller" {
   class IncidentsApiImpl {
     -incidentService: IncidentService
     +createIncident(createIncidentRequest: CreateIncidentRequest): IncidentResponse
-    +changeIncidentStatus(id: Long,%n()\
-    \tchangeIncidentStatusRequest: ChangeIncidentStatusRequest): IncidentResponse
+    +changeIncidentStatus(id: Long, changeIncidentStatusRequest: ChangeIncidentStatusRequest): IncidentResponse
   }
 }
 
@@ -405,14 +402,12 @@ package "service" {
   }
 
   interface FileStorage {
-    +store(originalFileName: String, contentType: String, content: InputStream,%n()\
-    \tsizeBytes: long): FileDescriptor
+    +store(originalFileName: String, contentType: String, content: InputStream, sizeBytes: long): FileDescriptor
   }
 
   class LocalDiskFileStorage {
     -storageProperties: StorageProperties
-    +store(originalFileName: String, contentType: String, content: InputStream,%n()\
-    \tsizeBytes: long): FileDescriptor
+    +store(originalFileName: String, contentType: String, content: InputStream, sizeBytes: long): FileDescriptor
     -resolvePath(storageId: String): Path
   }
 
@@ -431,8 +426,7 @@ package "service" {
 
   interface EntityHistoryService {
     +recordChange(entityType: EntityType, entityId: Long, newState: Object): void
-    +recordChange(entityType: EntityType, entityId: Long, newState: Object,%n()\
-    \tchangedByUserId: Long): void
+    +recordChange(entityType: EntityType, entityId: Long, newState: Object, changedByUserId: Long): void
   }
 
   class EntityHistoryServiceImpl {
@@ -440,10 +434,8 @@ package "service" {
     -objectMapper: ObjectMapperWrapper
     -currentUserService: CurrentUserService
     +recordChange(entityType: EntityType, entityId: Long, newState: Object): void
-    +recordChange(entityType: EntityType, entityId: Long, newState: Object,%n()\
-    \tchangedByUserId: Long): void
-    -validateRecordRequest(entityType: EntityType, entityId: Long, newState: Object,%n()\
-    \tchangedByUserId: Long): void
+    +recordChange(entityType: EntityType, entityId: Long, newState: Object, changedByUserId: Long): void
+    -validateRecordRequest(entityType: EntityType, entityId: Long, newState: Object, changedByUserId: Long): void
   }
 
   class CurrentUserService {
@@ -462,8 +454,7 @@ package "service" {
   class IncidentStatusTransitionGraph {
     -transitions: Map<StatusTransitionKey, IncidentStatusTransition<IncidentEntity>>
     +isAllowed(from: IncidentStatus, to: IncidentStatus): boolean
-    +getTransition(from: IncidentStatus,%n()\
-    \tto: IncidentStatus): IncidentStatusTransition<IncidentEntity>
+    +getTransition(from: IncidentStatus, to: IncidentStatus): IncidentStatusTransition<IncidentEntity>
   }
 
   class "IncidentStatusTransition<T>" as IncidentStatusTransition {
@@ -499,8 +490,7 @@ package "service" {
   }
 
   class DbQueueService {
-    +produceTask<P extends QueuePayload>(processorClass: Class<? extends DbQueueProcessor<P>>,%n()\
-    \tpayload: P): void
+    +produceTask<P extends QueuePayload>(processorClass: Class<? extends DbQueueProcessor<P>>, payload: P): void
   }
 }
 
