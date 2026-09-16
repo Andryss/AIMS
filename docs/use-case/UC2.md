@@ -1,9 +1,10 @@
-# Классификации инопланетянина
+# Классификация инопланетянина
 
 ## Диаграмма прецедента
 
 ```plantuml
 @startuml
+title UC2. Классификация инопланетянина
 left to right direction
 
 actor "Аналитик-ксенобиолог" as Analyst
@@ -12,7 +13,7 @@ rectangle "Alien Incident Management System" {
 
 (Получение уведомления о готовом к анализу инциденте) as UC01
 
-(Классификации инопланетянина) as UC11
+(Классификация инопланетянина) as UC11
 
 (Изменение статуса инцидента) as UC115
 (Привязывание записи базы знаний к инциденту) as UC114
@@ -96,4 +97,20 @@ UC11 --> UC115 : <<include>>
     Статус | ^Готов к анализу       ^^ Готов к выполнению ^^ Требуется уточнение ^
 }
 @endsalt
+```
+
+## Генерация диаграмм
+
+```bash
+curl -L https://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar -o /tmp/plantuml.jar
+mkdir -p /tmp/aims-uc2-use-case-render
+
+# Проверка синтаксиса
+java -Djava.awt.headless=true -jar /tmp/plantuml.jar -checkonly docs/use-case/UC2.md
+
+# SVG
+java -Djava.awt.headless=true -jar /tmp/plantuml.jar -tsvg -o /tmp/aims-uc2-use-case-render docs/use-case/UC2.md
+
+# PNG
+java -Djava.awt.headless=true -jar /tmp/plantuml.jar -tpng -o /tmp/aims-uc2-use-case-render docs/use-case/UC2.md
 ```

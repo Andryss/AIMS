@@ -4,6 +4,7 @@
 
 ```plantuml
 @startuml
+title UC1. Регистрация инцидента
 left to right direction
 
 actor "Оператор мониторинга" as Operator
@@ -91,4 +92,20 @@ UC11 --> UC116 : <<include>>
     Статус | ^Черновик       ^^ Готов к анализу ^
 }
 @endsalt
+```
+
+## Генерация диаграмм
+
+```bash
+curl -L https://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar -o /tmp/plantuml.jar
+mkdir -p /tmp/aims-uc1-use-case-render
+
+# Проверка синтаксиса
+java -Djava.awt.headless=true -jar /tmp/plantuml.jar -checkonly docs/use-case/UC1.md
+
+# SVG
+java -Djava.awt.headless=true -jar /tmp/plantuml.jar -tsvg -o /tmp/aims-uc1-use-case-render docs/use-case/UC1.md
+
+# PNG
+java -Djava.awt.headless=true -jar /tmp/plantuml.jar -tpng -o /tmp/aims-uc1-use-case-render docs/use-case/UC1.md
 ```

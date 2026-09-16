@@ -4,6 +4,7 @@
 
 ```plantuml
 @startuml
+title UC3. Назначение ответственных за инцидент
 left to right direction
 
 actor "Оперативный агент" as Agent
@@ -109,4 +110,20 @@ UC11 --> UC116 : <<include>>
     [ Создать ]
 }
 @endsalt
+```
+
+## Генерация диаграмм
+
+```bash
+curl -L https://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar -o /tmp/plantuml.jar
+mkdir -p /tmp/aims-uc3-use-case-render
+
+# Проверка синтаксиса
+java -Djava.awt.headless=true -jar /tmp/plantuml.jar -checkonly docs/use-case/UC3.md
+
+# SVG
+java -Djava.awt.headless=true -jar /tmp/plantuml.jar -tsvg -o /tmp/aims-uc3-use-case-render docs/use-case/UC3.md
+
+# PNG
+java -Djava.awt.headless=true -jar /tmp/plantuml.jar -tpng -o /tmp/aims-uc3-use-case-render docs/use-case/UC3.md
 ```
