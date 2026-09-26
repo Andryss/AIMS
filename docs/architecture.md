@@ -72,7 +72,7 @@ System_Boundary(aims, "AIMS") {
   }
 
   Container_Boundary(backend, "Backend") {
-    Component(api, "HTTP API и безопасность", "OpenAPI, Spring MVC, Spring Security", "Принимает REST-запросы и проверяет JWT")
+    Component(api, "HTTP API и безопасность", "OpenAPI, Spring MVC, Spring Security", "REST-запросы и проверка JWT")
     Component(incidents, "Инциденты и очистка", "Spring Services", "Управляет инцидентами, очисткой, статусами и историей")
     Component(monitoring, "Мониторинг и уведомления", "Spring Services", "Обрабатывает алерты и пользовательские уведомления")
     Component(files, "Работа с файлами", "Spring Services", "Метаданные и содержимое вложений")

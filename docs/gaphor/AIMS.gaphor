@@ -119,6 +119,11 @@ c4dependency {
 <name>
 <val>UC1. Регистрация инцидента</val>
 </name>
+<nestedPackage>
+<reflist>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
+</reflist>
+</nestedPackage>
 <nestingPackage>
 <ref refid="f7abe4fc-c4ef-585a-809a-398232996b8c"/>
 </nestingPackage>
@@ -127,35 +132,12 @@ c4dependency {
 <ref refid="d1249c86-47f2-5bb4-87b2-44c7e7413ed9"/>
 </reflist>
 </ownedDiagram>
-<ownedType>
-<reflist>
-<ref refid="1c30e83e-380a-5de7-94a8-d0ebe9853662"/>
-<ref refid="9b7d5e70-3097-5368-894b-f7c6c8aeff15"/>
-<ref refid="292c047e-5d3e-5821-97d1-e956af9fe711"/>
-<ref refid="720ba0d1-d347-5071-b199-8873a89ed539"/>
-<ref refid="9ae15a75-5a81-5f1c-8e5b-62a6c4a863dc"/>
-<ref refid="17133234-486f-5906-b0f7-ee3964bf8771"/>
-<ref refid="0c7fffc7-5647-5653-bad3-98fc07fbcb6d"/>
-<ref refid="250086ec-a45a-51c2-9e53-48a3984c3082"/>
-<ref refid="842f5037-e448-56e8-ba9b-e5755cafb3db"/>
-<ref refid="2ed7f5a7-1b8d-53d8-9c5a-a71d58bc31f7"/>
-</reflist>
-</ownedType>
 <owningPackage>
 <ref refid="f7abe4fc-c4ef-585a-809a-398232996b8c"/>
 </owningPackage>
 <packagedElement>
 <reflist>
-<ref refid="1c30e83e-380a-5de7-94a8-d0ebe9853662"/>
-<ref refid="9b7d5e70-3097-5368-894b-f7c6c8aeff15"/>
-<ref refid="292c047e-5d3e-5821-97d1-e956af9fe711"/>
-<ref refid="720ba0d1-d347-5071-b199-8873a89ed539"/>
-<ref refid="9ae15a75-5a81-5f1c-8e5b-62a6c4a863dc"/>
-<ref refid="17133234-486f-5906-b0f7-ee3964bf8771"/>
-<ref refid="0c7fffc7-5647-5653-bad3-98fc07fbcb6d"/>
-<ref refid="250086ec-a45a-51c2-9e53-48a3984c3082"/>
-<ref refid="842f5037-e448-56e8-ba9b-e5755cafb3db"/>
-<ref refid="2ed7f5a7-1b8d-53d8-9c5a-a71d58bc31f7"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -163,6 +145,11 @@ c4dependency {
 <name>
 <val>UC2. Классификация инопланетянина</val>
 </name>
+<nestedPackage>
+<reflist>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
+</reflist>
+</nestedPackage>
 <nestingPackage>
 <ref refid="f7abe4fc-c4ef-585a-809a-398232996b8c"/>
 </nestingPackage>
@@ -171,31 +158,12 @@ c4dependency {
 <ref refid="4e2468b8-330c-5b8f-81fd-5209a8d66cbb"/>
 </reflist>
 </ownedDiagram>
-<ownedType>
-<reflist>
-<ref refid="e15e4ef8-316c-5312-89fe-4a6e66a16b5a"/>
-<ref refid="536cf923-bfef-5b35-a392-c0d99bf12807"/>
-<ref refid="17abd2f5-eddd-5ca4-90ca-52544645c141"/>
-<ref refid="d3427fb5-e494-59a2-9fea-7e8af6511cc6"/>
-<ref refid="4e91da16-bc57-5d90-9933-583041077a36"/>
-<ref refid="b6b28a74-b44f-5376-ac4f-3041fa0860dc"/>
-<ref refid="bfc3a0df-d506-5ea4-9ffb-7b1e99826f82"/>
-<ref refid="0cb329ac-36a5-5979-8ebb-f39b1a2e738c"/>
-</reflist>
-</ownedType>
 <owningPackage>
 <ref refid="f7abe4fc-c4ef-585a-809a-398232996b8c"/>
 </owningPackage>
 <packagedElement>
 <reflist>
-<ref refid="e15e4ef8-316c-5312-89fe-4a6e66a16b5a"/>
-<ref refid="536cf923-bfef-5b35-a392-c0d99bf12807"/>
-<ref refid="17abd2f5-eddd-5ca4-90ca-52544645c141"/>
-<ref refid="d3427fb5-e494-59a2-9fea-7e8af6511cc6"/>
-<ref refid="4e91da16-bc57-5d90-9933-583041077a36"/>
-<ref refid="b6b28a74-b44f-5376-ac4f-3041fa0860dc"/>
-<ref refid="bfc3a0df-d506-5ea4-9ffb-7b1e99826f82"/>
-<ref refid="0cb329ac-36a5-5979-8ebb-f39b1a2e738c"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -203,6 +171,11 @@ c4dependency {
 <name>
 <val>UC3. Назначение ответственных за инцидент</val>
 </name>
+<nestedPackage>
+<reflist>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
+</reflist>
+</nestedPackage>
 <nestingPackage>
 <ref refid="f7abe4fc-c4ef-585a-809a-398232996b8c"/>
 </nestingPackage>
@@ -211,29 +184,12 @@ c4dependency {
 <ref refid="cac70436-7036-5de4-a6fc-b79b1b24c3e0"/>
 </reflist>
 </ownedDiagram>
-<ownedType>
-<reflist>
-<ref refid="3b288bc9-a8a2-537c-a099-c8009254df6f"/>
-<ref refid="a60b6037-ee75-54be-8960-4b5d83418284"/>
-<ref refid="c972db11-5b45-54b6-8b64-28f6efd5cded"/>
-<ref refid="795541a3-e22f-5ed5-a1f1-aef7a15983bd"/>
-<ref refid="a9ebe09b-f813-5bcb-8d8f-a4d4847f159a"/>
-<ref refid="18cfdfb0-a8af-5ddc-9a30-d461c61c9d09"/>
-<ref refid="860985b6-ed30-5377-b973-1b7fa4ff5d7b"/>
-</reflist>
-</ownedType>
 <owningPackage>
 <ref refid="f7abe4fc-c4ef-585a-809a-398232996b8c"/>
 </owningPackage>
 <packagedElement>
 <reflist>
-<ref refid="3b288bc9-a8a2-537c-a099-c8009254df6f"/>
-<ref refid="a60b6037-ee75-54be-8960-4b5d83418284"/>
-<ref refid="c972db11-5b45-54b6-8b64-28f6efd5cded"/>
-<ref refid="795541a3-e22f-5ed5-a1f1-aef7a15983bd"/>
-<ref refid="a9ebe09b-f813-5bcb-8d8f-a4d4847f159a"/>
-<ref refid="18cfdfb0-a8af-5ddc-9a30-d461c61c9d09"/>
-<ref refid="860985b6-ed30-5377-b973-1b7fa4ff5d7b"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -241,6 +197,11 @@ c4dependency {
 <name>
 <val>UC4. Создание отчёта об очистке</val>
 </name>
+<nestedPackage>
+<reflist>
+<ref refid="8b33ad48-b719-11f1-adf7-aae8df029ef6"/>
+</reflist>
+</nestedPackage>
 <nestingPackage>
 <ref refid="f7abe4fc-c4ef-585a-809a-398232996b8c"/>
 </nestingPackage>
@@ -249,27 +210,12 @@ c4dependency {
 <ref refid="9a8053df-a472-5991-9ba0-f7189d85881a"/>
 </reflist>
 </ownedDiagram>
-<ownedType>
-<reflist>
-<ref refid="e2de37a7-6393-589d-b725-fa70b88ae785"/>
-<ref refid="ff61ff3c-79bf-5877-9edb-48827c909e83"/>
-<ref refid="4cba77fb-c00d-5e35-a6d6-d37d8974f7bd"/>
-<ref refid="a3c2d7b6-b2b0-54d3-95e3-ff122bd45db6"/>
-<ref refid="0ea42a75-4956-57e8-9b86-b6bce29dbf87"/>
-<ref refid="3ed1c8a4-ac7c-5cbb-a622-5397eff00cf6"/>
-</reflist>
-</ownedType>
 <owningPackage>
 <ref refid="f7abe4fc-c4ef-585a-809a-398232996b8c"/>
 </owningPackage>
 <packagedElement>
 <reflist>
-<ref refid="e2de37a7-6393-589d-b725-fa70b88ae785"/>
-<ref refid="ff61ff3c-79bf-5877-9edb-48827c909e83"/>
-<ref refid="4cba77fb-c00d-5e35-a6d6-d37d8974f7bd"/>
-<ref refid="a3c2d7b6-b2b0-54d3-95e3-ff122bd45db6"/>
-<ref refid="0ea42a75-4956-57e8-9b86-b6bce29dbf87"/>
-<ref refid="3ed1c8a4-ac7c-5cbb-a622-5397eff00cf6"/>
+<ref refid="8b33ad48-b719-11f1-adf7-aae8df029ef6"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -835,10 +781,10 @@ c4dependency {
 <val>Отправка уведомления о подозрительной активности</val>
 </name>
 <owningPackage>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -856,10 +802,10 @@ c4dependency {
 <val>Получение уведомления о подозрительной активности</val>
 </name>
 <owningPackage>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -886,10 +832,10 @@ c4dependency {
 <val>Создание инцидента</val>
 </name>
 <owningPackage>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -907,10 +853,10 @@ c4dependency {
 <val>Ввод первичных данных инцидента</val>
 </name>
 <owningPackage>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -928,10 +874,10 @@ c4dependency {
 <val>Добавление медиа материалов к инциденту</val>
 </name>
 <owningPackage>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -949,10 +895,10 @@ c4dependency {
 <val>Проверка корректности данных</val>
 </name>
 <owningPackage>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -970,10 +916,10 @@ c4dependency {
 <val>Сохранение инцидента</val>
 </name>
 <owningPackage>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -991,10 +937,10 @@ c4dependency {
 <val>Получение уведомления о готовом к анализу инциденте</val>
 </name>
 <owningPackage>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1019,10 +965,10 @@ c4dependency {
 <val>Классификация инопланетянина</val>
 </name>
 <owningPackage>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1045,10 +991,10 @@ c4dependency {
 <val>Выполнение автоматической классификации инопланетянина</val>
 </name>
 <owningPackage>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1066,10 +1012,10 @@ c4dependency {
 <val>Поиск записи в базе знаний инопланетян</val>
 </name>
 <owningPackage>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1092,10 +1038,10 @@ c4dependency {
 <val>Создание новой записи в базе знаний</val>
 </name>
 <owningPackage>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1113,10 +1059,10 @@ c4dependency {
 <val>Привязывание записи базы знаний к инциденту</val>
 </name>
 <owningPackage>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1134,10 +1080,10 @@ c4dependency {
 <val>Получение уведомления о готовом к выполнению инциденте</val>
 </name>
 <owningPackage>
-<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1164,10 +1110,10 @@ c4dependency {
 <val>Назначение ответственных за инцидент</val>
 </name>
 <owningPackage>
-<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1185,10 +1131,10 @@ c4dependency {
 <val>Просмотр заявок на оборудование</val>
 </name>
 <owningPackage>
-<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1206,10 +1152,10 @@ c4dependency {
 <val>Назначение ответственного</val>
 </name>
 <owningPackage>
-<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1227,10 +1173,10 @@ c4dependency {
 <val>Добавление исполнителя</val>
 </name>
 <owningPackage>
-<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1257,10 +1203,10 @@ c4dependency {
 <val>Создание отчёта об очистке</val>
 </name>
 <owningPackage>
-<ref refid="72792b45-126e-5470-9cc9-ba14153eeddc"/>
+<ref refid="8b33ad48-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="72792b45-126e-5470-9cc9-ba14153eeddc"/>
+<ref refid="8b33ad48-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1278,10 +1224,10 @@ c4dependency {
 <val>Ввод сведений о выполненной очистке</val>
 </name>
 <owningPackage>
-<ref refid="72792b45-126e-5470-9cc9-ba14153eeddc"/>
+<ref refid="8b33ad48-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="72792b45-126e-5470-9cc9-ba14153eeddc"/>
+<ref refid="8b33ad48-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1299,10 +1245,10 @@ c4dependency {
 <val>Прикрепление фото и видео материалов</val>
 </name>
 <owningPackage>
-<ref refid="72792b45-126e-5470-9cc9-ba14153eeddc"/>
+<ref refid="8b33ad48-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="72792b45-126e-5470-9cc9-ba14153eeddc"/>
+<ref refid="8b33ad48-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1320,10 +1266,10 @@ c4dependency {
 <val>Сохранение отчета об очистке</val>
 </name>
 <owningPackage>
-<ref refid="72792b45-126e-5470-9cc9-ba14153eeddc"/>
+<ref refid="8b33ad48-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="72792b45-126e-5470-9cc9-ba14153eeddc"/>
+<ref refid="8b33ad48-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -1341,10 +1287,10 @@ c4dependency {
 <val>Изменение статуса очистки</val>
 </name>
 <owningPackage>
-<ref refid="72792b45-126e-5470-9cc9-ba14153eeddc"/>
+<ref refid="8b33ad48-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="72792b45-126e-5470-9cc9-ba14153eeddc"/>
+<ref refid="8b33ad48-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -2093,10 +2039,10 @@ c4dependency {
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -2172,10 +2118,10 @@ c4dependency {
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -2251,10 +2197,10 @@ c4dependency {
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+<ref refid="8b336464-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -2564,10 +2510,10 @@ c4dependency {
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -2643,10 +2589,10 @@ c4dependency {
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+<ref refid="8b33846c-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -2917,10 +2863,10 @@ c4dependency {
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -2996,10 +2942,10 @@ c4dependency {
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+<ref refid="8b3399a2-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -3309,10 +3255,10 @@ c4dependency {
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="72792b45-126e-5470-9cc9-ba14153eeddc"/>
+<ref refid="8b33ad48-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="72792b45-126e-5470-9cc9-ba14153eeddc"/>
+<ref refid="8b33ad48-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -3543,8 +3489,7 @@ c4dependency {
 </name>
 <nestedPackage>
 <reflist>
-<ref refid="094b1931-25f8-5631-9634-a27cfaf56c7b"/>
-<ref refid="b278aef6-d90a-5718-8847-34dc9bd626d4"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </reflist>
 </nestedPackage>
 <nestingPackage>
@@ -3559,7 +3504,7 @@ c4dependency {
 </ownedDiagram>
 <ownedType>
 <reflist>
-<ref refid="f78d1b4a-40ca-5b1f-bae2-7b3a2e6a884b"/>
+<ref refid="ae386b7a-b75b-11f1-b1a5-aae8df029ef6"/>
 </reflist>
 </ownedType>
 <owningPackage>
@@ -3567,34 +3512,8 @@ c4dependency {
 </owningPackage>
 <packagedElement>
 <reflist>
-<ref refid="f78d1b4a-40ca-5b1f-bae2-7b3a2e6a884b"/>
-<ref refid="094b1931-25f8-5631-9634-a27cfaf56c7b"/>
-<ref refid="b278aef6-d90a-5718-8847-34dc9bd626d4"/>
-<ref refid="8a87d58f-cac3-567a-9fa4-51d739ee23cf"/>
-<ref refid="c5e0c5aa-5118-54aa-accc-05e772dc80e7"/>
-<ref refid="5eba5c7c-a77d-5d56-9965-0346e942cfee"/>
-<ref refid="efccd48b-b25d-5333-8eca-ae017c68b0aa"/>
-<ref refid="2c8f1e7d-af7c-5dcd-984b-a69e34fea8af"/>
-<ref refid="19f74795-e9fe-575e-842a-387a99095965"/>
-<ref refid="9cf8e701-94e2-5cab-96ed-6a911a4ca755"/>
-<ref refid="0f9126fe-ed2e-5ee3-ae68-7ca0e7f87834"/>
-<ref refid="433dac1f-f185-5425-b8f4-732dca6c48c6"/>
-<ref refid="e2b41ad4-77be-5c4f-ab22-224da364a275"/>
-<ref refid="e25b33c0-d502-5200-b9f8-4d4c49f57967"/>
-<ref refid="4795fc55-f761-517c-a5f2-1639b3b300de"/>
-<ref refid="a9ca5896-11cf-5cef-b6c6-f9a00e8134da"/>
-<ref refid="092e7c93-d075-5508-8133-36d1004620c7"/>
-<ref refid="2c8cfb2f-5903-5453-b83d-1f095202acaf"/>
-<ref refid="79e883ff-3e88-517a-9fcf-51a463298c7d"/>
-<ref refid="8a998dcd-ceeb-55d8-bef4-9c6a111e9e1f"/>
-<ref refid="8ef78338-2017-564e-b630-cb1587b93e5d"/>
-<ref refid="e48fa3b9-3338-5db1-9592-6c29184997a6"/>
-<ref refid="59fe978e-c09f-53c9-a368-4d5b2f463166"/>
-<ref refid="734e24ec-989c-5330-ae60-e1198870d469"/>
-<ref refid="685af2f8-813b-5c8e-a67f-1df4e347df47"/>
-<ref refid="f01fd221-6f71-5b0d-978a-bcccaa1f1700"/>
-<ref refid="8f8ca592-96c8-591c-a552-924266b7bc41"/>
-<ref refid="0c493c26-ae7f-5227-9ca9-ee79b9ce352a"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
+<ref refid="ae386b7a-b75b-11f1-b1a5-aae8df029ef6"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -3632,14 +3551,14 @@ c4dependency {
 <ref refid="8f9ca601-c38e-5e61-99e6-d9a905571b37"/>
 <ref refid="00fa5894-3a5b-580b-8260-cdb2ccb68b3a"/>
 <ref refid="863c3db9-1947-5b86-9e32-35118c71d72a"/>
-<ref refid="4b784d42-d959-511a-94b6-fd31914b218f"/>
-<ref refid="be8a5e9c-92b6-549a-8f7f-d7abf8e9dbf1"/>
-<ref refid="9a0478b8-0d10-545c-87b2-f1673d34be72"/>
 <ref refid="c25527a8-affc-58f9-a91e-9c91c40d1376"/>
-<ref refid="90486587-24af-5104-bbcc-06e1c6379a46"/>
-<ref refid="9c8096fa-e6b2-5ff1-b9f5-3e1034c1c611"/>
+<ref refid="be8a5e9c-92b6-549a-8f7f-d7abf8e9dbf1"/>
+<ref refid="4b784d42-d959-511a-94b6-fd31914b218f"/>
+<ref refid="9a0478b8-0d10-545c-87b2-f1673d34be72"/>
 <ref refid="ef9220d9-8a98-5708-90b4-f6b954438790"/>
 <ref refid="85d18b24-8f48-5761-b63b-8aa55f47f9c1"/>
+<ref refid="90486587-24af-5104-bbcc-06e1c6379a46"/>
+<ref refid="9c8096fa-e6b2-5ff1-b9f5-3e1034c1c611"/>
 </reflist>
 </ownedPresentation>
 </C4Model:C4Diagram>
@@ -3667,21 +3586,21 @@ c4dependency {
 <ref refid="b7f97567-1d69-50aa-844c-e8ed5a8e80ff"/>
 <ref refid="c808badd-16b2-546b-8b0e-a65564dc7be9"/>
 <ref refid="5905ec2f-881e-5b59-b903-12ea18ee4454"/>
+<ref refid="12b77944-d0e1-5f8f-80dd-faf833092728"/>
+<ref refid="e7a92a24-d713-5f75-828d-87a5cf8bb90b"/>
+<ref refid="5b43de11-e418-5732-91a4-d3299b9bd86c"/>
+<ref refid="5bccc0a4-141e-5018-bb22-a7088409b127"/>
+<ref refid="6ea761a4-fbdc-542d-87b7-5b4dfd6d16c7"/>
+<ref refid="71efb078-47cf-5eec-b066-7413a1187289"/>
+<ref refid="f58b7c16-b34c-5748-b8c5-fb6a64afb085"/>
+<ref refid="727249a6-a14c-589a-bd42-0486ec1855da"/>
+<ref refid="36d995b7-99a1-5421-85da-71abfcc74fb4"/>
 <ref refid="ee197b0a-6fc6-59f2-a8f1-16dd32602af3"/>
 <ref refid="1a43b125-7b16-5c5c-af2c-39c239cdf37a"/>
 <ref refid="4fd71448-b9c7-5548-91e5-8fe08c9ae39a"/>
 <ref refid="26507b91-5fa8-5dfb-86f9-1af5cd21a2e7"/>
-<ref refid="12b77944-d0e1-5f8f-80dd-faf833092728"/>
-<ref refid="e7a92a24-d713-5f75-828d-87a5cf8bb90b"/>
-<ref refid="5b43de11-e418-5732-91a4-d3299b9bd86c"/>
 <ref refid="8248b4fb-36f7-5507-a374-93322e007f3f"/>
-<ref refid="6ea761a4-fbdc-542d-87b7-5b4dfd6d16c7"/>
-<ref refid="71efb078-47cf-5eec-b066-7413a1187289"/>
-<ref refid="f58b7c16-b34c-5748-b8c5-fb6a64afb085"/>
 <ref refid="23cf29cc-ae08-5658-b4a9-941889b542c9"/>
-<ref refid="5bccc0a4-141e-5018-bb22-a7088409b127"/>
-<ref refid="727249a6-a14c-589a-bd42-0486ec1855da"/>
-<ref refid="36d995b7-99a1-5421-85da-71abfcc74fb4"/>
 </reflist>
 </ownedPresentation>
 </C4Model:C4Diagram>
@@ -3700,10 +3619,10 @@ c4dependency {
 <val>Сотрудник MIB</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -3720,7 +3639,7 @@ c4dependency {
 <val>AIMS</val>
 </name>
 <nestingPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </nestingPackage>
 <owningContainer>
 <reflist>
@@ -3732,8 +3651,19 @@ c4dependency {
 </reflist>
 </owningContainer>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="efccd48b-b25d-5333-8eca-ae017c68b0aa"/>
+<ref refid="5eba5c7c-a77d-5d56-9965-0346e942cfee"/>
+<ref refid="2c8f1e7d-af7c-5dcd-984b-a69e34fea8af"/>
+<ref refid="433dac1f-f185-5425-b8f4-732dca6c48c6"/>
+<ref refid="e2b41ad4-77be-5c4f-ab22-224da364a275"/>
+<ref refid="8f8ca592-96c8-591c-a552-924266b7bc41"/>
+<ref refid="0c493c26-ae7f-5227-9ca9-ee79b9ce352a"/>
+</reflist>
+</packagedElement>
 <presentation>
 <reflist>
 <ref refid="0caafe89-f6ab-5f3c-bd70-136e51d3167d"/>
@@ -3765,10 +3695,10 @@ c4dependency {
 <val>Внешняя система мониторинга</val>
 </name>
 <nestingPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </nestingPackage>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -3782,7 +3712,7 @@ c4dependency {
 </C4Model:Container>
 <C4Model:C4PersonItem id="53389bed-72eb-594c-a3b1-14d6d4188aba">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 40.0, 220.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 40.0, 219.99999999999991)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -3802,7 +3732,7 @@ c4dependency {
 </C4Model:C4PersonItem>
 <C4Model:C4ContainerItem id="0caafe89-f6ab-5f3c-bd70-136e51d3167d">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 520.0, 200.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 520.0, 199.99999999999991)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -3822,7 +3752,7 @@ c4dependency {
 </C4Model:C4ContainerItem>
 <C4Model:C4ContainerItem id="cb969261-62b3-55d8-85d1-6886530fd309">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 1150.0, 205.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 1150.0000000000002, 204.99999999999986)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -3850,7 +3780,7 @@ c4dependency {
 <val>Использует веб-интерфейс</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -3880,7 +3810,7 @@ c4dependency {
 <ref refid="8a87d58f-cac3-567a-9fa4-51d739ee23cf"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 155.0, 285.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 155.0, 284.99999999999994)</val>
 </matrix>
 <points>
 <val>[(365.0, 0.0), (115.0, -5.0)]</val>
@@ -3902,7 +3832,7 @@ c4dependency {
 <val>Передаёт события</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -4001,6 +3931,11 @@ X-Integration-Api-Key</val>
 <ref refid="2dfe75e6-9682-5188-867b-045f3bd3c64d"/>
 </reflist>
 </owningContainer>
+<packagedElement>
+<reflist>
+<ref refid="19f74795-e9fe-575e-842a-387a99095965"/>
+</reflist>
+</packagedElement>
 <presentation>
 <reflist>
 <ref refid="7ba182f2-4b2c-5957-b6da-a4af91971a06"/>
@@ -4047,6 +3982,17 @@ X-Integration-Api-Key</val>
 <ref refid="e6a9fd63-d88e-5ccf-9acb-545a318d970b"/>
 </reflist>
 </owningContainer>
+<packagedElement>
+<reflist>
+<ref refid="2c8cfb2f-5903-5453-b83d-1f095202acaf"/>
+<ref refid="79e883ff-3e88-517a-9fcf-51a463298c7d"/>
+<ref refid="8a998dcd-ceeb-55d8-bef4-9c6a111e9e1f"/>
+<ref refid="f01fd221-6f71-5b0d-978a-bcccaa1f1700"/>
+<ref refid="e48fa3b9-3338-5db1-9592-6c29184997a6"/>
+<ref refid="59fe978e-c09f-53c9-a368-4d5b2f463166"/>
+<ref refid="734e24ec-989c-5330-ae60-e1198870d469"/>
+</reflist>
+</packagedElement>
 <presentation>
 <reflist>
 <ref refid="96ec6c43-73a3-5330-bf8b-15b97f5d9cf2"/>
@@ -4147,7 +4093,7 @@ X-Integration-Api-Key</val>
 </C4Model:C4PersonItem>
 <C4Model:C4ContainerItem id="7aea4717-349d-5070-a328-6b6e479ad907">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 380.0, 40.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 383.1714166642489, 32.9442117797786)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -4165,6 +4111,11 @@ X-Integration-Api-Key</val>
 <ref refid="96ec6c43-73a3-5330-bf8b-15b97f5d9cf2"/>
 <ref refid="8f9ca601-c38e-5e61-99e6-d9a905571b37"/>
 <ref refid="00fa5894-3a5b-580b-8260-cdb2ccb68b3a"/>
+<ref refid="be8a5e9c-92b6-549a-8f7f-d7abf8e9dbf1"/>
+<ref refid="4b784d42-d959-511a-94b6-fd31914b218f"/>
+<ref refid="9a0478b8-0d10-545c-87b2-f1673d34be72"/>
+<ref refid="ef9220d9-8a98-5708-90b4-f6b954438790"/>
+<ref refid="85d18b24-8f48-5761-b63b-8aa55f47f9c1"/>
 </reflist>
 </children>
 <diagram>
@@ -4176,7 +4127,7 @@ X-Integration-Api-Key</val>
 </C4Model:C4ContainerItem>
 <C4Model:C4ContainerItem id="863c3db9-1947-5b86-9e32-35118c71d72a">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 2050.0, 480.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 911.5947833599758, 996.0993667409005)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -4196,7 +4147,7 @@ X-Integration-Api-Key</val>
 </C4Model:C4ContainerItem>
 <C4Model:C4ContainerItem id="8ab74f49-b655-570a-b3c5-c75e56ebbfad">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 80.0, 110.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 80.00000000000024, 110.0)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -4219,7 +4170,7 @@ X-Integration-Api-Key</val>
 </C4Model:C4ContainerItem>
 <C4Model:C4ContainerItem id="7ba182f2-4b2c-5957-b6da-a4af91971a06">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 500.0, 110.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 80.00000000000023, 447.8399485548352)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -4230,6 +4181,11 @@ X-Integration-Api-Key</val>
 <height>
 <val>130.0</val>
 </height>
+<children>
+<reflist>
+<ref refid="c25527a8-affc-58f9-a91e-9c91c40d1376"/>
+</reflist>
+</children>
 <diagram>
 <ref refid="d649401d-2ddb-54e1-be66-1d24861882f9"/>
 </diagram>
@@ -4242,7 +4198,7 @@ X-Integration-Api-Key</val>
 </C4Model:C4ContainerItem>
 <C4Model:C4ContainerItem id="96ec6c43-73a3-5330-bf8b-15b97f5d9cf2">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 500.0, 440.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 541.3257356021495, 437.8399485548353)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -4288,7 +4244,7 @@ X-Integration-Api-Key</val>
 </C4Model:C4DatabaseItem>
 <C4Model:C4ContainerItem id="00fa5894-3a5b-580b-8260-cdb2ccb68b3a">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 1100.0, 650.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 1100.0, 650.0000000000001)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -4309,32 +4265,6 @@ X-Integration-Api-Key</val>
 <ref refid="bd9562e7-e983-58b6-b53f-2c5a3358004a"/>
 </subject>
 </C4Model:C4ContainerItem>
-<C4Model:Dependency id="5eba5c7c-a77d-5d56-9965-0346e942cfee">
-<client>
-<reflist>
-<ref refid="f78d1b4a-40ca-5b1f-bae2-7b3a2e6a884b"/>
-</reflist>
-</client>
-<name>
-<val>Загружает UI</val>
-</name>
-<owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
-</owningPackage>
-<presentation>
-<reflist>
-<ref refid="4b784d42-d959-511a-94b6-fd31914b218f"/>
-</reflist>
-</presentation>
-<supplier>
-<reflist>
-<ref refid="161bf58a-c513-5cee-80b6-e4a240b1477f"/>
-</reflist>
-</supplier>
-<technology>
-<val>HTTP</val>
-</technology>
-</C4Model:Dependency>
 <C4Model:C4DependencyItem id="4b784d42-d959-511a-94b6-fd31914b218f">
 <diagram>
 <ref refid="d649401d-2ddb-54e1-be66-1d24861882f9"/>
@@ -4345,14 +4275,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="7aea4717-349d-5070-a328-6b6e479ad907"/>
+</parent>
 <subject>
 <ref refid="5eba5c7c-a77d-5d56-9965-0346e942cfee"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 145.0, 495.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, -235.0, 455.0)</val>
 </matrix>
 <points>
-<val>[(315.0, -215.0), (115.0, -65.0)]</val>
+<val>[(349.2209302325581, -215.0), (111.82858333575109, -57.944211779778584)]</val>
 </points>
 <head-connection>
 <ref refid="8ab74f49-b655-570a-b3c5-c75e56ebbfad"/>
@@ -4371,7 +4304,7 @@ X-Integration-Api-Key</val>
 <val>Использует</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="094b1931-25f8-5631-9634-a27cfaf56c7b"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -4397,14 +4330,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="7aea4717-349d-5070-a328-6b6e479ad907"/>
+</parent>
 <subject>
 <ref refid="efccd48b-b25d-5333-8eca-ae017c68b0aa"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 145.0, 495.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, -235.0, 455.0)</val>
 </matrix>
 <points>
-<val>[(735.0, -215.0), (115.0, -65.0)]</val>
+<val>[(315.00000000000006, 11.996664972745918), (111.82858333575109, -57.944211779778584)]</val>
 </points>
 <head-connection>
 <ref refid="7ba182f2-4b2c-5957-b6da-a4af91971a06"/>
@@ -4423,7 +4359,7 @@ X-Integration-Api-Key</val>
 <val>Предоставляет</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="094b1931-25f8-5631-9634-a27cfaf56c7b"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -4446,14 +4382,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="7aea4717-349d-5070-a328-6b6e479ad907"/>
+</parent>
 <subject>
 <ref refid="2c8f1e7d-af7c-5dcd-984b-a69e34fea8af"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 595.0, 215.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 214.7309522421735, 177.8399485548352)</val>
 </matrix>
 <points>
-<val>[(285.0, 0.0), (135.0, 0.0)]</val>
+<val>[(-5.630609189000182, 270.00000000000017), (-5.130609189000182, 62.16005144516481)]</val>
 </points>
 <head-connection>
 <ref refid="7ba182f2-4b2c-5957-b6da-a4af91971a06"/>
@@ -4472,7 +4411,7 @@ X-Integration-Api-Key</val>
 <val>Вызывает API</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="e125235e-e9c3-5c85-b718-c926e6ca4b84"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -4498,14 +4437,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="7ba182f2-4b2c-5957-b6da-a4af91971a06"/>
+</parent>
 <subject>
 <ref refid="19f74795-e9fe-575e-842a-387a99095965"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 1020.0, 215.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 560.8250797906678, -262.16005144516475)</val>
 </matrix>
 <points>
-<val>[(0.0, 265.0), (10.0, 65.0)]</val>
+<val>[(-99.49934418851865, 347.3029085880219), (-280.8250797906678, 345.7025161814287)]</val>
 </points>
 <head-connection>
 <ref refid="96ec6c43-73a3-5330-bf8b-15b97f5d9cf2"/>
@@ -4524,7 +4466,7 @@ X-Integration-Api-Key</val>
 <val>Передаёт события</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -4557,7 +4499,7 @@ X-Integration-Api-Key</val>
 <val>(1.0, 0.0, 0.0, 1.0, 2205.0, 555.0)</val>
 </matrix>
 <points>
-<val>[(-1025.0, 0.0), (-155.0, -5.0)]</val>
+<val>[(-1132.9548951222023, 55.784160334613944), (-1136.357264028625, 441.09936674090045)]</val>
 </points>
 <head-connection>
 <ref refid="96ec6c43-73a3-5330-bf8b-15b97f5d9cf2"/>
@@ -4576,7 +4518,7 @@ X-Integration-Api-Key</val>
 <val>Читает и раздаёт</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -4609,7 +4551,7 @@ X-Integration-Api-Key</val>
 <val>(1.0, 0.0, 0.0, 1.0, 1030.0, 550.0)</val>
 </matrix>
 <points>
-<val>[(-300.0, -270.0), (-150.0, -70.0)]</val>
+<val>[(-296.82858333575086, -277.0557882202214), (-105.50284773360158, -79.21583966538611)]</val>
 </points>
 <head-connection>
 <ref refid="8ab74f49-b655-570a-b3c5-c75e56ebbfad"/>
@@ -4628,7 +4570,7 @@ X-Integration-Api-Key</val>
 <val>Читает и изменяет данные и задачи</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="094b1931-25f8-5631-9634-a27cfaf56c7b"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -4654,14 +4596,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="7aea4717-349d-5070-a328-6b6e479ad907"/>
+</parent>
 <subject>
 <ref refid="433dac1f-f185-5425-b8f4-732dca6c48c6"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 1030.0, 550.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 649.7309522421735, 509.83661352758116)</val>
 </matrix>
 <points>
-<val>[(450.0, -40.0), (150.0, -70.0)]</val>
+<val>[(450.26904775782646, -119.83661352758122), (191.59478335997596, -22.563440927158467)]</val>
 </points>
 <head-connection>
 <ref refid="8f9ca601-c38e-5e61-99e6-d9a905571b37"/>
@@ -4680,7 +4625,7 @@ X-Integration-Api-Key</val>
 <val>Читает и сохраняет вложения</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="094b1931-25f8-5631-9634-a27cfaf56c7b"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -4706,14 +4651,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="7aea4717-349d-5070-a328-6b6e479ad907"/>
+</parent>
 <subject>
 <ref refid="e2b41ad4-77be-5c4f-ab22-224da364a275"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 1030.0, 550.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 647.321480099861, 514.7651347330603)</val>
 </matrix>
 <points>
-<val>[(450.0, 140.0), (150.0, 70.0)]</val>
+<val>[(452.678519900139, 205.23486526693966), (194.00425550228852, 18.217670964632248)]</val>
 </points>
 <head-connection>
 <ref refid="00fa5894-3a5b-580b-8260-cdb2ccb68b3a"/>
@@ -5039,16 +4987,16 @@ X-Integration-Api-Key</val>
 </C4Model:Container>
 <C4Model:C4ContainerItem id="82b329a4-9e66-5543-83f1-7ce98f115839">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 30.0, 30.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 40.07893692894025, 16.530278196365487)</val>
 </matrix>
 <top-left>
-<val>(0.0, 0.0)</val>
+<val>(-9.217926135168867, 0.0)</val>
 </top-left>
 <width>
-<val>2500.0</val>
+<val>2003.936355021725</val>
 </width>
 <height>
-<val>1320.0</val>
+<val>2034.0902542138597</val>
 </height>
 <children>
 <reflist>
@@ -5056,6 +5004,8 @@ X-Integration-Api-Key</val>
 <ref refid="54559254-f93f-5cfd-93c1-99dfce484ea8"/>
 <ref refid="c808badd-16b2-546b-8b0e-a65564dc7be9"/>
 <ref refid="5905ec2f-881e-5b59-b903-12ea18ee4454"/>
+<ref refid="727249a6-a14c-589a-bd42-0486ec1855da"/>
+<ref refid="36d995b7-99a1-5421-85da-71abfcc74fb4"/>
 </reflist>
 </children>
 <diagram>
@@ -5098,7 +5048,7 @@ X-Integration-Api-Key</val>
 </C4Model:C4ContainerItem>
 <C4Model:C4ContainerItem id="54559254-f93f-5cfd-93c1-99dfce484ea8">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 50.0, 620.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 43.91326457037048, 619.8326444373547)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -5107,7 +5057,7 @@ X-Integration-Api-Key</val>
 <val>1900.0</val>
 </width>
 <height>
-<val>600.0</val>
+<val>844.5816099377805</val>
 </height>
 <children>
 <reflist>
@@ -5117,6 +5067,13 @@ X-Integration-Api-Key</val>
 <ref refid="4eaaadc6-4cd9-57d3-971e-bdb863831e4d"/>
 <ref refid="027773b3-9896-55c8-8204-fd70dd4c54c5"/>
 <ref refid="b7f97567-1d69-50aa-844c-e8ed5a8e80ff"/>
+<ref refid="12b77944-d0e1-5f8f-80dd-faf833092728"/>
+<ref refid="e7a92a24-d713-5f75-828d-87a5cf8bb90b"/>
+<ref refid="5b43de11-e418-5732-91a4-d3299b9bd86c"/>
+<ref refid="5bccc0a4-141e-5018-bb22-a7088409b127"/>
+<ref refid="6ea761a4-fbdc-542d-87b7-5b4dfd6d16c7"/>
+<ref refid="71efb078-47cf-5eec-b066-7413a1187289"/>
+<ref refid="f58b7c16-b34c-5748-b8c5-fb6a64afb085"/>
 </reflist>
 </children>
 <diagram>
@@ -5246,7 +5203,7 @@ X-Integration-Api-Key</val>
 </C4Model:C4ContainerItem>
 <C4Model:C4ContainerItem id="21a3952b-745b-563f-b742-72019b34fec4">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 510.0, 100.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 74.99999999999997, 362.5411333658339)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -5269,7 +5226,7 @@ X-Integration-Api-Key</val>
 </C4Model:C4ContainerItem>
 <C4Model:C4ContainerItem id="e18cc0c3-37a9-5603-84e2-b6b8109a9989">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 950.0, 100.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 739.3278367335278, 382.584228703878)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -5292,7 +5249,7 @@ X-Integration-Api-Key</val>
 </C4Model:C4ContainerItem>
 <C4Model:C4ContainerItem id="4eaaadc6-4cd9-57d3-971e-bdb863831e4d">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 1390.0, 100.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 1334.3313632966597, 382.5842287038782)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -5315,7 +5272,7 @@ X-Integration-Api-Key</val>
 </C4Model:C4ContainerItem>
 <C4Model:C4ContainerItem id="027773b3-9896-55c8-8204-fd70dd4c54c5">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 510.0, 410.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 72.83505521415094, 646.679173596692)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -5338,7 +5295,7 @@ X-Integration-Api-Key</val>
 </C4Model:C4ContainerItem>
 <C4Model:C4ContainerItem id="b7f97567-1d69-50aa-844c-e8ed5a8e80ff">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 970.0, 410.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 739.3278367335278, 674.5617705719119)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -5361,7 +5318,7 @@ X-Integration-Api-Key</val>
 </C4Model:C4ContainerItem>
 <C4Model:C4DatabaseItem id="c808badd-16b2-546b-8b0e-a65564dc7be9">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 2100.0, 740.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 554.9999999999999, 1796.8130821004743)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -5384,7 +5341,7 @@ X-Integration-Api-Key</val>
 </C4Model:C4DatabaseItem>
 <C4Model:C4ContainerItem id="5905ec2f-881e-5b59-b903-12ea18ee4454">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 2100.0, 1050.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 1340.1273237887003, 1816.8130821004743)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -5415,7 +5372,7 @@ X-Integration-Api-Key</val>
 <val>Вход и профиль</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -5445,7 +5402,7 @@ X-Integration-Api-Key</val>
 <val>(1.0, 0.0, 0.0, 1.0, 260.0, 250.0)</val>
 </matrix>
 <points>
-<val>[(310.0, 140.0), (120.0, 60.0)]</val>
+<val>[(320.07893692894027, 126.53027819636549), (130.07893692894027, 46.53027819636549)]</val>
 </points>
 <head-connection>
 <ref refid="8554c507-8029-55db-a2ab-b474b1afb11f"/>
@@ -5464,7 +5421,7 @@ X-Integration-Api-Key</val>
 <val>Инциденты, очистка и вложения</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -5494,7 +5451,7 @@ X-Integration-Api-Key</val>
 <val>(1.0, 0.0, 0.0, 1.0, 695.0, 250.0)</val>
 </matrix>
 <points>
-<val>[(0.0, 140.0), (10.0, 60.0)]</val>
+<val>[(10.078936928940266, 126.53027819636549), (20.078936928940266, 46.53027819636549)]</val>
 </points>
 <head-connection>
 <ref refid="8554c507-8029-55db-a2ab-b474b1afb11f"/>
@@ -5513,7 +5470,7 @@ X-Integration-Api-Key</val>
 <val>Алерты и уведомления</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -5543,7 +5500,7 @@ X-Integration-Api-Key</val>
 <val>(1.0, 0.0, 0.0, 1.0, 1135.0, 250.0)</val>
 </matrix>
 <points>
-<val>[(-295.0, 140.0), (-125.0, 60.0)]</val>
+<val>[(-284.92106307105973, 126.53027819636549), (-114.92106307105973, 46.53027819636549)]</val>
 </points>
 <head-connection>
 <ref refid="8554c507-8029-55db-a2ab-b474b1afb11f"/>
@@ -5562,7 +5519,7 @@ X-Integration-Api-Key</val>
 <val>Вызывает</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -5595,7 +5552,7 @@ X-Integration-Api-Key</val>
 <val>(1.0, 0.0, 0.0, 1.0, 705.0, 450.0)</val>
 </matrix>
 <points>
-<val>[(-275.0, 300.0), (-135.0, 60.0)]</val>
+<val>[(-271.00779850068926, 286.36292263372025), (-124.92106307105973, 46.53027819636549)]</val>
 </points>
 <head-connection>
 <ref refid="8219427b-f515-5968-b53b-a99a9de763db"/>
@@ -5614,7 +5571,7 @@ X-Integration-Api-Key</val>
 <val>Передаёт команды и запросы</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="52a631cc-5b80-5979-8b63-747fe092ff04"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -5637,14 +5594,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="54559254-f93f-5cfd-93c1-99dfce484ea8"/>
+</parent>
 <subject>
 <ref refid="2c8cfb2f-5903-5453-b83d-1f095202acaf"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 285.0, 815.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 203.29562603845875, 173.2751598272746)</val>
 </matrix>
 <points>
-<val>[(305.0, 0.0), (145.0, 0.0)]</val>
+<val>[(-25.718960079500718, 189.26597353855936), (-26.21896007950069, 56.72484017272541)]</val>
 </points>
 <head-connection>
 <ref refid="21a3952b-745b-563f-b742-72019b34fec4"/>
@@ -5663,7 +5623,7 @@ X-Integration-Api-Key</val>
 <val>Передаёт алерты и запросы</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="52a631cc-5b80-5979-8b63-747fe092ff04"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -5686,14 +5646,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="54559254-f93f-5cfd-93c1-99dfce484ea8"/>
+</parent>
 <subject>
 <ref refid="79e883ff-3e88-517a-9fcf-51a463298c7d"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 285.0, 815.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 203.29562603845878, 174.99492482383494)</val>
 </matrix>
 <points>
-<val>[(745.0, 0.0), (145.0, 0.0)]</val>
+<val>[(536.032210695069, 216.91430177727875), (146.70437396154122, 48.17974756827391)]</val>
 </points>
 <head-connection>
 <ref refid="e18cc0c3-37a9-5603-84e2-b6b8109a9989"/>
@@ -5712,7 +5675,7 @@ X-Integration-Api-Key</val>
 <val>Передаёт файлы</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="52a631cc-5b80-5979-8b63-747fe092ff04"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -5735,14 +5698,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="54559254-f93f-5cfd-93c1-99dfce484ea8"/>
+</parent>
 <subject>
 <ref refid="8a998dcd-ceeb-55d8-bef4-9c6a111e9e1f"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 285.0, 815.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 201.5020650165593, 177.58451226888508)</val>
 </matrix>
 <points>
-<val>[(1185.0, 0.0), (145.0, 0.0)]</val>
+<val>[(1132.8292982801004, 239.79325588203307), (148.4979349834407, -12.584512268885192)]</val>
 </points>
 <head-connection>
 <ref refid="4eaaadc6-4cd9-57d3-971e-bdb863831e4d"/>
@@ -5761,7 +5727,7 @@ X-Integration-Api-Key</val>
 <val>Ставит фоновые задачи</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -5791,7 +5757,7 @@ X-Integration-Api-Key</val>
 <val>(1.0, 0.0, 0.0, 1.0, 720.0, 815.0)</val>
 </matrix>
 <points>
-<val>[(0.0, 245.0), (5.0, 65.0)]</val>
+<val>[(-433.1727432865383, 468.0420962304122), (-426.0077985006893, 313.9040559995542)]</val>
 </points>
 <head-connection>
 <ref refid="027773b3-9896-55c8-8204-fd70dd4c54c5"/>
@@ -5810,7 +5776,7 @@ X-Integration-Api-Key</val>
 <val>Ставит задачи уведомлений</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="52a631cc-5b80-5979-8b63-747fe092ff04"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -5833,14 +5799,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="54559254-f93f-5cfd-93c1-99dfce484ea8"/>
+</parent>
 <subject>
 <ref refid="e48fa3b9-3338-5db1-9592-6c29184997a6"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 1160.0, 815.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 1104.867793367458, 181.07421979627492)</val>
 </matrix>
 <points>
-<val>[(-300.0, 245.0), (-130.0, 65.0)]</val>
+<val>[(-846.3678622526743, 465.6049538004172), (-365.53995663393016, 266.51000890760315)]</val>
 </points>
 <head-connection>
 <ref refid="027773b3-9896-55c8-8204-fd70dd4c54c5"/>
@@ -5859,7 +5828,7 @@ X-Integration-Api-Key</val>
 <val>Сохраняет предметные данные</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="52a631cc-5b80-5979-8b63-747fe092ff04"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -5882,14 +5851,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="54559254-f93f-5cfd-93c1-99dfce484ea8"/>
+</parent>
 <subject>
 <ref refid="59fe978e-c09f-53c9-a368-4d5b2f463166"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 720.0, 815.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 644.6066115504404, 184.54179648931495)</val>
 </matrix>
 <points>
-<val>[(330.0, 245.0), (130.0, 65.0)]</val>
+<val>[(94.72122518308731, 550.0199740825968), (-91.50838087297291, 445.5179614065179), (-309.60661155044005, 307.999336876519)]</val>
 </points>
 <head-connection>
 <ref refid="b7f97567-1d69-50aa-844c-e8ed5a8e80ff"/>
@@ -5908,7 +5880,7 @@ X-Integration-Api-Key</val>
 <val>Сохраняет алерты и уведомления</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="52a631cc-5b80-5979-8b63-747fe092ff04"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -5931,14 +5903,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="54559254-f93f-5cfd-93c1-99dfce484ea8"/>
+</parent>
 <subject>
 <ref refid="734e24ec-989c-5330-ae60-e1198870d469"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 1160.0, 815.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 1082.9815625427261, 184.7049054975239)</val>
 </matrix>
 <points>
-<val>[(0.0, 245.0), (35.0, 65.0)]</val>
+<val>[(-204.0515443158879, 489.856865074388), (-204.0515443158879, 327.8793232063541)]</val>
 </points>
 <head-connection>
 <ref refid="b7f97567-1d69-50aa-844c-e8ed5a8e80ff"/>
@@ -5957,7 +5932,7 @@ X-Integration-Api-Key</val>
 <val>Сохраняет метаданные</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="8b33bdd8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -5987,7 +5962,7 @@ X-Integration-Api-Key</val>
 <val>(1.0, 0.0, 0.0, 1.0, 1590.0, 815.0)</val>
 </matrix>
 <points>
-<val>[(-250.0, 245.0), (-120.0, 65.0)]</val>
+<val>[(-476.67996176716156, 495.92469320563214), (-171.67643520402953, 333.94715133759837)]</val>
 </points>
 <head-connection>
 <ref refid="b7f97567-1d69-50aa-844c-e8ed5a8e80ff"/>
@@ -6006,7 +5981,7 @@ X-Integration-Api-Key</val>
 <val>Хранит содержимое</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="52a631cc-5b80-5979-8b63-747fe092ff04"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -6032,14 +6007,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="54559254-f93f-5cfd-93c1-99dfce484ea8"/>
+</parent>
 <subject>
 <ref refid="f01fd221-6f71-5b0d-978a-bcccaa1f1700"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 1590.0, 815.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 1505.6071515359017, 180.17409971393488)</val>
 </matrix>
 <points>
-<val>[(540.0, 265.0), (120.0, 65.0)]</val>
+<val>[(-64.50765758763532, 1016.8063379491847), (-65.18064406620518, 332.41012898994336)]</val>
 </points>
 <head-connection>
 <ref refid="5905ec2f-881e-5b59-b903-12ea18ee4454"/>
@@ -6058,7 +6036,7 @@ X-Integration-Api-Key</val>
 <val>Обрабатывает queue_tasks</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="094b1931-25f8-5631-9634-a27cfaf56c7b"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -6084,14 +6062,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="82b329a4-9e66-5543-83f1-7ce98f115839"/>
+</parent>
 <subject>
 <ref refid="8f8ca592-96c8-591c-a552-924266b7bc41"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 725.0, 1120.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 694.9999999999999, 1092.9204126620766)</val>
 </matrix>
 <points>
-<val>[(1405.0, -190.0), (135.0, -60.0)]</val>
+<val>[(-3.994595599450804, 703.8926694383977), (-445.4166250013275, 293.59140537197004)]</val>
 </points>
 <head-connection>
 <ref refid="c808badd-16b2-546b-8b0e-a65564dc7be9"/>
@@ -6110,7 +6091,7 @@ X-Integration-Api-Key</val>
 <val>Читает и изменяет данные</val>
 </name>
 <owningPackage>
-<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+<ref refid="094b1931-25f8-5631-9634-a27cfaf56c7b"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -6136,14 +6117,17 @@ X-Integration-Api-Key</val>
 <orthogonal>
 <val>False</val>
 </orthogonal>
+<parent>
+<ref refid="82b329a4-9e66-5543-83f1-7ce98f115839"/>
+</parent>
 <subject>
 <ref refid="0c493c26-ae7f-5227-9ca9-ee79b9ce352a"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 1195.0, 1120.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 1165.0, 1092.9204126620764)</val>
 </matrix>
 <points>
-<val>[(935.0, -190.0), (145.0, -60.0)]</val>
+<val>[(-386.52203490908096, 703.8926694383979), (-305.8069646517001, 321.4740023471902)]</val>
 </points>
 <head-connection>
 <ref refid="c808badd-16b2-546b-8b0e-a65564dc7be9"/>
@@ -6156,6 +6140,11 @@ X-Integration-Api-Key</val>
 <name>
 <val>Deployment</val>
 </name>
+<nestedPackage>
+<reflist>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
+</reflist>
+</nestedPackage>
 <nestingPackage>
 <ref refid="f7abe4fc-c4ef-585a-809a-398232996b8c"/>
 </nestingPackage>
@@ -6164,45 +6153,12 @@ X-Integration-Api-Key</val>
 <ref refid="855e5735-3e68-520a-b71f-dfd2ba1d9bfe"/>
 </reflist>
 </ownedDiagram>
-<ownedType>
-<reflist>
-<ref refid="44da1ea3-16c6-52f6-b399-b7045bfeada8"/>
-<ref refid="7893281c-0fb8-58db-95eb-e615e1d73701"/>
-<ref refid="178e1f79-4579-5945-af23-9be3d44c1662"/>
-<ref refid="de9bc755-580e-5ca3-a89d-7064a845a210"/>
-<ref refid="6b985cba-fb49-52dd-9f01-a1b3cb05acdb"/>
-<ref refid="cffff25b-d28f-5827-b19c-218677f6b8f6"/>
-<ref refid="3176ecbb-e0d4-551f-8e0b-2f000126ff93"/>
-<ref refid="4d82249e-3240-598a-b9e1-86362e61dd6a"/>
-<ref refid="c0587fee-801c-5c8d-a0e5-bfdef2ee33b2"/>
-<ref refid="45a28093-c49b-58e8-a743-5315af25d8b0"/>
-<ref refid="4b233e83-f7d1-53bd-9b02-09da49bd7e81"/>
-<ref refid="0eff0c06-2271-5ea5-94ee-d0e85852c2b2"/>
-<ref refid="99fbf762-2b62-5d2a-ada5-33082838f55a"/>
-<ref refid="f681ab18-6fe2-54d7-b3e1-b0022e1654a7"/>
-<ref refid="5dbc9300-9168-575d-aa9d-4bb2f0f49a8b"/>
-</reflist>
-</ownedType>
 <owningPackage>
 <ref refid="f7abe4fc-c4ef-585a-809a-398232996b8c"/>
 </owningPackage>
 <packagedElement>
 <reflist>
-<ref refid="44da1ea3-16c6-52f6-b399-b7045bfeada8"/>
-<ref refid="7893281c-0fb8-58db-95eb-e615e1d73701"/>
-<ref refid="178e1f79-4579-5945-af23-9be3d44c1662"/>
-<ref refid="de9bc755-580e-5ca3-a89d-7064a845a210"/>
-<ref refid="6b985cba-fb49-52dd-9f01-a1b3cb05acdb"/>
-<ref refid="cffff25b-d28f-5827-b19c-218677f6b8f6"/>
-<ref refid="3176ecbb-e0d4-551f-8e0b-2f000126ff93"/>
-<ref refid="4d82249e-3240-598a-b9e1-86362e61dd6a"/>
-<ref refid="c0587fee-801c-5c8d-a0e5-bfdef2ee33b2"/>
-<ref refid="45a28093-c49b-58e8-a743-5315af25d8b0"/>
-<ref refid="4b233e83-f7d1-53bd-9b02-09da49bd7e81"/>
-<ref refid="0eff0c06-2271-5ea5-94ee-d0e85852c2b2"/>
-<ref refid="99fbf762-2b62-5d2a-ada5-33082838f55a"/>
-<ref refid="f681ab18-6fe2-54d7-b3e1-b0022e1654a7"/>
-<ref refid="5dbc9300-9168-575d-aa9d-4bb2f0f49a8b"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -6238,10 +6194,10 @@ X-Integration-Api-Key</val>
 <val>Рабочее место сотрудника</val>
 </name>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -6254,10 +6210,10 @@ X-Integration-Api-Key</val>
 <val>Google Chrome 146.0</val>
 </name>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -6271,10 +6227,10 @@ X-Integration-Api-Key</val>
 HTML, CSS и JavaScript</val>
 </name>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -6288,10 +6244,10 @@ HTML, CSS и JavaScript</val>
 «external system»</val>
 </name>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -6305,10 +6261,10 @@ HTML, CSS и JavaScript</val>
 FreeBSD 14.3</val>
 </name>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -6321,10 +6277,10 @@ FreeBSD 14.3</val>
 <val>OpenJDK 17 JVM</val>
 </name>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -6337,10 +6293,10 @@ FreeBSD 14.3</val>
 <val>Embedded Tomcat</val>
 </name>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -6354,10 +6310,10 @@ FreeBSD 14.3</val>
 Liquibase · :8080 · /actuator/health</val>
 </name>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -6371,10 +6327,10 @@ Liquibase · :8080 · /actuator/health</val>
 База данных: aims</val>
 </name>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -6387,10 +6343,10 @@ Liquibase · :8080 · /actuator/health</val>
 <val>Файлы данных</val>
 </name>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -6404,10 +6360,10 @@ Liquibase · :8080 · /actuator/health</val>
 ~/.aims/storage</val>
 </name>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -6479,7 +6435,7 @@ Liquibase · :8080 · /actuator/health</val>
 <val>180.0</val>
 </width>
 <height>
-<val>70.0</val>
+<val>81.0</val>
 </height>
 <diagram>
 <ref refid="855e5735-3e68-520a-b71f-dfd2ba1d9bfe"/>
@@ -6708,10 +6664,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -6790,10 +6746,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -6872,10 +6828,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -6954,10 +6910,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+<ref refid="8b33fbb8-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -7046,6 +7002,11 @@ Liquibase · :8080 · /actuator/health</val>
 <name>
 <val>Infological Model</val>
 </name>
+<nestedPackage>
+<reflist>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
+</reflist>
+</nestedPackage>
 <nestingPackage>
 <ref refid="8eac9ce6-f7d2-5f38-bc00-eba71f03d532"/>
 </nestingPackage>
@@ -7054,77 +7015,12 @@ Liquibase · :8080 · /actuator/health</val>
 <ref refid="82e25231-eb6e-5dd8-986b-cb8f7063da5f"/>
 </reflist>
 </ownedDiagram>
-<ownedType>
-<reflist>
-<ref refid="164f0ef4-8c71-590d-8159-ed9d8bc7d3e0"/>
-<ref refid="71f27066-ca34-5ba2-9871-7f411cdbb561"/>
-<ref refid="46aade4e-4dff-58d7-81a0-7593f5472464"/>
-<ref refid="6b9abe43-1234-5306-a2e4-0b1ae7b08378"/>
-<ref refid="676e7a94-46b0-5a12-84e1-7eeb151b0896"/>
-<ref refid="e94e170d-10c2-53f7-9b90-27a4dd00147a"/>
-<ref refid="276c947f-b2f3-525d-a0d0-508134014860"/>
-<ref refid="dfbee5eb-795f-50a7-b508-03ff4f53327c"/>
-<ref refid="6be314ba-2706-53be-9250-7ff244d1626a"/>
-<ref refid="905e55d2-ab0d-5867-b43c-1280c552efe7"/>
-<ref refid="2557a408-2599-52b0-ad98-247e57690c0b"/>
-<ref refid="7e6e455f-1d50-5cfc-a392-cb9773ff7ec9"/>
-<ref refid="335d7e46-9a6e-59cd-ae82-c5aee0684b9d"/>
-<ref refid="3139892d-1bfb-55f4-a225-558455fa9f7d"/>
-<ref refid="c6168e32-97aa-548b-97d7-b04797adc76a"/>
-<ref refid="74616ea5-11a6-546c-b22c-c58cba7ec46e"/>
-<ref refid="88fb7acf-14fe-5977-a577-b79c2e3c7659"/>
-<ref refid="16c7559f-bd1b-5b79-b55e-23a1829e423b"/>
-<ref refid="3c89b6d5-3619-5d24-8799-f59c82befff2"/>
-<ref refid="a60cd06a-f4b2-5433-ade6-1704f12c43d2"/>
-<ref refid="0c9f5e5f-69b6-5d75-babb-512ec0b2fead"/>
-<ref refid="37ebf2d2-7ae3-566d-9e0c-7da97d4bc25d"/>
-<ref refid="08c8b924-4479-52ff-ac0c-e61c937d9e6d"/>
-<ref refid="40626935-4faa-5889-8775-6428862ad0df"/>
-<ref refid="3cc31a5b-aa09-536d-b995-9785ac3c6f9f"/>
-<ref refid="ecd24dfc-2b4e-544b-b6db-e03c4fbfc50c"/>
-<ref refid="d4d0648e-5329-5dac-9eb9-4807442f7ee9"/>
-<ref refid="4d7f9b4d-2ae6-5e3c-8af7-37a758305717"/>
-<ref refid="ce4fe689-bc8c-5fbf-b3eb-a68bcf0e5a90"/>
-<ref refid="69aeb888-a321-5f74-87b1-a76b16e9fa64"/>
-<ref refid="d06e1028-93a7-5bd3-bb98-487527bf4370"/>
-</reflist>
-</ownedType>
 <owningPackage>
 <ref refid="8eac9ce6-f7d2-5f38-bc00-eba71f03d532"/>
 </owningPackage>
 <packagedElement>
 <reflist>
-<ref refid="164f0ef4-8c71-590d-8159-ed9d8bc7d3e0"/>
-<ref refid="71f27066-ca34-5ba2-9871-7f411cdbb561"/>
-<ref refid="46aade4e-4dff-58d7-81a0-7593f5472464"/>
-<ref refid="6b9abe43-1234-5306-a2e4-0b1ae7b08378"/>
-<ref refid="676e7a94-46b0-5a12-84e1-7eeb151b0896"/>
-<ref refid="e94e170d-10c2-53f7-9b90-27a4dd00147a"/>
-<ref refid="276c947f-b2f3-525d-a0d0-508134014860"/>
-<ref refid="dfbee5eb-795f-50a7-b508-03ff4f53327c"/>
-<ref refid="6be314ba-2706-53be-9250-7ff244d1626a"/>
-<ref refid="905e55d2-ab0d-5867-b43c-1280c552efe7"/>
-<ref refid="2557a408-2599-52b0-ad98-247e57690c0b"/>
-<ref refid="7e6e455f-1d50-5cfc-a392-cb9773ff7ec9"/>
-<ref refid="335d7e46-9a6e-59cd-ae82-c5aee0684b9d"/>
-<ref refid="3139892d-1bfb-55f4-a225-558455fa9f7d"/>
-<ref refid="c6168e32-97aa-548b-97d7-b04797adc76a"/>
-<ref refid="74616ea5-11a6-546c-b22c-c58cba7ec46e"/>
-<ref refid="88fb7acf-14fe-5977-a577-b79c2e3c7659"/>
-<ref refid="16c7559f-bd1b-5b79-b55e-23a1829e423b"/>
-<ref refid="3c89b6d5-3619-5d24-8799-f59c82befff2"/>
-<ref refid="a60cd06a-f4b2-5433-ade6-1704f12c43d2"/>
-<ref refid="0c9f5e5f-69b6-5d75-babb-512ec0b2fead"/>
-<ref refid="37ebf2d2-7ae3-566d-9e0c-7da97d4bc25d"/>
-<ref refid="08c8b924-4479-52ff-ac0c-e61c937d9e6d"/>
-<ref refid="40626935-4faa-5889-8775-6428862ad0df"/>
-<ref refid="3cc31a5b-aa09-536d-b995-9785ac3c6f9f"/>
-<ref refid="ecd24dfc-2b4e-544b-b6db-e03c4fbfc50c"/>
-<ref refid="d4d0648e-5329-5dac-9eb9-4807442f7ee9"/>
-<ref refid="4d7f9b4d-2ae6-5e3c-8af7-37a758305717"/>
-<ref refid="ce4fe689-bc8c-5fbf-b3eb-a68bcf0e5a90"/>
-<ref refid="69aeb888-a321-5f74-87b1-a76b16e9fa64"/>
-<ref refid="d06e1028-93a7-5bd3-bb98-487527bf4370"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -7184,10 +7080,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -7230,7 +7126,7 @@ Liquibase · :8080 · /actuator/health</val>
 </UML:Property>
 <UML:ClassItem id="73d844f7-8caa-594e-8648-798ad5b377bf">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 40.0, 40.0)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 40.0, 39.99999999999996)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -7244,6 +7140,9 @@ Liquibase · :8080 · /actuator/health</val>
 <diagram>
 <ref refid="82e25231-eb6e-5dd8-986b-cb8f7063da5f"/>
 </diagram>
+<show_operations>
+<val>0</val>
+</show_operations>
 <subject>
 <ref refid="164f0ef4-8c71-590d-8159-ed9d8bc7d3e0"/>
 </subject>
@@ -7261,10 +7160,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -7338,10 +7237,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -7417,10 +7316,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -7518,10 +7417,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -7630,10 +7529,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -7860,10 +7759,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -8050,10 +7949,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -8164,10 +8063,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -8288,10 +8187,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -8401,10 +8300,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -8512,10 +8411,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -8647,10 +8546,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -8782,10 +8681,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -8917,10 +8816,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -9052,10 +8951,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -9187,10 +9086,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -9322,10 +9221,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -9457,10 +9356,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -9592,10 +9491,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -9727,10 +9626,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -9862,10 +9761,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -9997,10 +9896,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -10132,10 +10031,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -10267,10 +10166,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -10402,10 +10301,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -10537,10 +10436,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -10672,10 +10571,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -10807,10 +10706,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -10942,10 +10841,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -11077,10 +10976,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+<ref refid="8b342354-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -11202,6 +11101,11 @@ Liquibase · :8080 · /actuator/health</val>
 <name>
 <val>Datalogical Model</val>
 </name>
+<nestedPackage>
+<reflist>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
+</reflist>
+</nestedPackage>
 <nestingPackage>
 <ref refid="8eac9ce6-f7d2-5f38-bc00-eba71f03d532"/>
 </nestingPackage>
@@ -11210,91 +11114,12 @@ Liquibase · :8080 · /actuator/health</val>
 <ref refid="6db41c76-dbaf-52fc-b60c-1632834a1796"/>
 </reflist>
 </ownedDiagram>
-<ownedType>
-<reflist>
-<ref refid="55e904e9-6f48-549a-85ec-529b39755cf6"/>
-<ref refid="bd1608cd-5dd4-52f5-abe5-af2cd6050d35"/>
-<ref refid="2cdf74c8-5d08-5c95-b89c-2522b9b69772"/>
-<ref refid="6ee684f0-5791-5b17-859a-96b3e02ce477"/>
-<ref refid="5b053749-0dee-53f0-b884-8cfb10dcd34a"/>
-<ref refid="1bcc8b1b-2d5f-57b1-be09-93c44ce21e95"/>
-<ref refid="a7177d88-a04b-5f16-821b-ccdf972e3337"/>
-<ref refid="4a8518c3-a00b-5874-b726-266a68df24b3"/>
-<ref refid="a7f6c8a8-aa49-5dbe-aebd-e34032f8e6f9"/>
-<ref refid="c10a27d3-7e5a-587e-bb43-721953cec148"/>
-<ref refid="0c82f34c-9d87-5f46-b6a5-1857bb3dc813"/>
-<ref refid="83e1cf41-b0d4-5ead-8caf-bee423dbe6c2"/>
-<ref refid="3ffe0169-0b3c-5c47-9270-499da89a2ad6"/>
-<ref refid="d7cab2c2-0545-5fda-853b-c290890a08d2"/>
-<ref refid="ad8c9ba6-70ee-517d-9037-6c6a8073c8dd"/>
-<ref refid="ce87ac2e-44a9-574f-8d0c-e70525880c2b"/>
-<ref refid="e1786ae6-6737-5493-bb70-431d9dafa4d8"/>
-<ref refid="dec58ec9-7aa6-5b50-aff4-d9347a352a76"/>
-<ref refid="a237010b-f9d2-5cd1-ad8a-b3fe9d81e49e"/>
-<ref refid="984bee4c-02b6-56b3-a911-736933d54842"/>
-<ref refid="e72c9b12-c132-50e1-ac25-3c9838941633"/>
-<ref refid="248a58f2-fec1-53c1-b8c5-cba694d938f9"/>
-<ref refid="49700783-7a03-562f-b8ef-4f62fe5b49b6"/>
-<ref refid="a9b73647-08bd-53d7-9033-2032e71e0b82"/>
-<ref refid="897bc784-9f95-5753-ae9d-541cac51e2f0"/>
-<ref refid="04cba91f-c69f-5372-9c7c-790972492894"/>
-<ref refid="d8f44048-4753-5e22-8482-7a8657ea8883"/>
-<ref refid="8d182106-2d43-5aff-bed2-27bc007d69ce"/>
-<ref refid="dc97ced5-834a-5432-8dc3-aeb16a603237"/>
-<ref refid="147d37b4-bb58-5dc3-9922-227e5ba42b00"/>
-<ref refid="24280c50-56e1-5b1a-b2b5-33ef08369597"/>
-<ref refid="a767faef-d093-5b51-880d-436d1514a1ac"/>
-<ref refid="9b5e3d2e-26cf-5b34-b54f-b914892514b5"/>
-<ref refid="3a30f8e1-2462-5e30-8bb2-ba616565a3f9"/>
-<ref refid="96455f47-d363-5abf-a181-05896163d7e9"/>
-<ref refid="8d96f27b-26ef-516d-b35d-806f4969f085"/>
-<ref refid="37ae0b8b-1940-5921-b559-af4935fc2a21"/>
-<ref refid="e91b8278-2621-568a-91cc-3731ee4bf488"/>
-</reflist>
-</ownedType>
 <owningPackage>
 <ref refid="8eac9ce6-f7d2-5f38-bc00-eba71f03d532"/>
 </owningPackage>
 <packagedElement>
 <reflist>
-<ref refid="55e904e9-6f48-549a-85ec-529b39755cf6"/>
-<ref refid="bd1608cd-5dd4-52f5-abe5-af2cd6050d35"/>
-<ref refid="2cdf74c8-5d08-5c95-b89c-2522b9b69772"/>
-<ref refid="6ee684f0-5791-5b17-859a-96b3e02ce477"/>
-<ref refid="5b053749-0dee-53f0-b884-8cfb10dcd34a"/>
-<ref refid="1bcc8b1b-2d5f-57b1-be09-93c44ce21e95"/>
-<ref refid="a7177d88-a04b-5f16-821b-ccdf972e3337"/>
-<ref refid="4a8518c3-a00b-5874-b726-266a68df24b3"/>
-<ref refid="a7f6c8a8-aa49-5dbe-aebd-e34032f8e6f9"/>
-<ref refid="c10a27d3-7e5a-587e-bb43-721953cec148"/>
-<ref refid="0c82f34c-9d87-5f46-b6a5-1857bb3dc813"/>
-<ref refid="83e1cf41-b0d4-5ead-8caf-bee423dbe6c2"/>
-<ref refid="3ffe0169-0b3c-5c47-9270-499da89a2ad6"/>
-<ref refid="d7cab2c2-0545-5fda-853b-c290890a08d2"/>
-<ref refid="ad8c9ba6-70ee-517d-9037-6c6a8073c8dd"/>
-<ref refid="ce87ac2e-44a9-574f-8d0c-e70525880c2b"/>
-<ref refid="e1786ae6-6737-5493-bb70-431d9dafa4d8"/>
-<ref refid="dec58ec9-7aa6-5b50-aff4-d9347a352a76"/>
-<ref refid="a237010b-f9d2-5cd1-ad8a-b3fe9d81e49e"/>
-<ref refid="984bee4c-02b6-56b3-a911-736933d54842"/>
-<ref refid="e72c9b12-c132-50e1-ac25-3c9838941633"/>
-<ref refid="248a58f2-fec1-53c1-b8c5-cba694d938f9"/>
-<ref refid="49700783-7a03-562f-b8ef-4f62fe5b49b6"/>
-<ref refid="a9b73647-08bd-53d7-9033-2032e71e0b82"/>
-<ref refid="897bc784-9f95-5753-ae9d-541cac51e2f0"/>
-<ref refid="04cba91f-c69f-5372-9c7c-790972492894"/>
-<ref refid="d8f44048-4753-5e22-8482-7a8657ea8883"/>
-<ref refid="8d182106-2d43-5aff-bed2-27bc007d69ce"/>
-<ref refid="dc97ced5-834a-5432-8dc3-aeb16a603237"/>
-<ref refid="147d37b4-bb58-5dc3-9922-227e5ba42b00"/>
-<ref refid="24280c50-56e1-5b1a-b2b5-33ef08369597"/>
-<ref refid="a767faef-d093-5b51-880d-436d1514a1ac"/>
-<ref refid="9b5e3d2e-26cf-5b34-b54f-b914892514b5"/>
-<ref refid="3a30f8e1-2462-5e30-8bb2-ba616565a3f9"/>
-<ref refid="96455f47-d363-5abf-a181-05896163d7e9"/>
-<ref refid="8d96f27b-26ef-516d-b35d-806f4969f085"/>
-<ref refid="37ae0b8b-1940-5921-b559-af4935fc2a21"/>
-<ref refid="e91b8278-2621-568a-91cc-3731ee4bf488"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -11360,10 +11185,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -11436,10 +11261,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -11512,10 +11337,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -11593,10 +11418,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -11723,10 +11548,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -11787,10 +11612,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -11865,10 +11690,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -12094,10 +11919,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -12282,10 +12107,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -12382,10 +12207,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -12483,10 +12308,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -12596,10 +12421,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -12719,10 +12544,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -12831,10 +12656,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedAttribute>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -12942,10 +12767,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -13077,10 +12902,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -13212,10 +13037,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -13347,10 +13172,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -13482,10 +13307,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -13617,10 +13442,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -13752,10 +13577,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -13887,10 +13712,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -14022,10 +13847,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -14157,10 +13982,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -14292,10 +14117,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -14427,10 +14252,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -14562,10 +14387,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -14697,10 +14522,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -14832,10 +14657,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -14967,10 +14792,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -15102,10 +14927,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -15237,10 +15062,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -15372,10 +15197,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -15507,10 +15332,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -15642,10 +15467,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -15777,10 +15602,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -15912,10 +15737,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -16047,10 +15872,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </ownedEnd>
 <owningPackage>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <package>
-<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+<ref refid="8b346f80-b719-11f1-adf7-aae8df029ef6"/>
 </package>
 <presentation>
 <reflist>
@@ -16174,7 +15999,7 @@ Liquibase · :8080 · /actuator/health</val>
 </name>
 <nestedPackage>
 <reflist>
-<ref refid="8e8c1a3d-6e13-5c39-bfde-4390638c691b"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </reflist>
 </nestedPackage>
 <nestingPackage>
@@ -16190,31 +16015,7 @@ Liquibase · :8080 · /actuator/health</val>
 </owningPackage>
 <packagedElement>
 <reflist>
-<ref refid="8e8c1a3d-6e13-5c39-bfde-4390638c691b"/>
-<ref refid="e966625c-3984-5666-8bc6-b30f72f16206"/>
-<ref refid="211009a3-0ff7-5b94-afdd-c965cd022aef"/>
-<ref refid="53d3bb7d-0ff0-559a-82e2-e332bb871c49"/>
-<ref refid="c19e9c22-022e-5105-9e3e-b3daf7987e4e"/>
-<ref refid="f8b282c2-4f68-5191-9661-e1a60764290d"/>
-<ref refid="c4c02f57-0bfe-5701-969a-732bfe4c1f13"/>
-<ref refid="c768f318-56a1-5060-bcd5-2b3f4b5a9105"/>
-<ref refid="65acd1c8-b5fc-54de-b970-f7e1978c2495"/>
-<ref refid="7fcb9331-663e-5c94-bdc3-e73aff07195b"/>
-<ref refid="9d2bacfb-dfb9-5d7f-987f-e6683be56f09"/>
-<ref refid="d9475105-0410-533f-9f0a-8562aa662ada"/>
-<ref refid="d10aadb8-dcd6-59aa-8132-77975ecf6536"/>
-<ref refid="f5b203b5-acb0-567a-af6c-fcdc8c780fd2"/>
-<ref refid="9dd40b9e-bf21-5f30-a26f-fe19143fa118"/>
-<ref refid="aa570f34-dd28-5266-8cf9-5cf0b8423af6"/>
-<ref refid="ff6342b8-99f4-50f7-8129-a738e9a9a450"/>
-<ref refid="e041d8ab-7bde-5c12-a1f1-5e3135897276"/>
-<ref refid="6b549d42-0c93-5401-a590-133fdd3c77ab"/>
-<ref refid="ed616207-31e8-5693-a193-67619e7801c3"/>
-<ref refid="fabe66ff-9e61-5036-9dc3-0f377e881d0b"/>
-<ref refid="9ebf2826-a5dc-5541-80c1-0d8167b3dadc"/>
-<ref refid="ca9303dc-c670-5505-ba80-76ed6ba06ddc"/>
-<ref refid="50266baf-7e3c-514f-8c6e-dfbc84e68bcb"/>
-<ref refid="1b99c8c9-1c7c-5a5c-acd6-a28cb47dc4f7"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -16297,10 +16098,10 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </nestedPackage>
 <nestingPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </nestingPackage>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <packagedElement>
 <reflist>
@@ -17424,7 +17225,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -17470,7 +17271,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -17516,7 +17317,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -17562,7 +17363,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -17608,7 +17409,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -17654,7 +17455,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -17700,7 +17501,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -17746,7 +17547,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -17792,7 +17593,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -17838,7 +17639,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -17884,7 +17685,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -17930,7 +17731,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -17976,7 +17777,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -18022,7 +17823,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -18068,7 +17869,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -18114,7 +17915,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -18160,7 +17961,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -18206,7 +18007,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -18252,7 +18053,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -18298,7 +18099,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -18344,7 +18145,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -18390,7 +18191,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -18436,7 +18237,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -18482,7 +18283,7 @@ Liquibase · :8080 · /actuator/health</val>
 </reflist>
 </client>
 <owningPackage>
-<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+<ref refid="8b34cb92-b719-11f1-adf7-aae8df029ef6"/>
 </owningPackage>
 <presentation>
 <reflist>
@@ -18521,5 +18322,489 @@ Liquibase · :8080 · /actuator/health</val>
 <ref refid="a182cbd9-3559-579f-baf6-0e18f3a57b2d"/>
 </tail-connection>
 </UML:DependencyItem>
+<UML:Package id="8b336464-b719-11f1-adf7-aae8df029ef6">
+<name>
+<val>elements</val>
+</name>
+<nestingPackage>
+<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+</nestingPackage>
+<ownedType>
+<reflist>
+<ref refid="1c30e83e-380a-5de7-94a8-d0ebe9853662"/>
+<ref refid="9b7d5e70-3097-5368-894b-f7c6c8aeff15"/>
+<ref refid="292c047e-5d3e-5821-97d1-e956af9fe711"/>
+<ref refid="720ba0d1-d347-5071-b199-8873a89ed539"/>
+<ref refid="9ae15a75-5a81-5f1c-8e5b-62a6c4a863dc"/>
+<ref refid="17133234-486f-5906-b0f7-ee3964bf8771"/>
+<ref refid="0c7fffc7-5647-5653-bad3-98fc07fbcb6d"/>
+<ref refid="250086ec-a45a-51c2-9e53-48a3984c3082"/>
+<ref refid="842f5037-e448-56e8-ba9b-e5755cafb3db"/>
+<ref refid="2ed7f5a7-1b8d-53d8-9c5a-a71d58bc31f7"/>
+</reflist>
+</ownedType>
+<owningPackage>
+<ref refid="f6e835c9-8760-555d-9de7-95154e172027"/>
+</owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="1c30e83e-380a-5de7-94a8-d0ebe9853662"/>
+<ref refid="9b7d5e70-3097-5368-894b-f7c6c8aeff15"/>
+<ref refid="292c047e-5d3e-5821-97d1-e956af9fe711"/>
+<ref refid="720ba0d1-d347-5071-b199-8873a89ed539"/>
+<ref refid="9ae15a75-5a81-5f1c-8e5b-62a6c4a863dc"/>
+<ref refid="17133234-486f-5906-b0f7-ee3964bf8771"/>
+<ref refid="0c7fffc7-5647-5653-bad3-98fc07fbcb6d"/>
+<ref refid="250086ec-a45a-51c2-9e53-48a3984c3082"/>
+<ref refid="842f5037-e448-56e8-ba9b-e5755cafb3db"/>
+<ref refid="2ed7f5a7-1b8d-53d8-9c5a-a71d58bc31f7"/>
+</reflist>
+</packagedElement>
+</UML:Package>
+<UML:Package id="8b33846c-b719-11f1-adf7-aae8df029ef6">
+<name>
+<val>elements</val>
+</name>
+<nestingPackage>
+<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+</nestingPackage>
+<ownedType>
+<reflist>
+<ref refid="e15e4ef8-316c-5312-89fe-4a6e66a16b5a"/>
+<ref refid="536cf923-bfef-5b35-a392-c0d99bf12807"/>
+<ref refid="17abd2f5-eddd-5ca4-90ca-52544645c141"/>
+<ref refid="d3427fb5-e494-59a2-9fea-7e8af6511cc6"/>
+<ref refid="4e91da16-bc57-5d90-9933-583041077a36"/>
+<ref refid="b6b28a74-b44f-5376-ac4f-3041fa0860dc"/>
+<ref refid="bfc3a0df-d506-5ea4-9ffb-7b1e99826f82"/>
+<ref refid="0cb329ac-36a5-5979-8ebb-f39b1a2e738c"/>
+</reflist>
+</ownedType>
+<owningPackage>
+<ref refid="92353e94-ab99-5db9-bfd9-89e455686252"/>
+</owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="e15e4ef8-316c-5312-89fe-4a6e66a16b5a"/>
+<ref refid="536cf923-bfef-5b35-a392-c0d99bf12807"/>
+<ref refid="17abd2f5-eddd-5ca4-90ca-52544645c141"/>
+<ref refid="d3427fb5-e494-59a2-9fea-7e8af6511cc6"/>
+<ref refid="4e91da16-bc57-5d90-9933-583041077a36"/>
+<ref refid="b6b28a74-b44f-5376-ac4f-3041fa0860dc"/>
+<ref refid="bfc3a0df-d506-5ea4-9ffb-7b1e99826f82"/>
+<ref refid="0cb329ac-36a5-5979-8ebb-f39b1a2e738c"/>
+</reflist>
+</packagedElement>
+</UML:Package>
+<UML:Package id="8b3399a2-b719-11f1-adf7-aae8df029ef6">
+<name>
+<val>elements</val>
+</name>
+<nestingPackage>
+<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+</nestingPackage>
+<ownedType>
+<reflist>
+<ref refid="3b288bc9-a8a2-537c-a099-c8009254df6f"/>
+<ref refid="a60b6037-ee75-54be-8960-4b5d83418284"/>
+<ref refid="c972db11-5b45-54b6-8b64-28f6efd5cded"/>
+<ref refid="795541a3-e22f-5ed5-a1f1-aef7a15983bd"/>
+<ref refid="a9ebe09b-f813-5bcb-8d8f-a4d4847f159a"/>
+<ref refid="18cfdfb0-a8af-5ddc-9a30-d461c61c9d09"/>
+<ref refid="860985b6-ed30-5377-b973-1b7fa4ff5d7b"/>
+</reflist>
+</ownedType>
+<owningPackage>
+<ref refid="bd725da9-e7d1-5ff9-aba5-1c63aaec840f"/>
+</owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="3b288bc9-a8a2-537c-a099-c8009254df6f"/>
+<ref refid="a60b6037-ee75-54be-8960-4b5d83418284"/>
+<ref refid="c972db11-5b45-54b6-8b64-28f6efd5cded"/>
+<ref refid="795541a3-e22f-5ed5-a1f1-aef7a15983bd"/>
+<ref refid="a9ebe09b-f813-5bcb-8d8f-a4d4847f159a"/>
+<ref refid="18cfdfb0-a8af-5ddc-9a30-d461c61c9d09"/>
+<ref refid="860985b6-ed30-5377-b973-1b7fa4ff5d7b"/>
+</reflist>
+</packagedElement>
+</UML:Package>
+<UML:Package id="8b33ad48-b719-11f1-adf7-aae8df029ef6">
+<name>
+<val>elements</val>
+</name>
+<nestingPackage>
+<ref refid="72792b45-126e-5470-9cc9-ba14153eeddc"/>
+</nestingPackage>
+<ownedType>
+<reflist>
+<ref refid="e2de37a7-6393-589d-b725-fa70b88ae785"/>
+<ref refid="ff61ff3c-79bf-5877-9edb-48827c909e83"/>
+<ref refid="4cba77fb-c00d-5e35-a6d6-d37d8974f7bd"/>
+<ref refid="a3c2d7b6-b2b0-54d3-95e3-ff122bd45db6"/>
+<ref refid="0ea42a75-4956-57e8-9b86-b6bce29dbf87"/>
+<ref refid="3ed1c8a4-ac7c-5cbb-a622-5397eff00cf6"/>
+</reflist>
+</ownedType>
+<owningPackage>
+<ref refid="72792b45-126e-5470-9cc9-ba14153eeddc"/>
+</owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="e2de37a7-6393-589d-b725-fa70b88ae785"/>
+<ref refid="ff61ff3c-79bf-5877-9edb-48827c909e83"/>
+<ref refid="4cba77fb-c00d-5e35-a6d6-d37d8974f7bd"/>
+<ref refid="a3c2d7b6-b2b0-54d3-95e3-ff122bd45db6"/>
+<ref refid="0ea42a75-4956-57e8-9b86-b6bce29dbf87"/>
+<ref refid="3ed1c8a4-ac7c-5cbb-a622-5397eff00cf6"/>
+</reflist>
+</packagedElement>
+</UML:Package>
+<UML:Package id="8b33bdd8-b719-11f1-adf7-aae8df029ef6">
+<name>
+<val>elements</val>
+</name>
+<nestedPackage>
+<reflist>
+<ref refid="094b1931-25f8-5631-9634-a27cfaf56c7b"/>
+<ref refid="b278aef6-d90a-5718-8847-34dc9bd626d4"/>
+</reflist>
+</nestedPackage>
+<nestingPackage>
+<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+</nestingPackage>
+<ownedType>
+<reflist>
+<ref refid="f78d1b4a-40ca-5b1f-bae2-7b3a2e6a884b"/>
+</reflist>
+</ownedType>
+<owningPackage>
+<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+</owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="f78d1b4a-40ca-5b1f-bae2-7b3a2e6a884b"/>
+<ref refid="094b1931-25f8-5631-9634-a27cfaf56c7b"/>
+<ref refid="b278aef6-d90a-5718-8847-34dc9bd626d4"/>
+<ref refid="8a87d58f-cac3-567a-9fa4-51d739ee23cf"/>
+<ref refid="c5e0c5aa-5118-54aa-accc-05e772dc80e7"/>
+<ref refid="9cf8e701-94e2-5cab-96ed-6a911a4ca755"/>
+<ref refid="0f9126fe-ed2e-5ee3-ae68-7ca0e7f87834"/>
+<ref refid="e25b33c0-d502-5200-b9f8-4d4c49f57967"/>
+<ref refid="4795fc55-f761-517c-a5f2-1639b3b300de"/>
+<ref refid="a9ca5896-11cf-5cef-b6c6-f9a00e8134da"/>
+<ref refid="092e7c93-d075-5508-8133-36d1004620c7"/>
+<ref refid="8ef78338-2017-564e-b630-cb1587b93e5d"/>
+<ref refid="685af2f8-813b-5c8e-a67f-1df4e347df47"/>
+</reflist>
+</packagedElement>
+</UML:Package>
+<UML:Package id="8b33fbb8-b719-11f1-adf7-aae8df029ef6">
+<name>
+<val>elements</val>
+</name>
+<nestingPackage>
+<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+</nestingPackage>
+<ownedType>
+<reflist>
+<ref refid="44da1ea3-16c6-52f6-b399-b7045bfeada8"/>
+<ref refid="7893281c-0fb8-58db-95eb-e615e1d73701"/>
+<ref refid="178e1f79-4579-5945-af23-9be3d44c1662"/>
+<ref refid="de9bc755-580e-5ca3-a89d-7064a845a210"/>
+<ref refid="6b985cba-fb49-52dd-9f01-a1b3cb05acdb"/>
+<ref refid="cffff25b-d28f-5827-b19c-218677f6b8f6"/>
+<ref refid="3176ecbb-e0d4-551f-8e0b-2f000126ff93"/>
+<ref refid="4d82249e-3240-598a-b9e1-86362e61dd6a"/>
+<ref refid="c0587fee-801c-5c8d-a0e5-bfdef2ee33b2"/>
+<ref refid="45a28093-c49b-58e8-a743-5315af25d8b0"/>
+<ref refid="4b233e83-f7d1-53bd-9b02-09da49bd7e81"/>
+<ref refid="0eff0c06-2271-5ea5-94ee-d0e85852c2b2"/>
+<ref refid="99fbf762-2b62-5d2a-ada5-33082838f55a"/>
+<ref refid="f681ab18-6fe2-54d7-b3e1-b0022e1654a7"/>
+<ref refid="5dbc9300-9168-575d-aa9d-4bb2f0f49a8b"/>
+</reflist>
+</ownedType>
+<owningPackage>
+<ref refid="ba29590e-bcf4-5573-bbe0-c7473e9444e3"/>
+</owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="44da1ea3-16c6-52f6-b399-b7045bfeada8"/>
+<ref refid="7893281c-0fb8-58db-95eb-e615e1d73701"/>
+<ref refid="178e1f79-4579-5945-af23-9be3d44c1662"/>
+<ref refid="de9bc755-580e-5ca3-a89d-7064a845a210"/>
+<ref refid="6b985cba-fb49-52dd-9f01-a1b3cb05acdb"/>
+<ref refid="cffff25b-d28f-5827-b19c-218677f6b8f6"/>
+<ref refid="3176ecbb-e0d4-551f-8e0b-2f000126ff93"/>
+<ref refid="4d82249e-3240-598a-b9e1-86362e61dd6a"/>
+<ref refid="c0587fee-801c-5c8d-a0e5-bfdef2ee33b2"/>
+<ref refid="45a28093-c49b-58e8-a743-5315af25d8b0"/>
+<ref refid="4b233e83-f7d1-53bd-9b02-09da49bd7e81"/>
+<ref refid="0eff0c06-2271-5ea5-94ee-d0e85852c2b2"/>
+<ref refid="99fbf762-2b62-5d2a-ada5-33082838f55a"/>
+<ref refid="f681ab18-6fe2-54d7-b3e1-b0022e1654a7"/>
+<ref refid="5dbc9300-9168-575d-aa9d-4bb2f0f49a8b"/>
+</reflist>
+</packagedElement>
+</UML:Package>
+<UML:Package id="8b342354-b719-11f1-adf7-aae8df029ef6">
+<name>
+<val>elements</val>
+</name>
+<nestingPackage>
+<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+</nestingPackage>
+<ownedType>
+<reflist>
+<ref refid="164f0ef4-8c71-590d-8159-ed9d8bc7d3e0"/>
+<ref refid="71f27066-ca34-5ba2-9871-7f411cdbb561"/>
+<ref refid="46aade4e-4dff-58d7-81a0-7593f5472464"/>
+<ref refid="6b9abe43-1234-5306-a2e4-0b1ae7b08378"/>
+<ref refid="676e7a94-46b0-5a12-84e1-7eeb151b0896"/>
+<ref refid="e94e170d-10c2-53f7-9b90-27a4dd00147a"/>
+<ref refid="276c947f-b2f3-525d-a0d0-508134014860"/>
+<ref refid="dfbee5eb-795f-50a7-b508-03ff4f53327c"/>
+<ref refid="6be314ba-2706-53be-9250-7ff244d1626a"/>
+<ref refid="905e55d2-ab0d-5867-b43c-1280c552efe7"/>
+<ref refid="2557a408-2599-52b0-ad98-247e57690c0b"/>
+<ref refid="7e6e455f-1d50-5cfc-a392-cb9773ff7ec9"/>
+<ref refid="335d7e46-9a6e-59cd-ae82-c5aee0684b9d"/>
+<ref refid="3139892d-1bfb-55f4-a225-558455fa9f7d"/>
+<ref refid="c6168e32-97aa-548b-97d7-b04797adc76a"/>
+<ref refid="74616ea5-11a6-546c-b22c-c58cba7ec46e"/>
+<ref refid="88fb7acf-14fe-5977-a577-b79c2e3c7659"/>
+<ref refid="16c7559f-bd1b-5b79-b55e-23a1829e423b"/>
+<ref refid="3c89b6d5-3619-5d24-8799-f59c82befff2"/>
+<ref refid="a60cd06a-f4b2-5433-ade6-1704f12c43d2"/>
+<ref refid="0c9f5e5f-69b6-5d75-babb-512ec0b2fead"/>
+<ref refid="37ebf2d2-7ae3-566d-9e0c-7da97d4bc25d"/>
+<ref refid="08c8b924-4479-52ff-ac0c-e61c937d9e6d"/>
+<ref refid="40626935-4faa-5889-8775-6428862ad0df"/>
+<ref refid="3cc31a5b-aa09-536d-b995-9785ac3c6f9f"/>
+<ref refid="ecd24dfc-2b4e-544b-b6db-e03c4fbfc50c"/>
+<ref refid="d4d0648e-5329-5dac-9eb9-4807442f7ee9"/>
+<ref refid="4d7f9b4d-2ae6-5e3c-8af7-37a758305717"/>
+<ref refid="ce4fe689-bc8c-5fbf-b3eb-a68bcf0e5a90"/>
+<ref refid="69aeb888-a321-5f74-87b1-a76b16e9fa64"/>
+<ref refid="d06e1028-93a7-5bd3-bb98-487527bf4370"/>
+</reflist>
+</ownedType>
+<owningPackage>
+<ref refid="55efcc8d-0efb-5ed8-a928-ca2d3d389a94"/>
+</owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="164f0ef4-8c71-590d-8159-ed9d8bc7d3e0"/>
+<ref refid="71f27066-ca34-5ba2-9871-7f411cdbb561"/>
+<ref refid="46aade4e-4dff-58d7-81a0-7593f5472464"/>
+<ref refid="6b9abe43-1234-5306-a2e4-0b1ae7b08378"/>
+<ref refid="676e7a94-46b0-5a12-84e1-7eeb151b0896"/>
+<ref refid="e94e170d-10c2-53f7-9b90-27a4dd00147a"/>
+<ref refid="276c947f-b2f3-525d-a0d0-508134014860"/>
+<ref refid="dfbee5eb-795f-50a7-b508-03ff4f53327c"/>
+<ref refid="6be314ba-2706-53be-9250-7ff244d1626a"/>
+<ref refid="905e55d2-ab0d-5867-b43c-1280c552efe7"/>
+<ref refid="2557a408-2599-52b0-ad98-247e57690c0b"/>
+<ref refid="7e6e455f-1d50-5cfc-a392-cb9773ff7ec9"/>
+<ref refid="335d7e46-9a6e-59cd-ae82-c5aee0684b9d"/>
+<ref refid="3139892d-1bfb-55f4-a225-558455fa9f7d"/>
+<ref refid="c6168e32-97aa-548b-97d7-b04797adc76a"/>
+<ref refid="74616ea5-11a6-546c-b22c-c58cba7ec46e"/>
+<ref refid="88fb7acf-14fe-5977-a577-b79c2e3c7659"/>
+<ref refid="16c7559f-bd1b-5b79-b55e-23a1829e423b"/>
+<ref refid="3c89b6d5-3619-5d24-8799-f59c82befff2"/>
+<ref refid="a60cd06a-f4b2-5433-ade6-1704f12c43d2"/>
+<ref refid="0c9f5e5f-69b6-5d75-babb-512ec0b2fead"/>
+<ref refid="37ebf2d2-7ae3-566d-9e0c-7da97d4bc25d"/>
+<ref refid="08c8b924-4479-52ff-ac0c-e61c937d9e6d"/>
+<ref refid="40626935-4faa-5889-8775-6428862ad0df"/>
+<ref refid="3cc31a5b-aa09-536d-b995-9785ac3c6f9f"/>
+<ref refid="ecd24dfc-2b4e-544b-b6db-e03c4fbfc50c"/>
+<ref refid="d4d0648e-5329-5dac-9eb9-4807442f7ee9"/>
+<ref refid="4d7f9b4d-2ae6-5e3c-8af7-37a758305717"/>
+<ref refid="ce4fe689-bc8c-5fbf-b3eb-a68bcf0e5a90"/>
+<ref refid="69aeb888-a321-5f74-87b1-a76b16e9fa64"/>
+<ref refid="d06e1028-93a7-5bd3-bb98-487527bf4370"/>
+</reflist>
+</packagedElement>
+</UML:Package>
+<UML:Package id="8b346f80-b719-11f1-adf7-aae8df029ef6">
+<name>
+<val>elements</val>
+</name>
+<nestingPackage>
+<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+</nestingPackage>
+<ownedType>
+<reflist>
+<ref refid="55e904e9-6f48-549a-85ec-529b39755cf6"/>
+<ref refid="bd1608cd-5dd4-52f5-abe5-af2cd6050d35"/>
+<ref refid="2cdf74c8-5d08-5c95-b89c-2522b9b69772"/>
+<ref refid="6ee684f0-5791-5b17-859a-96b3e02ce477"/>
+<ref refid="5b053749-0dee-53f0-b884-8cfb10dcd34a"/>
+<ref refid="1bcc8b1b-2d5f-57b1-be09-93c44ce21e95"/>
+<ref refid="a7177d88-a04b-5f16-821b-ccdf972e3337"/>
+<ref refid="4a8518c3-a00b-5874-b726-266a68df24b3"/>
+<ref refid="a7f6c8a8-aa49-5dbe-aebd-e34032f8e6f9"/>
+<ref refid="c10a27d3-7e5a-587e-bb43-721953cec148"/>
+<ref refid="0c82f34c-9d87-5f46-b6a5-1857bb3dc813"/>
+<ref refid="83e1cf41-b0d4-5ead-8caf-bee423dbe6c2"/>
+<ref refid="3ffe0169-0b3c-5c47-9270-499da89a2ad6"/>
+<ref refid="d7cab2c2-0545-5fda-853b-c290890a08d2"/>
+<ref refid="ad8c9ba6-70ee-517d-9037-6c6a8073c8dd"/>
+<ref refid="ce87ac2e-44a9-574f-8d0c-e70525880c2b"/>
+<ref refid="e1786ae6-6737-5493-bb70-431d9dafa4d8"/>
+<ref refid="dec58ec9-7aa6-5b50-aff4-d9347a352a76"/>
+<ref refid="a237010b-f9d2-5cd1-ad8a-b3fe9d81e49e"/>
+<ref refid="984bee4c-02b6-56b3-a911-736933d54842"/>
+<ref refid="e72c9b12-c132-50e1-ac25-3c9838941633"/>
+<ref refid="248a58f2-fec1-53c1-b8c5-cba694d938f9"/>
+<ref refid="49700783-7a03-562f-b8ef-4f62fe5b49b6"/>
+<ref refid="a9b73647-08bd-53d7-9033-2032e71e0b82"/>
+<ref refid="897bc784-9f95-5753-ae9d-541cac51e2f0"/>
+<ref refid="04cba91f-c69f-5372-9c7c-790972492894"/>
+<ref refid="d8f44048-4753-5e22-8482-7a8657ea8883"/>
+<ref refid="8d182106-2d43-5aff-bed2-27bc007d69ce"/>
+<ref refid="dc97ced5-834a-5432-8dc3-aeb16a603237"/>
+<ref refid="147d37b4-bb58-5dc3-9922-227e5ba42b00"/>
+<ref refid="24280c50-56e1-5b1a-b2b5-33ef08369597"/>
+<ref refid="a767faef-d093-5b51-880d-436d1514a1ac"/>
+<ref refid="9b5e3d2e-26cf-5b34-b54f-b914892514b5"/>
+<ref refid="3a30f8e1-2462-5e30-8bb2-ba616565a3f9"/>
+<ref refid="96455f47-d363-5abf-a181-05896163d7e9"/>
+<ref refid="8d96f27b-26ef-516d-b35d-806f4969f085"/>
+<ref refid="37ae0b8b-1940-5921-b559-af4935fc2a21"/>
+<ref refid="e91b8278-2621-568a-91cc-3731ee4bf488"/>
+</reflist>
+</ownedType>
+<owningPackage>
+<ref refid="97a0ae52-70cf-5db5-8a9e-e43eff5fbb94"/>
+</owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="55e904e9-6f48-549a-85ec-529b39755cf6"/>
+<ref refid="bd1608cd-5dd4-52f5-abe5-af2cd6050d35"/>
+<ref refid="2cdf74c8-5d08-5c95-b89c-2522b9b69772"/>
+<ref refid="6ee684f0-5791-5b17-859a-96b3e02ce477"/>
+<ref refid="5b053749-0dee-53f0-b884-8cfb10dcd34a"/>
+<ref refid="1bcc8b1b-2d5f-57b1-be09-93c44ce21e95"/>
+<ref refid="a7177d88-a04b-5f16-821b-ccdf972e3337"/>
+<ref refid="4a8518c3-a00b-5874-b726-266a68df24b3"/>
+<ref refid="a7f6c8a8-aa49-5dbe-aebd-e34032f8e6f9"/>
+<ref refid="c10a27d3-7e5a-587e-bb43-721953cec148"/>
+<ref refid="0c82f34c-9d87-5f46-b6a5-1857bb3dc813"/>
+<ref refid="83e1cf41-b0d4-5ead-8caf-bee423dbe6c2"/>
+<ref refid="3ffe0169-0b3c-5c47-9270-499da89a2ad6"/>
+<ref refid="d7cab2c2-0545-5fda-853b-c290890a08d2"/>
+<ref refid="ad8c9ba6-70ee-517d-9037-6c6a8073c8dd"/>
+<ref refid="ce87ac2e-44a9-574f-8d0c-e70525880c2b"/>
+<ref refid="e1786ae6-6737-5493-bb70-431d9dafa4d8"/>
+<ref refid="dec58ec9-7aa6-5b50-aff4-d9347a352a76"/>
+<ref refid="a237010b-f9d2-5cd1-ad8a-b3fe9d81e49e"/>
+<ref refid="984bee4c-02b6-56b3-a911-736933d54842"/>
+<ref refid="e72c9b12-c132-50e1-ac25-3c9838941633"/>
+<ref refid="248a58f2-fec1-53c1-b8c5-cba694d938f9"/>
+<ref refid="49700783-7a03-562f-b8ef-4f62fe5b49b6"/>
+<ref refid="a9b73647-08bd-53d7-9033-2032e71e0b82"/>
+<ref refid="897bc784-9f95-5753-ae9d-541cac51e2f0"/>
+<ref refid="04cba91f-c69f-5372-9c7c-790972492894"/>
+<ref refid="d8f44048-4753-5e22-8482-7a8657ea8883"/>
+<ref refid="8d182106-2d43-5aff-bed2-27bc007d69ce"/>
+<ref refid="dc97ced5-834a-5432-8dc3-aeb16a603237"/>
+<ref refid="147d37b4-bb58-5dc3-9922-227e5ba42b00"/>
+<ref refid="24280c50-56e1-5b1a-b2b5-33ef08369597"/>
+<ref refid="a767faef-d093-5b51-880d-436d1514a1ac"/>
+<ref refid="9b5e3d2e-26cf-5b34-b54f-b914892514b5"/>
+<ref refid="3a30f8e1-2462-5e30-8bb2-ba616565a3f9"/>
+<ref refid="96455f47-d363-5abf-a181-05896163d7e9"/>
+<ref refid="8d96f27b-26ef-516d-b35d-806f4969f085"/>
+<ref refid="37ae0b8b-1940-5921-b559-af4935fc2a21"/>
+<ref refid="e91b8278-2621-568a-91cc-3731ee4bf488"/>
+</reflist>
+</packagedElement>
+</UML:Package>
+<UML:Package id="8b34cb92-b719-11f1-adf7-aae8df029ef6">
+<name>
+<val>elements</val>
+</name>
+<nestedPackage>
+<reflist>
+<ref refid="8e8c1a3d-6e13-5c39-bfde-4390638c691b"/>
+</reflist>
+</nestedPackage>
+<nestingPackage>
+<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+</nestingPackage>
+<owningPackage>
+<ref refid="3b5c6798-e492-558e-8d7f-10a1cc167e35"/>
+</owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="8e8c1a3d-6e13-5c39-bfde-4390638c691b"/>
+<ref refid="e966625c-3984-5666-8bc6-b30f72f16206"/>
+<ref refid="211009a3-0ff7-5b94-afdd-c965cd022aef"/>
+<ref refid="53d3bb7d-0ff0-559a-82e2-e332bb871c49"/>
+<ref refid="c19e9c22-022e-5105-9e3e-b3daf7987e4e"/>
+<ref refid="f8b282c2-4f68-5191-9661-e1a60764290d"/>
+<ref refid="c4c02f57-0bfe-5701-969a-732bfe4c1f13"/>
+<ref refid="c768f318-56a1-5060-bcd5-2b3f4b5a9105"/>
+<ref refid="65acd1c8-b5fc-54de-b970-f7e1978c2495"/>
+<ref refid="7fcb9331-663e-5c94-bdc3-e73aff07195b"/>
+<ref refid="9d2bacfb-dfb9-5d7f-987f-e6683be56f09"/>
+<ref refid="d9475105-0410-533f-9f0a-8562aa662ada"/>
+<ref refid="d10aadb8-dcd6-59aa-8132-77975ecf6536"/>
+<ref refid="f5b203b5-acb0-567a-af6c-fcdc8c780fd2"/>
+<ref refid="9dd40b9e-bf21-5f30-a26f-fe19143fa118"/>
+<ref refid="aa570f34-dd28-5266-8cf9-5cf0b8423af6"/>
+<ref refid="ff6342b8-99f4-50f7-8129-a738e9a9a450"/>
+<ref refid="e041d8ab-7bde-5c12-a1f1-5e3135897276"/>
+<ref refid="6b549d42-0c93-5401-a590-133fdd3c77ab"/>
+<ref refid="ed616207-31e8-5693-a193-67619e7801c3"/>
+<ref refid="fabe66ff-9e61-5036-9dc3-0f377e881d0b"/>
+<ref refid="9ebf2826-a5dc-5541-80c1-0d8167b3dadc"/>
+<ref refid="ca9303dc-c670-5505-ba80-76ed6ba06ddc"/>
+<ref refid="50266baf-7e3c-514f-8c6e-dfbc84e68bcb"/>
+<ref refid="1b99c8c9-1c7c-5a5c-acd6-a28cb47dc4f7"/>
+</reflist>
+</packagedElement>
+</UML:Package>
+<C4Model:Dependency id="5eba5c7c-a77d-5d56-9965-0346e942cfee">
+<client>
+<reflist>
+<ref refid="f78d1b4a-40ca-5b1f-bae2-7b3a2e6a884b"/>
+</reflist>
+</client>
+<name>
+<val>Загружает UI</val>
+</name>
+<owningPackage>
+<ref refid="094b1931-25f8-5631-9634-a27cfaf56c7b"/>
+</owningPackage>
+<presentation>
+<reflist>
+<ref refid="4b784d42-d959-511a-94b6-fd31914b218f"/>
+</reflist>
+</presentation>
+<supplier>
+<reflist>
+<ref refid="161bf58a-c513-5cee-80b6-e4a240b1477f"/>
+</reflist>
+</supplier>
+<technology>
+<val>HTTP</val>
+</technology>
+</C4Model:Dependency>
+<UML:Interaction id="ae386b7a-b75b-11f1-b1a5-aae8df029ef6">
+<name>
+<val>Interaction</val>
+</name>
+<owningPackage>
+<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+</owningPackage>
+<package>
+<ref refid="6dd63257-6850-5540-8d3e-9e81516b2871"/>
+</package>
+</UML:Interaction>
 </model>
 </gaphor>
