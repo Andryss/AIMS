@@ -27,3 +27,34 @@
 | UC21 | [Просмотр аналитики по инцидентам](UC21.md) |
 | UC22 | [Просмотр аналитики по оборудованию](UC22.md) |
 | UC23 | [Просмотр аналитики по тюремному заключению](UC23.md) |
+
+## Генерация диаграмм
+
+Подготовка:
+
+```bash
+curl -fL https://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar -o /tmp/plantuml.jar
+mkdir -p /tmp/aims-use-case-render
+```
+
+Проверка синтаксиса:
+
+```bash
+java -Djava.awt.headless=true -jar /tmp/plantuml.jar -checkonly docs/use-case/common.md 'docs/use-case/UC*.md'
+```
+
+Все диаграммы в SVG:
+
+```bash
+java -Djava.awt.headless=true -jar /tmp/plantuml.jar -tsvg -o /tmp/aims-use-case-render \
+  docs/use-case/common.md 'docs/use-case/UC*.md'
+```
+
+Все диаграммы в PNG:
+
+```bash
+java -Djava.awt.headless=true -jar /tmp/plantuml.jar -tpng -o /tmp/aims-use-case-render \
+  docs/use-case/common.md 'docs/use-case/UC*.md'
+```
+
+Результаты: `/tmp/aims-use-case-render`.

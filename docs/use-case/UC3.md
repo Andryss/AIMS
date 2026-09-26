@@ -19,7 +19,6 @@ rectangle "Alien Incident Management System" {
 (Добавление исполнителя) as UC115
 (Назначение ответственного) as UC114
 (Создание заявки на оборудование) as UC113
-(Просмотр заявок на оборудование) as UC112
 (Просмотр карточки инцидента) as UC111
 
 }
@@ -29,7 +28,6 @@ Agent -- UC01
 Agent -- UC11
 
 UC11 --> UC111 : <<include>>
-UC11 --> UC112 : <<include>>
 UC11 <-- UC113 : <<extend>>
 UC11 --> UC114 : <<include>>
 UC11 --> UC115 : <<include>>
@@ -110,20 +108,4 @@ UC11 --> UC116 : <<include>>
     [ Создать ]
 }
 @endsalt
-```
-
-## Генерация диаграмм
-
-```bash
-curl -L https://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar -o /tmp/plantuml.jar
-mkdir -p /tmp/aims-uc3-use-case-render
-
-# Проверка синтаксиса
-java -Djava.awt.headless=true -jar /tmp/plantuml.jar -checkonly docs/use-case/UC3.md
-
-# SVG
-java -Djava.awt.headless=true -jar /tmp/plantuml.jar -tsvg -o /tmp/aims-uc3-use-case-render docs/use-case/UC3.md
-
-# PNG
-java -Djava.awt.headless=true -jar /tmp/plantuml.jar -tpng -o /tmp/aims-uc3-use-case-render docs/use-case/UC3.md
 ```

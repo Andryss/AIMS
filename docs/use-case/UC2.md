@@ -98,19 +98,3 @@ UC11 --> UC115 : <<include>>
 }
 @endsalt
 ```
-
-## Генерация диаграмм
-
-```bash
-curl -L https://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar -o /tmp/plantuml.jar
-mkdir -p /tmp/aims-uc2-use-case-render
-
-# Проверка синтаксиса
-java -Djava.awt.headless=true -jar /tmp/plantuml.jar -checkonly docs/use-case/UC2.md
-
-# SVG
-java -Djava.awt.headless=true -jar /tmp/plantuml.jar -tsvg -o /tmp/aims-uc2-use-case-render docs/use-case/UC2.md
-
-# PNG
-java -Djava.awt.headless=true -jar /tmp/plantuml.jar -tpng -o /tmp/aims-uc2-use-case-render docs/use-case/UC2.md
-```
