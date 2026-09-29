@@ -56,10 +56,12 @@ endif
 @enduml
 ```
 
+Logical View описывает успешные сценарии протокола между клиентом и сервером без действий пользователя и деталей внутреннего устройства сервера. Работа с базой знаний относится к стороне сервера. Автоматическая классификация и создание записи предусмотрены протоколом, но ещё не реализованы в коде. Предложение классификации не изменяет инцидент: привязка выполняется отдельным запросом, а завершение — только после подтверждения привязки.
+
 ```plantuml
 @startuml aims_uc2_activity_logical_view
 title UC2. Классификация инопланетянина — Logical View
-scale max 3800 width
+scale max 3800 height
 
 skinparam shadowing false
 skinparam activity {
@@ -80,112 +82,77 @@ activityDiagram {
 </style>
 
 start
-:[frontend]
-Открыть карточку инцидента;
-:[generated.api]
-Контракт GET /incidents/{id};
-:[controller]
-Передаёт запрос на получение инцидента
-в сервис;
-:[services]
-Передаёт запрос на загрузку данных
-в репозиторий;
-:[repository]
-Загрузить сведения и материалы инцидента;
-:[frontend]
-Показать сведения и материалы;
+:[Клиент]
+Запрашивает инцидент по идентификатору;
+:[Сервер]
+Возвращает сведения, материалы, статус
+и текущую классификацию;
 
-if (Данных достаточно для классификации?) then (нет)
-  :[frontend]
-  Указать недостающие сведения;
-  :[frontend]
-  Выбрать статус «Требуется уточнение»
-  и добавить комментарий;
-else (да)
-  if (Нужна автоматическая классификация?) then (да)
-    :[services]
-    Определить тип инопланетянина
-    по материалам инцидента;
-    :[repository]
-    Найти запись определённого типа;
+if (Запрошено уточнение сведений?) then (да)
+  :[Клиент]
+Отправляет запрос на изменение статуса:
+идентификатор инцидента,
+статус «Требуется уточнение»,
+комментарий о недостающих сведениях;
+else (нет)
+  if (Запрошена автоматическая классификация?) then (да)
+    :[Клиент]
+Запрашивает автоматическую классификацию
+по идентификатору инцидента;
+    :[Сервер]
+Возвращает предложенный тип инопланетянина
+и идентификатор записи базы знаний
+без привязки к инциденту;
   else (нет)
-    :[frontend]
-    Ввести строку поиска;
-    :[generated.api]
-    Контракт GET /aliens/search?q=...;
-    :[controller]
-    Передаёт параметры поиска в сервис;
-    :[services]
-    Ограничить результат 20 записями;
-    :[repository]
-    Найти записи по названию или описанию;
-    :[frontend]
-    Показать найденные типы,
-    описания и уровни угрозы;
-
-    if (Подходящая запись найдена?) then (да)
-      :[frontend]
-      Выбрать найденный тип инопланетянина;
+    :[Клиент]
+Отправляет запрос на поиск
+со строкой названия или описания;
+    :[Сервер]
+Возвращает подходящие записи базы знаний:
+идентификаторы, названия, описания
+и уровни угрозы;
+    if (Требуется новая запись?) then (да)
+      :[Клиент]
+Отправляет запрос на создание типа инопланетянина:
+название, описание и уровень угрозы;
+      :[Сервер]
+Создаёт запись базы знаний
+и возвращает её данные с идентификатором;
     else (нет)
-      :[frontend]
-      Указать название, описание
-      и уровень угрозы нового типа;
-      :[services]
-      Проверить данные нового типа инопланетянина;
-      :[repository]
-      Создать запись нового типа инопланетянина;
     endif
   endif
 
-  :[frontend]
-  Подтвердить классификацию;
-  :[generated.api]
-  Контракт PUT /incidents/{id}/alien
-  Данные: выбранный тип инопланетянина;
-  :[controller]
-  Передаёт запрос на привязку
-  инопланетянина к инциденту в сервис;
-  :[services]
-  Проверить статус «Готов к анализу»
-  и существование выбранной записи;
-  :[repository]
-  Сохранить связь инцидента
-  с типом инопланетянина;
-  :[frontend]
-  Выбрать статус «Готов к выполнению»;
+  :[Клиент]
+Запрашивает привязку:
+идентификатор инцидента
+и идентификатор записи базы знаний;
+  :[Сервер]
+Привязывает запись к инциденту
+и возвращает подтверждённую классификацию;
+  :[Клиент]
+После получения подтверждения привязки
+отправляет запрос на изменение статуса:
+идентификатор инцидента,
+статус «Готов к выполнению»;
 endif
 
-:[generated.api]
-Контракт POST /incidents/{id}/status
-Данные: новый статус и комментарий;
-:[controller]
-Передаёт запрос на изменение статуса
-в сервис;
-:[services]
-Передаёт изменение статуса
-в обработчик переходов;
-:[services.incident.status]
-Проверить допустимость перехода
-из статуса «Готов к анализу»;
-:[services.incident.status.precondition]
-Проверить роль аналитика-ксенобиолога,
-а для статуса «Готов к выполнению» —
-наличие связанного типа инопланетянина;
-:[repository]
-Сохранить новый статус и комментарий;
-:[frontend]
-Обновить карточку инцидента;
+:[Сервер]
+Изменяет статус, сохраняет переданный комментарий
+и возвращает обновлённый инцидент
+в подтверждение изменения;
+:[Клиент]
+Принимает обновлённое состояние инцидента;
 stop
 @enduml
 ```
 
 ```plantuml
 @startuml aims_uc2_activity_implementation_view
+' applyChanges(entity) is shorthand for field updates, not an implemented method.
 title UC2. Классификация инопланетянина — Implementation View
-scale 0.75
+scale max 2400 height
 
 skinparam shadowing false
-skinparam defaultFontSize 11
 skinparam activity {
   BackgroundColor #F8FAFC
   BorderColor #334155
@@ -204,174 +171,72 @@ activityDiagram {
 </style>
 
 start
-:[Analyst]
-Открывает инцидент в статусе READY_FOR_ANALYSIS;
-:[IncidentDetailPage]
-useEffect() запрашивает данные инцидента;
-:[api/client.ts]
-getIncident(token, incidentId);
-:[IncidentsApiImpl]
-getIncident(id);
-:[IncidentServiceImpl]
-getById(id);
-:[IncidentRepository]
-findById(id);
+:[IncidentDetailPage.tsx]
+api.getIncident(token, incidentId);
 
-if (Инцидент найден?) then (да)
-  :[IncidentMapper]
-  toResponse(entity);
-  :[IncidentDetailPage]
-  setIncident(data);
-else (нет)
-  :[Errors]
-  incidentNotFound();
-  :[IncidentDetailPage]
-  setError(message);
-  stop
-endif
-
-if (Сведений достаточно для классификации?) then (да)
-  :[IncidentDetailPage]
-  setAlienDrawerOpen(true);
-  :[AlienPickerDrawer]
-  setSearchQuery(input);
-  :[AlienPickerDrawer]
-  useEffect() проверяет два символа
-  и применяет задержку 300 мс;
-  :[api/client.ts]
-  searchAliens(token, query);
-  :[AliensApiImpl]
-  searchAliens(q);
+if (Данных достаточно для классификации?) then (да)
+  :[AlienPickerDrawer.tsx]
+api.searchAliens(token, query)
+{ query.length >= 2, debounce = 300ms };
   :[AlienServiceImpl]
-  search(query) нормализует запрос;
-  :[AlienRepository]
-  search(pattern, SEARCH_LIMIT = 20);
-  :[AlienPickerDrawer]
-  setSearchResults(response.items);
+AlienRepository.search(pattern, SEARCH_LIMIT)
+{ normalized pattern, SEARCH_LIMIT = 20 };
 
-  if (Подходящий инопланетянин найден?) then (да)
-    :[Analyst]
-    Выбирает инопланетянина и подтверждает выбор;
-    :[AlienPickerDrawer]
-    handleConfirm();
-    :[IncidentDetailPage]
-    handleLinkAlien(alienId);
-    :[api/client.ts]
-    putIncidentAlien(token, incidentId, alienId);
-    :[IncidentsApiImpl]
-    linkIncidentAlien(id, request);
+  if (Инопланетянин выбран и выбор подтверждён?) then (да)
     :[IncidentServiceImpl]
-    linkAlien(id, request);
-    :[IncidentRepository]
-    findById(id);
-
-    if (entity.getStatus() == READY_FOR_ANALYSIS?) then (да)
-      :[AlienRepository]
-      existsById(alienId);
-      if (Запись инопланетянина существует?) then (да)
-        :[IncidentEntity]
-        setAlienId(alienId);
-        :[IncidentRepository]
-        save(entity);
-        :[EntityHistoryService]
-        recordChange(EntityType.INCIDENT, id, entity);
-        :[IncidentMapper]
-        toResponse(entity);
-        :[IncidentDetailPage]
-        setIncident(updated);
-      else (нет)
-        :[Errors]
-        alienNotFound();
-        :[IncidentDetailPage]
-        setError(message);
-        stop
-      endif
-    else (нет)
-      :[Errors]
-      invalidAlienLink();
-      :[IncidentDetailPage]
-      setError(message);
-      stop
-    endif
+linkAlien(id, request)
+{ status = READY_FOR_ANALYSIS, alien exists };
+    :[IncidentServiceImpl]
+IncidentRepository.save(applyChanges(entity))
+{ alienId = request.alienId };
+    :[IncidentServiceImpl]
+EntityHistoryService.recordChange(EntityType.INCIDENT, id, entity);
   else (нет)
-    :[AlienPickerDrawer]
-    Показывает «Ничего не найдено»;
   endif
 else (нет)
-  :[IncidentDetailPage]
-  Оставляет инцидент без классификации;
 endif
 
-if (Инопланетянин привязан?) then (да)
-  :[Analyst]
-  Выбирает статус READY_FOR_EXECUTION;
-  :[IncidentStatusSelect]
-  handleStatusChange(READY_FOR_EXECUTION);
-  :[IncidentStatusSelect]
-  applyStatusChange(READY_FOR_EXECUTION);
-else (нет)
-  :[Analyst]
-  Выбирает статус CLARIFICATION_REQUIRED
-  и вводит комментарий;
-  :[IncidentStatusSelect]
-  confirmStatusChange();
-  :[IncidentStatusSelect]
-  applyStatusChange(CLARIFICATION_REQUIRED, comment);
+if (incident.alienId != null?) then (yes)
+  :[IncidentStatusSelect.tsx]
+applyStatusChange(READY_FOR_EXECUTION);
+else (no)
+  :[IncidentStatusSelect.tsx]
+applyStatusChange(CLARIFICATION_REQUIRED, comment)
+{ non-blank comment required };
 endif
 
-:[api/client.ts]
-changeIncidentStatus(token, id, status, comment);
-:[IncidentsApiImpl]
-changeIncidentStatus(id, request);
 :[IncidentServiceImpl]
-changeStatus(id, request);
-:[IncidentRepository]
-findById(id);
-:[IncidentMapper]
-toModelStatus(request.status);
-:[StatusChangeCommentHolder]
-set(comment);
+IncidentStatusWorkflow.changeStatus(entity, target)
+{ allowed transition, authorized role };
+
+if (target == READY_FOR_EXECUTION?) then (yes)
+  :[IncidentStatusWorkflow]
+AlienLinkedPrecondition.check(entity);
+else (CLARIFICATION_REQUIRED)
+endif
+
 :[IncidentStatusWorkflow]
-changeStatus(entity, target);
-:[IncidentStatusTransitionGraph]
-isAllowed(current, target);
-:[IncidentStatusTransitionGraph]
-getTransition(current, target);
-:[RolePrecondition]
-check(entity);
+IncidentRepository.save(applyChanges(entity))
+{ status = target };
 
-if (target == READY_FOR_EXECUTION?) then (да)
-  :[AlienLinkedPrecondition]
-  check(entity);
+if (target == READY_FOR_EXECUTION?) then (yes)
+  :[IncidentStatusWorkflow]
+EnqueueNotifyAgentsPostAction.execute(entity);
 else (CLARIFICATION_REQUIRED)
+  :[IncidentStatusWorkflow]
+EnqueueNotifyOperatorClarificationPostAction.execute(entity);
 endif
 
-:[IncidentEntity]
-setStatus(target);
-:[IncidentRepository]
-save(entity);
-
-if (target == READY_FOR_EXECUTION?) then (да)
-  :[EnqueueNotifyAgentsPostAction]
-  execute(entity);
-  :[DbQueueService]
-  produceTask(NotifyAgentsIncidentReadyPayload);
-else (CLARIFICATION_REQUIRED)
-  :[EnqueueNotifyOperatorClarificationPostAction]
-  execute(entity);
-  :[DbQueueService]
-  produceTask(NotifyOperatorClarificationRequiredPayload);
-  :[IncidentCommentService]
-  createFromStatusChange(id, comment);
+if (comment != null && !comment.isBlank()) then (yes)
+  :[IncidentServiceImpl]
+IncidentCommentService.createFromStatusChange(id, comment);
+else (no)
 endif
 
-:[EntityHistoryService]
-recordChange(EntityType.INCIDENT, id, entity);
-:[IncidentMapper]
-toResponse(entity);
-:[StatusChangeCommentHolder]
-clear();
-:[IncidentStatusSelect]
+:[IncidentServiceImpl]
+EntityHistoryService.recordChange(EntityType.INCIDENT, id, entity);
+
+:[IncidentStatusSelect.tsx]
 onStatusChanged(updated);
 stop
 @enduml
