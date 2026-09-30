@@ -14,162 +14,79 @@ skinparam classAttributeIconSize 0
 skinparam shadowing false
 top to bottom direction
 
-  entity "Пользователь\n(app_user)" as user_i {
-    id : integer <<PK>> — идентификатор пользователя
-    --
-    login : string — логин
-    password_hash : string — хеш пароля
-  }
+entity "Сотрудник" as employee_i {
+  id : integer <<PK>> — идентификатор сотрудника
+  --
+  name : string — имя сотрудника
+  position : string — должность сотрудника
+}
 
-  entity "Роль\n(role)" as role_i {
-    id : integer <<PK>> — идентификатор роли
-    --
-    name : string — системное имя
-    description : text — назначение роли
-  }
+entity "Инцидент" as incident_i {
+  id : integer <<PK>> — номер инцидента
+  --
+  status : string — статус
+  event_type : string — тип события
+  location : string — место обнаружения
+  detected_at : datetime — время обнаружения
+  description : string — описание
+  photos : image[] — фотографии инцидента
+  cleanup_status : string — статус очистки
+  created_at : datetime — время регистрации
+  updated_at : datetime — время изменения
+}
 
-  entity "Разрешение\n(permission)" as permission_i {
-    id : integer <<PK>> — идентификатор разрешения
-    --
-    code : string — код действия
-    description : text — описание действия
-  }
+entity "Сигнал мониторинга" as alert_i {
+  id : integer <<PK>> — идентификатор сигнала
+  --
+  source : string — источник сигнала
+  event_type : string — тип события
+  location : string — место обнаружения
+  detected_at : datetime — время обнаружения
+  description : string — описание
+  received_at : datetime — время получения
+}
 
-  entity "Инцидент\n(incident)" as incident_i {
-    id : integer <<PK>> — номер инцидента
-    --
-    status : string — статус
-    event_type : string — тип события
-    location : string — место обнаружения
-    detected_at : datetime — время обнаружения
-    description : text — описание
-    attachment_file_ids : integer[] <<FK>> — вложения
-    created_by_user_id : integer <<FK>> — автор
-    responsible_user_id : integer <<FK>> — ответственный
-    executor_user_ids : integer[] <<FK>> — исполнители
-    created_at : datetime — время создания
-    updated_at : datetime — время изменения
-    alien_id : integer <<FK>> — вид инопланетянина
-    cleanup_status : string — статус очистки
-    cleanup_report_id : integer <<FK>> — отчёт об очистке
-    monitoring_alert_id : integer <<FK>> — исходный алерт
-  }
+entity "Вид инопланетянина" as alien_i {
+  id : integer <<PK>> — идентификатор вида
+  --
+  name : string — название вида
+  description : string — описание вида
+  threat_level : integer — уровень угрозы
+}
 
-  entity "Инопланетянин\n(alien)" as alien_i {
-    id : integer <<PK>> — идентификатор вида
-    --
-    name : string — название вида
-    description : text — описание вида
-    threat_level : integer — уровень угрозы
-    created_at : datetime — время создания
-  }
+entity "Комментарий" as comment_i {
+  id : integer <<PK>> — идентификатор комментария
+  --
+  text : string — текст комментария
+  created_at : datetime — время создания
+}
 
-  entity "Комментарий к инциденту\n(incident_comment)" as comment_i {
-    id : integer <<PK>> — идентификатор комментария
-    --
-    incident_id : integer <<FK>> — инцидент
-    author_user_id : integer <<FK>> — автор
-    text : text — текст комментария
-    created_at : datetime — время создания
-  }
+entity "Отчёт об очистке" as report_i {
+  id : integer <<PK>> — идентификатор отчёта
+  --
+  description : string — выполненные работы
+  photos : image[] — фотографии результата
+  created_at : datetime — время создания
+}
 
-  entity "Отчёт об очистке\n(cleanup_report)" as cleanup_i {
-    id : integer <<PK>> — идентификатор отчёта
-    --
-    incident_id : integer <<FK>> — инцидент
-    description : text — выполненные работы
-    attachment_file_ids : integer[] <<FK>> — вложения
-    created_by_user_id : integer <<FK>> — автор
-    created_at : datetime — время создания
-  }
+employee_i ||--o{ incident_i
+employee_i |o--o{ incident_i
+employee_i }o--o{ incident_i
 
-  entity "Алерт мониторинга\n(monitoring_alert)" as alert_i {
-    id : integer <<PK>> — идентификатор алерта
-    --
-    external_event_id : string — внешний идентификатор
-    source_system : string — система-источник
-    status : string — статус обработки
-    event_type : string — тип события
-    location : string — место обнаружения
-    detected_at : datetime — время обнаружения
-    description : text — описание
-    media_urls : string[] — медиассылки
-    raw_payload : json — исходное сообщение
-    incident_id : integer <<FK>> — созданный инцидент
-    received_at : datetime — время получения
-    created_at : datetime — время создания
-  }
-
-  entity "Сохранённый файл\n(stored_file)" as file_i {
-    id : integer <<PK>> — идентификатор файла
-    --
-    storage_id : string — ключ хранилища
-    file_name : string — имя файла
-    content_type : string — MIME-тип
-    file_size : integer — размер в байтах
-    created_at : datetime — время загрузки
-    created_by_user_id : integer <<FK>> — загрузивший пользователь
-  }
-
-  entity "Уведомление\n(notification)" as notification_i {
-    id : integer <<PK>> — идентификатор уведомления
-    --
-    recipient_user_id : integer <<FK>> — получатель
-    message : text — текст уведомления
-    related_entities : reference[] <<FK>> — связанные объекты
-    read_at : datetime — время прочтения
-    created_at : datetime — время создания
-  }
-
-  entity "Запись истории\n(entity_history)" as history_i {
-    id : integer <<PK>> — идентификатор записи
-    --
-    entity_type : string — тип объекта
-    entity_id : integer <<FK>> — изменённый объект
-    snapshot : json — снимок состояния
-    changed_by_user_id : integer <<FK>> — автор изменения
-    changed_at : datetime — время изменения
-  }
-
-user_i }o--o{ role_i
-role_i }o--o{ permission_i
-
-user_i ||--o{ incident_i
-user_i |o--o{ incident_i
-user_i }o..o{ incident_i
+alert_i |o--o| incident_i
 alien_i |o--o{ incident_i
 
 incident_i ||--o{ comment_i
-user_i ||--o{ comment_i
-incident_i |o--o| cleanup_i
-user_i ||--o{ cleanup_i
-incident_i |o--o| alert_i
+employee_i ||--o{ comment_i
 
-user_i |o--o{ file_i
-file_i }o..o{ incident_i
-file_i }o..o{ cleanup_i
-
-user_i ||--o{ notification_i
-incident_i }o..o{ notification_i
-alert_i }o..o{ notification_i
-
-user_i ||--o{ history_i
-incident_i |o..o{ history_i
-alert_i |o..o{ history_i
-
-permission_i -[hidden]right-> role_i
-role_i -[hidden]right-> user_i
+incident_i |o--o| report_i
+employee_i ||--o{ report_i
 
 alien_i -[hidden]right-> incident_i
 incident_i -[hidden]right-> alert_i
-
-file_i -[hidden]right-> comment_i
-comment_i -[hidden]right-> cleanup_i
-cleanup_i -[hidden]right-> notification_i
-notification_i -[hidden]right-> history_i
-
-user_i -[hidden]down-> incident_i
-incident_i -[hidden]down-> cleanup_i
+comment_i -[hidden]right-> report_i
+employee_i -[hidden]down-> incident_i
+incident_i -[hidden]down-> report_i
 
 @enduml
 ```
