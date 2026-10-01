@@ -184,8 +184,38 @@ AlienRepository.search(pattern, SEARCH_LIMIT)
 
   if (Инопланетянин выбран и выбор подтверждён?) then (да)
     :[IncidentServiceImpl]
-linkAlien(id, request)
-{ status = READY_FOR_ANALYSIS, alien exists };
+linkAlien(id, request);
+
+    if (entity.getStatus() == READY_FOR_ANALYSIS?) then (no)
+      :[IncidentServiceImpl]
+throw Errors.invalidAlienLink();
+      :[ControllerExceptionHandler]
+handleBaseException(ex, response)
+{ response = ErrorObject { code = 400,
+message = "incident.invalid_alien_link" } };
+      :[api/client.ts]
+throw await parseError(response);
+      :[IncidentDetailPage.tsx]
+setError(message);
+      stop
+    else (yes)
+    endif
+
+    if (AlienRepository.existsById(alienId)?) then (no)
+      :[IncidentServiceImpl]
+throw Errors.alienNotFound();
+      :[ControllerExceptionHandler]
+handleBaseException(ex, response)
+{ response = ErrorObject { code = 404,
+message = "alien.not_found" } };
+      :[api/client.ts]
+throw await parseError(response);
+      :[IncidentDetailPage.tsx]
+setError(message);
+      stop
+    else (yes)
+    endif
+
     :[IncidentServiceImpl]
 IncidentRepository.save(applyChanges(entity))
 { alienId = request.alienId };
