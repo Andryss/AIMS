@@ -2,7 +2,7 @@
 
 ```plantuml
 @startuml aims_uc2_activity_use_case_view
-title UC2. Классификация инопланетянина — представление прецедента
+title Activity Diagram — UC2. Классификация инопланетянина — Use Case View
 scale max 3800 width
 
 skinparam shadowing false
@@ -60,7 +60,7 @@ Logical View описывает успешные сценарии протоко
 
 ```plantuml
 @startuml aims_uc2_activity_logical_view
-title UC2. Классификация инопланетянина — Logical View
+title Activity Diagram — UC2. Классификация инопланетянина — Logical View
 scale max 3800 height
 
 skinparam shadowing false
@@ -149,7 +149,7 @@ stop
 ```plantuml
 @startuml aims_uc2_activity_implementation_view
 ' applyChanges(entity) is shorthand for field updates, not an implemented method.
-title UC2. Классификация инопланетянина — Implementation View
+title Activity Diagram — UC2. Классификация инопланетянина — Implementation View
 scale max 2400 height
 
 skinparam shadowing false

@@ -3,7 +3,7 @@
 ```plantuml
 @startuml aims_uc1_use_case_view
 !pragma layout smetana
-title UC1. Регистрация инцидента - Use Case View
+title Class Diagram — UC1. Регистрация инцидента — Use Case View
 
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
@@ -34,7 +34,7 @@ Incident -- EquipmentRequest
 ```plantuml
 @startuml aims_uc1_logical_view
 !pragma layout smetana
-title UC1. Регистрация инцидента - Logical View
+title Class Diagram — UC1. Регистрация инцидента — Logical View
 
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
@@ -123,7 +123,7 @@ StatusChangeRequest -[hidden]down-> IncidentState
 ```plantuml
 @startuml aims_uc1_implementation_view
 !pragma layout smetana
-title UC1. Регистрация инцидента - Implementation View
+title Class Diagram — UC1. Регистрация инцидента — Implementation View
 
 skinparam classAttributeIconSize 0
 skinparam linetype ortho

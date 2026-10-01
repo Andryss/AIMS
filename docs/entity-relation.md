@@ -5,7 +5,7 @@
 ```plantuml
 @startuml aims_infological_model
 !pragma layout smetana
-title Инфологическая модель базы данных
+title ER Diagram — Conceptual Data Model
 
 hide circle
 hide methods
@@ -96,7 +96,7 @@ incident_i -[hidden]down-> report_i
 ```plantuml
 @startuml aims_datalogical_model
 !pragma layout smetana
-title Даталогическая модель базы данных
+title ER Diagram — Logical Data Model
 
 hide circle
 hide methods

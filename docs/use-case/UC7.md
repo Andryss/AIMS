@@ -4,7 +4,7 @@
 
 ```plantuml
 @startuml
-title UC7. Создание записи в базе знаний
+title Use Case Diagram — UC7. Создание записи в базе знаний
 left to right direction
 
 actor "Аналитик-ксенобиолог" as Analyst

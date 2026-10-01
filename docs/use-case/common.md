@@ -2,6 +2,7 @@
 
 ```plantuml
 @startuml
+title Use Case Diagram — AIMS
 left to right direction
 
 actor "Оператор мониторинга" as Operator

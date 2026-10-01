@@ -4,7 +4,7 @@
 
 ```plantuml
 @startuml
-title UC2. Классификация инопланетянина
+title Use Case Diagram — UC2. Классификация инопланетянина
 left to right direction
 
 actor "Аналитик-ксенобиолог" as Analyst

@@ -2,7 +2,7 @@
 
 ```plantuml
 @startuml aims_uc3_state_machine_use_case_view
-title UC3. Назначение ответственных за инцидент — представление прецедента
+title State Machine Diagram — UC3. Назначение ответственных за инцидент — Use Case View
 scale max 3800 width
 
 skinparam shadowing false
@@ -49,7 +49,7 @@ Logical View описывает протокол между клиентом и 
 
 ```plantuml
 @startuml aims_uc3_state_machine_logical_view
-title UC3. Назначение ответственных за инцидент — Logical View
+title State Machine Diagram — UC3. Назначение ответственных за инцидент — Logical View
 scale max 3800 width
 
 skinparam shadowing false
@@ -101,7 +101,7 @@ Implementation View показывает состояние `IncidentEntity.stat
 
 ```plantuml
 @startuml aims_uc3_state_machine_implementation_view
-title UC3. Назначение ответственных за инцидент — Implementation View
+title State Machine Diagram — UC3. Назначение ответственных за инцидент — Implementation View
 scale max 3800 width
 
 skinparam shadowing false

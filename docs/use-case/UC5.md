@@ -4,7 +4,7 @@
 
 ```plantuml
 @startuml
-title UC5. Выполнение инцидента
+title Use Case Diagram — UC5. Выполнение инцидента
 left to right direction
 
 actor "Оперативный агент" as Agent

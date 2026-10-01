@@ -2,7 +2,7 @@
 
 ```plantuml
 @startuml aims_uc1_cooperative_use_case_view
-title UC1. Регистрация инцидента — представление прецедента
+title Cooperative Diagram — UC1. Регистрация инцидента — Use Case View
 scale max 3800 width
 top to bottom direction
 
@@ -57,7 +57,7 @@ Logical View фиксирует протокол между внешней си�
 
 ```plantuml
 @startuml aims_uc1_cooperative_logical_view
-title UC1. Регистрация инцидента — Logical View
+title Cooperative Diagram — UC1. Регистрация инцидента — Logical View
 scale max 3800 width
 top to bottom direction
 
@@ -103,7 +103,7 @@ Implementation View показывает основные вызовы реал�
 
 ```plantuml
 @startuml aims_uc1_cooperative_implementation_view
-title UC1. Регистрация инцидента — Implementation View
+title Cooperative Diagram — UC1. Регистрация инцидента — Implementation View
 scale max 3800 width
 top to bottom direction
 

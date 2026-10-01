@@ -2,7 +2,7 @@
 
 ```plantuml
 @startuml aims_uc4_sequence_use_case_view
-title UC4. Создание отчёта об очистке — представление прецедента
+title Sequence Diagram — UC4. Создание отчёта об очистке — Use Case View
 scale max 3800 width
 
 skinparam shadowing false
@@ -55,7 +55,7 @@ Logical View фиксирует успешный протокол между к�
 
 ```plantuml
 @startuml aims_uc4_sequence_logical_view
-title UC4. Создание отчёта об очистке — Logical View
+title Sequence Diagram — UC4. Создание отчёта об очистке — Logical View
 scale max 3800 width
 
 skinparam shadowing false
@@ -114,7 +114,7 @@ Implementation View показывает основные вызовы успе�
 
 ```plantuml
 @startuml aims_uc4_sequence_implementation_view
-title UC4. Создание отчёта об очистке — Implementation View
+title Sequence Diagram — UC4. Создание отчёта об очистке — Implementation View
 scale max 3800 width
 
 skinparam shadowing false

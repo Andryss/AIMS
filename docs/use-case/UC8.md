@@ -4,7 +4,7 @@
 
 ```plantuml
 @startuml
-title UC8. Редактирование записи в базе знаний
+title Use Case Diagram — UC8. Редактирование записи в базе знаний
 left to right direction
 
 actor "Аналитик-ксенобиолог" as Analyst

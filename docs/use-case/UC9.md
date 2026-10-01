@@ -4,7 +4,7 @@
 
 ```plantuml
 @startuml
-title UC9. Просмотр истории изменений инцидента
+title Use Case Diagram — UC9. Просмотр истории изменений инцидента
 left to right direction
 
 actor "Руководство" as Management

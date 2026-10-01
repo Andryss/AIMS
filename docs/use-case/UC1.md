@@ -4,7 +4,7 @@
 
 ```plantuml
 @startuml
-title UC1. Регистрация инцидента
+title Use Case Diagram — UC1. Регистрация инцидента
 left to right direction
 
 actor "Оператор мониторинга" as Operator

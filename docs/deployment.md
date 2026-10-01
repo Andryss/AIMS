@@ -3,7 +3,7 @@
 ```plantuml
 @startuml aims_deployment
 !pragma layout smetana
-title Deployment-диаграмма AIMS
+title Deployment Diagram — AIMS
 
 skinparam linetype ortho
 skinparam shadowing false

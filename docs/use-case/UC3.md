@@ -4,7 +4,7 @@
 
 ```plantuml
 @startuml
-title UC3. Назначение ответственных за инцидент
+title Use Case Diagram — UC3. Назначение ответственных за инцидент
 left to right direction
 
 actor "Оперативный агент" as Agent

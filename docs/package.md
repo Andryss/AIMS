@@ -3,7 +3,7 @@
 ```plantuml
 @startuml aims_backend_packages
 !pragma layout smetana
-title Пакетная диаграмма backend AIMS
+title Package Diagram — AIMS Backend
 
 skinparam linetype ortho
 skinparam shadowing false

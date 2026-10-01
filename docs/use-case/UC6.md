@@ -4,7 +4,7 @@
 
 ```plantuml
 @startuml
-title UC6. Завершение инцидента
+title Use Case Diagram — UC6. Завершение инцидента
 left to right direction
 
 actor "Оперативный агент" as Agent

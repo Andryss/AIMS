@@ -4,7 +4,7 @@
 
 ```plantuml
 @startuml
-title UC4. Создание отчёта об очистке
+title Use Case Diagram — UC4. Создание отчёта об очистке
 left to right direction
 
 actor "Специалист по прикрытию" as Cleaner
