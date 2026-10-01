@@ -110,7 +110,7 @@ end
 @enduml
 ```
 
-Implementation View показывает основные вызовы успешного сценария в реализованном коде. Физическое файловое хранилище и репозитории объединены на одной линии жизни для компактности; конкретный получатель указан в подписи каждого вызова. Вспомогательные mapper-классы, запись истории, управление React-состоянием и постановка уведомления в очередь опущены.
+Implementation View показывает основные вызовы успешного сценария и две значимые ошибки в реализованном коде. Физическое файловое хранилище и репозитории объединены на одной линии жизни для компактности; конкретный получатель указан в подписи каждого вызова. Вспомогательные mapper-классы, запись истории, управление React-состоянием и постановка уведомления в очередь опущены.
 
 ```plantuml
 @startuml aims_uc4_sequence_implementation_view
@@ -137,6 +137,7 @@ end box
 box "backend" #F0FDF4
   participant "FilesApiImpl" as FilesApi
   participant "IncidentsApiImpl" as IncidentsApi
+  participant "ControllerExceptionHandler" as ExceptionHandler
   participant "FileService" as FileService
   participant "CleanupServiceImpl" as CleanupService
   participant "CleanupStatusWorkflow" as StatusWorkflow
@@ -144,21 +145,41 @@ end box
 
 database "FileStorage /\nRepositories" as Persistence
 
-loop nextStatus = PREPARATION, EXECUTION
-  StatusSelect -> StatusSelect: handleChange(nextRaw); nextStatus = nextRaw as CleanupStatus
-  StatusSelect -> ApiClient: changeCleanupStatus(token, incident.id, nextStatus)
-  ApiClient -> IncidentsApi: changeIncidentCleanupStatus(id, ChangeCleanupStatusRequest { status })
+group nextStatus = PREPARATION
+  StatusSelect -> StatusSelect: handleChange("PREPARATION")
+  StatusSelect -> ApiClient: changeCleanupStatus(token, incident.id, PREPARATION)
+  ApiClient -> IncidentsApi: changeIncidentCleanupStatus(id, ChangeCleanupStatusRequest { status = PREPARATION })
   IncidentsApi -> CleanupService: changeCleanupStatus(id, request)
   CleanupService -> Persistence: IncidentRepository.findById(incidentId)
   Persistence --> CleanupService: IncidentEntity incident
-  CleanupService -> StatusWorkflow: changeStatus(incident, target)
-  StatusWorkflow -> StatusWorkflow: transitionGraph.getTransition(current, target)
-  StatusWorkflow -> StatusWorkflow: precondition.check(incident)
-  StatusWorkflow -> Persistence: IncidentRepository.save(incident) { cleanupStatus = target }
+  CleanupService -> StatusWorkflow: changeStatus(incident, PREPARATION)
+  StatusWorkflow -> StatusWorkflow: transitionGraph.getTransition(null, PREPARATION)
+  StatusWorkflow -> StatusWorkflow: IncidentExecutingPrecondition.check(incident)
+  StatusWorkflow -> Persistence: IncidentRepository.save(incident) { cleanupStatus = PREPARATION }
   Persistence --> StatusWorkflow: IncidentEntity incident
   StatusWorkflow --> CleanupService: incident
   CleanupService --> IncidentsApi: IncidentResponse
-  IncidentsApi --> ApiClient: IncidentResponse
+  IncidentsApi --> ApiClient: IncidentResponse { code = 200 }
+  ApiClient --> StatusSelect: updated
+  StatusSelect -> StatusSelect: onStatusChanged(updated)
+end
+
+group nextStatus = EXECUTION
+  StatusSelect -> StatusSelect: handleChange("EXECUTION")
+  StatusSelect -> ApiClient: changeCleanupStatus(token, incident.id, EXECUTION)
+  ApiClient -> IncidentsApi: changeIncidentCleanupStatus(id, ChangeCleanupStatusRequest { status = EXECUTION })
+  IncidentsApi -> CleanupService: changeCleanupStatus(id, request)
+  CleanupService -> Persistence: IncidentRepository.findById(incidentId)
+  Persistence --> CleanupService: IncidentEntity incident
+  CleanupService -> StatusWorkflow: changeStatus(incident, EXECUTION)
+  StatusWorkflow -> StatusWorkflow: transitionGraph.isAllowed(PREPARATION, EXECUTION)
+  StatusWorkflow -> StatusWorkflow: transitionGraph.getTransition(PREPARATION, EXECUTION)
+  StatusWorkflow -> StatusWorkflow: IncidentExecutingPrecondition.check(incident)
+  StatusWorkflow -> Persistence: IncidentRepository.save(incident) { cleanupStatus = EXECUTION }
+  Persistence --> StatusWorkflow: IncidentEntity incident
+  StatusWorkflow --> CleanupService: incident
+  CleanupService --> IncidentsApi: IncidentResponse
+  IncidentsApi --> ApiClient: IncidentResponse { code = 200 }
   ApiClient --> StatusSelect: updated
   StatusSelect -> StatusSelect: onStatusChanged(updated)
 end
@@ -175,7 +196,7 @@ loop file in attachmentFiles
   FileService -> Persistence: StoredFileRepository.save(entity)
   Persistence --> FileService: StoredFileEntity entity
   FileService --> FilesApi: FileUploadResponse
-  FilesApi --> ApiClient: FileUploadResponse
+  FilesApi --> ApiClient: FileUploadResponse { code = 200 }
 end
 
 ApiClient --> ReportDrawer: FileUploadResponse[] uploaded
@@ -186,18 +207,28 @@ IncidentsApi -> CleanupService: createReport(incidentId, request)
 CleanupService -> Persistence: IncidentRepository.findById(incidentId)
 Persistence --> CleanupService: IncidentEntity incident
 CleanupService -> Persistence: CleanupReportRepository.existsByIncidentId(incidentId)
-Persistence --> CleanupService: false
-CleanupService -> CleanupService: assertCleanupAllowed(incident)
-CleanupService -> CleanupService: AttachmentValidator.assertAllExist(attachmentFileIds)
-CleanupService -> Persistence: CleanupReportRepository.save(report)
-Persistence --> CleanupService: CleanupReportEntity report
-CleanupService -> Persistence: IncidentRepository.save(incident) { cleanupReportId = report.id }
-Persistence --> CleanupService: IncidentEntity incident
-CleanupService --> IncidentsApi: CleanupReportResponse
-IncidentsApi --> ApiClient: CleanupReportResponse
-ApiClient --> ReportDrawer: created
-ReportDrawer -> ReportDrawer: onCreated(created)
-ReportDrawer -> ReportDrawer: onClose()
+Persistence --> CleanupService: reportExists
+alt reportExists
+  CleanupService --> IncidentsApi: throw Errors.cleanupReportAlreadyExists()
+  IncidentsApi --> ExceptionHandler: BaseException { code = 409, message = "cleanup_report.already_exists" }
+  ExceptionHandler -> ExceptionHandler: handleBaseException(ex, response)
+  ExceptionHandler --> ApiClient: ErrorObject { code = 409, message = "cleanup_report.already_exists" }
+  ApiClient -> ApiClient: parseError(response); throw new ApiError(409, body)
+  ApiClient --> ReportDrawer: ApiError
+  ReportDrawer -> ReportDrawer: setError(err.message)
+else !reportExists
+  CleanupService -> CleanupService: assertCleanupAllowed(incident)
+  CleanupService -> CleanupService: AttachmentValidator.assertAllExist(attachmentFileIds)
+  CleanupService -> Persistence: CleanupReportRepository.save(report)
+  Persistence --> CleanupService: CleanupReportEntity report
+  CleanupService -> Persistence: IncidentRepository.save(incident) { cleanupReportId = report.id }
+  Persistence --> CleanupService: IncidentEntity incident
+  CleanupService --> IncidentsApi: CleanupReportResponse
+  IncidentsApi --> ApiClient: CleanupReportResponse { code = 201 }
+  ApiClient --> ReportDrawer: created
+  ReportDrawer -> ReportDrawer: onCreated(created)
+  ReportDrawer -> ReportDrawer: onClose()
+end
 
 group nextStatus = COMPLETED
   StatusSelect -> StatusSelect: handleChange(nextRaw)
@@ -209,13 +240,24 @@ group nextStatus = COMPLETED
   CleanupService -> StatusWorkflow: changeStatus(incident, COMPLETED)
   StatusWorkflow -> StatusWorkflow: transitionGraph.getTransition(EXECUTION, COMPLETED)
   StatusWorkflow -> StatusWorkflow: CleanupReportExistsPrecondition.check(incident)
-  StatusWorkflow -> Persistence: IncidentRepository.save(incident) { cleanupStatus = COMPLETED }
-  Persistence --> StatusWorkflow: IncidentEntity incident
-  StatusWorkflow --> CleanupService: incident
-  CleanupService --> IncidentsApi: IncidentResponse
-  IncidentsApi --> ApiClient: IncidentResponse
-  ApiClient --> StatusSelect: updated
-  StatusSelect -> StatusSelect: onStatusChanged(updated)
+  alt incident.cleanupReportId == null
+    StatusWorkflow --> CleanupService: throw Errors.validationError("Cleanup report must exist before completing cleanup")
+    CleanupService --> IncidentsApi: BaseException { code = 400, message = "validation.error" }
+    IncidentsApi --> ExceptionHandler: BaseException
+    ExceptionHandler -> ExceptionHandler: handleBaseException(ex, response)
+    ExceptionHandler --> ApiClient: ErrorObject { code = 400, message = "validation.error" }
+    ApiClient -> ApiClient: parseError(response); throw new ApiError(400, body)
+    ApiClient --> StatusSelect: ApiError
+    StatusSelect -> StatusSelect: setError(err.message)
+  else incident.cleanupReportId != null
+    StatusWorkflow -> Persistence: IncidentRepository.save(incident) { cleanupStatus = COMPLETED }
+    Persistence --> StatusWorkflow: IncidentEntity incident
+    StatusWorkflow --> CleanupService: incident
+    CleanupService --> IncidentsApi: IncidentResponse
+    IncidentsApi --> ApiClient: IncidentResponse { code = 200 }
+    ApiClient --> StatusSelect: updated
+    StatusSelect -> StatusSelect: onStatusChanged(updated)
+  end
 end
 @enduml
 ```
