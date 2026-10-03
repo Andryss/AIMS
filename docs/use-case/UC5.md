@@ -1,6 +1,40 @@
 # UC5. Выполнение инцидента
 
-## Диаграмма прецедента
+## 1.Use-Case Name (Название прецедента)
+
+TBD
+
+## 2.Actors (Акторы)
+
+TBD
+
+## 2. Brief Description (Краткое описание)
+
+TBD
+
+## 3. Flow of Events (Последовательность событий)
+
+### 3.1 Basic Flow (Главная последовательность)
+
+TBD
+
+### 3.2 Alternative Flows (Альтернативные последовательности)
+
+TBD
+
+## 4. Preconditions (Предусловия)
+
+TBD
+
+## 5. Postconditions (Постусловия)
+
+TBD
+
+## 6. Extension Points (Точки расширения)
+
+TBD
+
+## 7. Use-case diagram (Диаграмма прецедента)
 
 ```plantuml
 @startuml
@@ -15,7 +49,7 @@ rectangle "Alien Incident Management System" {
 
 (Выполнение инцидента) as UC11
 
-(Создание заявки на тюремное заключение) as UC115
+(UC17. Создание заявки\nна тюремное заключение) as UC115
 (Сохранение изменений инцидента) as UC114
 (Изменение статуса инцидента) as UC113
 (Просмотр карточки инцидента) as UC111
@@ -33,3 +67,7 @@ UC11 <-- UC115 : <<extend>>
 
 @enduml
 ```
+
+## 8. Interface example (Пример интерефейса)
+
+TBD

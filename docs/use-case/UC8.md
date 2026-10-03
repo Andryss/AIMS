@@ -1,6 +1,40 @@
 # UC8. Редактирование записи в базе знаний
 
-## Диаграмма прецедента
+## 1.Use-Case Name (Название прецедента)
+
+TBD
+
+## 2.Actors (Акторы)
+
+TBD
+
+## 2. Brief Description (Краткое описание)
+
+TBD
+
+## 3. Flow of Events (Последовательность событий)
+
+### 3.1 Basic Flow (Главная последовательность)
+
+TBD
+
+### 3.2 Alternative Flows (Альтернативные последовательности)
+
+TBD
+
+## 4. Preconditions (Предусловия)
+
+TBD
+
+## 5. Postconditions (Постусловия)
+
+TBD
+
+## 6. Extension Points (Точки расширения)
+
+TBD
+
+## 7. Use-case diagram (Диаграмма прецедента)
 
 ```plantuml
 @startuml
@@ -29,3 +63,7 @@ UC11 --> UC115 : <<include>>
 
 @enduml
 ```
+
+## 8. Interface example (Пример интерефейса)
+
+TBD
