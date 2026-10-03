@@ -2,15 +2,18 @@
 
 ## 1.Use-Case Name (Название прецедента)
 
-TBD
+UC9. Просмотр истории изменений инцидента.
+
+Связанные требования: 3.1.1.4.
 
 ## 2.Actors (Акторы)
 
-TBD
+Основное действующее лицо: Сотрудник.
 
 ## 2. Brief Description (Краткое описание)
 
-TBD
+Сотрудник открывает карточку инцидента и просматривает историю его изменений, включая время изменения и сведения о
+пользователе, внесшем изменение, для анализа хода обработки инцидента.
 
 ## 3. Flow of Events (Последовательность событий)
 
@@ -41,9 +44,9 @@ TBD
 title Use Case Diagram — UC9. Просмотр истории изменений инцидента
 left to right direction
 
-actor "Руководство" as Management
+actor "Сотрудник" as Employee
 
-rectangle "Alien Incident Management System" {
+rectangle "Alien Incident Employee System" {
 
 (Просмотр истории изменений инцидента) as UC11
 
@@ -52,7 +55,7 @@ rectangle "Alien Incident Management System" {
 
 }
 
-Management -- UC11
+Employee -- UC11
 
 UC11 --> UC111 : <<include>>
 UC11 --> UC113 : <<include>>
