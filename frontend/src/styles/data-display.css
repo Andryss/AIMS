@@ -2,7 +2,39 @@
    Data display — table, tabs, comments, history, pickers, attachments, chips
    ========================================================================== */
 
-/* Incidents table */
+/* Knowledge base */
+.knowledge-base__heading,
+.alien-linked__heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.knowledge-base__name {
+  color: inherit;
+  text-decoration: none;
+}
+
+.knowledge-base__name:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.knowledge-base__search {
+  max-width: 36rem;
+  margin-bottom: var(--space-4);
+}
+
+.knowledge-base__description {
+  display: block;
+  max-width: 40ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Tables */
 .incidents-table-wrapper {
   overflow-x: auto;
 }

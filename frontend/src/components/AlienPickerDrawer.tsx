@@ -144,7 +144,7 @@ export function AlienPickerDrawer({
                 >
                   <div className="picker-card__content">
                     <p className="alien-card__name">{alien.name}</p>
-                    <p className="alien-card__meta">Угроза {alien.threatLevel}/10</p>
+                    <p className="alien-card__meta">Угроза {alien.threatLevel}</p>
                     <p className="alien-card__description">{alien.description}</p>
                   </div>
                 </button>

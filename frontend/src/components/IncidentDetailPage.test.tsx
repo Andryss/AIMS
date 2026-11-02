@@ -5,6 +5,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import * as api from '../api/client';
 import { mockAlien, mockIncident } from '../test/testData';
 import { IncidentDetailPage } from './IncidentDetailPage';
+import { AlienDetailPage } from './AlienDetailPage';
 
 jest.mock('../api/client');
 
@@ -63,6 +64,7 @@ function renderAt(
             />
           }
         />
+        <Route path="/aliens/:id" element={<AlienDetailPage token="tok" canWrite={false} />} />
       </Routes>
     </MemoryRouter>,
   );
@@ -104,6 +106,18 @@ describe('IncidentDetailPage', () => {
     expect(screen.getByText('Слизень')).toBeInTheDocument();
   });
 
+
+  it('opens the linked species card and returns to the source incident', async () => {
+    getIncident.mockResolvedValue(mockIncident({ id: 3, alienId: 1, status: 'READY_FOR_EXECUTION' }));
+    getAlien.mockResolvedValue(mockAlien());
+    renderAt('/incidents/3');
+    const link = await screen.findByRole('link', { name: 'Открыть карточку вида' });
+    expect(link).toHaveAttribute('href', '/aliens/1');
+    await userEvent.click(link);
+    expect(await screen.findByRole('heading', { name: 'Слизень' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('link', { name: /К инциденту/ }));
+    expect(await screen.findByRole('heading', { name: 'Инцидент #3' })).toBeInTheDocument();
+  });
   it('loads comments on mount and history lazily on tab switch', async () => {
     getIncident.mockResolvedValue(mockIncident({ id: 7 }));
     listIncidentComments.mockResolvedValue({
@@ -224,7 +238,7 @@ describe('IncidentDetailPage', () => {
     await waitFor(() => {
       expect(getAlien).toHaveBeenCalledWith('tok', 2);
     });
-    expect(screen.getByText(/угроза 3\/10/)).toBeInTheDocument();
+    expect(screen.getByText(/\(угроза 3\)/)).toBeInTheDocument();
   });
 
   it('replaces a linked alien during analysis and refreshes loaded history', async () => {

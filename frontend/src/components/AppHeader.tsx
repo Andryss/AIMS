@@ -29,6 +29,7 @@ interface AppHeaderProps {
   notificationsOpen: boolean;
   showIncidentsTab: boolean;
   showMonitoringAlertsTab: boolean;
+  showKnowledgeBaseTab: boolean;
   onToggleNotifications: () => void;
   onCloseNotifications: () => void;
   onUnreadChange: (count: number) => void;
@@ -42,6 +43,7 @@ export function AppHeader({
   notificationsOpen,
   showIncidentsTab,
   showMonitoringAlertsTab,
+  showKnowledgeBaseTab,
   onToggleNotifications,
   onCloseNotifications,
   onUnreadChange,
@@ -53,7 +55,7 @@ export function AppHeader({
         <img src={MIB_LOGO_PATH} alt="MIB" className="app-header__logo" />
       </div>
 
-      {(showIncidentsTab || showMonitoringAlertsTab) && (
+      {(showIncidentsTab || showMonitoringAlertsTab || showKnowledgeBaseTab) && (
         <nav className="app-header__nav" aria-label="Разделы">
           {showIncidentsTab && (
             <NavLink
@@ -73,6 +75,12 @@ export function AppHeader({
               }
             >
               Входящие алерты
+            </NavLink>
+          )}
+          {showKnowledgeBaseTab && (
+            <NavLink to="/aliens" className={({ isActive }) =>
+              isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'}>
+              База знаний
             </NavLink>
           )}
         </nav>

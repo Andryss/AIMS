@@ -652,11 +652,18 @@ export function IncidentDetailPage({
                   <dd>
                     {linkedAlien ? (
                       <div className="alien-linked">
-                        <strong>{linkedAlien.name}</strong>
-                        <span className="text-muted">
-                          {' '}
-                          (угроза {linkedAlien.threatLevel}/10)
-                        </span>
+                        <div className="alien-linked__heading">
+                          <strong>{linkedAlien.name}</strong>
+                          <Link to={`/aliens/${linkedAlien.id}`} state={{ incidentId: incident.id }}
+                            className="btn btn--outline icon-button" title="Открыть карточку вида"
+                            aria-label="Открыть карточку вида">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
+                              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                              <path d="M14 3h7v7M21 3 10 14M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5" />
+                            </svg>
+                          </Link>
+                          <span className="text-muted">(угроза {linkedAlien.threatLevel})</span>
+                        </div>
                         <p className="text-pre-wrap">{linkedAlien.description}</p>
                         {canLinkAlien && incident.status === 'READY_FOR_ANALYSIS' && (
                           <Button variant="outline" onClick={() => setAlienDrawerOpen(true)}>

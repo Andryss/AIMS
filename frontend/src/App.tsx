@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import * as api from './api/client';
 import { AppHeader } from './components/AppHeader';
+import { AlienKnowledgeBaseTab } from './components/AlienKnowledgeBaseTab';
+import { AlienDetailPage } from './components/AlienDetailPage';
 import { DevStyleguidePage } from './components/DevStyleguidePage';
 import { IncidentDetailPage } from './components/IncidentDetailPage';
 import { IncidentsTab } from './components/IncidentsTab';
@@ -9,7 +11,7 @@ import { LoginPage } from './components/LoginPage';
 import { MonitoringAlertsTab } from './components/MonitoringAlertsTab';
 import { ProfileTab } from './components/ProfileTab';
 import { LoadingBlock } from './components/ui/LoadingBlock';
-import { INCIDENTS_TAB_ROLES, MONITORING_ALERTS_TAB_ROLES, TOKEN_STORAGE_KEY } from './constants';
+import { INCIDENTS_TAB_ROLES, KNOWLEDGE_BASE_TAB_ROLES, MONITORING_ALERTS_TAB_ROLES, TOKEN_STORAGE_KEY } from './constants';
 import { AuthMeResponse } from './types';
 
 function App() {
@@ -43,6 +45,9 @@ function App() {
   );
   const canChangeIncidentStatus = profile?.permissions.includes('INCIDENT_STATUS_CHANGE') ?? false;
   const canReadAliens = profile?.permissions.includes('ALIEN_READ') ?? false;
+  const canWriteAliens = profile?.permissions.includes('ALIEN_WRITE') ?? false;
+  const showKnowledgeBaseTab = canReadAliens && (profile?.roles.some((role) =>
+    KNOWLEDGE_BASE_TAB_ROLES.includes(role as (typeof KNOWLEDGE_BASE_TAB_ROLES)[number])) ?? false);
   const canLinkAlien = profile?.permissions.includes('INCIDENT_ALIEN_LINK') ?? false;
   const canComment = profile?.permissions.includes('INCIDENT_COMMENT') ?? false;
   const canAssign = profile?.permissions.includes('INCIDENT_ASSIGN') ?? false;
@@ -133,6 +138,10 @@ function App() {
     );
   }
 
+  if (!profile) {
+    return <div className="app"><LoadingBlock label="Загрузка профиля…" /></div>;
+  }
+
   return (
     <div className="app app--authenticated">
       <a href="#main-content" className="skip-link">
@@ -150,6 +159,7 @@ function App() {
         notificationsOpen={notificationsOpen}
         showIncidentsTab={showIncidentsTab}
         showMonitoringAlertsTab={canReadMonitoringAlerts}
+        showKnowledgeBaseTab={showKnowledgeBaseTab}
         onToggleNotifications={() => setNotificationsOpen((prev) => !prev)}
         onCloseNotifications={() => setNotificationsOpen(false)}
         onUnreadChange={setUnreadCount}
@@ -184,6 +194,13 @@ function App() {
               )
             }
           />
+          {showKnowledgeBaseTab && (
+            <Route path="/aliens" element={<AlienKnowledgeBaseTab token={accessToken} canWrite={canWriteAliens} />} />
+          )}
+          {canReadAliens && (
+            <Route path="/aliens/:id" element={<AlienDetailPage token={accessToken}
+              canWrite={canWriteAliens} canBrowseList={showKnowledgeBaseTab} />} />
+          )}
           {canReadMonitoringAlerts && (
             <Route
               path="/monitoring/alerts"

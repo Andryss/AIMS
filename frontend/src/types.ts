@@ -214,6 +214,20 @@ export interface AlienSearchResponse {
   items: Alien[];
 }
 
+export interface SaveAlienRequest {
+  name: string;
+  description: string;
+  threatLevel: number;
+}
+
+export interface AlienListResponse {
+  items: Alien[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
 export interface FileUploadResponse {
   id: number;
   fileName: string;

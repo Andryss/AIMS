@@ -12,6 +12,9 @@ import {
   markNotificationRead,
   putIncidentAlien,
   searchAliens,
+  listAliens,
+  createAlien,
+  updateAlien,
   signIn,
   uploadFile,
   uploadFiles,
@@ -179,6 +182,25 @@ describe('api client', () => {
       const alien = await getAlien('tok', 1);
       expect(alien.name).toBe('Слизень');
     });
+  });
+
+
+  it('listAliens sends pagination and encodes the filter', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, { items: [], page: 1, size: 10 }));
+    await listAliens('tok', { q: 'слиз %', page: 1, size: 10 });
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/api/v1/aliens?page=1&size=10&q=%D1%81%D0%BB%D0%B8%D0%B7+%25', expect.any(Object));
+    expect((mockFetch.mock.calls[0][1].headers as Headers).get('Authorization')).toBe('Bearer tok');
+  });
+
+  it.each(['create', 'update'])('sends the %s species request', async (mode) => {
+    const body = { name: 'Слизень', description: 'Признаки', threatLevel: 3 };
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, { id: 1, ...body }));
+    const saved = mode === 'create' ? await createAlien('tok', body) : await updateAlien('tok', 1, body);
+    expect(saved.name).toBe('Слизень');
+    expect(mockFetch).toHaveBeenCalledWith(
+      mode === 'create' ? '/api/v1/aliens' : '/api/v1/aliens/1',
+      expect.objectContaining({ method: mode === 'create' ? 'POST' : 'PUT', body: JSON.stringify(body) }));
   });
 
   describe('files', () => {

@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 import * as api from './api/client';
 import { TOKEN_STORAGE_KEY, SYSTEM_NAME } from './constants';
-import { mockIncidentList, mockProfile } from './test/testData';
+import { mockAlien, mockIncidentList, mockProfile } from './test/testData';
 
 jest.mock('./api/client');
 
@@ -117,10 +117,10 @@ describe('App', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Уведомления' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Уведомления/ })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole('button', { name: 'Уведомления' }));
+    await userEvent.click(screen.getByRole('button', { name: /Уведомления/ }));
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: 'Уведомления' })).toBeInTheDocument();
@@ -143,4 +143,48 @@ describe('App', () => {
     });
     expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull();
   });
+  it('restores a direct species-card URL after loading the profile', async () => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile({ roles: ['ANALYST'], permissions: ['ALIEN_READ'] }));
+    (api.getAlien as jest.Mock).mockResolvedValue(mockAlien());
+    render(<MemoryRouter initialEntries={['/aliens/1']}><App /></MemoryRouter>);
+    expect(await screen.findByRole('heading', { name: 'Слизень' })).toBeInTheDocument();
+    expect(api.getAlien).toHaveBeenCalledWith('saved-token', 1);
+  });
+
+  it.each([
+    ['ANALYST', ['ALIEN_READ', 'ALIEN_WRITE'], true, true],
+    ['ADMIN', ['ALIEN_READ', 'ALIEN_WRITE'], true, true],
+    ['ANALYST', ['ALIEN_READ'], true, false],
+    ['ANALYST', ['ALIEN_WRITE'], false, false],
+    ['AGENT', ['ALIEN_READ', 'ALIEN_WRITE'], false, false],
+    ['OPERATOR', [], false, false],
+  ])('controls knowledge base for %s with %j', async (role, permissions, visible, writable) => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile({ roles: [role as string], permissions: permissions as string[] }));
+    (api.listAliens as jest.Mock).mockResolvedValue({ items: [], page: 0, size: 10,
+      totalElements: 0, totalPages: 0 });
+    render(<MemoryRouter initialEntries={['/aliens']}><App /></MemoryRouter>);
+    await screen.findByRole('link', { name: /analyst|operator/ });
+    if (visible) {
+      expect(screen.getByRole('link', { name: 'База знаний' })).toBeInTheDocument();
+      expect(await screen.findByRole('heading', { name: 'База знаний' })).toBeInTheDocument();
+      expect(Boolean(screen.queryByRole('button', { name: 'Добавить вид' }))).toBe(writable);
+    } else {
+      expect(screen.queryByRole('link', { name: 'База знаний' })).not.toBeInTheDocument();
+      expect(api.listAliens).not.toHaveBeenCalled();
+    }
+  });
+
+  it.each(['AGENT', 'CLEANER'])('allows %s to read a species card without the knowledge-base tab', async (role) => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile({ roles: [role], permissions: ['ALIEN_READ'] }));
+    (api.getAlien as jest.Mock).mockResolvedValue(mockAlien());
+    render(<MemoryRouter initialEntries={['/aliens/1']}><App /></MemoryRouter>);
+    expect(await screen.findByRole('heading', { name: 'Слизень' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'База знаний' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Редактировать вид' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /К инцидентам/ })).toHaveAttribute('href', '/incidents');
+  });
+
 });

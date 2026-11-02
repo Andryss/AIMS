@@ -502,3 +502,16 @@
   width: 1.25rem;
   height: 1.25rem;
 }
+
+.btn.icon-button {
+  width: var(--space-8);
+  height: var(--space-8);
+  padding: var(--space-2);
+  flex-shrink: 0;
+}
+
+.icon-button svg {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+}
