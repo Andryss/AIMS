@@ -8,6 +8,7 @@ insert into permission (code, description) values
     ('INCIDENT_COMMENT', 'Добавление комментариев к инциденту'),
     ('INCIDENT_ALIEN_LINK', 'Привязка типа инопланетянина к инциденту'),
     ('ALIEN_READ', 'Просмотр и поиск в справочнике инопланетян'),
+    ('ALIEN_WRITE', 'Создание и редактирование записей справочника инопланетян'),
     ('USER_READ', 'Поиск пользователей и пакетное чтение профилей'),
     ('INCIDENT_ASSIGN', 'Назначение ответственного и исполнителей на инцидент'),
     ('CLEANUP_REPORT_READ', 'Просмотр отчёта об очистке'),
@@ -34,12 +35,13 @@ where r.name = 'OPERATOR' and p.code in ('INCIDENT_READ', 'INCIDENT_CREATE', 'IN
 insert into role_permission (role_id, permission_id)
 select r.id, p.id
 from role r, permission p
-where r.name = 'ANALYST' and p.code in ('INCIDENT_READ', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT', 'INCIDENT_ALIEN_LINK', 'ALIEN_READ', 'USER_READ', 'CLEANUP_REPORT_READ', 'FILE_UPLOAD', 'FILE_READ', 'NOTIFICATION_READ');
+where r.name = 'ANALYST' and p.code in ('ALIEN_WRITE', 'INCIDENT_READ', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT', 'INCIDENT_ALIEN_LINK', 'ALIEN_READ', 'USER_READ', 'CLEANUP_REPORT_READ', 'FILE_UPLOAD', 'FILE_READ', 'NOTIFICATION_READ');
 
 insert into role_permission (role_id, permission_id)
 select r.id, p.id
 from role r, permission p
 where r.name = 'ADMIN' and p.code in (
+    'ALIEN_WRITE',
     'INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT',
     'INCIDENT_ALIEN_LINK', 'ALIEN_READ', 'USER_READ', 'INCIDENT_ASSIGN', 'CLEANUP_REPORT_READ',
     'FILE_UPLOAD', 'FILE_READ', 'NOTIFICATION_READ'

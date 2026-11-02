@@ -189,23 +189,8 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: page
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
-            minimum: 0
-        - name: size
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 20
-            minimum: 1
-            maximum: 100
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Size"
       responses:
         200:
           description: Paginated notification list
@@ -392,23 +377,8 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: page
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
-            minimum: 0
-        - name: size
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 20
-            minimum: 1
-            maximum: 100
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Size"
       responses:
         200:
           description: Paginated incident list
@@ -526,6 +496,107 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
 
+  /api/v1/aliens:
+    get:
+      summary: List and search alien knowledge base
+      operationId: listAliens
+      tags: [aliens]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Size"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlienListResponse"
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        401:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        403:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        404:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+    post:
+      summary: Create alien knowledge base entry
+      operationId: createAlien
+      tags: [aliens]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveAlienRequest"
+      responses:
+        201:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlienResponse"
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        401:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        403:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        404:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+
   /api/v1/aliens/search:
     get:
       summary: Search aliens in knowledge base
@@ -614,6 +685,63 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
 
+    put:
+      summary: Update alien knowledge base entry
+      operationId: updateAlien
+      tags: [aliens]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveAlienRequest"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlienResponse"
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        401:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        403:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        404:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+
   /api/v1/incidents/{id}/alien:
     put:
       summary: Link alien type to incident
@@ -688,13 +816,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: page
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
+        - $ref: "#/components/parameters/Page"
         - name: size
           in: query
           required: false
@@ -807,13 +929,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: page
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
+        - $ref: "#/components/parameters/Page"
         - name: size
           in: query
           required: false
@@ -1266,23 +1382,8 @@ paths:
           required: false
           schema:
             $ref: "#/components/schemas/MonitoringAlertStatusApi"
-        - name: page
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
-            minimum: 0
-        - name: size
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 20
-            minimum: 1
-            maximum: 100
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Size"
       responses:
         200:
           description: Paginated monitoring alerts
@@ -1357,6 +1458,26 @@ paths:
                 $ref: "#/components/schemas/ErrorObject"
 
 components:
+  parameters:
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 0
+        minimum: 0
+    Size:
+      name: size
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 20
+        minimum: 1
+        maximum: 100
   securitySchemes:
     bearerAuth:
       type: http
@@ -1621,6 +1742,47 @@ components:
           items:
             type: integer
             format: int64
+
+    SaveAlienRequest:
+      type: object
+      required: [name, description, threatLevel]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: '(?s).*\S.*'
+        description:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          pattern: '(?s).*\S.*'
+        threatLevel:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+
+    AlienListResponse:
+      type: object
+      required: [items, page, size, totalElements, totalPages]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlienResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
 
     AlienResponse:
       type: object

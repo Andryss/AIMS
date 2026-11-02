@@ -24,6 +24,7 @@ public enum Role {
     ),
     ANALYST(
             "Аналитик",
+            Permission.ALIEN_WRITE,
             Permission.INCIDENT_READ,
             Permission.INCIDENT_STATUS_CHANGE,
             Permission.INCIDENT_COMMENT,
@@ -37,6 +38,7 @@ public enum Role {
     ),
     ADMIN(
             "Администратор",
+            Permission.ALIEN_WRITE,
             Permission.INCIDENT_READ,
             Permission.INCIDENT_CREATE,
             Permission.INCIDENT_STATUS_CHANGE,

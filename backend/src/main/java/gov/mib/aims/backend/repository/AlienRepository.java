@@ -1,11 +1,11 @@
 package gov.mib.aims.backend.repository;
 
 import gov.mib.aims.backend.entity.AlienEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 /**
  * Репозиторий справочника инопланетян.
@@ -15,17 +15,17 @@ public interface AlienRepository extends JpaRepository<AlienEntity, Long> {
     /**
      * Поиск по названию и описанию (name-match выше description-match).
      *
-     * @param pattern шаблон LIKE (уже с %)
-     * @param limit максимум записей
-     * @return список совпадений
+     * @param query поисковая подстрока в нижнем регистре
+     * @param pageable параметры страницы
+     * @return страница справочника
      */
     @Query(value = """
             SELECT * FROM alien
-            WHERE lower(name) LIKE :pattern OR lower(description) LIKE :pattern
-            ORDER BY
-                CASE WHEN lower(name) LIKE :pattern THEN 0 ELSE 1 END,
-                name
-            LIMIT :limit
+            WHERE strpos(lower(name), :query) > 0 OR strpos(lower(description), :query) > 0
+            ORDER BY CASE WHEN strpos(lower(name), :query) > 0 THEN 0 ELSE 1 END, lower(name), id
+            """, countQuery = """
+            SELECT count(*) FROM alien
+            WHERE strpos(lower(name), :query) > 0 OR strpos(lower(description), :query) > 0
             """, nativeQuery = true)
-    List<AlienEntity> search(@Param("pattern") String pattern, @Param("limit") int limit);
+    Page<AlienEntity> search(@Param("query") String query, Pageable pageable);
 }
