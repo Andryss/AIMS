@@ -227,6 +227,61 @@ describe('IncidentDetailPage', () => {
     expect(screen.getByText(/угроза 3\/10/)).toBeInTheDocument();
   });
 
+  it('replaces a linked alien during analysis and refreshes loaded history', async () => {
+    getIncident.mockResolvedValue(mockIncident({ id: 4, status: 'READY_FOR_ANALYSIS', alienId: 1 }));
+    getAlien.mockResolvedValueOnce(mockAlien({ id: 1, name: 'Слизень' }))
+      .mockResolvedValue(mockAlien({ id: 2, name: 'Слизистый червь' }));
+    searchAliens.mockResolvedValue({ items: [mockAlien({ id: 2, name: 'Слизистый червь' })] });
+    putIncidentAlien.mockResolvedValue(mockIncident({ id: 4, status: 'READY_FOR_ANALYSIS', alienId: 2 }));
+    renderAt('/incidents/4');
+
+    await screen.findByText('Слизень');
+    await userEvent.click(screen.getByRole('tab', { name: 'История' }));
+    await waitFor(() => expect(listIncidentHistory).toHaveBeenCalledTimes(1));
+    await screen.findByText('История изменений пуста');
+    await userEvent.click(screen.getByRole('button', { name: 'Изменить вид' }));
+    await userEvent.type(screen.getByLabelText('Поиск типа инопланетянина'), 'червь');
+    const dialog = screen.getByRole('dialog', { name: 'Выбор типа инопланетянина' });
+    await userEvent.click(await within(dialog).findByRole('button', { name: /Слизистый червь/ }));
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Выбрать' }));
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(putIncidentAlien).toHaveBeenCalledWith('tok', 4, 2);
+    expect(screen.getByText('Слизистый червь')).toBeInTheDocument();
+    expect(screen.queryByText('Слизень')).not.toBeInTheDocument();
+    await waitFor(() => expect(listIncidentHistory).toHaveBeenCalledTimes(2));
+  });
+
+  it.each([
+    ['READY_FOR_EXECUTION', true],
+    ['EXECUTION_COMPLETED', true],
+    ['READY_FOR_ANALYSIS', false],
+  ] as const)('prevents replacing alien in %s with link permission %s', async (status, canLinkAlien) => {
+    getIncident.mockResolvedValue(mockIncident({ id: 4, status, alienId: 1 }));
+    getAlien.mockResolvedValue(mockAlien());
+    renderAt('/incidents/4', { canLinkAlien });
+    await screen.findByText('Слизень');
+    expect(screen.queryByRole('button', { name: 'Изменить вид' })).not.toBeInTheDocument();
+    expect(putIncidentAlien).not.toHaveBeenCalled();
+  });
+
+  it('keeps the original alien and shows an error if replacement fails', async () => {
+    getIncident.mockResolvedValue(mockIncident({ id: 4, status: 'READY_FOR_ANALYSIS', alienId: 1 }));
+    getAlien.mockResolvedValue(mockAlien({ id: 1, name: 'Слизень' }));
+    searchAliens.mockResolvedValue({ items: [mockAlien({ id: 2, name: 'Слизистый червь' })] });
+    putIncidentAlien.mockRejectedValueOnce(new Error('Не удалось сохранить классификацию'));
+    renderAt('/incidents/4');
+    await screen.findByText('Слизень');
+    await userEvent.click(screen.getByRole('button', { name: 'Изменить вид' }));
+    await userEvent.type(screen.getByLabelText('Поиск типа инопланетянина'), 'червь');
+    const dialog = screen.getByRole('dialog', { name: 'Выбор типа инопланетянина' });
+    await userEvent.click(await within(dialog).findByRole('button', { name: /Слизистый червь/ }));
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Выбрать' }));
+    await screen.findByText('Не удалось сохранить классификацию');
+    expect(screen.getByText('Слизень')).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
   it('shows error when incident load fails', async () => {
     getIncident.mockRejectedValueOnce(new Error('Not found'));
 

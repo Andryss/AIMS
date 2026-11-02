@@ -37,8 +37,11 @@ function allowedTargetsForUser(
   if (status === 'READY_FOR_ANALYSIS') {
     return hasRole(roles, 'ANALYST') ? fromGraph : [];
   }
-  if (status === 'CLARIFICATION_REQUIRED' || status === 'REANALYSIS_REQUIRED') {
+  if (status === 'CLARIFICATION_REQUIRED') {
     return hasRole(roles, 'OPERATOR') ? fromGraph : [];
+  }
+  if (status === 'REANALYSIS_REQUIRED') {
+    return hasRole(roles, 'ANALYST') ? fromGraph : [];
   }
   if (status === 'PREPARED_FOR_EXECUTION' || status === 'EXECUTING') {
     if (!hasRole(roles, 'AGENT')) {

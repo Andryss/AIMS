@@ -81,7 +81,7 @@ describe('buildIncidentHistoryDiffs', () => {
       entry(2, '2025-06-01T11:00:00Z', 2, {
         ...baseSnapshot,
         executorUserIds: [2],
-        cleanupStatus: 'IN_PROGRESS',
+        cleanupStatus: 'EXECUTION',
         cleanupReportId: 9,
         attachmentFileIds: [],
       }),

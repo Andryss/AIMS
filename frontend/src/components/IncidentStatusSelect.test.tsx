@@ -133,4 +133,42 @@ describe('IncidentStatusSelect', () => {
 
     expect(screen.getByLabelText(/Статус инцидента #1/i)).toBeDisabled();
   });
+
+  it.each(['ANALYST', 'ADMIN'])('allows %s to resume reanalysis', async (role) => {
+    const updated = mockIncident({ status: 'READY_FOR_ANALYSIS' });
+    const onStatusChanged = jest.fn();
+    changeIncidentStatus.mockResolvedValue(updated);
+    render(
+      <IncidentStatusSelect token="tok" incident={mockIncident({ status: 'REANALYSIS_REQUIRED' })}
+        roles={[role]} canChange onStatusChanged={onStatusChanged} />,
+    );
+
+    await userEvent.selectOptions(screen.getByLabelText(/Статус инцидента #1/i), 'READY_FOR_ANALYSIS');
+
+    await waitFor(() => expect(onStatusChanged).toHaveBeenCalledWith(updated));
+    expect(changeIncidentStatus).toHaveBeenCalledWith('tok', 1, 'READY_FOR_ANALYSIS', undefined);
+  });
+
+  it.each([
+    ['OPERATOR', 'REANALYSIS_REQUIRED'],
+    ['AGENT', 'REANALYSIS_REQUIRED'],
+    ['ANALYST', 'CLARIFICATION_REQUIRED'],
+  ] as const)('prevents %s from resuming %s', (role, status) => {
+    render(
+      <IncidentStatusSelect token="tok" incident={mockIncident({ status })}
+        roles={[role]} canChange onStatusChanged={jest.fn()} />,
+    );
+
+    expect(screen.getByLabelText(/Статус инцидента #1/i)).toBeDisabled();
+    expect(screen.queryByRole('option', { name: 'Готов к анализу' })).not.toBeInTheDocument();
+    expect(changeIncidentStatus).not.toHaveBeenCalled();
+  });
+
+  it('requires status change permission even for analyst resuming reanalysis', () => {
+    render(
+      <IncidentStatusSelect token="tok" incident={mockIncident({ status: 'REANALYSIS_REQUIRED' })}
+        roles={['ANALYST']} canChange={false} onStatusChanged={jest.fn()} />,
+    );
+    expect(screen.getByLabelText(/Статус инцидента #1/i)).toBeDisabled();
+  });
 });

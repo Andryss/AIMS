@@ -372,6 +372,9 @@ export function IncidentDetailPage({
       const alien = await api.getAlien(token, alienId);
       setLinkedAlien(alien);
       setAlienDrawerOpen(false);
+      if (historyLoaded) {
+        loadHistory();
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Не удалось привязать тип';
       setError(message);
@@ -655,6 +658,11 @@ export function IncidentDetailPage({
                           (угроза {linkedAlien.threatLevel}/10)
                         </span>
                         <p className="text-pre-wrap">{linkedAlien.description}</p>
+                        {canLinkAlien && incident.status === 'READY_FOR_ANALYSIS' && (
+                          <Button variant="outline" onClick={() => setAlienDrawerOpen(true)}>
+                            Изменить вид
+                          </Button>
+                        )}
                       </div>
                     ) : canLinkAlien && incident.status === 'READY_FOR_ANALYSIS' ? (
                       <button
@@ -1048,7 +1056,6 @@ export function IncidentDetailPage({
           && canReadAliens
           && canLinkAlien
           && incident?.status === 'READY_FOR_ANALYSIS'
-          && incident.alienId == null
         }
         selecting={linkLoading}
         onClose={() => setAlienDrawerOpen(false)}
