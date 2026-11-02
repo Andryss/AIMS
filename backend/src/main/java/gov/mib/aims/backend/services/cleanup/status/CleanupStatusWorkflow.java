@@ -4,8 +4,7 @@ import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.model.CleanupStatus;
 import gov.mib.aims.backend.repository.IncidentRepository;
-import gov.mib.aims.backend.services.incident.status.postaction.StatusTransitionPostAction;
-import gov.mib.aims.backend.services.incident.status.precondition.StatusTransitionPrecondition;
+import gov.mib.aims.backend.services.status.AbstractStatusWorkflow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,8 @@ import java.time.LocalDateTime;
  */
 @Service
 @RequiredArgsConstructor
-public class CleanupStatusWorkflow {
+public class CleanupStatusWorkflow
+        extends AbstractStatusWorkflow<IncidentEntity, CleanupStatus> {
 
     private final CleanupStatusTransitionGraph transitionGraph;
     private final IncidentRepository incidentRepository;
@@ -31,23 +31,19 @@ public class CleanupStatusWorkflow {
      * @return обновлённый инцидент
      */
     public IncidentEntity changeStatus(IncidentEntity incident, CleanupStatus target) {
-        CleanupStatus current = incident.getCleanupStatus();
-        if (!transitionGraph.isAllowed(current, target)) {
-            throw Errors.invalidCleanupStatusTransition();
-        }
-        CleanupStatusTransition<IncidentEntity> transition = transitionGraph.getTransition(current, target);
+        var transition = transitionGraph.getTransition(incident.getCleanupStatus(), target);
         if (transition == null) {
             throw Errors.invalidCleanupStatusTransition();
         }
-        for (StatusTransitionPrecondition<IncidentEntity> precondition : transition.getPreconditions()) {
-            precondition.check(incident);
-        }
+
+        return applyTransition(incident, transition);
+    }
+
+    @Override
+    protected IncidentEntity applyStatus(IncidentEntity incident, CleanupStatus target) {
         incident.setCleanupStatus(target);
         incident.setUpdatedAt(LocalDateTime.now(clock));
-        incident = incidentRepository.save(incident);
-        for (StatusTransitionPostAction<IncidentEntity> postAction : transition.getPostActions()) {
-            postAction.execute(incident);
-        }
-        return incident;
+
+        return incidentRepository.save(incident);
     }
 }

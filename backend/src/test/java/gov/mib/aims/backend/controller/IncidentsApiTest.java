@@ -5,9 +5,13 @@ import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
 import gov.mib.aims.backend.generated.model.IncidentEventTypeApi;
 import gov.mib.aims.backend.generated.model.IncidentStatusApi;
 import gov.mib.aims.backend.generated.model.SignInRequest;
+import gov.mib.aims.backend.generated.model.EquipmentMovementOperationApi;
+import gov.mib.aims.backend.generated.model.EquipmentMovementStatusApi;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyAnalystsIncidentReadyPayload;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyAnalystsIncidentReadyProcessor;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,6 +21,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.emptyOrNullString;
@@ -38,6 +44,94 @@ class IncidentsApiTest extends BaseApiTest {
 
     @Autowired
     private NotifyAnalystsIncidentReadyProcessor notifyAnalystsProcessor;
+
+    @ParameterizedTest
+    @ValueSource(strings = {"PENDING", "PROCESSING"})
+    void cannotCompleteIncidentWithPendingMovement(String state) throws Exception {
+        long incident = executingIncident();
+        String warehouse = fixtures.signInAndGetToken("storekeeper", "storekeeper");
+        long equipment = fixtures.registerEquipment(warehouse, "GUARD-001");
+        long holder = appUserRepository.findByLogin("agent").orElseThrow().getId();
+        long movement = fixtures.createEquipmentMovement(warehouse, incident, holder,
+                EquipmentMovementOperationApi.ISSUE, null, List.of(equipment));
+        if (state.equals("PROCESSING")) {
+            fixtures.changeEquipmentMovementStatus(warehouse, movement, EquipmentMovementStatusApi.PROCESSING);
+        }
+        int before = jdbcTemplate.queryForObject("select count(*) from entity_history where entity_type = 'INCIDENT'",
+                Integer.class);
+        completeIncident(incident, 409);
+        assertThat(jdbcTemplate.queryForObject("select status from incident where id = ?", String.class, incident))
+                .isEqualTo("EXECUTING");
+        assertThat(jdbcTemplate.queryForObject("select count(*) from entity_history where entity_type = 'INCIDENT'",
+                Integer.class)).isEqualTo(before);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"CANCELLED", "REJECTED"})
+    void cancelledAndRejectedMovementsDoNotBlockCompletion(String target) throws Exception {
+        long incident = executingIncident();
+        String warehouse = fixtures.signInAndGetToken("storekeeper", "storekeeper");
+        long equipment = fixtures.registerEquipment(warehouse, "GUARD-001");
+        long holder = appUserRepository.findByLogin("agent").orElseThrow().getId();
+        long movement = fixtures.createEquipmentMovement(warehouse, incident, holder,
+                EquipmentMovementOperationApi.ISSUE, null, List.of(equipment));
+        fixtures.changeEquipmentMovementStatus(warehouse, movement, EquipmentMovementStatusApi.valueOf(target));
+        completeIncident(incident, 200);
+    }
+
+    @Test
+    void cannotCompleteIncidentUntilEveryIssuedItemIsReturned() throws Exception {
+        long incident = executingIncident();
+        String warehouse = fixtures.signInAndGetToken("storekeeper", "storekeeper");
+        long first = fixtures.registerEquipment(warehouse, "GUARD-001");
+        long second = fixtures.registerEquipment(warehouse, "GUARD-002");
+        long holder = appUserRepository.findByLogin("agent").orElseThrow().getId();
+        long issue = fixtures.createEquipmentMovement(warehouse, incident, holder,
+                EquipmentMovementOperationApi.ISSUE, null, List.of(first, second));
+        completeMovement(warehouse, issue);
+        completeIncident(incident, 409);
+        long firstReturn = fixtures.createEquipmentMovement(warehouse, incident, holder,
+                EquipmentMovementOperationApi.RETURN, issue, List.of(first));
+        completeMovement(warehouse, firstReturn);
+        completeIncident(incident, 409);
+        long secondReturn = fixtures.createEquipmentMovement(warehouse, incident, holder,
+                EquipmentMovementOperationApi.RETURN, issue, List.of(second));
+        completeMovement(warehouse, secondReturn);
+        completeIncident(incident, 200);
+        mockMvc.perform(post("/api/v1/equipment-movements")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + warehouse).contentType(APPLICATION_JSON)
+                        .content("{\"operation\":\"ISSUE\",\"incidentId\":" + incident
+                                + ",\"responsibleUserId\":" + holder + ",\"equipmentIds\":[" + first + "]}"))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void incidentWithoutEquipmentStillCompletes() throws Exception {
+        completeIncident(executingIncident(), 200);
+    }
+
+    private long executingIncident() throws Exception {
+        long id = fixtures.createPreparedIncident();
+        String agent = fixtures.signInAndGetToken("agent", "agent");
+        mockMvc.perform(post(INCIDENTS_URL + "/" + id + "/status")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + agent).contentType(APPLICATION_JSON)
+                        .content("{\"status\":\"EXECUTING\"}"))
+                .andExpect(status().isOk());
+        return id;
+    }
+
+    private void completeIncident(long id, int expected) throws Exception {
+        String agent = fixtures.signInAndGetToken("agent", "agent");
+        mockMvc.perform(post(INCIDENTS_URL + "/" + id + "/status")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + agent).contentType(APPLICATION_JSON)
+                        .content("{\"status\":\"EXECUTION_COMPLETED\"}"))
+                .andExpect(status().is(expected));
+    }
+
+    private void completeMovement(String token, long id) throws Exception {
+        fixtures.changeEquipmentMovementStatus(token, id, EquipmentMovementStatusApi.PROCESSING);
+        fixtures.changeEquipmentMovementStatus(token, id, EquipmentMovementStatusApi.COMPLETED);
+    }
 
     @Test
     void operatorCreatesIncidentAndAnalystReceivesNotificationAfterStatusChange() throws Exception {

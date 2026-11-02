@@ -1,4 +1,4 @@
-package gov.mib.aims.backend.services.incident.status.precondition;
+package gov.mib.aims.backend.services.status;
 
 /**
  * Предусловие перехода статуса.

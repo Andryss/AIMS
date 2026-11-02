@@ -86,8 +86,9 @@ class AuthApiTest extends BaseApiTest {
                 .andExpect(jsonPath("$.login").value("operator"))
                 .andExpect(jsonPath("$.roles", hasSize(1)))
                 .andExpect(jsonPath("$.roles[0]").value("OPERATOR"))
-                .andExpect(jsonPath("$.permissions", hasSize(10)))
+                .andExpect(jsonPath("$.permissions", hasSize(13)))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
+                        "EQUIPMENT_READ", "EQUIPMENT_MOVEMENT_READ", "EQUIPMENT_MOVEMENT_CREATE",
                         "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT",
                         "USER_READ", "CLEANUP_REPORT_READ",
                         "FILE_UPLOAD", "FILE_READ", "NOTIFICATION_READ", "MONITORING_ALERT_READ")));
@@ -100,8 +101,9 @@ class AuthApiTest extends BaseApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login").value("analyst"))
                 .andExpect(jsonPath("$.roles[0]").value("ANALYST"))
-                .andExpect(jsonPath("$.permissions", hasSize(11)))
+                .andExpect(jsonPath("$.permissions", hasSize(14)))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
+                        "EQUIPMENT_READ", "EQUIPMENT_MOVEMENT_READ", "EQUIPMENT_MOVEMENT_CREATE",
                         "INCIDENT_READ", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT",
                         "INCIDENT_ALIEN_LINK", "ALIEN_READ", "ALIEN_WRITE", "USER_READ", "CLEANUP_REPORT_READ",
                         "FILE_UPLOAD", "FILE_READ", "NOTIFICATION_READ")));
@@ -115,6 +117,7 @@ class AuthApiTest extends BaseApiTest {
                 .andExpect(jsonPath("$.login").value("agent"))
                 .andExpect(jsonPath("$.roles[0]").value("AGENT"))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
+                        "EQUIPMENT_READ", "EQUIPMENT_MOVEMENT_READ", "EQUIPMENT_MOVEMENT_CREATE",
                         "INCIDENT_READ", "USER_READ", "INCIDENT_ASSIGN", "INCIDENT_STATUS_CHANGE",
                         "INCIDENT_COMMENT", "ALIEN_READ", "CLEANUP_REPORT_READ",
                         "FILE_UPLOAD", "FILE_READ", "NOTIFICATION_READ")));

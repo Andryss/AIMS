@@ -1,5 +1,7 @@
 package gov.mib.aims.backend.services.incident.status.precondition;
 
+import gov.mib.aims.backend.services.status.StatusTransitionPrecondition;
+
 import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.services.validation.AttachmentValidator;
 import lombok.RequiredArgsConstructor;

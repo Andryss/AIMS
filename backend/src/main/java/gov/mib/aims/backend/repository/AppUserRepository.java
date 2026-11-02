@@ -33,7 +33,7 @@ public interface AppUserRepository extends JpaRepository<AppUserEntity, Long> {
             SELECT DISTINCT u.* FROM app_user u
             INNER JOIN user_role ur ON ur.user_id = u.id
             INNER JOIN role r ON r.id = ur.role_id
-            WHERE LOWER(u.login) LIKE LOWER(CONCAT('%', CAST(:query AS text), '%'))
+            WHERE strpos(lower(u.login), lower(:query)) > 0
               AND r.name = :roleName
             ORDER BY u.login
             LIMIT :limit
@@ -43,6 +43,21 @@ public interface AppUserRepository extends JpaRepository<AppUserEntity, Long> {
             @Param("roleName") String roleName,
             @Param("limit") int limit
     );
+
+    /**
+     * Ищет пользователей по фрагменту login без ограничения по роли.
+     *
+     * @param query подстрока login (без учёта регистра)
+     * @param limit максимум результатов
+     * @return список пользователей
+     */
+    @Query(value = """
+            SELECT * FROM app_user
+            WHERE strpos(lower(login), lower(:query)) > 0
+            ORDER BY login
+            LIMIT :limit
+            """, nativeQuery = true)
+    List<AppUserEntity> searchByLogin(@Param("query") String query, @Param("limit") int limit);
 
     /**
      * Возвращает всех пользователей с указанной ролью.

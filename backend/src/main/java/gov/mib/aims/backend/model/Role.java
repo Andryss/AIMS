@@ -9,6 +9,7 @@ import java.util.Set;
  */
 public enum Role {
 
+    /** Оператор. */
     OPERATOR(
             "Оператор",
             Permission.INCIDENT_READ,
@@ -16,61 +17,90 @@ public enum Role {
             Permission.INCIDENT_STATUS_CHANGE,
             Permission.INCIDENT_COMMENT,
             Permission.USER_READ,
+            Permission.EQUIPMENT_READ,
+            Permission.EQUIPMENT_MOVEMENT_READ,
+            Permission.EQUIPMENT_MOVEMENT_CREATE,
             Permission.CLEANUP_REPORT_READ,
             Permission.FILE_UPLOAD,
             Permission.FILE_READ,
             Permission.NOTIFICATION_READ,
             Permission.MONITORING_ALERT_READ
     ),
+    /** Аналитик. */
     ANALYST(
             "Аналитик",
-            Permission.ALIEN_WRITE,
             Permission.INCIDENT_READ,
             Permission.INCIDENT_STATUS_CHANGE,
             Permission.INCIDENT_COMMENT,
             Permission.INCIDENT_ALIEN_LINK,
             Permission.ALIEN_READ,
+            Permission.ALIEN_WRITE,
             Permission.USER_READ,
+            Permission.EQUIPMENT_READ,
+            Permission.EQUIPMENT_MOVEMENT_READ,
+            Permission.EQUIPMENT_MOVEMENT_CREATE,
             Permission.CLEANUP_REPORT_READ,
             Permission.FILE_UPLOAD,
             Permission.FILE_READ,
             Permission.NOTIFICATION_READ
     ),
+    /** Администратор. */
     ADMIN(
             "Администратор",
-            Permission.ALIEN_WRITE,
             Permission.INCIDENT_READ,
             Permission.INCIDENT_CREATE,
             Permission.INCIDENT_STATUS_CHANGE,
             Permission.INCIDENT_COMMENT,
             Permission.INCIDENT_ALIEN_LINK,
             Permission.ALIEN_READ,
+            Permission.ALIEN_WRITE,
             Permission.USER_READ,
             Permission.INCIDENT_ASSIGN,
+            Permission.EQUIPMENT_READ,
+            Permission.EQUIPMENT_WRITE,
+            Permission.EQUIPMENT_MOVEMENT_READ,
+            Permission.EQUIPMENT_MOVEMENT_CREATE,
+            Permission.EQUIPMENT_MOVEMENT_PROCESS,
             Permission.CLEANUP_REPORT_READ,
             Permission.FILE_UPLOAD,
             Permission.FILE_READ,
             Permission.NOTIFICATION_READ
     ),
+    /** Оперативный агент. */
     AGENT(
             "Оперативный агент",
             Permission.INCIDENT_READ,
-            Permission.USER_READ,
-            Permission.INCIDENT_ASSIGN,
             Permission.INCIDENT_STATUS_CHANGE,
             Permission.INCIDENT_COMMENT,
             Permission.ALIEN_READ,
+            Permission.USER_READ,
+            Permission.INCIDENT_ASSIGN,
+            Permission.EQUIPMENT_READ,
+            Permission.EQUIPMENT_MOVEMENT_READ,
+            Permission.EQUIPMENT_MOVEMENT_CREATE,
             Permission.CLEANUP_REPORT_READ,
             Permission.FILE_UPLOAD,
             Permission.FILE_READ,
             Permission.NOTIFICATION_READ
     ),
+    /** Завхоз. */
+    STOREKEEPER(
+            "Завхоз",
+            Permission.INCIDENT_READ,
+            Permission.USER_READ,
+            Permission.EQUIPMENT_READ,
+            Permission.EQUIPMENT_WRITE,
+            Permission.EQUIPMENT_MOVEMENT_READ,
+            Permission.EQUIPMENT_MOVEMENT_CREATE,
+            Permission.EQUIPMENT_MOVEMENT_PROCESS
+    ),
+    /** Специалист по прикрытию. */
     CLEANER(
             "Специалист по прикрытию",
             Permission.INCIDENT_READ,
-            Permission.USER_READ,
             Permission.INCIDENT_COMMENT,
             Permission.ALIEN_READ,
+            Permission.USER_READ,
             Permission.CLEANUP_REPORT_READ,
             Permission.CLEANUP_REPORT_CREATE,
             Permission.CLEANUP_STATUS_CHANGE,

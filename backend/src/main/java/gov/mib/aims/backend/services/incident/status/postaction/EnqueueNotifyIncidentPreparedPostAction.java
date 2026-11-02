@@ -1,5 +1,7 @@
 package gov.mib.aims.backend.services.incident.status.postaction;
 
+import gov.mib.aims.backend.services.status.StatusTransitionPostAction;
+
 import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.services.dbqueue.DbQueueService;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyIncidentPreparedPayload;

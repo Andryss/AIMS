@@ -1,4 +1,4 @@
-package gov.mib.aims.backend.services.incident.status.postaction;
+package gov.mib.aims.backend.services.status;
 
 /**
  * Пост-действие после перехода статуса.

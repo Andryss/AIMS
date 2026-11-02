@@ -6,6 +6,7 @@ import gov.mib.aims.backend.services.cleanup.status.postaction.EnqueueNotifyClea
 import gov.mib.aims.backend.services.cleanup.status.precondition.CleanupReportExistsPrecondition;
 import gov.mib.aims.backend.services.cleanup.status.precondition.IncidentExecutingPrecondition;
 import org.springframework.stereotype.Component;
+import gov.mib.aims.backend.services.status.StatusTransition;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 @Component
 public class CleanupStatusTransitionGraph {
 
-    private final Map<CleanupStatusTransitionKey, CleanupStatusTransition<IncidentEntity>> transitions;
+    private final Map<CleanupStatusTransitionKey, StatusTransition<IncidentEntity, CleanupStatus>> transitions;
 
     /**
      * Регистрирует линейный граф статусов очистки.
@@ -28,20 +29,20 @@ public class CleanupStatusTransitionGraph {
             CleanupReportExistsPrecondition cleanupReportExistsPrecondition,
             EnqueueNotifyCleanupCompletedPostAction enqueueNotifyCleanupCompletedPostAction
     ) {
-        List<CleanupStatusTransition<IncidentEntity>> transitionList = List.of(
-                CleanupStatusTransition.<IncidentEntity>builder()
+        List<StatusTransition<IncidentEntity, CleanupStatus>> transitionList = List.of(
+                StatusTransition.<IncidentEntity, CleanupStatus>builder()
                         .from(null)
                         .to(CleanupStatus.PREPARATION)
                         .preconditions(List.of(incidentExecutingPrecondition))
                         .postActions(List.of())
                         .build(),
-                CleanupStatusTransition.<IncidentEntity>builder()
+                StatusTransition.<IncidentEntity, CleanupStatus>builder()
                         .from(CleanupStatus.PREPARATION)
                         .to(CleanupStatus.EXECUTION)
                         .preconditions(List.of(incidentExecutingPrecondition))
                         .postActions(List.of())
                         .build(),
-                CleanupStatusTransition.<IncidentEntity>builder()
+                StatusTransition.<IncidentEntity, CleanupStatus>builder()
                         .from(CleanupStatus.EXECUTION)
                         .to(CleanupStatus.COMPLETED)
                         .preconditions(List.of(incidentExecutingPrecondition, cleanupReportExistsPrecondition))
@@ -74,7 +75,7 @@ public class CleanupStatusTransitionGraph {
      * @param to целевой статус
      * @return переход или null
      */
-    public CleanupStatusTransition<IncidentEntity> getTransition(CleanupStatus from, CleanupStatus to) {
+    public StatusTransition<IncidentEntity, CleanupStatus> getTransition(CleanupStatus from, CleanupStatus to) {
         return transitions.get(CleanupStatusTransitionKey.of(from, to));
     }
 }

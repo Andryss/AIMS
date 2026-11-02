@@ -7,6 +7,10 @@ import gov.mib.aims.backend.generated.model.IncidentStatusApi;
 import gov.mib.aims.backend.generated.model.SetIncidentExecutorsRequest;
 import gov.mib.aims.backend.generated.model.SetIncidentResponsibleRequest;
 import gov.mib.aims.backend.generated.model.SignInRequest;
+import gov.mib.aims.backend.generated.model.SaveEquipmentMovementRequest;
+import gov.mib.aims.backend.generated.model.EquipmentMovementOperationApi;
+import gov.mib.aims.backend.generated.model.EquipmentMovementStatusApi;
+import gov.mib.aims.backend.generated.model.ChangeEquipmentMovementStatusRequest;
 import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.services.ObjectMapperWrapper;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +28,7 @@ import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -64,6 +69,45 @@ public final class ApiTestFixtures {
                 .andExpect(status().isOk())
                 .andReturn();
         return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
+    }
+
+    /**
+     * Регистрирует один экземпляр оборудования для проверки связанных сценариев.
+     */
+    public long registerEquipment(String token, String serial) throws Exception {
+        MvcResult result = mockMvc.perform(post("/api/v1/equipment")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token).contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(java.util.Map.of(
+                                "type", "NEURALYZER", "model", "Model A", "serialNumber", serial))))
+                .andExpect(status().isCreated()).andReturn();
+        return objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asLong();
+    }
+
+    /**
+     * Создает выдачу или возврат по инциденту.
+     */
+    public long createEquipmentMovement(String token, Long incidentId, Long responsibleUserId,
+                                         EquipmentMovementOperationApi operation, Long sourceId,
+                                         List<Long> equipmentIds) throws Exception {
+        var request = new SaveEquipmentMovementRequest().incidentId(incidentId).responsibleUserId(responsibleUserId)
+                .operation(operation).sourceIssueMovementId(sourceId).equipmentIds(equipmentIds);
+        MvcResult result = mockMvc.perform(post("/api/v1/equipment-movements")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token).contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated()).andReturn();
+        return objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asLong();
+    }
+
+    /**
+     * Выполняет успешный переход заявки с причиной для отмены или отклонения.
+     */
+    public void changeEquipmentMovementStatus(String token, Long id, EquipmentMovementStatusApi target)
+            throws Exception {
+        mockMvc.perform(patch("/api/v1/equipment-movements/" + id + "/status")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token).contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new ChangeEquipmentMovementStatusRequest()
+                                .status(target).comment("Причина"))))
+                .andExpect(status().isOk());
     }
 
     /**

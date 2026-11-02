@@ -9,6 +9,29 @@ public final class Errors {
     }
 
     /**
+     * Экземпляр оборудования не найден.
+     */
+    public static BaseException equipmentNotFound() {
+        return BaseException.builder().code(404).message("equipment.not_found")
+                .humanMessage("Оборудование не найдено").build();
+    }
+
+    /**
+     * Заявка на движение оборудования не найдена.
+     */
+    public static BaseException equipmentMovementNotFound() {
+        return BaseException.builder().code(404).message("equipment_movement.not_found")
+                .humanMessage("Заявка на движение оборудования не найдена").build();
+    }
+
+    /**
+     * Конфликт складского учета.
+     */
+    public static BaseException equipmentConflict(String message) {
+        return BaseException.builder().code(409).message("equipment.conflict").humanMessage(message).build();
+    }
+
+    /**
      * Неверный логин или пароль.
      */
     public static BaseException invalidCredentials() {
@@ -60,6 +83,15 @@ public final class Errors {
                 .code(400)
                 .message("validation.error")
                 .humanMessage(message != null ? message : "Validation error")
+                .build();
+    }
+
+    /**
+     * Конфликт одновременных транзакций после исчерпания повторов.
+     */
+    public static BaseException transactionConflict() {
+        return BaseException.builder().code(409).message("transaction.conflict")
+                .humanMessage("Не удалось сохранить изменения из-за одновременного запроса. Повторите операцию")
                 .build();
     }
 

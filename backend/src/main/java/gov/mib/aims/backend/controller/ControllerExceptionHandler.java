@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.dao.PessimisticLockingFailureException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.CONFLICT;
 
 /**
  * Глобальный обработчик исключений REST API.
@@ -40,7 +42,19 @@ public class ControllerExceptionHandler {
     public ErrorObject handleBaseException(BaseException ex, HttpServletResponse response) {
         log.warn("BaseException: code={}, message={}", ex.getCode(), ex.getMessage());
         response.setStatus(ex.getCode());
+
         return createErrorObject(ex);
+    }
+
+    /**
+     * Возвращает конфликт после исчерпания повторов транзакции.
+     */
+    @ExceptionHandler(PessimisticLockingFailureException.class)
+    @ResponseStatus(CONFLICT)
+    public ErrorObject handleTransactionConflict(PessimisticLockingFailureException ex) {
+        log.warn("Transaction conflict after retries: {}", ex.getMessage());
+
+        return createErrorObject(Errors.transactionConflict());
     }
 
     /**
@@ -53,6 +67,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(FORBIDDEN)
     public ErrorObject handleAccessDenied(RuntimeException ex) {
         log.warn("Access denied: {}", ex.getMessage());
+
         return createErrorObject(Errors.accessDenied());
     }
 
@@ -68,6 +83,7 @@ public class ControllerExceptionHandler {
         FieldError fieldError = ex.getBindingResult().getFieldError();
         String message = fieldError != null ? fieldError.getDefaultMessage() : "Validation error";
         log.warn("Validation error: {}", message);
+
         return createErrorObject(Errors.validationError(message));
     }
 
@@ -81,6 +97,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(BAD_REQUEST)
     public ErrorObject handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
         log.warn("Missing request parameter: {}", ex.getMessage());
+
         return createErrorObject(Errors.validationError(ex.getMessage()));
     }
 
@@ -94,6 +111,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(BAD_REQUEST)
     public ErrorObject handleConstraintViolation(ConstraintViolationException ex) {
         log.warn("Constraint violation: {}", ex.getMessage());
+
         return createErrorObject(Errors.validationError(ex.getMessage()));
     }
 
@@ -107,6 +125,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(BAD_REQUEST)
     public ErrorObject handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         log.warn("Malformed request body: {}", ex.getMessage());
+
         return createErrorObject(Errors.validationError("Invalid request body"));
     }
 
@@ -120,6 +139,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(NOT_FOUND)
     public ErrorObject handleNoResourceFound(NoResourceFoundException ex) {
         log.warn("Resource not found: {}", ex.getResourcePath());
+
         return createErrorObject(Errors.notFound());
     }
 
@@ -133,6 +153,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     public ErrorObject handleException(Exception ex) {
         log.error("Unhandled exception: {}", ex.getMessage(), ex);
+
         return createErrorObject(Errors.unhandledExceptionError());
     }
 

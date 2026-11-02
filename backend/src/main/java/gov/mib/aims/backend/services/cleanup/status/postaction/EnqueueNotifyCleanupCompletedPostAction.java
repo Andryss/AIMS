@@ -4,7 +4,7 @@ import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.services.dbqueue.DbQueueService;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyCleanupCompletedPayload;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyCleanupCompletedProcessor;
-import gov.mib.aims.backend.services.incident.status.postaction.StatusTransitionPostAction;
+import gov.mib.aims.backend.services.status.StatusTransitionPostAction;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

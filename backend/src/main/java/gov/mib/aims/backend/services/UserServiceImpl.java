@@ -34,11 +34,10 @@ public class UserServiceImpl implements UserService {
         if (query == null || query.trim().length() < 2) {
             throw Errors.validationError("Search query must be at least 2 characters");
         }
-        if (roleName == null || roleName.isBlank()) {
-            throw Errors.validationError("Role is required");
-        }
-        List<AppUserEntity> users = appUserRepository.searchByLoginAndRoleName(
-                query.trim(), roleName.trim(), SEARCH_LIMIT);
+        String trimmed = query.trim();
+        List<AppUserEntity> users = roleName == null || roleName.isBlank()
+                ? appUserRepository.searchByLogin(trimmed, SEARCH_LIMIT)
+                : appUserRepository.searchByLoginAndRoleName(trimmed, roleName.trim(), SEARCH_LIMIT);
         return new UserSearchResponse()
                 .items(users.stream().map(this::toSummary).toList());
     }

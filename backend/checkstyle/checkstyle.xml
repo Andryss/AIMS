@@ -73,6 +73,14 @@
         <module name="InvalidJavadocPosition"/>
         <module name="JavadocTagContinuationIndentation"/>
         <module name="SingleLineJavadoc"/>
+        <module name="JavadocVariable">
+            <property name="tokens" value="ENUM_CONSTANT_DEF"/>
+        </module>
+        <!-- Checkstyle 9.x also requires VARIABLE_DEF; restrict the rule to enum constants. -->
+        <module name="SuppressionXpathSingleFilter">
+            <property name="checks" value="JavadocVariable"/>
+            <property name="query" value="//VARIABLE_DEF"/>
+        </module>
         <module name="MissingJavadocType">
             <property name="scope" value="public"/>
             <property name="tokens" value="INTERFACE_DEF"/>

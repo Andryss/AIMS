@@ -28,6 +28,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.retry.annotation.Retryable;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -79,7 +81,9 @@ public class IncidentServiceImpl implements IncidentService {
             linkedAlert.setIncidentId(entity.getId());
             monitoringAlertRepository.save(linkedAlert);
         }
+
         entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
+
         return incidentMapper.toResponse(entity);
     }
 
@@ -87,28 +91,34 @@ public class IncidentServiceImpl implements IncidentService {
         if (monitoringAlertId == null) {
             return null;
         }
+
         MonitoringAlertEntity alert = monitoringAlertRepository.findById(monitoringAlertId)
                 .orElseThrow(Errors::monitoringAlertNotFound);
         if (alert.getStatus() != MonitoringAlertStatus.NEW || alert.getIncidentId() != null) {
             throw Errors.monitoringAlertNotLinkable();
         }
+
         return alert;
     }
 
     @Override
-    @Transactional
+    @Retryable(interceptor = "retryInterceptor")
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public IncidentResponse changeStatus(Long id, ChangeIncidentStatusRequest request) {
         IncidentEntity entity = incidentRepository.findById(id)
                 .orElseThrow(Errors::incidentNotFound);
         IncidentStatus target = incidentMapper.toModelStatus(request.getStatus());
         String comment = request.getComment();
+
         try {
             StatusChangeCommentHolder.set(comment);
             entity = incidentStatusWorkflow.changeStatus(entity, target);
             if (comment != null && !comment.isBlank()) {
                 incidentCommentService.createFromStatusChange(id, comment);
             }
+
             entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
+
             return incidentMapper.toResponse(entity);
         } finally {
             StatusChangeCommentHolder.clear();
@@ -120,6 +130,7 @@ public class IncidentServiceImpl implements IncidentService {
     public IncidentResponse getById(Long id) {
         IncidentEntity entity = incidentRepository.findById(id)
                 .orElseThrow(Errors::incidentNotFound);
+
         return incidentMapper.toResponse(entity);
     }
 
@@ -131,14 +142,18 @@ public class IncidentServiceImpl implements IncidentService {
         if (entity.getStatus() != IncidentStatus.READY_FOR_ANALYSIS) {
             throw Errors.invalidAlienLink();
         }
+
         Long alienId = request.getAlienId();
         if (!alienRepository.existsById(alienId)) {
             throw Errors.alienNotFound();
         }
+
         entity.setAlienId(alienId);
         entity.setUpdatedAt(LocalDateTime.now(clock));
         entity = incidentRepository.save(entity);
+
         entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
+
         return incidentMapper.toResponse(entity);
     }
 
@@ -148,6 +163,7 @@ public class IncidentServiceImpl implements IncidentService {
         Page<IncidentEntity> result = incidentRepository.findAllByOrderByCreatedAtDesc(
                 PageRequest.of(page, size)
         );
+
         return new IncidentListResponse()
                 .items(result.getContent().stream().map(incidentMapper::toResponse).toList())
                 .page(result.getNumber())
@@ -166,10 +182,13 @@ public class IncidentServiceImpl implements IncidentService {
         if (userId != null) {
             assertAgentUser(userId);
         }
+
         entity.setResponsibleUserId(userId);
         entity.setUpdatedAt(LocalDateTime.now(clock));
         entity = incidentRepository.save(entity);
+
         entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
+
         return incidentMapper.toResponse(entity);
     }
 
@@ -180,20 +199,24 @@ public class IncidentServiceImpl implements IncidentService {
                 .orElseThrow(Errors::incidentNotFound);
         assertAssignmentAllowed(entity);
         List<Long> userIds = request.getUserIds() != null ? request.getUserIds() : List.of();
+
         for (Long userId : userIds) {
             assertAgentUser(userId);
         }
+
         List<Long> previous = entity.getExecutorUserIds() != null
                 ? new ArrayList<>(entity.getExecutorUserIds())
                 : new ArrayList<>();
         entity.setExecutorUserIds(new ArrayList<>(userIds));
         entity.setUpdatedAt(LocalDateTime.now(clock));
         entity = incidentRepository.save(entity);
+
         entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
         List<Long> newExecutors = userIds.stream()
                 .filter(userId -> !previous.contains(userId))
                 .toList();
         executorAssignmentNotifier.notifyNewExecutors(entity.getId(), newExecutors);
+
         return incidentMapper.toResponse(entity);
     }
 
@@ -209,6 +232,7 @@ public class IncidentServiceImpl implements IncidentService {
         if (!appUserRepository.existsById(userId)) {
             throw Errors.userNotFound();
         }
+
         if (!appUserRepository.hasRole(userId, Role.AGENT.getCode())) {
             throw Errors.userNotAgent();
         }

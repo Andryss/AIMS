@@ -28,13 +28,13 @@ class UsersApiTest extends BaseApiTest {
     private AppUserRepository appUserRepository;
 
     @Test
-    void searchWithoutRoleReturns400() throws Exception {
+    void searchWithoutRoleFindsEmployeesAcrossRoles() throws Exception {
         String agentToken = fixtures.signInAndGetToken("agent", "agent");
 
-        mockMvc.perform(get(USERS_SEARCH_URL + "?q=ag")
+        mockMvc.perform(get(USERS_SEARCH_URL + "?q=op")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + agentToken))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("validation.error"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items[0].login").value("operator"));
     }
 
     @Test

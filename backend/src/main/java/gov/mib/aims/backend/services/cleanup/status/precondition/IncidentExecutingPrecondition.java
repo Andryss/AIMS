@@ -3,7 +3,7 @@ package gov.mib.aims.backend.services.cleanup.status.precondition;
 import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.model.IncidentStatus;
-import gov.mib.aims.backend.services.incident.status.precondition.StatusTransitionPrecondition;
+import gov.mib.aims.backend.services.status.StatusTransitionPrecondition;
 import org.springframework.stereotype.Component;
 
 /**

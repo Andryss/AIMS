@@ -92,6 +92,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/notifications", "/api/v1/notifications/**").authenticated()
                         .requestMatchers("/api/v1/incidents", "/api/v1/incidents/**").authenticated()
                         .requestMatchers("/api/v1/aliens", "/api/v1/aliens/**").authenticated()
+                        .requestMatchers("/api/v1/equipment", "/api/v1/equipment/**").authenticated()
+                        .requestMatchers("/api/v1/equipment-movements",
+                                "/api/v1/equipment-movements/**").authenticated()
                         .requestMatchers("/api/v1/users", "/api/v1/users/**").authenticated()
                         .requestMatchers(HttpMethod.POST, IntegrationApiKeyFilter.INGEST_PATH)
                         .hasAuthority(IntegrationAuthentication.INGEST_AUTHORITY)

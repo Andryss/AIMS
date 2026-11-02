@@ -12,7 +12,9 @@ import gov.mib.aims.backend.services.incident.status.precondition.AssignmentComp
 import gov.mib.aims.backend.services.incident.status.precondition.AttachmentsExistPrecondition;
 import gov.mib.aims.backend.services.incident.status.precondition.RolePrecondition;
 import gov.mib.aims.backend.services.incident.status.precondition.ResponsibleAgentPrecondition;
+import gov.mib.aims.backend.services.incident.status.precondition.EquipmentReturnedPrecondition;
 import org.springframework.stereotype.Component;
+import gov.mib.aims.backend.services.status.StatusTransition;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +27,7 @@ import java.util.stream.Collectors;
 @Component
 public class IncidentStatusTransitionGraph {
 
-    private final Map<StatusTransitionKey, IncidentStatusTransition<IncidentEntity>> transitions;
+    private final Map<StatusTransitionKey, StatusTransition<IncidentEntity, IncidentStatus>> transitions;
 
     /**
      * Регистрирует переходы UC1/UC2 и строит индекс по паре from/to.
@@ -42,85 +44,86 @@ public class IncidentStatusTransitionGraph {
             EnqueueNotifyOperatorClarificationPostAction enqueueNotifyOperatorClarificationPostAction,
             EnqueueNotifyAnalystsReanalysisPostAction enqueueNotifyAnalystsReanalysisPostAction,
             EnqueueNotifyIncidentPreparedPostAction enqueueNotifyIncidentPreparedPostAction,
-            ResponsibleAgentPrecondition responsibleAgentPrecondition
+            ResponsibleAgentPrecondition responsibleAgentPrecondition,
+            EquipmentReturnedPrecondition equipmentReturnedPrecondition
     ) {
-        List<IncidentStatusTransition<IncidentEntity>> transitionList = List.of(
-                IncidentStatusTransition.<IncidentEntity>builder()
+        List<StatusTransition<IncidentEntity, IncidentStatus>> transitionList = List.of(
+                StatusTransition.<IncidentEntity, IncidentStatus>builder()
                         .from(IncidentStatus.DRAFT)
                         .to(IncidentStatus.READY_FOR_ANALYSIS)
                         .preconditions(List.of(attachmentsExistPrecondition, operatorRolePrecondition))
                         .postActions(List.of(enqueueNotifyAnalystsPostAction))
                         .build(),
-                IncidentStatusTransition.<IncidentEntity>builder()
+                StatusTransition.<IncidentEntity, IncidentStatus>builder()
                         .from(IncidentStatus.READY_FOR_ANALYSIS)
                         .to(IncidentStatus.READY_FOR_EXECUTION)
                         .preconditions(List.of(analystRolePrecondition, alienLinkedPrecondition))
                         .postActions(List.of(enqueueNotifyAgentsPostAction))
                         .build(),
-                IncidentStatusTransition.<IncidentEntity>builder()
+                StatusTransition.<IncidentEntity, IncidentStatus>builder()
                         .from(IncidentStatus.READY_FOR_ANALYSIS)
                         .to(IncidentStatus.CLARIFICATION_REQUIRED)
                         .preconditions(List.of(analystRolePrecondition))
                         .postActions(List.of(enqueueNotifyOperatorClarificationPostAction))
                         .build(),
-                IncidentStatusTransition.<IncidentEntity>builder()
+                StatusTransition.<IncidentEntity, IncidentStatus>builder()
                         .from(IncidentStatus.CLARIFICATION_REQUIRED)
                         .to(IncidentStatus.READY_FOR_ANALYSIS)
                         .preconditions(List.of(attachmentsExistPrecondition, operatorRolePrecondition))
                         .postActions(List.of(enqueueNotifyAnalystsPostAction))
                         .build(),
-                IncidentStatusTransition.<IncidentEntity>builder()
+                StatusTransition.<IncidentEntity, IncidentStatus>builder()
                         .from(IncidentStatus.READY_FOR_EXECUTION)
                         .to(IncidentStatus.PREPARATION_FOR_EXECUTION)
                         .preconditions(List.of(agentRolePrecondition))
                         .postActions(List.of())
                         .build(),
-                IncidentStatusTransition.<IncidentEntity>builder()
+                StatusTransition.<IncidentEntity, IncidentStatus>builder()
                         .from(IncidentStatus.PREPARATION_FOR_EXECUTION)
                         .to(IncidentStatus.PREPARED_FOR_EXECUTION)
                         .preconditions(List.of(agentRolePrecondition, assignmentCompletePrecondition))
                         .postActions(List.of(enqueueNotifyIncidentPreparedPostAction))
                         .build(),
-                IncidentStatusTransition.<IncidentEntity>builder()
+                StatusTransition.<IncidentEntity, IncidentStatus>builder()
                         .from(IncidentStatus.READY_FOR_EXECUTION)
                         .to(IncidentStatus.CLARIFICATION_REQUIRED)
                         .preconditions(List.of(agentRolePrecondition))
                         .postActions(List.of(enqueueNotifyOperatorClarificationPostAction))
                         .build(),
-                IncidentStatusTransition.<IncidentEntity>builder()
+                StatusTransition.<IncidentEntity, IncidentStatus>builder()
                         .from(IncidentStatus.READY_FOR_EXECUTION)
                         .to(IncidentStatus.REANALYSIS_REQUIRED)
                         .preconditions(List.of(agentRolePrecondition))
                         .postActions(List.of(enqueueNotifyAnalystsReanalysisPostAction))
                         .build(),
-                IncidentStatusTransition.<IncidentEntity>builder()
+                StatusTransition.<IncidentEntity, IncidentStatus>builder()
                         .from(IncidentStatus.PREPARATION_FOR_EXECUTION)
                         .to(IncidentStatus.CLARIFICATION_REQUIRED)
                         .preconditions(List.of(agentRolePrecondition))
                         .postActions(List.of(enqueueNotifyOperatorClarificationPostAction))
                         .build(),
-                IncidentStatusTransition.<IncidentEntity>builder()
+                StatusTransition.<IncidentEntity, IncidentStatus>builder()
                         .from(IncidentStatus.PREPARATION_FOR_EXECUTION)
                         .to(IncidentStatus.REANALYSIS_REQUIRED)
                         .preconditions(List.of(agentRolePrecondition))
                         .postActions(List.of(enqueueNotifyAnalystsReanalysisPostAction))
                         .build(),
-                IncidentStatusTransition.<IncidentEntity>builder()
+                StatusTransition.<IncidentEntity, IncidentStatus>builder()
                         .from(IncidentStatus.REANALYSIS_REQUIRED)
                         .to(IncidentStatus.READY_FOR_ANALYSIS)
                         .preconditions(List.of(analystRolePrecondition))
                         .postActions(List.of(enqueueNotifyAnalystsPostAction))
                         .build(),
-                IncidentStatusTransition.<IncidentEntity>builder()
+                StatusTransition.<IncidentEntity, IncidentStatus>builder()
                         .from(IncidentStatus.PREPARED_FOR_EXECUTION)
                         .to(IncidentStatus.EXECUTING)
                         .preconditions(List.of(responsibleAgentPrecondition))
                         .postActions(List.of())
                         .build(),
-                IncidentStatusTransition.<IncidentEntity>builder()
+                StatusTransition.<IncidentEntity, IncidentStatus>builder()
                         .from(IncidentStatus.EXECUTING)
                         .to(IncidentStatus.EXECUTION_COMPLETED)
-                        .preconditions(List.of(responsibleAgentPrecondition))
+                        .preconditions(List.of(responsibleAgentPrecondition, equipmentReturnedPrecondition))
                         .postActions(List.of())
                         .build()
         );
@@ -150,7 +153,7 @@ public class IncidentStatusTransitionGraph {
      * @param to целевой статус
      * @return переход или null, если не зарегистрирован
      */
-    public IncidentStatusTransition<IncidentEntity> getTransition(IncidentStatus from, IncidentStatus to) {
+    public StatusTransition<IncidentEntity, IncidentStatus> getTransition(IncidentStatus from, IncidentStatus to) {
         return transitions.get(StatusTransitionKey.of(from, to));
     }
 }

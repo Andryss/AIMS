@@ -13,7 +13,7 @@ public interface UserService {
      * Поиск пользователей по login среди пользователей с указанной ролью.
      *
      * @param query строка поиска (min 2 символа)
-     * @param roleName имя роли
+     * @param roleName имя роли или null для поиска без ограничения по роли
      * @return результаты поиска
      */
     UserSearchResponse searchUsers(String query, String roleName);

@@ -23,9 +23,6 @@ public interface AlienRepository extends JpaRepository<AlienEntity, Long> {
             SELECT * FROM alien
             WHERE strpos(lower(name), :query) > 0 OR strpos(lower(description), :query) > 0
             ORDER BY CASE WHEN strpos(lower(name), :query) > 0 THEN 0 ELSE 1 END, lower(name), id
-            """, countQuery = """
-            SELECT count(*) FROM alien
-            WHERE strpos(lower(name), :query) > 0 OR strpos(lower(description), :query) > 0
             """, nativeQuery = true)
     Page<AlienEntity> search(@Param("query") String query, Pageable pageable);
 }
