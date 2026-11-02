@@ -10,6 +10,7 @@ interface IncidentStatusSelectProps {
   roles: string[];
   currentUserId?: number;
   canChange: boolean;
+  showErrorText?: boolean;
   onStatusChanged: (updated: IncidentResponse) => void;
   className?: string;
 }
@@ -61,6 +62,7 @@ export function IncidentStatusSelect({
   roles,
   currentUserId,
   canChange,
+  showErrorText = false,
   onStatusChanged,
   className,
 }: IncidentStatusSelectProps) {
@@ -156,9 +158,9 @@ export function IncidentStatusSelect({
         ))}
       </select>
       {loading && <span className="status-select__loading">…</span>}
-      {error && !modalOpen && (
-        <span className="status-select__error" title={error}>!</span>
-      )}
+      {error && !modalOpen && (showErrorText
+        ? <div className="alert alert--error" role="alert">{error}</div>
+        : <span className="status-select__error" title={error}>!</span>)}
 
       {modalOpen && pendingStatus && (
         <div className="status-change-modal-backdrop" role="presentation" onClick={closeModal}>

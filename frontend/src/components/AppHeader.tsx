@@ -30,6 +30,8 @@ interface AppHeaderProps {
   showIncidentsTab: boolean;
   showMonitoringAlertsTab: boolean;
   showKnowledgeBaseTab: boolean;
+  showEquipmentTab?: boolean;
+  showEquipmentMovementsTab?: boolean;
   onToggleNotifications: () => void;
   onCloseNotifications: () => void;
   onUnreadChange: (count: number) => void;
@@ -44,6 +46,8 @@ export function AppHeader({
   showIncidentsTab,
   showMonitoringAlertsTab,
   showKnowledgeBaseTab,
+  showEquipmentTab,
+  showEquipmentMovementsTab,
   onToggleNotifications,
   onCloseNotifications,
   onUnreadChange,
@@ -55,7 +59,7 @@ export function AppHeader({
         <img src={MIB_LOGO_PATH} alt="MIB" className="app-header__logo" />
       </div>
 
-      {(showIncidentsTab || showMonitoringAlertsTab || showKnowledgeBaseTab) && (
+      {(showIncidentsTab || showMonitoringAlertsTab || showKnowledgeBaseTab || showEquipmentTab || showEquipmentMovementsTab) && (
         <nav className="app-header__nav" aria-label="Разделы">
           {showIncidentsTab && (
             <NavLink
@@ -75,6 +79,18 @@ export function AppHeader({
               }
             >
               Входящие алерты
+            </NavLink>
+          )}
+          {showEquipmentTab && (
+            <NavLink to="/equipment" className={({ isActive }) =>
+              isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'}>
+              Склад
+            </NavLink>
+          )}
+          {showEquipmentMovementsTab && (
+            <NavLink to="/equipment-movements" className={({ isActive }) =>
+              isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'}>
+              Движение оборудования
             </NavLink>
           )}
           {showKnowledgeBaseTab && (

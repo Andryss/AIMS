@@ -8,6 +8,10 @@
   width: 15rem;
 }
 
+.status-select-wrap--modal {
+  flex-wrap: wrap;
+}
+
 .status-select,
 .status-chip {
   font: inherit;
@@ -56,6 +60,28 @@
   color: var(--color-danger);
   font-size: var(--font-size-xs);
   font-weight: 700;
+}
+
+/* Inventory and movement statuses */
+.status-chip--available,
+.status-chip--completed {
+  background: var(--status-execution-completed-bg);
+  color: var(--status-execution-completed-text);
+  border-color: var(--status-execution-completed-border);
+}
+
+.status-chip--issued,
+.status-chip--processing {
+  background: var(--status-executing-bg);
+  color: var(--status-executing-text);
+  border-color: var(--status-executing-border);
+}
+
+.status-chip--cancelled,
+.status-chip--rejected {
+  background: var(--status-clarification-required-bg);
+  color: var(--status-clarification-required-text);
+  border-color: var(--status-clarification-required-border);
 }
 
 /* Incident statuses */

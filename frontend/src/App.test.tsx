@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 import * as api from './api/client';
 import { TOKEN_STORAGE_KEY, SYSTEM_NAME } from './constants';
-import { mockAlien, mockIncidentList, mockProfile } from './test/testData';
+import { mockAlien, mockEquipment, mockEquipmentMovement, mockIncident, mockIncidentList, mockProfile } from './test/testData';
 
 jest.mock('./api/client');
 
@@ -24,6 +24,47 @@ describe('App', () => {
     getUnreadNotificationsCount.mockResolvedValue({ count: 0 });
     listIncidents.mockResolvedValue(mockIncidentList({ items: [] }));
     listNotifications.mockResolvedValue({ items: [], page: 0, size: 20, totalElements: 0, totalPages: 0 });
+    (api.listEquipment as jest.Mock).mockResolvedValue({ items: [mockEquipment()], page: 0, size: 10,
+      totalElements: 1, totalPages: 1 });
+    (api.batchUsers as jest.Mock).mockResolvedValue({ items: [] });
+    (api.listEquipmentMovements as jest.Mock).mockResolvedValue({ items: [mockEquipmentMovement()], page: 0,
+      size: 10, totalElements: 1, totalPages: 1 });
+    (api.getEquipmentMovement as jest.Mock).mockResolvedValue(mockEquipmentMovement());
+    (api.getIncident as jest.Mock).mockResolvedValue(mockIncident());
+    (api.listEquipmentMovementHistory as jest.Mock).mockResolvedValue({ items: [], page: 0, size: 10,
+      totalElements: 0, totalPages: 0 });
+  });
+
+  it('lands the storekeeper on the warehouse and retains incident navigation', async () => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile({ login: 'storekeeper', roles: ['STOREKEEPER'],
+      permissions: ['INCIDENT_READ', 'EQUIPMENT_READ', 'EQUIPMENT_WRITE'] }));
+    render(<MemoryRouter><App /></MemoryRouter>);
+    expect(await screen.findByRole('heading', { name: 'Склад' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Инциденты' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Добавить оборудование' })).toBeInTheDocument();
+  });
+
+  it('restores a direct movement route after loading the profile', async () => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile({ roles: ['AGENT'], permissions: [
+      'INCIDENT_READ', 'EQUIPMENT_READ', 'EQUIPMENT_MOVEMENT_READ',
+    ] }));
+    render(<MemoryRouter initialEntries={['/equipment-movements/7']}><App /></MemoryRouter>);
+    expect(await screen.findByRole('heading', { name: 'Заявка #7 — Выдача' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Движение оборудования' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Редактировать заявку' })).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['AGENT', ['INCIDENT_READ', 'EQUIPMENT_READ'], true],
+    ['CLEANER', ['INCIDENT_READ'], false],
+  ])('guards warehouse navigation for %s', async (role, permissions, visible) => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile({ roles: [role as string], permissions: permissions as string[] }));
+    render(<MemoryRouter><App /></MemoryRouter>);
+    await screen.findByRole('link', { name: 'Инциденты' });
+    expect(Boolean(screen.queryByRole('link', { name: 'Склад' }))).toBe(visible);
   });
 
   it('renders sign in form with system name and fields', () => {

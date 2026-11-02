@@ -19,9 +19,53 @@ import {
   uploadFile,
   uploadFiles,
 } from './client';
+import * as api from './client';
 
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
+
+describe('equipment API', () => {
+  beforeEach(() => mockFetch.mockReset());
+
+  it.each([
+    ['equipment', () => api.listEquipment('tok', { q: '  SN  ', type: 'NEURALYZER', status: 'AVAILABLE',
+      holderUserId: 3, page: 1, size: 10 }), '/api/v1/equipment', { q: 'SN', type: 'NEURALYZER',
+      status: 'AVAILABLE', holderUserId: '3', page: '1', size: '10' }],
+    ['movements', () => api.listEquipmentMovements('tok', { incidentId: 4, responsibleUserId: 3,
+      equipmentId: 1, status: 'PENDING', operation: 'ISSUE', page: 0, size: 10 }),
+    '/api/v1/equipment-movements', { incidentId: '4', responsibleUserId: '3', equipmentId: '1',
+      status: 'PENDING', operation: 'ISSUE', page: '0', size: '10' }],
+  ] as const)('encodes %s list filters', async (_, run, path, query) => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, { items: [] }));
+    await run();
+    const url = new URL(mockFetch.mock.calls[0][0], 'http://localhost');
+    expect(url.pathname).toBe(path);
+    expect(Object.fromEntries(url.searchParams)).toEqual(query);
+    expect(new Headers(mockFetch.mock.calls[0][1].headers).get('Authorization')).toBe('Bearer tok');
+  });
+
+  it.each([
+    [() => api.getEquipment('tok', 1), '/equipment/1', 'GET'],
+    [() => api.getEquipmentMovement('tok', 7), '/equipment-movements/7', 'GET'],
+    [() => api.listEquipmentHistory('tok', 1, 1, 10), '/equipment/1/history?page=1&size=10', 'GET'],
+    [() => api.listEquipmentMovementHistory('tok', 7, 1, 10),
+      '/equipment-movements/7/history?page=1&size=10', 'GET'],
+    [() => api.changeEquipmentMovementStatus('tok', 7, { status: 'CANCELLED', comment: 'Причина' }),
+      '/equipment-movements/7/status', 'PATCH'],
+  ] as const)('uses the equipment endpoint %#', async (run, path, method) => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, {}));
+    await run();
+    expect(mockFetch).toHaveBeenCalledWith(`/api/v1${path}`, expect.objectContaining({ method }));
+  });
+
+  it('supports employee search without a role while preserving agent search', async () => {
+    mockFetch.mockResolvedValue(jsonResponse(true, { items: [] }));
+    await api.searchUsers('tok', 'ag');
+    expect(mockFetch.mock.calls[0][0]).toBe('/api/v1/users/search?q=ag');
+    await api.searchUsers('tok', 'ag', 'AGENT');
+    expect(mockFetch.mock.calls[1][0]).toBe('/api/v1/users/search?q=ag&role=AGENT');
+  });
+});
 
 function jsonResponse(
   ok: boolean,

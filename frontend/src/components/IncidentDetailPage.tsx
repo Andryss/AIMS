@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import * as api from '../api/client';
 import { EVENT_TYPE_LABELS } from '../incidentLabels';
-import { Alien, CleanupReportResponse, IncidentComment, IncidentHistoryEntry, IncidentResponse, UserSummary } from '../types';
+import { Alien, CleanupReportResponse, IncidentComment, IncidentHistoryEntry, IncidentHistorySnapshot,
+  IncidentResponse, UserSummary } from '../types';
 import { buildIncidentHistoryDiffs } from '../utils/incidentHistoryDiff';
 import {
   collectIncidentUserIds,
@@ -13,6 +14,7 @@ import { AttachmentDownloadList } from './AttachmentDownloadList';
 import { CleanupReportDrawer } from './CleanupReportDrawer';
 import { CleanupStatusSelect } from './CleanupStatusSelect';
 import { IncidentStatusSelect } from './IncidentStatusSelect';
+import { IncidentEquipmentSection } from './IncidentEquipmentSection';
 import { UserChip } from './UserChip';
 import { UserPickerDrawer } from './UserPickerDrawer';
 import { EmptyState } from './ui/EmptyState';
@@ -42,7 +44,7 @@ function formatDate(iso: string): string {
   }
 }
 
-type DetailTab = 'comments' | 'history';
+type DetailTab = 'comments' | 'history' | 'equipment';
 
 interface IncidentDetailPageProps {
   token: string;
@@ -56,6 +58,8 @@ interface IncidentDetailPageProps {
   canReadCleanupReport: boolean;
   canCreateCleanupReport: boolean;
   canChangeCleanupStatus: boolean;
+  canReadEquipmentMovements?: boolean;
+  canCreateEquipmentMovements?: boolean;
 }
 
 export function IncidentDetailPage({
@@ -70,6 +74,8 @@ export function IncidentDetailPage({
   canReadCleanupReport,
   canCreateCleanupReport,
   canChangeCleanupStatus,
+  canReadEquipmentMovements = false,
+  canCreateEquipmentMovements = false,
 }: IncidentDetailPageProps) {
   const { id: idParam } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -348,6 +354,19 @@ export function IncidentDetailPage({
     return formatAlienLabel(Number(match[1]));
   };
 
+  const renderHistoryValue = (label: string, value: string, snapshot?: IncidentHistorySnapshot): React.ReactNode => {
+    if (label === 'Ответственный') {
+      return snapshot?.responsibleUserId != null
+        ? <UserChip login={userLoginFromMap(snapshot.responsibleUserId, usersMap)} size={24} /> : '—';
+    }
+    if (label === 'Исполнители') {
+      return snapshot?.executorUserIds?.length ? snapshot.executorUserIds.map((userId) => (
+        <UserChip key={userId} login={userLoginFromMap(userId, usersMap)} size={24} />
+      )) : '—';
+    }
+    return enrichAlienDiffValue(label, value);
+  };
+
   const handleDownload = async (fileId: number) => {
     setDownloadingId(fileId);
     try {
@@ -615,6 +634,7 @@ export function IncidentDetailPage({
                     roles={roles}
                     currentUserId={currentUserId}
                     canChange={canChangeStatus}
+                    showErrorText
                     className="status-select-wrap status-select-wrap--modal"
                     onStatusChanged={(updated) => {
                       setIncident(updated);
@@ -913,7 +933,7 @@ export function IncidentDetailPage({
 
           <section className="section">
           <div className="tabs">
-            <div className="tabs__bar" role="tablist" aria-label="Комментарии и история">
+            <div className="tabs__bar" role="tablist" aria-label="Разделы инцидента">
               <button
                 type="button"
                 role="tab"
@@ -936,6 +956,12 @@ export function IncidentDetailPage({
               >
                 История
               </button>
+              {canReadEquipmentMovements && <button type="button" role="tab" id="incident-tab-equipment"
+                aria-selected={activeTab === 'equipment'} aria-controls="incident-tab-panel-equipment"
+                className={activeTab === 'equipment' ? 'tabs__tab tabs__tab--active' : 'tabs__tab'}
+                onClick={() => setActiveTab('equipment')}>
+                Оборудование
+              </button>}
             </div>
 
             {activeTab === 'comments' && (
@@ -984,6 +1010,15 @@ export function IncidentDetailPage({
               </div>
             )}
 
+            {activeTab === 'equipment' && canReadEquipmentMovements && (
+              <div id="incident-tab-panel-equipment" className="tabs__panel" role="tabpanel"
+                aria-labelledby="incident-tab-equipment">
+                <IncidentEquipmentSection key={incident.id} token={token} incidentId={incident.id}
+                  incidentStatus={incident.status} currentUserId={currentUserId} canRead={canReadEquipmentMovements}
+                  canCreate={canCreateEquipmentMovements} />
+              </div>
+            )}
+
             {activeTab === 'history' && (
               <div
                 id="incident-tab-panel-history"
@@ -996,7 +1031,7 @@ export function IncidentDetailPage({
                   <EmptyState title="История изменений пуста" />
                 )}
                 <ol className="history-timeline">
-                  {historyDiffs.map((block) => (
+                  {historyDiffs.map((block, blockIndex) => (
                     <li key={block.entry.id} className="history-timeline__item">
                       <div className="history-timeline__header">
                         {block.isCreation ? 'Создание инцидента · ' : ''}
@@ -1015,12 +1050,12 @@ export function IncidentDetailPage({
                           <li key={`${block.entry.id}-${row.label}`} className="history-diff__row">
                             <span className="history-diff__label">{row.label}:</span>
                             {block.isCreation ? (
-                              <span>{enrichAlienDiffValue(row.label, row.newValue)}</span>
+                              <span>{renderHistoryValue(row.label, row.newValue, block.entry.snapshot)}</span>
                             ) : (
                               <span>
-                                {enrichAlienDiffValue(row.label, row.oldValue)}
+                                {renderHistoryValue(row.label, row.oldValue, historyEntries[blockIndex - 1]?.snapshot)}
                                 {' → '}
-                                {enrichAlienDiffValue(row.label, row.newValue)}
+                                {renderHistoryValue(row.label, row.newValue, block.entry.snapshot)}
                               </span>
                             )}
                           </li>

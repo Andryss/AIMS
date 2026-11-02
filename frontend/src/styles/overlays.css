@@ -297,6 +297,10 @@
   box-shadow: var(--shadow-lg);
 }
 
+.modal--equipment {
+  max-width: 52rem;
+}
+
 .modal--narrow {
   max-width: 560px;
 }

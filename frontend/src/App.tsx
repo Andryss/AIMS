@@ -4,6 +4,10 @@ import * as api from './api/client';
 import { AppHeader } from './components/AppHeader';
 import { AlienKnowledgeBaseTab } from './components/AlienKnowledgeBaseTab';
 import { AlienDetailPage } from './components/AlienDetailPage';
+import { EquipmentTab } from './components/EquipmentTab';
+import { EquipmentDetailPage } from './components/EquipmentDetailPage';
+import { EquipmentMovementsTab } from './components/EquipmentMovementsTab';
+import { EquipmentMovementDetailPage } from './components/EquipmentMovementDetailPage';
 import { DevStyleguidePage } from './components/DevStyleguidePage';
 import { IncidentDetailPage } from './components/IncidentDetailPage';
 import { IncidentsTab } from './components/IncidentsTab';
@@ -33,6 +37,13 @@ function App() {
     [profile],
   );
 
+  const canReadEquipment = profile?.permissions.includes('EQUIPMENT_READ') ?? false;
+  const canWriteEquipment = profile?.permissions.includes('EQUIPMENT_WRITE') ?? false;
+  const canReadMovements = profile?.permissions.includes('EQUIPMENT_MOVEMENT_READ') ?? false;
+  const canCreateMovements = profile?.permissions.includes('EQUIPMENT_MOVEMENT_CREATE') ?? false;
+  const canProcessMovements = (profile?.permissions.includes('EQUIPMENT_MOVEMENT_PROCESS') ?? false)
+    && (profile?.roles.some((role) => role === 'STOREKEEPER' || role === 'ADMIN') ?? false);
+
   const canCreateIncident = profile?.permissions.includes('INCIDENT_CREATE') ?? false;
   const canReadMonitoringAlerts = useMemo(
     () =>
@@ -56,6 +67,8 @@ function App() {
   const canChangeCleanupStatus = profile?.permissions.includes('CLEANUP_STATUS_CHANGE') ?? false;
   const roles = profile?.roles ?? [];
   const currentUserId = profile?.userId;
+  const defaultPath = roles.includes('STOREKEEPER') && canReadEquipment ? '/equipment'
+    : showIncidentsTab ? '/incidents' : '/profile';
 
   const loadProfile = useCallback(async (token: string) => {
     const me = await api.getAuthMe(token);
@@ -99,7 +112,7 @@ function App() {
       const response = await api.signIn({ login, password });
       setAccessToken(response.accessToken);
       localStorage.setItem(TOKEN_STORAGE_KEY, response.accessToken);
-      navigate('/incidents');
+      navigate('/');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Ошибка входа';
       setError(message);
@@ -160,6 +173,8 @@ function App() {
         showIncidentsTab={showIncidentsTab}
         showMonitoringAlertsTab={canReadMonitoringAlerts}
         showKnowledgeBaseTab={showKnowledgeBaseTab}
+        showEquipmentTab={canReadEquipment}
+        showEquipmentMovementsTab={canReadMovements}
         onToggleNotifications={() => setNotificationsOpen((prev) => !prev)}
         onCloseNotifications={() => setNotificationsOpen(false)}
         onUnreadChange={setUnreadCount}
@@ -177,11 +192,7 @@ function App() {
           <Route
             path="/"
             element={
-              showIncidentsTab ? (
-                <Navigate to="/incidents" replace />
-              ) : (
-                <Navigate to="/profile" replace />
-              )
+              <Navigate to={defaultPath} replace />
             }
           />
           <Route
@@ -194,6 +205,17 @@ function App() {
               )
             }
           />
+          {canReadEquipment && <>
+            <Route path="/equipment" element={<EquipmentTab token={accessToken} canWrite={canWriteEquipment} />} />
+            <Route path="/equipment/:id" element={<EquipmentDetailPage token={accessToken}
+              canWrite={canWriteEquipment} canReadMovements={canReadMovements} />} />
+          </>}
+          {canReadMovements && <>
+            <Route path="/equipment-movements" element={<EquipmentMovementsTab token={accessToken} />} />
+            <Route path="/equipment-movements/:id" element={<EquipmentMovementDetailPage token={accessToken}
+              canCreate={canCreateMovements} canProcess={canProcessMovements} currentUserId={currentUserId}
+              canReadEquipment={canReadEquipment} />} />
+          </>}
           {showKnowledgeBaseTab && (
             <Route path="/aliens" element={<AlienKnowledgeBaseTab token={accessToken} canWrite={canWriteAliens} />} />
           )}
@@ -240,6 +262,8 @@ function App() {
                     canReadCleanupReport={canReadCleanupReport}
                     canCreateCleanupReport={canCreateCleanupReport}
                     canChangeCleanupStatus={canChangeCleanupStatus}
+                    canReadEquipmentMovements={canReadMovements}
+                    canCreateEquipmentMovements={canCreateMovements}
                   />
                 }
               />
@@ -251,7 +275,7 @@ function App() {
           <Route
             path="*"
             element={
-              <Navigate to={showIncidentsTab ? '/incidents' : '/profile'} replace />
+              <Navigate to={defaultPath} replace />
             }
           />
         </Routes>

@@ -1,5 +1,7 @@
 import {
   Alien,
+  EquipmentResponse,
+  EquipmentMovementResponse,
   AuthMeResponse,
   IncidentListResponse,
   IncidentResponse,
@@ -86,5 +88,34 @@ export const mockMonitoringAlertList = (
   size: 12,
   totalElements: 1,
   totalPages: 1,
+  ...overrides,
+});
+
+export const mockEquipment = (overrides: Partial<EquipmentResponse> = {}): EquipmentResponse => ({
+  id: 1,
+  type: 'NEURALYZER',
+  model: 'Нейралайзер Н-1',
+  serialNumber: 'SN-001',
+  status: 'AVAILABLE',
+  holderUserId: null,
+  currentIssueMovementId: null,
+  createdAt: '2026-11-02T12:00:00Z',
+  ...overrides,
+});
+
+export const mockEquipmentMovement = (
+  overrides: Partial<EquipmentMovementResponse> = {},
+): EquipmentMovementResponse => ({
+  id: 7,
+  operation: 'ISSUE',
+  status: 'PENDING',
+  incidentId: 1,
+  responsibleUserId: 3,
+  sourceIssueMovementId: null,
+  createdByUserId: 1,
+  comment: 'Обследование склада',
+  createdAt: '2026-11-02T12:00:00Z',
+  completedAt: null,
+  equipment: [mockEquipment()],
   ...overrides,
 });

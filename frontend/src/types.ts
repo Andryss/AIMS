@@ -19,7 +19,7 @@ export type IncidentStatus =
 
 export type CleanupStatus = 'PREPARATION' | 'EXECUTION' | 'COMPLETED';
 
-export type RoleName = 'OPERATOR' | 'ANALYST' | 'ADMIN' | 'AGENT' | 'CLEANER';
+export type RoleName = 'OPERATOR' | 'ANALYST' | 'ADMIN' | 'AGENT' | 'STOREKEEPER' | 'CLEANER';
 
 export interface SignInRequest {
   login: string;
@@ -222,6 +222,125 @@ export interface SaveAlienRequest {
 
 export interface AlienListResponse {
   items: Alien[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export type EquipmentType = 'NEURALYZER' | 'NEUTRALIZER';
+export type EquipmentStatus = 'AVAILABLE' | 'ISSUED';
+export type EquipmentMovementOperation = 'ISSUE' | 'RETURN';
+export type EquipmentMovementStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'CANCELLED' | 'REJECTED';
+
+export interface SaveEquipmentRequest {
+  type: EquipmentType;
+  model: string;
+  serialNumber: string;
+}
+
+export interface EquipmentResponse extends SaveEquipmentRequest {
+  id: number;
+  status: EquipmentStatus;
+  holderUserId?: number | null;
+  currentIssueMovementId?: number | null;
+  createdAt: string;
+}
+
+export interface EquipmentListQuery {
+  q?: string;
+  type?: EquipmentType;
+  status?: EquipmentStatus;
+  holderUserId?: number;
+  page: number;
+  size: number;
+}
+
+export interface EquipmentListResponse {
+  items: EquipmentResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface EquipmentHistoryEntry {
+  id: number;
+  changedAt: string;
+  changedByUserId: number;
+  snapshot: {
+    event: 'REGISTERED' | 'UPDATED' | 'ISSUED' | 'RETURNED';
+    movementId?: number | null;
+    equipment: EquipmentResponse;
+  };
+}
+
+export interface EquipmentHistoryListResponse {
+  items: EquipmentHistoryEntry[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface SaveEquipmentMovementRequest {
+  operation: EquipmentMovementOperation;
+  incidentId: number;
+  responsibleUserId: number;
+  sourceIssueMovementId?: number | null;
+  equipmentIds: number[];
+  comment?: string;
+}
+
+export interface EquipmentMovementResponse {
+  id: number;
+  operation: EquipmentMovementOperation;
+  status: EquipmentMovementStatus;
+  incidentId: number;
+  responsibleUserId: number;
+  sourceIssueMovementId?: number | null;
+  createdByUserId: number;
+  comment?: string | null;
+  createdAt: string;
+  completedAt?: string | null;
+  equipment: EquipmentResponse[];
+}
+
+export interface EquipmentMovementListQuery {
+  incidentId?: number;
+  responsibleUserId?: number;
+  status?: EquipmentMovementStatus;
+  operation?: EquipmentMovementOperation;
+  equipmentId?: number;
+  page: number;
+  size: number;
+}
+
+export interface EquipmentMovementListResponse {
+  items: EquipmentMovementResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface ChangeEquipmentMovementStatusRequest {
+  status: EquipmentMovementStatus;
+  comment?: string;
+}
+
+export interface EquipmentMovementHistoryEntry {
+  id: number;
+  changedAt: string;
+  changedByUserId: number;
+  snapshot: {
+    movement: EquipmentMovementResponse;
+    transitionComment?: string | null;
+  };
+}
+
+export interface EquipmentMovementHistoryListResponse {
+  items: EquipmentMovementHistoryEntry[];
   page: number;
   size: number;
   totalElements: number;

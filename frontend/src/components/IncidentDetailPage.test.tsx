@@ -3,7 +3,7 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import * as api from '../api/client';
-import { mockAlien, mockIncident } from '../test/testData';
+import { mockAlien, mockIncident, mockEquipmentMovement } from '../test/testData';
 import { IncidentDetailPage } from './IncidentDetailPage';
 import { AlienDetailPage } from './AlienDetailPage';
 
@@ -33,6 +33,7 @@ function renderAt(
     canReadCleanupReport?: boolean;
     canCreateCleanupReport?: boolean;
     canChangeCleanupStatus?: boolean;
+    canReadEquipmentMovements?: boolean;
   } = {},
 ) {
   const {
@@ -43,6 +44,7 @@ function renderAt(
     canReadCleanupReport = false,
     canCreateCleanupReport = false,
     canChangeCleanupStatus = false,
+    canReadEquipmentMovements = false,
   } = options;
   return render(
     <MemoryRouter initialEntries={[path]}>
@@ -61,6 +63,7 @@ function renderAt(
               canReadCleanupReport={canReadCleanupReport}
               canCreateCleanupReport={canCreateCleanupReport}
               canChangeCleanupStatus={canChangeCleanupStatus}
+              canReadEquipmentMovements={canReadEquipmentMovements}
             />
           }
         />
@@ -104,6 +107,36 @@ describe('IncidentDetailPage', () => {
     expect(listIncidentComments).toHaveBeenCalledWith('tok', 3);
     expect(getAlien).toHaveBeenCalledWith('tok', 1);
     expect(screen.getByText('Слизень')).toBeInTheDocument();
+  });
+
+  it('shows equipment after comments and history in its own tab', async () => {
+    getIncident.mockResolvedValue(mockIncident({ alienId: undefined }));
+    (api.listEquipmentMovements as jest.Mock).mockResolvedValue({ items: [mockEquipmentMovement()],
+      page: 0, size: 100, totalElements: 1, totalPages: 1 });
+    renderAt('/incidents/1', { canReadEquipmentMovements: true });
+    await screen.findByRole('heading', { name: 'Инцидент #1' });
+    expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual(['Комментарии', 'История', 'Оборудование']);
+    expect(screen.queryByRole('link', { name: 'Заявка #7' })).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('tab', { name: 'Оборудование' }));
+    expect(await within(screen.getByRole('tabpanel', { name: 'Оборудование' }))
+      .findByRole('link', { name: 'Заявка #7' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: 'Комментарии' }));
+    expect(screen.queryByRole('link', { name: 'Заявка #7' })).not.toBeInTheDocument();
+  });
+
+  it('renders employees with avatars in incident history field changes', async () => {
+    getIncident.mockResolvedValue(mockIncident({ alienId: undefined }));
+    batchUsers.mockResolvedValue({ items: [{ id: 3, login: 'agent' }, { id: 4, login: 'agent2' },
+      { id: 5, login: 'operator' }] });
+    listIncidentHistory.mockResolvedValue({ items: [{ id: 1, changedAt: '2026-11-02T12:00:00Z', changedByUserId: 5,
+      snapshot: mockIncident({ responsibleUserId: 3, executorUserIds: [4] }) }],
+    page: 0, size: 50, totalElements: 1, totalPages: 1 });
+    renderAt('/incidents/1');
+    await userEvent.click(await screen.findByRole('tab', { name: 'История' }));
+    const panel = screen.getByRole('tabpanel', { name: 'История' });
+    expect(await within(panel).findByRole('img', { name: 'Аватар agent' })).toBeInTheDocument();
+    expect(within(panel).getByRole('img', { name: 'Аватар agent2' })).toBeInTheDocument();
   });
 
 

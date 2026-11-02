@@ -14,6 +14,17 @@ import {
   CreateIncidentCommentRequest,
   CreateIncidentRequest,
   ErrorObject,
+  EquipmentResponse,
+  EquipmentListResponse,
+  EquipmentListQuery,
+  SaveEquipmentRequest,
+  EquipmentHistoryListResponse,
+  EquipmentMovementResponse,
+  EquipmentMovementListResponse,
+  EquipmentMovementListQuery,
+  SaveEquipmentMovementRequest,
+  ChangeEquipmentMovementStatusRequest,
+  EquipmentMovementHistoryListResponse,
   FileUploadResponse,
   IncidentComment,
   IncidentCommentListResponse,
@@ -267,6 +278,79 @@ export function updateAlien(token: string, id: number, payload: SaveAlienRequest
   return requestJson<Alien>(`/aliens/${id}`, { method: 'PUT', body: JSON.stringify(payload) }, token);
 }
 
+function equipmentQueryString(query: EquipmentListQuery | EquipmentMovementListQuery): string {
+  const params = new URLSearchParams();
+  Object.entries(query).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && String(value).trim()) {
+      params.set(key, String(value).trim());
+    }
+  });
+
+  return params.toString();
+}
+
+export function listEquipment(token: string, query: EquipmentListQuery): Promise<EquipmentListResponse> {
+  return requestJson<EquipmentListResponse>(`/equipment?${equipmentQueryString(query)}`, { method: 'GET' }, token);
+}
+
+export function getEquipment(token: string, id: number): Promise<EquipmentResponse> {
+  return requestJson<EquipmentResponse>(`/equipment/${id}`, { method: 'GET' }, token);
+}
+
+export function createEquipment(token: string, payload: SaveEquipmentRequest): Promise<EquipmentResponse> {
+  return requestJson<EquipmentResponse>('/equipment', { method: 'POST', body: JSON.stringify(payload) }, token);
+}
+
+export function updateEquipment(token: string, id: number, payload: SaveEquipmentRequest): Promise<EquipmentResponse> {
+  return requestJson<EquipmentResponse>(`/equipment/${id}`, { method: 'PUT', body: JSON.stringify(payload) }, token);
+}
+
+export function listEquipmentHistory(
+  token: string, id: number, page: number, size: number,
+): Promise<EquipmentHistoryListResponse> {
+  return requestJson<EquipmentHistoryListResponse>(`/equipment/${id}/history?page=${page}&size=${size}`,
+    { method: 'GET' }, token);
+}
+
+export function listEquipmentMovements(
+  token: string, query: EquipmentMovementListQuery,
+): Promise<EquipmentMovementListResponse> {
+  return requestJson<EquipmentMovementListResponse>(`/equipment-movements?${equipmentQueryString(query)}`,
+    { method: 'GET' }, token);
+}
+
+export function getEquipmentMovement(token: string, id: number): Promise<EquipmentMovementResponse> {
+  return requestJson<EquipmentMovementResponse>(`/equipment-movements/${id}`, { method: 'GET' }, token);
+}
+
+export function createEquipmentMovement(
+  token: string, payload: SaveEquipmentMovementRequest,
+): Promise<EquipmentMovementResponse> {
+  return requestJson<EquipmentMovementResponse>('/equipment-movements',
+    { method: 'POST', body: JSON.stringify(payload) }, token);
+}
+
+export function updateEquipmentMovement(
+  token: string, id: number, payload: SaveEquipmentMovementRequest,
+): Promise<EquipmentMovementResponse> {
+  return requestJson<EquipmentMovementResponse>(`/equipment-movements/${id}`,
+    { method: 'PUT', body: JSON.stringify(payload) }, token);
+}
+
+export function changeEquipmentMovementStatus(
+  token: string, id: number, payload: ChangeEquipmentMovementStatusRequest,
+): Promise<EquipmentMovementResponse> {
+  return requestJson<EquipmentMovementResponse>(`/equipment-movements/${id}/status`,
+    { method: 'PATCH', body: JSON.stringify(payload) }, token);
+}
+
+export function listEquipmentMovementHistory(
+  token: string, id: number, page: number, size: number,
+): Promise<EquipmentMovementHistoryListResponse> {
+  return requestJson<EquipmentMovementHistoryListResponse>(`/equipment-movements/${id}/history?page=${page}&size=${size}`,
+    { method: 'GET' }, token);
+}
+
 export function putIncidentAlien(
   token: string,
   incidentId: number,
@@ -335,9 +419,12 @@ export function markNotificationRead(token: string, id: number): Promise<void> {
 export function searchUsers(
   token: string,
   q: string,
-  role: RoleName,
+  role?: RoleName,
 ): Promise<UserSearchResponse> {
-  const params = new URLSearchParams({ q, role });
+  const params = new URLSearchParams({ q });
+  if (role) {
+    params.set('role', role);
+  }
   return requestJson<UserSearchResponse>(
     `/users/search?${params.toString()}`,
     { method: 'GET' },

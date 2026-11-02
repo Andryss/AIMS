@@ -134,6 +134,20 @@ describe('IncidentStatusSelect', () => {
     expect(screen.getByLabelText(/Статус инцидента #1/i)).toBeDisabled();
   });
 
+  it('shows the server reason when equipment prevents incident completion', async () => {
+    const reason = 'Нельзя завершить инцидент: оборудование не возвращено';
+    changeIncidentStatus.mockRejectedValue(new Error(reason));
+    const onStatusChanged = jest.fn();
+    render(<IncidentStatusSelect token="tok" incident={mockIncident({ status: 'EXECUTING', responsibleUserId: 3 })}
+      currentUserId={3} roles={['AGENT']} canChange showErrorText onStatusChanged={onStatusChanged} />);
+
+    await userEvent.selectOptions(screen.getByLabelText(/Статус инцидента #1/i), 'EXECUTION_COMPLETED');
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(reason);
+    expect(screen.getByLabelText(/Статус инцидента #1/i)).toHaveValue('EXECUTING');
+    expect(onStatusChanged).not.toHaveBeenCalled();
+  });
+
   it.each(['ANALYST', 'ADMIN'])('allows %s to resume reanalysis', async (role) => {
     const updated = mockIncident({ status: 'READY_FOR_ANALYSIS' });
     const onStatusChanged = jest.fn();
