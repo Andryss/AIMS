@@ -79,6 +79,7 @@ public class DemoDataInitializer implements ApplicationRunner {
         DEMO_USERS.put("agent2", Role.AGENT);
         DEMO_USERS.put("storekeeper", Role.STOREKEEPER);
         DEMO_USERS.put("tender_manager", Role.TENDER_MANAGER);
+        DEMO_USERS.put("prison_guard", Role.PRISON_GUARD);
         DEMO_USERS.put("cleaner", Role.CLEANER);
         DEMO_USERS.put("admin", Role.ADMIN);
     }

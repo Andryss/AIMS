@@ -66,6 +66,10 @@ public enum Role {
             Permission.TENDER_EDIT,
             Permission.TENDER_MANAGE,
             Permission.TENDER_RECEIVE,
+            Permission.DETENTION_READ,
+            Permission.DETENTION_CREATE,
+            Permission.DETENTION_EDIT,
+            Permission.DETENTION_PROCESS,
             Permission.CLEANUP_REPORT_READ,
             Permission.FILE_UPLOAD,
             Permission.FILE_READ,
@@ -80,6 +84,9 @@ public enum Role {
             Permission.ALIEN_READ,
             Permission.USER_READ,
             Permission.INCIDENT_ASSIGN,
+            Permission.DETENTION_READ,
+            Permission.DETENTION_CREATE,
+            Permission.DETENTION_EDIT,
             Permission.EQUIPMENT_READ,
             Permission.EQUIPMENT_MOVEMENT_READ,
             Permission.EQUIPMENT_MOVEMENT_CREATE,
@@ -114,6 +121,16 @@ public enum Role {
             Permission.TENDER_EDIT,
             Permission.TENDER_MANAGE,
             Permission.TENDER_RECEIVE
+    ),
+    /** Тюремный надзиратель. */
+    PRISON_GUARD(
+            "Тюремный надзиратель",
+            Permission.INCIDENT_READ,
+            Permission.ALIEN_READ,
+            Permission.USER_READ,
+            Permission.DETENTION_READ,
+            Permission.DETENTION_EDIT,
+            Permission.DETENTION_PROCESS
     ),
     /** Специалист по прикрытию. */
     CLEANER(

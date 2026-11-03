@@ -119,6 +119,7 @@ class AuthApiTest extends BaseApiTest {
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
                         "EQUIPMENT_READ", "EQUIPMENT_MOVEMENT_READ", "EQUIPMENT_MOVEMENT_CREATE",
                         "INCIDENT_READ", "USER_READ", "INCIDENT_ASSIGN", "INCIDENT_STATUS_CHANGE",
+                        "DETENTION_READ", "DETENTION_CREATE", "DETENTION_EDIT",
                         "INCIDENT_COMMENT", "ALIEN_READ", "CLEANUP_REPORT_READ",
                         "FILE_UPLOAD", "FILE_READ", "NOTIFICATION_READ")));
     }

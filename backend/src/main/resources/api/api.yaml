@@ -22,6 +22,8 @@ tags:
     description: Equipment inventory API
   - name: equipment-movements
     description: Equipment movements API
+  - name: detention-requests
+    description: Detention requests and custody API
   - name: users
     description: Users API
   - name: integration
@@ -119,6 +121,18 @@ paths:
 
   /api/v1/tenders/{id}/history:
     $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1history"
+
+  /api/v1/detention-requests:
+    $ref: "./domains/detention-requests.yaml#/paths/~1api~1v1~1detention-requests"
+
+  /api/v1/detention-requests/{id}:
+    $ref: "./domains/detention-requests.yaml#/paths/~1api~1v1~1detention-requests~1{id}"
+
+  /api/v1/detention-requests/{id}/status:
+    $ref: "./domains/detention-requests.yaml#/paths/~1api~1v1~1detention-requests~1{id}~1status"
+
+  /api/v1/detention-requests/{id}/history:
+    $ref: "./domains/detention-requests.yaml#/paths/~1api~1v1~1detention-requests~1{id}~1history"
 
   /api/v1/equipment:
     $ref: "./domains/equipment.yaml#/paths/~1api~1v1~1equipment"
@@ -398,6 +412,30 @@ components:
 
     IncidentListResponse:
       $ref: "./domains/incidents.yaml#/components/schemas/IncidentListResponse"
+
+    DetentionRequestStatusApi:
+      $ref: "./domains/detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
+
+    ChangeDetentionRequestStatusRequest:
+      $ref: "./domains/detention-requests.yaml#/components/schemas/ChangeDetentionRequestStatusRequest"
+
+    SaveDetentionRequest:
+      $ref: "./domains/detention-requests.yaml#/components/schemas/SaveDetentionRequest"
+
+    DetentionRequestResponse:
+      $ref: "./domains/detention-requests.yaml#/components/schemas/DetentionRequestResponse"
+
+    DetentionRequestListResponse:
+      $ref: "./domains/detention-requests.yaml#/components/schemas/DetentionRequestListResponse"
+
+    DetentionRequestHistorySnapshot:
+      $ref: "./domains/detention-requests.yaml#/components/schemas/DetentionRequestHistorySnapshot"
+
+    DetentionRequestHistoryEntry:
+      $ref: "./domains/detention-requests.yaml#/components/schemas/DetentionRequestHistoryEntry"
+
+    DetentionRequestHistoryListResponse:
+      $ref: "./domains/detention-requests.yaml#/components/schemas/DetentionRequestHistoryListResponse"
 
     ErrorObject:
       $ref: "./common.yaml#/components/schemas/ErrorObject"

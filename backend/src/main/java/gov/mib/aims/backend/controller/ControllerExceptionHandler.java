@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.dao.PessimisticLockingFailureException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -99,6 +100,17 @@ public class ControllerExceptionHandler {
         log.warn("Missing request parameter: {}", ex.getMessage());
 
         return createErrorObject(Errors.validationError(ex.getMessage()));
+    }
+
+    /**
+     * Обрабатывает неверный тип query/path параметра.
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public ErrorObject handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        log.warn("Invalid request parameter {}: {}", ex.getName(), ex.getMessage());
+
+        return createErrorObject(Errors.validationError("Invalid request parameter: " + ex.getName()));
     }
 
     /**

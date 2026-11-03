@@ -25,6 +25,21 @@ public final class Errors {
     }
 
     /**
+     * Заявка на заключение не найдена.
+     */
+    public static BaseException detentionRequestNotFound() {
+        return BaseException.builder().code(404).message("detention_request.not_found")
+                .humanMessage("Заявка на заключение не найдена").build();
+    }
+
+    /**
+     * Конфликт состояния заявки на заключение.
+     */
+    public static BaseException detentionRequestConflict(String message) {
+        return BaseException.builder().code(409).message("detention_request.conflict").humanMessage(message).build();
+    }
+
+    /**
      * Тендер не найден.
      */
     public static BaseException tenderNotFound() {

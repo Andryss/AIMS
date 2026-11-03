@@ -1,0 +1,483 @@
+paths:
+  /api/v1/detention-requests:
+    get:
+      operationId: listDetentionRequests
+      tags:
+        - detention-requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: incidentId
+          in: query
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/DetentionRequestStatusApi"
+        - $ref: "../common.yaml#/components/parameters/Page"
+        - $ref: "../common.yaml#/components/parameters/Size"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetentionRequestListResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+    post:
+      operationId: createDetentionRequest
+      tags:
+        - detention-requests
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveDetentionRequest"
+      responses:
+        201:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetentionRequestResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+  /api/v1/detention-requests/{id}:
+    get:
+      operationId: getDetentionRequest
+      tags:
+        - detention-requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetentionRequestResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+    put:
+      operationId: updateDetentionRequest
+      tags:
+        - detention-requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveDetentionRequest"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetentionRequestResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+  /api/v1/detention-requests/{id}/status:
+    patch:
+      operationId: changeDetentionRequestStatus
+      tags:
+        - detention-requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeDetentionRequestStatusRequest"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetentionRequestResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+  /api/v1/detention-requests/{id}/history:
+    get:
+      operationId: listDetentionRequestHistory
+      tags:
+        - detention-requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - $ref: "../common.yaml#/components/parameters/Page"
+        - $ref: "../common.yaml#/components/parameters/Size"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetentionRequestHistoryListResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+components:
+  schemas:
+    DetentionRequestStatusApi:
+      type: string
+      enum: [NEW, ACCEPTED, IN_CUSTODY, RELEASED, REJECTED, CANCELLED]
+
+    ChangeDetentionRequestStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          $ref: "#/components/schemas/DetentionRequestStatusApi"
+        comment:
+          type: string
+          maxLength: 4000
+
+    SaveDetentionRequest:
+      type: object
+      required: [incidentId, subjectName, subjectDescription, durationDays]
+      properties:
+        incidentId:
+          type: integer
+          format: int64
+          minimum: 1
+        subjectName:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: "(?s).*\\S.*"
+        subjectDescription:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          pattern: "(?s).*\\S.*"
+        alienId:
+          type: integer
+          format: int64
+          minimum: 1
+        durationDays:
+          type: integer
+          format: int32
+          minimum: 1
+        comment:
+          type: string
+          maxLength: 4000
+
+    DetentionRequestResponse:
+      type: object
+      required: [id, incidentId, subjectName, subjectDescription, durationDays, status, createdByUserId, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+          format: int64
+        incidentId:
+          type: integer
+          format: int64
+        subjectName:
+          type: string
+        subjectDescription:
+          type: string
+        alienId:
+          type: integer
+          format: int64
+        durationDays:
+          type: integer
+          format: int32
+        status:
+          $ref: "#/components/schemas/DetentionRequestStatusApi"
+        createdByUserId:
+          type: integer
+          format: int64
+        reviewedByUserId:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        admittedAt:
+          type: string
+          format: date-time
+        plannedReleaseAt:
+          type: string
+          format: date-time
+        releasedAt:
+          type: string
+          format: date-time
+
+    DetentionRequestHistorySnapshot:
+      type: object
+      required: [request]
+      properties:
+        request:
+          $ref: "#/components/schemas/DetentionRequestResponse"
+        transitionComment:
+          type: string
+
+    DetentionRequestHistoryEntry:
+      type: object
+      required: [id, changedAt, changedByUserId, snapshot]
+      properties:
+        id:
+          type: integer
+          format: int64
+        changedAt:
+          type: string
+          format: date-time
+        changedByUserId:
+          type: integer
+          format: int64
+        snapshot:
+          $ref: "#/components/schemas/DetentionRequestHistorySnapshot"
+
+    DetentionRequestListResponse:
+      type: object
+      required: [items, page, size, totalElements, totalPages]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/DetentionRequestResponse"
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    DetentionRequestHistoryListResponse:
+      type: object
+      required: [items, page, size, totalElements, totalPages]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/DetentionRequestHistoryEntry"
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
