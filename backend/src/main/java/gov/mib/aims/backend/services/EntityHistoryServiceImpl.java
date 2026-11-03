@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-
 /**
  * Реализация {@link EntityHistoryService}.
  */
@@ -20,6 +18,7 @@ public class EntityHistoryServiceImpl implements EntityHistoryService {
     private final EntityHistoryRepository entityHistoryRepository;
     private final ObjectMapperWrapper objectMapper;
     private final CurrentUserService currentUserService;
+    private final ChronoService chronoService;
 
     @Override
     @Transactional
@@ -37,7 +36,7 @@ public class EntityHistoryServiceImpl implements EntityHistoryService {
                 .entityId(entityId)
                 .snapshot(snapshot)
                 .changedByUserId(changedByUserId)
-                .changedAt(Instant.now())
+                .changedAt(chronoService.now())
                 .build();
         entityHistoryRepository.save(entity);
     }

@@ -16,7 +16,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +25,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class EntityHistoryQueryServiceImpl implements EntityHistoryQueryService {
+
+    private final ChronoService chronoService;
 
     private static final int MAX_PAGE_SIZE = 100;
 
@@ -60,7 +61,7 @@ public class EntityHistoryQueryServiceImpl implements EntityHistoryQueryService 
         IncidentEntity snapshotEntity = objectMapper.readValue(entity.getSnapshot(), IncidentEntity.class);
         return new IncidentHistoryEntry()
                 .id(entity.getId())
-                .changedAt(entity.getChangedAt().atOffset(ZoneOffset.UTC))
+                .changedAt(chronoService.toOffsetDateTime(entity.getChangedAt()))
                 .changedByUserId(entity.getChangedByUserId())
                 .snapshot(toSnapshot(snapshotEntity));
     }
@@ -73,7 +74,7 @@ public class EntityHistoryQueryServiceImpl implements EntityHistoryQueryService 
                 .status(incidentMapper.toApiStatus(entity.getStatus()))
                 .eventType(incidentMapper.toApiEventType(entity.getEventType()))
                 .location(entity.getLocation())
-                .detectedAt(entity.getDetectedAt().atOffset(ZoneOffset.UTC))
+                .detectedAt(chronoService.toOffsetDateTime(entity.getDetectedAt()))
                 .description(entity.getDescription())
                 .attachmentFileIds(new ArrayList<>(entity.getAttachmentFileIds()))
                 .alienId(entity.getAlienId())

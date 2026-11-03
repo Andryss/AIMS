@@ -1,0 +1,350 @@
+components:
+  schemas:
+    AnalyticsBucketUnitApi:
+      type: "string"
+      enum:
+        - "HOUR"
+        - "DAY"
+        - "MONTH"
+    AnalyticsMeta:
+      type: "object"
+      required:
+        - "from"
+        - "to"
+        - "generatedAt"
+        - "bucketUnit"
+        - "bucketStep"
+        - "recordsWithoutSnapshot"
+      properties:
+        from:
+          type: "string"
+          format: "date-time"
+        to:
+          type: "string"
+          format: "date-time"
+        generatedAt:
+          type: "string"
+          format: "date-time"
+        bucketUnit:
+          $ref: "#/components/schemas/AnalyticsBucketUnitApi"
+        bucketStep:
+          type: "integer"
+          format: "int32"
+        recordsWithoutSnapshot:
+          type: "integer"
+          format: "int64"
+    DurationPercentiles:
+      type: "object"
+      required:
+        - "sampleCount"
+        - "excludedSampleCount"
+      properties:
+        sampleCount:
+          type: "integer"
+          format: "int64"
+        excludedSampleCount:
+          type: "integer"
+          format: "int64"
+        p50Seconds:
+          type: "number"
+          format: "double"
+          nullable: true
+        p90Seconds:
+          type: "number"
+          format: "double"
+          nullable: true
+        p95Seconds:
+          type: "number"
+          format: "double"
+          nullable: true
+        p99Seconds:
+          type: "number"
+          format: "double"
+          nullable: true
+    AnalyticsCountGroup:
+      description: "Stable group key; locations use LOCATION:<value> with name for display, OTHER is the remainder"
+      type: "object"
+      required:
+        - "key"
+        - "count"
+      properties:
+        key:
+          type: "string"
+        count:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+    AnalyticsTrendBucket:
+      type: "object"
+      required:
+        - "from"
+        - "to"
+        - "values"
+      properties:
+        from:
+          type: "string"
+          format: "date-time"
+        to:
+          type: "string"
+          format: "date-time"
+        values:
+          type: "object"
+          additionalProperties:
+            type: "integer"
+            format: "int64"
+    StaleIncidentAnalyticsRow:
+      type: "object"
+      required:
+        - "incidentId"
+        - "location"
+        - "status"
+        - "lastChangedAt"
+      properties:
+        incidentId:
+          type: "integer"
+          format: "int64"
+        location:
+          type: "string"
+        status:
+          $ref: "./incidents.yaml#/components/schemas/IncidentStatusApi"
+        responsibleUserId:
+          type: "integer"
+          format: "int64"
+        lastChangedAt:
+          type: "string"
+          format: "date-time"
+    EquipmentInventoryAnalyticsRow:
+      type: "object"
+      required:
+        - "equipmentType"
+        - "available"
+        - "issued"
+        - "total"
+      properties:
+        equipmentType:
+          $ref: "./equipment.yaml#/components/schemas/EquipmentTypeApi"
+        available:
+          type: "integer"
+          format: "int64"
+        issued:
+          type: "integer"
+          format: "int64"
+        total:
+          type: "integer"
+          format: "int64"
+        issuedShare:
+          type: "number"
+          format: "double"
+          nullable: true
+    OpenEquipmentRequestAnalyticsRow:
+      type: "object"
+      required:
+        - "equipmentType"
+        - "operation"
+        - "requestCount"
+        - "unitCount"
+      properties:
+        equipmentType:
+          $ref: "./equipment.yaml#/components/schemas/EquipmentTypeApi"
+        operation:
+          $ref: "./equipment-movements.yaml#/components/schemas/EquipmentMovementOperationApi"
+        requestCount:
+          type: "integer"
+          format: "int64"
+        unitCount:
+          type: "integer"
+          format: "int64"
+    ExpectedDeliveryAnalyticsRow:
+      type: "object"
+      required:
+        - "equipmentType"
+        - "tenderCount"
+        - "unitCount"
+      properties:
+        equipmentType:
+          $ref: "./equipment.yaml#/components/schemas/EquipmentTypeApi"
+        tenderCount:
+          type: "integer"
+          format: "int64"
+        unitCount:
+          type: "integer"
+          format: "int64"
+    OutstandingEquipmentAnalyticsRow:
+      type: "object"
+      required:
+        - "incidentId"
+        - "location"
+        - "responsibleUserId"
+        - "unitsByType"
+      properties:
+        incidentId:
+          type: "integer"
+          format: "int64"
+        location:
+          type: "string"
+        responsibleUserId:
+          type: "integer"
+          format: "int64"
+        unitsByType:
+          type: "object"
+          additionalProperties:
+            type: "integer"
+            format: "int64"
+    UpcomingReleaseAnalyticsRow:
+      type: "object"
+      required:
+        - "requestId"
+        - "subjectName"
+        - "incidentId"
+        - "plannedReleaseAt"
+      properties:
+        requestId:
+          type: "integer"
+          format: "int64"
+        subjectName:
+          type: "string"
+        alienId:
+          type: "integer"
+          format: "int64"
+        alienName:
+          type: "string"
+        incidentId:
+          type: "integer"
+          format: "int64"
+        plannedReleaseAt:
+          type: "string"
+          format: "date-time"
+    CountAnalyticsResponse:
+      type: "object"
+      required:
+        - "meta"
+        - "count"
+      properties:
+        meta:
+          $ref: "#/components/schemas/AnalyticsMeta"
+        count:
+          type: "integer"
+          format: "int64"
+    GroupedAnalyticsResponse:
+      type: "object"
+      required:
+        - "meta"
+        - "groups"
+      properties:
+        meta:
+          $ref: "#/components/schemas/AnalyticsMeta"
+        groups:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/AnalyticsCountGroup"
+    TrendAnalyticsResponse:
+      type: "object"
+      required:
+        - "meta"
+        - "buckets"
+      properties:
+        meta:
+          $ref: "#/components/schemas/AnalyticsMeta"
+        buckets:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/AnalyticsTrendBucket"
+    DurationAnalyticsResponse:
+      type: "object"
+      required:
+        - "meta"
+        - "percentiles"
+      properties:
+        meta:
+          $ref: "#/components/schemas/AnalyticsMeta"
+        percentiles:
+          $ref: "#/components/schemas/DurationPercentiles"
+    StaleIncidentAnalyticsResponse:
+      type: "object"
+      required:
+        - "meta"
+        - "totalCount"
+        - "items"
+      properties:
+        meta:
+          $ref: "#/components/schemas/AnalyticsMeta"
+        totalCount:
+          type: "integer"
+          format: "int64"
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/StaleIncidentAnalyticsRow"
+    EquipmentInventoryAnalyticsResponse:
+      type: "object"
+      required:
+        - "meta"
+        - "items"
+      properties:
+        meta:
+          $ref: "#/components/schemas/AnalyticsMeta"
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/EquipmentInventoryAnalyticsRow"
+    OpenEquipmentRequestsAnalyticsResponse:
+      type: "object"
+      required:
+        - "meta"
+        - "totalCount"
+        - "items"
+      properties:
+        meta:
+          $ref: "#/components/schemas/AnalyticsMeta"
+        totalCount:
+          type: "integer"
+          format: "int64"
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/OpenEquipmentRequestAnalyticsRow"
+    ExpectedDeliveriesAnalyticsResponse:
+      type: "object"
+      required:
+        - "meta"
+        - "items"
+      properties:
+        meta:
+          $ref: "#/components/schemas/AnalyticsMeta"
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ExpectedDeliveryAnalyticsRow"
+    OutstandingEquipmentAnalyticsResponse:
+      type: "object"
+      required:
+        - "meta"
+        - "totalCount"
+        - "items"
+      properties:
+        meta:
+          $ref: "#/components/schemas/AnalyticsMeta"
+        totalCount:
+          type: "integer"
+          format: "int64"
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/OutstandingEquipmentAnalyticsRow"
+    UpcomingReleasesAnalyticsResponse:
+      type: "object"
+      required:
+        - "meta"
+        - "totalCount"
+        - "items"
+      properties:
+        meta:
+          $ref: "#/components/schemas/AnalyticsMeta"
+        totalCount:
+          type: "integer"
+          format: "int64"
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/UpcomingReleaseAnalyticsRow"

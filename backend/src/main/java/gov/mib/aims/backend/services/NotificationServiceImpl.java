@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +21,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
+
+    private final ChronoService chronoService;
 
     private final NotificationRepository notificationRepository;
     private final CurrentUserService currentUserService;
@@ -36,7 +37,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .message(message.trim())
                 .relatedEntities(refs)
                 .readAt(null)
-                .createdAt(Instant.now())
+                .createdAt(chronoService.now())
                 .build();
         entity = notificationRepository.save(entity);
         return toRecord(entity);
@@ -68,7 +69,7 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationEntity entity = notificationRepository.findByIdAndRecipientUserId(notificationId, userId)
                 .orElseThrow(Errors::notificationNotFound);
         if (entity.getReadAt() == null) {
-            entity.setReadAt(Instant.now());
+            entity.setReadAt(chronoService.now());
             notificationRepository.save(entity);
         }
     }

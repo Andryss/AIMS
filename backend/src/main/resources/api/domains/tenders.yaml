@@ -1,5 +1,5 @@
-paths:
-  /api/v1/tenders:
+pathItems:
+  Tenders:
     get:
       operationId: listTenders
       tags:
@@ -39,41 +39,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenderListResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
     post:
       operationId: createTender
       tags:
@@ -94,43 +70,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenderResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/tenders/{id}:
+  TendersById:
     get:
       operationId: getTender
       tags:
@@ -153,41 +105,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenderResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
     put:
       operationId: updateTender
       tags:
@@ -216,43 +144,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenderResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/tenders/{id}/status:
+  TendersByIdStatus:
     patch:
       operationId: changeTenderStatus
       tags:
@@ -281,43 +185,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenderResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/tenders/{id}/participants:
+  TendersByIdParticipants:
     get:
       operationId: listTenderParticipants
       tags:
@@ -342,41 +222,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenderParticipantListResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
     post:
       operationId: createTenderParticipant
       tags:
@@ -405,43 +261,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenderParticipantResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/tenders/{id}/participants/{participantId}:
+  TendersByIdParticipantsByParticipantId:
     put:
       operationId: updateTenderParticipant
       tags:
@@ -477,43 +309,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenderParticipantResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/tenders/{id}/winner:
+  TendersByIdWinner:
     post:
       operationId: selectTenderWinner
       tags:
@@ -542,43 +350,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenderResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/tenders/{id}/receipt:
+  TendersByIdReceipt:
     post:
       operationId: receiveTender
       tags:
@@ -607,43 +391,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenderReceiptResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/tenders/{id}/history:
+  TendersByIdHistory:
     get:
       operationId: listTenderHistory
       tags:
@@ -668,51 +428,34 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenderHistoryListResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
 components:
   schemas:
     TenderStatusApi:
       type: string
-      enum: [NEED, COLLECTING_OFFERS, AWAITING_DELIVERY, COMPLETED, CANCELLED]
+      enum:
+        [
+          NEED,
+          COLLECTING_OFFERS,
+          AWAITING_DELIVERY,
+          COMPLETED,
+          CANCELLED
+        ]
 
     TenderParticipantStatusApi:
       type: string
-      enum: [PARTICIPATING, WINNER]
+      enum: [ PARTICIPATING, WINNER ]
 
     SaveTenderRequest:
       type: object

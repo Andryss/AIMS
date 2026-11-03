@@ -4,8 +4,8 @@ import gov.mib.aims.backend.entity.EquipmentEntity;
 import gov.mib.aims.backend.entity.EquipmentMovementEntity;
 import gov.mib.aims.backend.entity.EquipmentMovementItemEntity;
 import gov.mib.aims.backend.exception.Errors;
-import gov.mib.aims.backend.generated.model.EquipmentMovementHistoryEntry;
 import gov.mib.aims.backend.generated.model.ChangeEquipmentMovementStatusRequest;
+import gov.mib.aims.backend.generated.model.EquipmentMovementHistoryEntry;
 import gov.mib.aims.backend.generated.model.EquipmentMovementHistoryListResponse;
 import gov.mib.aims.backend.generated.model.EquipmentMovementHistorySnapshot;
 import gov.mib.aims.backend.generated.model.EquipmentMovementListResponse;
@@ -26,18 +26,17 @@ import gov.mib.aims.backend.repository.EquipmentMovementItemRepository;
 import gov.mib.aims.backend.repository.EquipmentMovementRepository;
 import gov.mib.aims.backend.repository.EquipmentRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
-import gov.mib.aims.backend.services.mapping.EquipmentMapper;
 import gov.mib.aims.backend.services.equipment.EquipmentMovementWorkflow;
+import gov.mib.aims.backend.services.mapping.EquipmentMapper;
 import gov.mib.aims.backend.services.mapping.EquipmentMovementMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +50,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class EquipmentMovementServiceImpl implements EquipmentMovementService {
+
+    private final ChronoService chronoService;
 
     private final EquipmentMovementRepository movementRepository;
     private final EquipmentMovementItemRepository itemRepository;
@@ -270,7 +271,7 @@ public class EquipmentMovementServiceImpl implements EquipmentMovementService {
 
         return new EquipmentMovementHistoryListResponse().items(result.map(entry ->
                         new EquipmentMovementHistoryEntry().id(entry.getId())
-                                .changedAt(entry.getChangedAt().atOffset(ZoneOffset.UTC))
+                                .changedAt(chronoService.toOffsetDateTime(entry.getChangedAt()))
                                 .changedByUserId(entry.getChangedByUserId()).snapshot(objectMapper.readValue(
                                         entry.getSnapshot(), EquipmentMovementHistorySnapshot.class))).getContent())
                 .page(result.getNumber()).size(result.getSize()).totalElements(result.getTotalElements())

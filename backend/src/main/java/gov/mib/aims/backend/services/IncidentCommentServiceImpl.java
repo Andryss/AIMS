@@ -13,10 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneOffset;
-
 /**
  * Реализация {@link IncidentCommentService}.
  */
@@ -29,7 +25,7 @@ public class IncidentCommentServiceImpl implements IncidentCommentService {
     private final IncidentCommentRepository incidentCommentRepository;
     private final IncidentRepository incidentRepository;
     private final CurrentUserService currentUserService;
-    private final Clock clock;
+    private final ChronoService chronoService;
 
     @Override
     @Transactional
@@ -72,7 +68,7 @@ public class IncidentCommentServiceImpl implements IncidentCommentService {
                 .incidentId(incidentId)
                 .authorUserId(authorUserId)
                 .text(text)
-                .createdAt(Instant.now(clock))
+                .createdAt(chronoService.now())
                 .build();
         return incidentCommentRepository.save(entity);
     }
@@ -89,6 +85,6 @@ public class IncidentCommentServiceImpl implements IncidentCommentService {
                 .incidentId(entity.getIncidentId())
                 .authorUserId(entity.getAuthorUserId())
                 .text(entity.getText())
-                .createdAt(entity.getCreatedAt().atOffset(ZoneOffset.UTC));
+                .createdAt(chronoService.toOffsetDateTime(entity.getCreatedAt()));
     }
 }

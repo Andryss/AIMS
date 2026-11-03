@@ -3,14 +3,13 @@ package gov.mib.aims.backend.bootstrap;
 import gov.mib.aims.backend.entity.AppUserEntity;
 import gov.mib.aims.backend.entity.PermissionEntity;
 import gov.mib.aims.backend.entity.RoleEntity;
+import gov.mib.aims.backend.generated.model.ChangeDetentionRequestStatusRequest;
 import gov.mib.aims.backend.generated.model.ChangeEquipmentMovementStatusRequest;
 import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.ChangeTenderStatusRequest;
-import gov.mib.aims.backend.generated.model.ChangeDetentionRequestStatusRequest;
-import gov.mib.aims.backend.generated.model.DetentionRequestStatusApi;
-import gov.mib.aims.backend.generated.model.SaveDetentionRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentCommentRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
+import gov.mib.aims.backend.generated.model.DetentionRequestStatusApi;
 import gov.mib.aims.backend.generated.model.EquipmentMovementOperationApi;
 import gov.mib.aims.backend.generated.model.EquipmentMovementStatusApi;
 import gov.mib.aims.backend.generated.model.EquipmentTypeApi;
@@ -19,6 +18,7 @@ import gov.mib.aims.backend.generated.model.IncidentStatusApi;
 import gov.mib.aims.backend.generated.model.LinkIncidentAlienRequest;
 import gov.mib.aims.backend.generated.model.ReceiveTenderEquipmentRequest;
 import gov.mib.aims.backend.generated.model.ReceiveTenderRequest;
+import gov.mib.aims.backend.generated.model.SaveDetentionRequest;
 import gov.mib.aims.backend.generated.model.SaveEquipmentMovementRequest;
 import gov.mib.aims.backend.generated.model.SaveEquipmentRequest;
 import gov.mib.aims.backend.generated.model.SaveTenderParticipantRequest;
@@ -33,8 +33,9 @@ import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.PermissionRepository;
 import gov.mib.aims.backend.repository.RoleRepository;
 import gov.mib.aims.backend.security.UserInfo;
-import gov.mib.aims.backend.services.EquipmentMovementService;
+import gov.mib.aims.backend.services.ChronoService;
 import gov.mib.aims.backend.services.DetentionRequestService;
+import gov.mib.aims.backend.services.EquipmentMovementService;
 import gov.mib.aims.backend.services.EquipmentService;
 import gov.mib.aims.backend.services.IncidentCommentService;
 import gov.mib.aims.backend.services.IncidentService;
@@ -56,8 +57,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
-import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -84,6 +84,7 @@ public class DemoDataInitializer implements ApplicationRunner {
         DEMO_USERS.put("agent2", Role.AGENT);
         DEMO_USERS.put("storekeeper", Role.STOREKEEPER);
         DEMO_USERS.put("tender_manager", Role.TENDER_MANAGER);
+        DEMO_USERS.put("management", Role.MANAGEMENT);
         DEMO_USERS.put("prison_guard", Role.PRISON_GUARD);
         DEMO_USERS.put("cleaner", Role.CLEANER);
         DEMO_USERS.put("admin", Role.ADMIN);
@@ -102,7 +103,7 @@ public class DemoDataInitializer implements ApplicationRunner {
     private final TenderParticipantService participantService;
     private final TenderReceiptService receiptService;
     private final DetentionRequestService detentionService;
-    private final Clock clock;
+    private final ChronoService chronoService;
 
     @Override
     @Retryable(interceptor = "retryInterceptor")
@@ -247,7 +248,8 @@ public class DemoDataInitializer implements ApplicationRunner {
     private Long seedIncident(String description, String location, IncidentStatusApi target) {
         var incident = asUser("operator", () -> incidentService.create(new CreateIncidentRequest()
                 .eventType(IncidentEventTypeApi.ALIEN_ARTIFACT).location(location).description(description)
-                .detectedAt(OffsetDateTime.now(clock).minusHours(2)).attachmentFileIds(List.of())));
+                .detectedAt(chronoService.toOffsetDateTime(chronoService.minus(chronoService.now(),
+                        2, ChronoUnit.HOURS))).attachmentFileIds(List.of())));
         asUser("operator", () -> commentService.create(incident.getId(), new CreateIncidentCommentRequest()
                 .text("Демонстрационные сведения. Материалы зарегистрированы оператором.")));
         if (target == IncidentStatusApi.DRAFT) {

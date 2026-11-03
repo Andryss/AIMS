@@ -1,6 +1,7 @@
 package gov.mib.aims.backend.services.dbqueue.processor;
 
 import gov.mib.aims.backend.BaseDbTest;
+import gov.mib.aims.backend.config.TestChronoConfig;
 import gov.mib.aims.backend.entity.MonitoringAlertEntity;
 import gov.mib.aims.backend.model.IncidentEventType;
 import gov.mib.aims.backend.model.MonitoringAlertStatus;
@@ -35,7 +36,7 @@ class NotifyOperatorsMonitoringAlertProcessorTest extends BaseDbTest {
 
     @Test
     void sendsNotificationToAllOperators() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = TestChronoConfig.FIXED_LOCAL_DATE_TIME;
         MonitoringAlertEntity alert = monitoringAlertRepository.save(MonitoringAlertEntity.builder()
                 .externalEventId("processor-test-001")
                 .sourceSystem("EXTERNAL_MONITORING_V1")

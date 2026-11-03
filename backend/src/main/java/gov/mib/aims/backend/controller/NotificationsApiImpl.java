@@ -5,15 +5,13 @@ import gov.mib.aims.backend.generated.model.NotificationItem;
 import gov.mib.aims.backend.generated.model.NotificationListResponse;
 import gov.mib.aims.backend.generated.model.UnreadCountResponse;
 import gov.mib.aims.backend.model.NotificationRecord;
+import gov.mib.aims.backend.services.ChronoService;
 import gov.mib.aims.backend.services.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 
 /**
  * REST-контроллер уведомлений.
@@ -22,6 +20,8 @@ import java.time.ZoneOffset;
 @RestController
 @RequiredArgsConstructor
 public class NotificationsApiImpl implements NotificationsApi {
+
+    private final ChronoService chronoService;
 
     private final NotificationService notificationService;
 
@@ -60,14 +60,10 @@ public class NotificationsApiImpl implements NotificationsApi {
                 .message(record.message())
                 .relatedEntities(record.relatedEntities())
                 .read(record.read())
-                .createdAt(toOffsetDateTime(record.createdAt()));
+                .createdAt(chronoService.toOffsetDateTime(record.createdAt()));
         if (record.readAt() != null) {
-            item.readAt(toOffsetDateTime(record.readAt()));
+            item.readAt(chronoService.toOffsetDateTime(record.readAt()));
         }
         return item;
-    }
-
-    private static OffsetDateTime toOffsetDateTime(java.time.Instant instant) {
-        return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 }

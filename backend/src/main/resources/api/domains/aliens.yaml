@@ -1,9 +1,9 @@
-paths:
-  /api/v1/aliens:
+pathItems:
+  Aliens:
     get:
       summary: List and search alien knowledge base
       operationId: listAliens
-      tags: [aliens]
+      tags: [ aliens ]
       security:
         - bearerAuth: []
       parameters:
@@ -21,39 +21,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/AlienListResponse"
         400:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
     post:
       summary: Create alien knowledge base entry
       operationId: createAlien
-      tags: [aliens]
+      tags: [ aliens ]
       security:
         - bearerAuth: []
       requestBody:
@@ -70,37 +50,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/AlienResponse"
         400:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/aliens/search:
+  AliensSearch:
     get:
       summary: Search aliens in knowledge base
       operationId: searchAliens
@@ -123,25 +83,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/AlienSearchResponse"
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/aliens/{id}:
+  AliensById:
     get:
       summary: Get alien by id
       operationId: getAlien
@@ -164,34 +112,18 @@ paths:
               schema:
                 $ref: "#/components/schemas/AlienResponse"
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Alien not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
     put:
       summary: Update alien knowledge base entry
       operationId: updateAlien
-      tags: [aliens]
+      tags: [ aliens ]
       security:
         - bearerAuth: []
       parameters:
@@ -215,41 +147,21 @@ paths:
               schema:
                 $ref: "#/components/schemas/AlienResponse"
         400:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
 components:
   schemas:
     SaveAlienRequest:
       type: object
-      required: [name, description, threatLevel]
+      required: [ name, description, threatLevel ]
       properties:
         name:
           type: string
@@ -269,7 +181,7 @@ components:
 
     AlienListResponse:
       type: object
-      required: [items, page, size, totalElements, totalPages]
+      required: [ items, page, size, totalElements, totalPages ]
       properties:
         items:
           type: array

@@ -15,15 +15,15 @@ import gov.mib.aims.backend.generated.model.TenderStatusApi;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.EquipmentType;
 import gov.mib.aims.backend.model.Permission;
-import gov.mib.aims.backend.model.TenderStatus;
 import gov.mib.aims.backend.model.TenderParticipantStatus;
+import gov.mib.aims.backend.model.TenderStatus;
 import gov.mib.aims.backend.repository.EntityHistoryRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
-import gov.mib.aims.backend.repository.TenderRepository;
 import gov.mib.aims.backend.repository.TenderParticipantRepository;
+import gov.mib.aims.backend.repository.TenderRepository;
 import gov.mib.aims.backend.services.mapping.TenderMapper;
-import gov.mib.aims.backend.services.tender.TenderWorkflow;
 import gov.mib.aims.backend.services.tender.TenderHistoryService;
+import gov.mib.aims.backend.services.tender.TenderWorkflow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -32,12 +32,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
-import java.time.ZoneOffset;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Закупочные потребности, доступ к редактированию и аудит тендеров.
@@ -55,7 +53,7 @@ public class TenderServiceImpl implements TenderService {
     private final ObjectMapperWrapper objectMapper;
     private final TenderMapper mapper;
     private final TenderWorkflow workflow;
-    private final Clock clock;
+    private final ChronoService chronoService;
 
     @Override
     @Retryable(interceptor = "retryInterceptor")
@@ -168,7 +166,7 @@ public class TenderServiceImpl implements TenderService {
                 PageRequest.of(page, size, Sort.by("id")));
 
         return new TenderHistoryListResponse().items(result.map(entry -> new TenderHistoryEntry()
-                        .id(entry.getId()).changedAt(entry.getChangedAt().atOffset(ZoneOffset.UTC))
+                        .id(entry.getId()).changedAt(chronoService.toOffsetDateTime(entry.getChangedAt()))
                         .changedByUserId(entry.getChangedByUserId())
                         .snapshot(objectMapper.readValue(entry.getSnapshot(), TenderHistorySnapshot.class)))
                 .getContent()).page(result.getNumber()).size(result.getSize())
@@ -183,7 +181,7 @@ public class TenderServiceImpl implements TenderService {
         entity.setEquipmentType(EquipmentType.valueOf(request.getEquipmentType().name()));
         entity.setQuantity(request.getQuantity());
         entity.setConditions(request.getConditions() == null ? null : request.getConditions().trim());
-        entity.setUpdatedAt(clock.instant());
+        entity.setUpdatedAt(chronoService.now());
     }
 
     private TenderResponse save(TenderEntity entity, String comment) {

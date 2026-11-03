@@ -19,7 +19,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,7 @@ public class MonitoringAlertServiceImpl implements MonitoringAlertService {
     private final IncidentMapper incidentMapper;
     private final ObjectMapperWrapper objectMapper;
     private final DbQueueService dbQueueService;
-    private final Clock clock;
+    private final ChronoService chronoService;
 
     @Override
     @Transactional
@@ -49,7 +48,7 @@ public class MonitoringAlertServiceImpl implements MonitoringAlertService {
             throw Errors.duplicateMonitoringEvent();
         }
 
-        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime now = chronoService.localDateTimeNow();
         List<String> mediaUrls = request.getMediaUrls() != null
                 ? request.getMediaUrls().stream().map(java.net.URI::toString).toList()
                 : new ArrayList<>();
@@ -63,7 +62,7 @@ public class MonitoringAlertServiceImpl implements MonitoringAlertService {
                 .status(MonitoringAlertStatus.NEW)
                 .eventType(incidentMapper.toModelEventType(request.getEventType()))
                 .location(request.getLocation().trim())
-                .detectedAt(request.getDetectedAt().toLocalDateTime())
+                .detectedAt(chronoService.toLocalDateTime(request.getDetectedAt()))
                 .description(request.getDescription().trim())
                 .mediaUrls(mediaUrls)
                 .rawPayload(rawPayload)

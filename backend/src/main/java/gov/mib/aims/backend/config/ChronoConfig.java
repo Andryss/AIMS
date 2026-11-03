@@ -7,14 +7,14 @@ import org.springframework.context.annotation.Profile;
 import java.time.Clock;
 
 /**
- * Системные часы для production и локальной разработки.
+ * Системные часы для приложения и локальной разработки.
  */
 @Configuration
 @Profile("!test")
-public class ClockConfig {
+public class ChronoConfig {
 
     /**
-     * Часы по UTC (для {@link java.time.LocalDateTime#now(Clock)} и {@link java.time.Instant#now(Clock)}).
+     * Предоставляет системные часы UTC для сервиса времени.
      *
      * @return системные часы UTC
      */

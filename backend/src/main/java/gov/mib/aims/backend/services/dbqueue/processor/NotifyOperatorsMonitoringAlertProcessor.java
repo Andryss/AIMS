@@ -8,6 +8,7 @@ import gov.mib.aims.backend.model.Role;
 import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.MonitoringAlertRepository;
 import gov.mib.aims.backend.services.NotificationService;
+import gov.mib.aims.backend.services.ChronoService;
 import gov.mib.aims.backend.services.dbqueue.DbQueueProcessor;
 import gov.mib.aims.backend.services.dbqueue.DbQueueSettings;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yoomoney.tech.dbqueue.api.TaskExecutionResult;
 
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -29,9 +28,7 @@ import java.util.List;
 public class NotifyOperatorsMonitoringAlertProcessor
         implements DbQueueProcessor<NotifyOperatorsMonitoringAlertPayload> {
 
-    private static final DateTimeFormatter DETECTED_AT_FORMAT =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC);
-
+    private final ChronoService chronoService;
     private final MonitoringAlertRepository monitoringAlertRepository;
     private final AppUserRepository appUserRepository;
     private final NotificationService notificationService;
@@ -44,7 +41,7 @@ public class NotifyOperatorsMonitoringAlertProcessor
             log.warn("Monitoring alert {} not found for operator notification", alertId);
             return TaskExecutionResult.finish();
         }
-        String detectedAt = DETECTED_AT_FORMAT.format(alert.getDetectedAt().atOffset(ZoneOffset.UTC));
+        String detectedAt = chronoService.formatUtc(alert.getDetectedAt(), "yyyy-MM-dd HH:mm");
         String message = "Новая активность: " + alert.getLocation() + ", " + detectedAt;
         String relatedRef = EntityRef.format(EntityType.MONITORING_ALERT, alertId);
         List<AppUserEntity> operators = appUserRepository.findAllByRoleName(Role.OPERATOR.getCode());

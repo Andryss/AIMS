@@ -1,5 +1,5 @@
-paths:
-  /api/v1/files:
+pathItems:
+  Files:
     post:
       summary: Upload a file
       operationId: uploadFile
@@ -27,25 +27,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/FileUploadResponse"
         400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/files/{id}:
+  FilesById:
     get:
       summary: Download file content by id
       operationId: downloadFile
@@ -69,23 +57,11 @@ paths:
                 type: string
                 format: binary
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         404:
-          description: File not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
 components:
   schemas:

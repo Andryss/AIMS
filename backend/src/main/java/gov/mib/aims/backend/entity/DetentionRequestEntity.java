@@ -15,8 +15,6 @@ import org.hibernate.annotations.Generated;
 import org.hibernate.generator.EventType;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-
 /**
  * Заявка с данными субъекта и сроком его заключения.
  */
@@ -68,7 +66,4 @@ public class DetentionRequestEntity {
     @Column(name = "released_at")
     private Instant releasedAt;
 
-    public Instant getPlannedReleaseAt() {
-        return admittedAt == null ? null : admittedAt.plus(durationDays, ChronoUnit.DAYS);
-    }
 }

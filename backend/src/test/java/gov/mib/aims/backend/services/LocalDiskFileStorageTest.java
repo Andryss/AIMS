@@ -1,6 +1,7 @@
 package gov.mib.aims.backend.services;
 
 import gov.mib.aims.backend.config.StorageProperties;
+import gov.mib.aims.backend.config.TestChronoConfig;
 import gov.mib.aims.backend.model.FileDescriptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,8 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Clock;
+import java.time.ZoneOffset;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,7 +29,8 @@ class LocalDiskFileStorageTest {
     void setUp() {
         StorageProperties properties = new StorageProperties();
         properties.setBasePath(tempDir.toString());
-        storage = new LocalDiskFileStorage(properties);
+        storage = new LocalDiskFileStorage(properties,
+                new ChronoService(Clock.fixed(TestChronoConfig.FIXED_INSTANT, ZoneOffset.UTC)));
     }
 
     @Test
@@ -39,6 +43,7 @@ class LocalDiskFileStorageTest {
                 content.length
         );
 
+        assertThat(descriptor.storedAt()).isEqualTo(TestChronoConfig.FIXED_INSTANT);
         assertThat(descriptor.storageId()).isNotBlank();
         assertThat(Files.exists(tempDir.resolve(descriptor.storageId()))).isTrue();
         assertThat(storage.read(descriptor.storageId())).contains(content);

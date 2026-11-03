@@ -19,8 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
-
 /**
  * Предложения участников, ограничения жизненного цикла и аудит изменений.
  */
@@ -33,7 +31,7 @@ public class TenderParticipantServiceImpl implements TenderParticipantService {
     private final CurrentUserService currentUserService;
     private final TenderParticipantMapper mapper;
     private final TenderHistoryService historyService;
-    private final Clock clock;
+    private final ChronoService chronoService;
 
     @Override
     @Transactional(readOnly = true)
@@ -93,7 +91,7 @@ public class TenderParticipantServiceImpl implements TenderParticipantService {
             throw Errors.validationError("Укажите название участника и текст предложения");
         }
 
-        var updatedAt = clock.instant();
+        var updatedAt = chronoService.now();
         participant.setName(name);
         participant.setProposal(proposal);
         participant.setUpdatedAt(updatedAt);

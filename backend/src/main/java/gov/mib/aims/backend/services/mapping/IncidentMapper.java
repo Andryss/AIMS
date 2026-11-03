@@ -8,9 +8,10 @@ import gov.mib.aims.backend.generated.model.IncidentStatusApi;
 import gov.mib.aims.backend.model.CleanupStatus;
 import gov.mib.aims.backend.model.IncidentEventType;
 import gov.mib.aims.backend.model.IncidentStatus;
+import gov.mib.aims.backend.services.ChronoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,10 @@ import java.util.List;
  * Маппинг инцидента между доменной моделью и OpenAPI DTO.
  */
 @Component
+@RequiredArgsConstructor
 public class IncidentMapper {
+
+    private final ChronoService chronoService;
 
     /**
      * Преобразует сущность инцидента в ответ API.
@@ -35,11 +39,11 @@ public class IncidentMapper {
                 .status(toApiStatus(entity.getStatus()))
                 .eventType(toApiEventType(entity.getEventType()))
                 .location(entity.getLocation())
-                .detectedAt(entity.getDetectedAt().atOffset(ZoneOffset.UTC))
+                .detectedAt(chronoService.toOffsetDateTime(entity.getDetectedAt()))
                 .description(entity.getDescription())
                 .attachmentFileIds(new ArrayList<>(entity.getAttachmentFileIds()))
-                .createdAt(entity.getCreatedAt().atOffset(ZoneOffset.UTC))
-                .updatedAt(entity.getUpdatedAt().atOffset(ZoneOffset.UTC))
+                .createdAt(chronoService.toOffsetDateTime(entity.getCreatedAt()))
+                .updatedAt(chronoService.toOffsetDateTime(entity.getUpdatedAt()))
                 .alienId(entity.getAlienId())
                 .responsibleUserId(entity.getResponsibleUserId())
                 .executorUserIds(executorIds)

@@ -12,8 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 
 /**
  * Сервис загрузки и скачивания файлов.
@@ -21,6 +19,8 @@ import java.time.ZoneOffset;
 @Service
 @RequiredArgsConstructor
 public class FileService {
+
+    private final ChronoService chronoService;
 
     private final FileStorage fileStorage;
     private final StoredFileRepository storedFileRepository;
@@ -59,7 +59,7 @@ public class FileService {
                 .fileName(entity.getFileName())
                 .contentType(entity.getContentType())
                 .fileSize(entity.getFileSize())
-                .createdAt(OffsetDateTime.ofInstant(entity.getCreatedAt(), ZoneOffset.UTC));
+                .createdAt(chronoService.toOffsetDateTime(entity.getCreatedAt()));
     }
 
     /**

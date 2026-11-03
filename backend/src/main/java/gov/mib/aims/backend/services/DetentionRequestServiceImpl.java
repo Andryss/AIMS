@@ -2,6 +2,7 @@ package gov.mib.aims.backend.services;
 
 import gov.mib.aims.backend.entity.DetentionRequestEntity;
 import gov.mib.aims.backend.exception.Errors;
+import gov.mib.aims.backend.generated.model.ChangeDetentionRequestStatusRequest;
 import gov.mib.aims.backend.generated.model.DetentionRequestHistoryEntry;
 import gov.mib.aims.backend.generated.model.DetentionRequestHistoryListResponse;
 import gov.mib.aims.backend.generated.model.DetentionRequestHistorySnapshot;
@@ -9,7 +10,6 @@ import gov.mib.aims.backend.generated.model.DetentionRequestListResponse;
 import gov.mib.aims.backend.generated.model.DetentionRequestResponse;
 import gov.mib.aims.backend.generated.model.DetentionRequestStatusApi;
 import gov.mib.aims.backend.generated.model.SaveDetentionRequest;
-import gov.mib.aims.backend.generated.model.ChangeDetentionRequestStatusRequest;
 import gov.mib.aims.backend.model.DetentionRequestStatus;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.IncidentStatus;
@@ -18,8 +18,8 @@ import gov.mib.aims.backend.repository.AlienRepository;
 import gov.mib.aims.backend.repository.DetentionRequestRepository;
 import gov.mib.aims.backend.repository.EntityHistoryRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
-import gov.mib.aims.backend.services.mapping.DetentionRequestMapper;
 import gov.mib.aims.backend.services.detention.DetentionRequestWorkflow;
+import gov.mib.aims.backend.services.mapping.DetentionRequestMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -28,9 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -50,7 +47,7 @@ public class DetentionRequestServiceImpl implements DetentionRequestService {
     private final ObjectMapperWrapper objectMapper;
     private final DetentionRequestMapper mapper;
     private final DetentionRequestWorkflow workflow;
-    private final Clock clock;
+    private final ChronoService chronoService;
 
     @Override
     @Retryable(interceptor = "retryInterceptor")
@@ -136,7 +133,7 @@ public class DetentionRequestServiceImpl implements DetentionRequestService {
                 id, PageRequest.of(page, size, Sort.by("id")));
 
         return new DetentionRequestHistoryListResponse().items(result.map(entry -> new DetentionRequestHistoryEntry()
-                        .id(entry.getId()).changedAt(entry.getChangedAt().atOffset(ZoneOffset.UTC))
+                        .id(entry.getId()).changedAt(chronoService.toOffsetDateTime(entry.getChangedAt()))
                         .changedByUserId(entry.getChangedByUserId())
                         .snapshot(objectMapper.readValue(entry.getSnapshot(), DetentionRequestHistorySnapshot.class)))
                 .getContent()).page(result.getNumber()).size(result.getSize())
@@ -159,7 +156,7 @@ public class DetentionRequestServiceImpl implements DetentionRequestService {
         entity.setSubjectDescription(request.getSubjectDescription().trim());
         entity.setAlienId(request.getAlienId());
         entity.setDurationDays(request.getDurationDays());
-        entity.setUpdatedAt(clock.instant().truncatedTo(ChronoUnit.MICROS));
+        entity.setUpdatedAt(chronoService.now());
     }
 
     private DetentionRequestResponse save(DetentionRequestEntity entity, String comment) {

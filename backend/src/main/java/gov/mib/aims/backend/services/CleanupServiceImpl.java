@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -39,7 +38,7 @@ public class CleanupServiceImpl implements CleanupService {
     private final CleanupMapper cleanupMapper;
     private final IncidentMapper incidentMapper;
     private final AttachmentValidator attachmentValidator;
-    private final Clock clock;
+    private final ChronoService chronoService;
 
     @Override
     @Transactional
@@ -52,7 +51,7 @@ public class CleanupServiceImpl implements CleanupService {
         }
         attachmentValidator.assertAllExist(request.getAttachmentFileIds());
 
-        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime now = chronoService.localDateTimeNow();
         CleanupReportEntity report = CleanupReportEntity.builder()
                 .incidentId(incidentId)
                 .description(request.getDescription().trim())

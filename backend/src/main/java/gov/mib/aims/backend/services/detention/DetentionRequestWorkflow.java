@@ -4,13 +4,13 @@ import gov.mib.aims.backend.entity.DetentionRequestEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.model.DetentionRequestStatus;
 import gov.mib.aims.backend.model.Permission;
+import gov.mib.aims.backend.services.ChronoService;
 import gov.mib.aims.backend.services.CurrentUserService;
 import gov.mib.aims.backend.services.status.AbstractStatusWorkflow;
 import gov.mib.aims.backend.services.status.StatusTransition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -24,7 +24,7 @@ public class DetentionRequestWorkflow
         extends AbstractStatusWorkflow<DetentionRequestEntity, DetentionRequestStatus> {
 
     private final CurrentUserService currentUserService;
-    private final Clock clock;
+    private final ChronoService chronoService;
 
     /**
      * Проверяет переход, полномочия и обязательную причину, затем изменяет состояние заявки.
@@ -61,7 +61,8 @@ public class DetentionRequestWorkflow
 
     private void assertComment(DetentionRequestEntity entity, DetentionRequestStatus target, String comment) {
         boolean earlyRelease = target == DetentionRequestStatus.RELEASED
-                && clock.instant().isBefore(entity.getPlannedReleaseAt());
+                && chronoService.isBefore(chronoService.now(),
+                        chronoService.plus(entity.getAdmittedAt(), entity.getDurationDays(), ChronoUnit.DAYS));
         if ((target == DetentionRequestStatus.CANCELLED || target == DetentionRequestStatus.REJECTED || earlyRelease)
                 && (comment == null || comment.trim().isBlank())) {
             throw Errors.validationError("Укажите причину отмены, отклонения или досрочного освобождения");
@@ -70,7 +71,7 @@ public class DetentionRequestWorkflow
 
     @Override
     protected DetentionRequestEntity applyStatus(DetentionRequestEntity entity, DetentionRequestStatus target) {
-        Instant now = clock.instant().truncatedTo(ChronoUnit.MICROS);
+        Instant now = chronoService.now();
         if (target == DetentionRequestStatus.ACCEPTED || target == DetentionRequestStatus.REJECTED) {
             entity.setReviewedByUserId(currentUserService.getCurrentUserId());
         } else if (target == DetentionRequestStatus.IN_CUSTODY) {

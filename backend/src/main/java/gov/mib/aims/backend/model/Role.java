@@ -66,6 +66,7 @@ public enum Role {
             Permission.TENDER_EDIT,
             Permission.TENDER_MANAGE,
             Permission.TENDER_RECEIVE,
+            Permission.ANALYTICS_READ,
             Permission.DETENTION_READ,
             Permission.DETENTION_CREATE,
             Permission.DETENTION_EDIT,
@@ -121,6 +122,18 @@ public enum Role {
             Permission.TENDER_EDIT,
             Permission.TENDER_MANAGE,
             Permission.TENDER_RECEIVE
+    ),
+    /** Руководство. */
+    MANAGEMENT(
+            "Руководство",
+            Permission.ANALYTICS_READ,
+            Permission.INCIDENT_READ,
+            Permission.EQUIPMENT_READ,
+            Permission.EQUIPMENT_MOVEMENT_READ,
+            Permission.TENDER_READ,
+            Permission.DETENTION_READ,
+            Permission.ALIEN_READ,
+            Permission.USER_READ
     ),
     /** Тюремный надзиратель. */
     PRISON_GUARD(

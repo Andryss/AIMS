@@ -4,8 +4,6 @@ import gov.mib.aims.backend.entity.EquipmentEntity;
 import gov.mib.aims.backend.entity.EquipmentMovementEntity;
 import gov.mib.aims.backend.entity.EquipmentMovementItemEntity;
 import gov.mib.aims.backend.exception.Errors;
-import gov.mib.aims.backend.services.status.AbstractStatusWorkflow;
-import gov.mib.aims.backend.services.status.StatusTransition;
 import gov.mib.aims.backend.generated.model.EquipmentHistoryEventApi;
 import gov.mib.aims.backend.generated.model.EquipmentHistorySnapshot;
 import gov.mib.aims.backend.model.EntityType;
@@ -15,13 +13,15 @@ import gov.mib.aims.backend.model.EquipmentStatus;
 import gov.mib.aims.backend.model.Role;
 import gov.mib.aims.backend.repository.EquipmentMovementItemRepository;
 import gov.mib.aims.backend.repository.EquipmentRepository;
+import gov.mib.aims.backend.services.ChronoService;
 import gov.mib.aims.backend.services.CurrentUserService;
 import gov.mib.aims.backend.services.EntityHistoryService;
 import gov.mib.aims.backend.services.mapping.EquipmentMapper;
+import gov.mib.aims.backend.services.status.AbstractStatusWorkflow;
+import gov.mib.aims.backend.services.status.StatusTransition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.Clock;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,7 +38,7 @@ public class EquipmentMovementWorkflow
     private final EquipmentRepository equipmentRepository;
     private final EntityHistoryService historyService;
     private final EquipmentMapper equipmentMapper;
-    private final Clock clock;
+    private final ChronoService chronoService;
 
     /**
      * Проверяет переход и права, затем применяет изменение в транзакции сервиса.
@@ -115,7 +115,7 @@ public class EquipmentMovementWorkflow
         }
 
         movement.setStatus(EquipmentMovementStatus.COMPLETED);
-        movement.setCompletedAt(clock.instant());
+        movement.setCompletedAt(chronoService.now());
 
         for (EquipmentEntity item : equipment) {
             item.setStatus(issue ? EquipmentStatus.ISSUED : EquipmentStatus.AVAILABLE);

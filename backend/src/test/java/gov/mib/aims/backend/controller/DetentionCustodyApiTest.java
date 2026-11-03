@@ -1,6 +1,6 @@
 package gov.mib.aims.backend.controller;
 
-import gov.mib.aims.backend.config.TestClockConfig;
+import gov.mib.aims.backend.config.TestChronoConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -33,8 +33,8 @@ class DetentionCustodyApiTest extends BaseApiTest {
     @ValueSource(strings = {"prison_guard", "admin"})
     void admitsWithServerTimeAndReleasesWithReason(String actor) throws Exception {
         long id = accepted();
-        String now = TestClockConfig.FIXED_INSTANT.toString();
-        String planned = TestClockConfig.FIXED_INSTANT.plus(30, ChronoUnit.DAYS).toString();
+        String now = TestChronoConfig.FIXED_INSTANT.toString();
+        String planned = TestChronoConfig.FIXED_INSTANT.plus(30, ChronoUnit.DAYS).toString();
 
         mockMvc.perform(patch(URL + "/" + id + "/status").header(HttpHeaders.AUTHORIZATION, token(actor))
                 .contentType(APPLICATION_JSON).content("""
@@ -72,7 +72,7 @@ class DetentionCustodyApiTest extends BaseApiTest {
         assertThat(historyCount(id)).isEqualTo(3);
         mockMvc.perform(get(URL + "/" + id).header(HttpHeaders.AUTHORIZATION, token("agent")))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("IN_CUSTODY"))
-                .andExpect(jsonPath("$.admittedAt").value(TestClockConfig.FIXED_INSTANT.toString()));
+                .andExpect(jsonPath("$.admittedAt").value(TestChronoConfig.FIXED_INSTANT.toString()));
     }
 
     @ParameterizedTest
@@ -92,7 +92,7 @@ class DetentionCustodyApiTest extends BaseApiTest {
     @CsvSource({"29,400", "30,200", "31,200"})
     void checksReleaseDeadlineWithoutAutomaticTransition(int daysAgo, int expected) throws Exception {
         long id = admitted();
-        Instant admission = TestClockConfig.FIXED_INSTANT.minus(daysAgo, ChronoUnit.DAYS);
+        Instant admission = TestChronoConfig.FIXED_INSTANT.minus(daysAgo, ChronoUnit.DAYS);
         jdbcTemplate.update("update detention_request set admitted_at=? where id=?",
                 java.sql.Timestamp.from(admission), id);
 
@@ -123,7 +123,7 @@ class DetentionCustodyApiTest extends BaseApiTest {
     @Test
     void shorteningDurationKeepsAdmissionAndCanMakeRequestOverdue() throws Exception {
         long id = admitted();
-        Instant admission = TestClockConfig.FIXED_INSTANT.minus(10, ChronoUnit.DAYS);
+        Instant admission = TestChronoConfig.FIXED_INSTANT.minus(10, ChronoUnit.DAYS);
         jdbcTemplate.update("update detention_request set admitted_at=? where id=?",
                 java.sql.Timestamp.from(admission), id);
 
@@ -151,7 +151,7 @@ class DetentionCustodyApiTest extends BaseApiTest {
                         """)))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("IN_CUSTODY"))
                 .andExpect(jsonPath("$.createdByUserId").value(userId("agent")))
-                .andExpect(jsonPath("$.admittedAt").value(TestClockConfig.FIXED_INSTANT.toString()))
+                .andExpect(jsonPath("$.admittedAt").value(TestChronoConfig.FIXED_INSTANT.toString()))
                 .andExpect(jsonPath("$.releasedAt").doesNotExist());
 
         assertThat(historyCount(id)).isEqualTo(4);

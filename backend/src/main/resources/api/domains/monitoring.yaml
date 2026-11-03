@@ -1,5 +1,5 @@
-paths:
-  /api/v1/monitoring/alerts:
+pathItems:
+  MonitoringAlerts:
     get:
       summary: List monitoring alerts
       operationId: listMonitoringAlerts
@@ -23,25 +23,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/MonitoringAlertListResponse"
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/monitoring/alerts/{id}:
+  MonitoringAlertsById:
     get:
       summary: Get monitoring alert by id
       operationId: getMonitoringAlert
@@ -64,29 +52,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/MonitoringAlertResponse"
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Monitoring alert not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
 components:
   schemas:

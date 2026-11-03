@@ -4,16 +4,20 @@ import gov.mib.aims.backend.entity.CleanupReportEntity;
 import gov.mib.aims.backend.generated.model.CleanupReportResponse;
 import gov.mib.aims.backend.generated.model.CleanupStatusApi;
 import gov.mib.aims.backend.model.CleanupStatus;
+import gov.mib.aims.backend.services.ChronoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 
 /**
  * Маппинг отчёта об очистке и статуса очистки между доменной моделью и OpenAPI DTO.
  */
 @Component
+@RequiredArgsConstructor
 public class CleanupMapper {
+
+    private final ChronoService chronoService;
 
     /**
      * Преобразует статус очистки из API в доменную модель.
@@ -36,6 +40,6 @@ public class CleanupMapper {
                 .description(entity.getDescription())
                 .attachmentFileIds(new ArrayList<>(entity.getAttachmentFileIds()))
                 .createdByUserId(entity.getCreatedByUserId())
-                .createdAt(entity.getCreatedAt().atOffset(ZoneOffset.UTC));
+                .createdAt(chronoService.toOffsetDateTime(entity.getCreatedAt()));
     }
 }

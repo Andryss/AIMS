@@ -1,5 +1,5 @@
-paths:
-  /api/v1/incidents:
+pathItems:
+  Incidents:
     get:
       summary: List incidents
       operationId: listIncidents
@@ -18,23 +18,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/IncidentListResponse"
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
     post:
       summary: Create incident
       operationId: createIncident
@@ -56,31 +44,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/IncidentResponse"
         400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/incidents/{id}:
+  IncidentsById:
     get:
       summary: Get incident by id
       operationId: getIncident
@@ -103,31 +75,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/IncidentResponse"
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Incident not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/incidents/{id}/alien:
+  IncidentsByIdAlien:
     put:
       summary: Link alien type to incident
       operationId: linkIncidentAlien
@@ -156,37 +112,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/IncidentResponse"
         400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Incident or alien not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/incidents/{id}/comments:
+  IncidentsByIdComments:
     get:
       summary: List incident comments
       operationId: listIncidentComments
@@ -218,29 +154,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/IncidentCommentListResponse"
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Incident not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
     post:
       summary: Create incident comment
       operationId: createIncidentComment
@@ -269,37 +189,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/IncidentCommentResponse"
         400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Incident not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/incidents/{id}/history:
+  IncidentsByIdHistory:
     get:
       summary: List incident change history
       operationId: listIncidentHistory
@@ -331,31 +231,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/IncidentHistoryListResponse"
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Incident not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/incidents/{id}/responsible:
+  IncidentsByIdResponsible:
     put:
       summary: Set incident responsible agent
       operationId: setIncidentResponsible
@@ -384,37 +268,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/IncidentResponse"
         400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Incident or user not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/incidents/{id}/executors:
+  IncidentsByIdExecutors:
     put:
       summary: Replace incident executors list
       operationId: setIncidentExecutors
@@ -443,37 +307,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/IncidentResponse"
         400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Incident or user not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/incidents/{id}/status:
+  IncidentsByIdStatus:
     post:
       summary: Change incident status
       operationId: changeIncidentStatus
@@ -502,37 +346,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/IncidentResponse"
         400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Incident not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/incidents/{id}/cleanup-report:
+  IncidentsByIdCleanupReport:
     get:
       summary: Get cleanup report for incident
       operationId: getIncidentCleanupReport
@@ -555,29 +379,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/CleanupReportResponse"
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Incident or cleanup report not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
     post:
       summary: Create cleanup report for incident
       operationId: createIncidentCleanupReport
@@ -606,43 +414,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/CleanupReportResponse"
         400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Incident not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Cleanup report already exists
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/incidents/{id}/cleanup-status:
+  IncidentsByIdCleanupStatus:
     post:
       summary: Change cleanup status for incident
       operationId: changeIncidentCleanupStatus
@@ -671,35 +455,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/IncidentResponse"
         400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Incident not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
 components:
   schemas:

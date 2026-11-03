@@ -4,22 +4,22 @@ import gov.mib.aims.backend.entity.MonitoringAlertEntity;
 import gov.mib.aims.backend.generated.model.MonitoringAlertResponse;
 import gov.mib.aims.backend.generated.model.MonitoringAlertStatusApi;
 import gov.mib.aims.backend.model.MonitoringAlertStatus;
+import gov.mib.aims.backend.services.ChronoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 
 /**
  * Маппинг алерта мониторинга между доменной моделью и OpenAPI DTO.
  */
 @Component
+@RequiredArgsConstructor
 public class MonitoringAlertMapper {
 
-    private final IncidentMapper incidentMapper;
+    private final ChronoService chronoService;
 
-    public MonitoringAlertMapper(IncidentMapper incidentMapper) {
-        this.incidentMapper = incidentMapper;
-    }
+    private final IncidentMapper incidentMapper;
 
     /**
      * Преобразует сущность алерта в ответ API.
@@ -32,14 +32,14 @@ public class MonitoringAlertMapper {
                 .status(toApiStatus(entity.getStatus()))
                 .eventType(incidentMapper.toApiEventType(entity.getEventType()))
                 .location(entity.getLocation())
-                .detectedAt(entity.getDetectedAt().atOffset(ZoneOffset.UTC))
+                .detectedAt(chronoService.toOffsetDateTime(entity.getDetectedAt()))
                 .description(entity.getDescription())
                 .mediaUrls(entity.getMediaUrls() != null
                         ? new ArrayList<>(entity.getMediaUrls())
                         : new ArrayList<>())
                 .incidentId(entity.getIncidentId())
-                .receivedAt(entity.getReceivedAt().atOffset(ZoneOffset.UTC))
-                .createdAt(entity.getCreatedAt().atOffset(ZoneOffset.UTC));
+                .receivedAt(chronoService.toOffsetDateTime(entity.getReceivedAt()))
+                .createdAt(chronoService.toOffsetDateTime(entity.getCreatedAt()));
     }
 
     /**

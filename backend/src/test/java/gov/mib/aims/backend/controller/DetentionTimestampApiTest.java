@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Одинаковая точность дат в ответах, сохранённых заявках и истории.
  */
-@Import(DetentionTimestampApiTest.PreciseClockConfig.class)
+@Import(DetentionTimestampApiTest.PreciseChronoConfig.class)
 class DetentionTimestampApiTest extends BaseApiTest {
 
     private static final String URL = "/api/v1/detention-requests";
@@ -69,7 +69,7 @@ class DetentionTimestampApiTest extends BaseApiTest {
      * Часы с точностью выше точности PostgreSQL для проверки сохранённых снимков.
      */
     @TestConfiguration
-    static class PreciseClockConfig {
+    static class PreciseChronoConfig {
 
         @Bean
         @Primary

@@ -15,18 +15,17 @@ import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.EquipmentType;
 import gov.mib.aims.backend.repository.EntityHistoryRepository;
 import gov.mib.aims.backend.repository.EquipmentRepository;
-import gov.mib.aims.backend.services.mapping.EquipmentMapper;
 import gov.mib.aims.backend.services.equipment.EquipmentRegistrationService;
+import gov.mib.aims.backend.services.mapping.EquipmentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZoneOffset;
 import java.util.Locale;
 
 /**
@@ -35,6 +34,8 @@ import java.util.Locale;
 @Service
 @RequiredArgsConstructor
 public class EquipmentServiceImpl implements EquipmentService {
+
+    private final ChronoService chronoService;
 
     private final EquipmentRepository equipmentRepository;
     private final EntityHistoryRepository historyRepository;
@@ -90,7 +91,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                 PageRequest.of(page, size, Sort.by("id")));
 
         return new EquipmentHistoryListResponse().items(result.map(entry -> new EquipmentHistoryEntry()
-                        .id(entry.getId()).changedAt(entry.getChangedAt().atOffset(ZoneOffset.UTC))
+                        .id(entry.getId()).changedAt(chronoService.toOffsetDateTime(entry.getChangedAt()))
                         .changedByUserId(entry.getChangedByUserId())
                         .snapshot(objectMapper.readValue(entry.getSnapshot(), EquipmentHistorySnapshot.class)))
                 .getContent()).page(result.getNumber()).size(result.getSize())

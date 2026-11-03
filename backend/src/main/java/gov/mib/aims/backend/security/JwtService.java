@@ -1,20 +1,23 @@
 package gov.mib.aims.backend.security;
 
 import gov.mib.aims.backend.config.JwtProperties;
+import gov.mib.aims.backend.services.ChronoService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.temporal.ChronoUnit;
+import javax.crypto.SecretKey;
 
 /**
  * Сервис выпуска и проверки JWT.
  */
 @Service
 public class JwtService {
+
+    private final ChronoService chronoService;
 
     private final SecretKey secretKey;
     private final long expirationMs;
@@ -24,7 +27,8 @@ public class JwtService {
      *
      * @param jwtProperties параметры JWT
      */
-    public JwtService(JwtProperties jwtProperties) {
+    public JwtService(JwtProperties jwtProperties, ChronoService chronoService) {
+        this.chronoService = chronoService;
         this.secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
         this.expirationMs = jwtProperties.getExpirationMs();
     }
@@ -36,12 +40,12 @@ public class JwtService {
      * @return токен доступа
      */
     public String generateToken(String login) {
-        Date now = new Date();
-        Date expiry = new Date(now.getTime() + expirationMs);
+        var now = chronoService.now();
+        var expiry = chronoService.plus(now, expirationMs, ChronoUnit.MILLIS);
         return Jwts.builder()
                 .subject(login)
-                .issuedAt(now)
-                .expiration(expiry)
+                .issuedAt(chronoService.toDate(now))
+                .expiration(chronoService.toDate(expiry))
                 .signWith(secretKey)
                 .compact();
     }
@@ -74,6 +78,7 @@ public class JwtService {
     private Claims parseClaims(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
+                .clock(() -> chronoService.toDate(chronoService.now()))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();

@@ -4,13 +4,13 @@ import gov.mib.aims.backend.entity.TenderEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.model.Permission;
 import gov.mib.aims.backend.model.TenderStatus;
+import gov.mib.aims.backend.services.ChronoService;
 import gov.mib.aims.backend.services.CurrentUserService;
 import gov.mib.aims.backend.services.status.AbstractStatusWorkflow;
 import gov.mib.aims.backend.services.status.StatusTransition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.Clock;
 import java.util.List;
 
 /**
@@ -21,7 +21,7 @@ import java.util.List;
 public class TenderWorkflow extends AbstractStatusWorkflow<TenderEntity, TenderStatus> {
 
     private final CurrentUserService currentUserService;
-    private final Clock clock;
+    private final ChronoService chronoService;
 
     /**
      * Проверяет переход, полномочия и обязательную причину отмены.
@@ -92,7 +92,7 @@ public class TenderWorkflow extends AbstractStatusWorkflow<TenderEntity, TenderS
     @Override
     protected TenderEntity applyStatus(TenderEntity entity, TenderStatus target) {
         entity.setStatus(target);
-        entity.setUpdatedAt(clock.instant());
+        entity.setUpdatedAt(chronoService.now());
         if (target == TenderStatus.COMPLETED) {
             entity.setCompletedAt(entity.getUpdatedAt());
         }

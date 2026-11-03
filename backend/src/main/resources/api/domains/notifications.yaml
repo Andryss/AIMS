@@ -1,5 +1,5 @@
-paths:
-  /api/v1/notifications:
+pathItems:
+  Notifications:
     get:
       summary: List notifications for current user
       operationId: listNotifications
@@ -18,19 +18,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/NotificationListResponse"
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/notifications/unread-count:
+  NotificationsUnreadCount:
     get:
       summary: Get unread notifications count
       operationId: getUnreadNotificationsCount
@@ -46,19 +38,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/UnreadCountResponse"
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
-  /api/v1/notifications/{id}/read:
+  NotificationsByIdRead:
     patch:
       summary: Mark notification as read
       operationId: markNotificationRead
@@ -77,23 +61,11 @@ paths:
         200:
           description: Notification marked as read
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         404:
-          description: Notification not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
 components:
   schemas:

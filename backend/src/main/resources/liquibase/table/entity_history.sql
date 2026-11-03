@@ -10,6 +10,9 @@ create table entity_history (
     changed_at timestamptz not null default now()
 );
 
+create index entity_history_snapshot_idx on entity_history (entity_type, entity_id, changed_at desc, id desc);
+create index entity_history_event_idx on entity_history (entity_type, changed_at);
+
 comment on table entity_history is 'Audit snapshots of entity state after change';
 comment on column entity_history.entity_type is 'Entity type code';
 comment on column entity_history.snapshot is 'Full JSON dump of new entity state';

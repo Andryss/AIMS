@@ -1,0 +1,613 @@
+pathItems:
+  IncidentsStatisticsCreatedCount:
+    get:
+      operationId: "getIncidentCreatedCount"
+      tags:
+        - "incident-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "eventType"
+          in: "query"
+          schema:
+            $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  IncidentsStatisticsCompletedCount:
+    get:
+      operationId: "getIncidentCompletedCount"
+      tags:
+        - "incident-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "eventType"
+          in: "query"
+          schema:
+            $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  IncidentsStatisticsTotalAtTo:
+    get:
+      operationId: "getIncidentTotalAtTo"
+      tags:
+        - "incident-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "eventType"
+          in: "query"
+          schema:
+            $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  IncidentsStatisticsCompletedAtTo:
+    get:
+      operationId: "getIncidentCompletedAtTo"
+      tags:
+        - "incident-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "eventType"
+          in: "query"
+          schema:
+            $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  IncidentsStatisticsOpenAtTo:
+    get:
+      operationId: "getIncidentOpenAtTo"
+      tags:
+        - "incident-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "eventType"
+          in: "query"
+          schema:
+            $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  IncidentsStatisticsCompletionDuration:
+    get:
+      operationId: "getIncidentCompletionDuration"
+      tags:
+        - "incident-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "eventType"
+          in: "query"
+          schema:
+            $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/DurationAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  IncidentsStatisticsTrend:
+    get:
+      operationId: "getIncidentTrend"
+      tags:
+        - "incident-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "eventType"
+          in: "query"
+          schema:
+            $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/TrendAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  IncidentsStatisticsByStatus:
+    get:
+      operationId: "getIncidentByStatus"
+      tags:
+        - "incident-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "eventType"
+          in: "query"
+          schema:
+            $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/GroupedAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  IncidentsStatisticsByEventType:
+    get:
+      operationId: "getIncidentByEventType"
+      tags:
+        - "incident-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "eventType"
+          in: "query"
+          schema:
+            $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/GroupedAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  IncidentsStatisticsByAlien:
+    get:
+      operationId: "getIncidentByAlien"
+      tags:
+        - "incident-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "eventType"
+          in: "query"
+          schema:
+            $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/GroupedAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  IncidentsStatisticsByLocation:
+    get:
+      operationId: "getIncidentByLocation"
+      tags:
+        - "incident-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "eventType"
+          in: "query"
+          schema:
+            $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/GroupedAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  IncidentsStatisticsStale:
+    get:
+      operationId: "getIncidentStale"
+      tags:
+        - "incident-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "eventType"
+          in: "query"
+          schema:
+            $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/StaleIncidentAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden

@@ -1,5 +1,5 @@
-paths:
-  /api/v1/integration/monitoring/events:
+pathItems:
+  IntegrationMonitoringEvents:
     post:
       summary: Ingest monitoring event from external system
       operationId: ingestMonitoringEvent
@@ -21,35 +21,15 @@ paths:
               schema:
                 $ref: "./monitoring.yaml#/components/schemas/MonitoringAlertResponse"
         400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         409:
-          description: Duplicate external event id
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/InternalServerError
 
 components:
   schemas:

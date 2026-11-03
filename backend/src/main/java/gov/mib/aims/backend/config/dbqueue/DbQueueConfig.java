@@ -1,18 +1,11 @@
 package gov.mib.aims.backend.config.dbqueue;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
+import gov.mib.aims.backend.services.ChronoService;
 import gov.mib.aims.backend.services.ObjectMapperWrapper;
 import gov.mib.aims.backend.services.dbqueue.DbQueueProcessor;
 import gov.mib.aims.backend.services.dbqueue.DbQueueSettings;
 import gov.mib.aims.backend.services.dbqueue.QueuePayload;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,9 +32,18 @@ import ru.yoomoney.tech.dbqueue.settings.QueueSettings;
 import ru.yoomoney.tech.dbqueue.settings.ReenqueueSettings;
 import ru.yoomoney.tech.dbqueue.spring.dao.SpringDatabaseAccessLayer;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import javax.sql.DataSource;
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class DbQueueConfig {
+
+    private final ChronoService chronoService;
 
     @Bean(initMethod = "start")
     public QueueService queueService(
@@ -159,15 +161,15 @@ public class DbQueueConfig {
                         )
                         .withPollSettings(
                                 PollSettings.builder()
-                                        .withBetweenTaskTimeout(Duration.ofSeconds(settings.betweenTasksTimeout()))
-                                        .withNoTaskTimeout(Duration.ofSeconds(settings.noTaskTimeout()))
-                                        .withFatalCrashTimeout(Duration.ofSeconds(settings.fatalCrashTimeout()))
+                                        .withBetweenTaskTimeout(chronoService.seconds(settings.betweenTasksTimeout()))
+                                        .withNoTaskTimeout(chronoService.seconds(settings.noTaskTimeout()))
+                                        .withFatalCrashTimeout(chronoService.seconds(settings.fatalCrashTimeout()))
                                         .build()
                         )
                         .withFailureSettings(
                                 FailureSettings.builder()
                                         .withRetryType(settings.failRetryType())
-                                        .withRetryInterval(Duration.ofSeconds(settings.failInitialDelay()))
+                                        .withRetryInterval(chronoService.seconds(settings.failInitialDelay()))
                                         .build()
                         )
                         .withReenqueueSettings(
@@ -175,11 +177,11 @@ public class DbQueueConfig {
                                         .withRetryType(settings.retryType())
                                         .withSequentialPlan(
                                                 Arrays.stream(settings.sequentialPlan())
-                                                        .mapToObj(Duration::ofSeconds)
+                                                        .mapToObj(chronoService::seconds)
                                                         .toList())
-                                        .withFixedDelay(Duration.ofSeconds(settings.fixedDelay()))
-                                        .withInitialDelay(Duration.ofSeconds(settings.initialDelay()))
-                                        .withArithmeticStep(Duration.ofSeconds(settings.arithmeticStep()))
+                                        .withFixedDelay(chronoService.seconds(settings.fixedDelay()))
+                                        .withInitialDelay(chronoService.seconds(settings.initialDelay()))
+                                        .withArithmeticStep(chronoService.seconds(settings.arithmeticStep()))
                                         .withGeometricRatio(settings.geometricRatio())
                                         .build()
                         )

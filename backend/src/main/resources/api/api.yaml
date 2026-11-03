@@ -14,14 +14,20 @@ tags:
     description: File upload and download API
   - name: notifications
     description: Notifications API
+  - name: incident-statistics
+    description: Historical incidents statistics API
   - name: incidents
     description: Incidents API
   - name: aliens
     description: Alien knowledge base API
+  - name: equipment-statistics
+    description: Historical equipment statistics API
   - name: equipment
     description: Equipment inventory API
   - name: equipment-movements
     description: Equipment movements API
+  - name: detention-statistics
+    description: Historical detention-requests statistics API
   - name: detention-requests
     description: Detention requests and custody API
   - name: users
@@ -32,144 +38,212 @@ tags:
     description: Monitoring alerts API
 
 paths:
+
   /api/v1/auth/signin:
-    $ref: "./domains/auth.yaml#/paths/~1api~1v1~1auth~1signin"
+    $ref: ./domains/auth.yaml#/pathItems/AuthSignin
 
   /api/v1/auth/me:
-    $ref: "./domains/auth.yaml#/paths/~1api~1v1~1auth~1me"
+    $ref: ./domains/auth.yaml#/pathItems/AuthMe
 
   /api/v1/files:
-    $ref: "./domains/files.yaml#/paths/~1api~1v1~1files"
+    $ref: ./domains/files.yaml#/pathItems/Files
 
-  /api/v1/files/{id}:
-    $ref: "./domains/files.yaml#/paths/~1api~1v1~1files~1{id}"
+  "/api/v1/files/{id}":
+    $ref: ./domains/files.yaml#/pathItems/FilesById
 
   /api/v1/notifications:
-    $ref: "./domains/notifications.yaml#/paths/~1api~1v1~1notifications"
+    $ref: ./domains/notifications.yaml#/pathItems/Notifications
 
   /api/v1/notifications/unread-count:
-    $ref: "./domains/notifications.yaml#/paths/~1api~1v1~1notifications~1unread-count"
+    $ref: ./domains/notifications.yaml#/pathItems/NotificationsUnreadCount
 
-  /api/v1/notifications/{id}/read:
-    $ref: "./domains/notifications.yaml#/paths/~1api~1v1~1notifications~1{id}~1read"
+  "/api/v1/notifications/{id}/read":
+    $ref: ./domains/notifications.yaml#/pathItems/NotificationsByIdRead
 
   /api/v1/users/search:
-    $ref: "./domains/users.yaml#/paths/~1api~1v1~1users~1search"
+    $ref: ./domains/users.yaml#/pathItems/UsersSearch
 
   /api/v1/users/batch:
-    $ref: "./domains/users.yaml#/paths/~1api~1v1~1users~1batch"
+    $ref: ./domains/users.yaml#/pathItems/UsersBatch
 
+  /api/v1/incidents/statistics/created-count:
+    $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsCreatedCount
+  /api/v1/incidents/statistics/completed-count:
+    $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsCompletedCount
+  /api/v1/incidents/statistics/total-at-to:
+    $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsTotalAtTo
+  /api/v1/incidents/statistics/completed-at-to:
+    $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsCompletedAtTo
+  /api/v1/incidents/statistics/open-at-to:
+    $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsOpenAtTo
+  /api/v1/incidents/statistics/completion-duration:
+    $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsCompletionDuration
+  /api/v1/incidents/statistics/trend:
+    $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsTrend
+  /api/v1/incidents/statistics/by-status:
+    $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsByStatus
+  /api/v1/incidents/statistics/by-event-type:
+    $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsByEventType
+  /api/v1/incidents/statistics/by-alien:
+    $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsByAlien
+  /api/v1/incidents/statistics/by-location:
+    $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsByLocation
+  /api/v1/incidents/statistics/stale:
+    $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsStale
   /api/v1/incidents:
-    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents"
+    $ref: ./domains/incidents.yaml#/pathItems/Incidents
 
-  /api/v1/incidents/{id}:
-    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}"
+  "/api/v1/incidents/{id}":
+    $ref: ./domains/incidents.yaml#/pathItems/IncidentsById
 
   /api/v1/aliens:
-    $ref: "./domains/aliens.yaml#/paths/~1api~1v1~1aliens"
+    $ref: ./domains/aliens.yaml#/pathItems/Aliens
 
   /api/v1/aliens/search:
-    $ref: "./domains/aliens.yaml#/paths/~1api~1v1~1aliens~1search"
+    $ref: ./domains/aliens.yaml#/pathItems/AliensSearch
 
-  /api/v1/aliens/{id}:
-    $ref: "./domains/aliens.yaml#/paths/~1api~1v1~1aliens~1{id}"
+  "/api/v1/aliens/{id}":
+    $ref: ./domains/aliens.yaml#/pathItems/AliensById
 
-  /api/v1/incidents/{id}/alien:
-    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1alien"
+  "/api/v1/incidents/{id}/alien":
+    $ref: ./domains/incidents.yaml#/pathItems/IncidentsByIdAlien
 
-  /api/v1/incidents/{id}/comments:
-    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1comments"
+  "/api/v1/incidents/{id}/comments":
+    $ref: ./domains/incidents.yaml#/pathItems/IncidentsByIdComments
 
-  /api/v1/incidents/{id}/history:
-    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1history"
+  "/api/v1/incidents/{id}/history":
+    $ref: ./domains/incidents.yaml#/pathItems/IncidentsByIdHistory
 
-  /api/v1/incidents/{id}/responsible:
-    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1responsible"
+  "/api/v1/incidents/{id}/responsible":
+    $ref: ./domains/incidents.yaml#/pathItems/IncidentsByIdResponsible
 
-  /api/v1/incidents/{id}/executors:
-    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1executors"
+  "/api/v1/incidents/{id}/executors":
+    $ref: ./domains/incidents.yaml#/pathItems/IncidentsByIdExecutors
 
-  /api/v1/incidents/{id}/status:
-    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1status"
+  "/api/v1/incidents/{id}/status":
+    $ref: ./domains/incidents.yaml#/pathItems/IncidentsByIdStatus
 
-  /api/v1/incidents/{id}/cleanup-report:
-    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1cleanup-report"
+  "/api/v1/incidents/{id}/cleanup-report":
+    $ref: ./domains/incidents.yaml#/pathItems/IncidentsByIdCleanupReport
 
-  /api/v1/incidents/{id}/cleanup-status:
-    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1cleanup-status"
+  "/api/v1/incidents/{id}/cleanup-status":
+    $ref: ./domains/incidents.yaml#/pathItems/IncidentsByIdCleanupStatus
 
   /api/v1/tenders:
-    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders"
+    $ref: ./domains/tenders.yaml#/pathItems/Tenders
 
-  /api/v1/tenders/{id}:
-    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}"
+  "/api/v1/tenders/{id}":
+    $ref: ./domains/tenders.yaml#/pathItems/TendersById
 
-  /api/v1/tenders/{id}/status:
-    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1status"
+  "/api/v1/tenders/{id}/status":
+    $ref: ./domains/tenders.yaml#/pathItems/TendersByIdStatus
 
-  /api/v1/tenders/{id}/participants:
-    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1participants"
+  "/api/v1/tenders/{id}/participants":
+    $ref: ./domains/tenders.yaml#/pathItems/TendersByIdParticipants
 
-  /api/v1/tenders/{id}/participants/{participantId}:
-    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1participants~1{participantId}"
+  "/api/v1/tenders/{id}/participants/{participantId}":
+    $ref: ./domains/tenders.yaml#/pathItems/TendersByIdParticipantsByParticipantId
 
-  /api/v1/tenders/{id}/winner:
-    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1winner"
+  "/api/v1/tenders/{id}/winner":
+    $ref: ./domains/tenders.yaml#/pathItems/TendersByIdWinner
 
-  /api/v1/tenders/{id}/receipt:
-    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1receipt"
+  "/api/v1/tenders/{id}/receipt":
+    $ref: ./domains/tenders.yaml#/pathItems/TendersByIdReceipt
 
-  /api/v1/tenders/{id}/history:
-    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1history"
+  "/api/v1/tenders/{id}/history":
+    $ref: ./domains/tenders.yaml#/pathItems/TendersByIdHistory
 
+  /api/v1/detention-requests/statistics/created-count:
+    $ref: ./domains/detention-statistics.yaml#/pathItems/DetentionRequestsStatisticsCreatedCount
+  /api/v1/detention-requests/statistics/admitted-count:
+    $ref: ./domains/detention-statistics.yaml#/pathItems/DetentionRequestsStatisticsAdmittedCount
+  /api/v1/detention-requests/statistics/released-count:
+    $ref: ./domains/detention-statistics.yaml#/pathItems/DetentionRequestsStatisticsReleasedCount
+  /api/v1/detention-requests/statistics/awaiting-at-to:
+    $ref: ./domains/detention-statistics.yaml#/pathItems/DetentionRequestsStatisticsAwaitingAtTo
+  /api/v1/detention-requests/statistics/in-custody-at-to:
+    $ref: ./domains/detention-statistics.yaml#/pathItems/DetentionRequestsStatisticsInCustodyAtTo
+  /api/v1/detention-requests/statistics/overdue-at-to:
+    $ref: ./domains/detention-statistics.yaml#/pathItems/DetentionRequestsStatisticsOverdueAtTo
+  /api/v1/detention-requests/statistics/custody-duration:
+    $ref: ./domains/detention-statistics.yaml#/pathItems/DetentionRequestsStatisticsCustodyDuration
+  /api/v1/detention-requests/statistics/trend:
+    $ref: ./domains/detention-statistics.yaml#/pathItems/DetentionRequestsStatisticsTrend
+  /api/v1/detention-requests/statistics/by-status:
+    $ref: ./domains/detention-statistics.yaml#/pathItems/DetentionRequestsStatisticsByStatus
+  /api/v1/detention-requests/statistics/by-alien:
+    $ref: ./domains/detention-statistics.yaml#/pathItems/DetentionRequestsStatisticsByAlien
+  /api/v1/detention-requests/statistics/by-assigned-term:
+    $ref: ./domains/detention-statistics.yaml#/pathItems/DetentionRequestsStatisticsByAssignedTerm
+  /api/v1/detention-requests/statistics/by-remaining-time:
+    $ref: ./domains/detention-statistics.yaml#/pathItems/DetentionRequestsStatisticsByRemainingTime
+  /api/v1/detention-requests/statistics/upcoming-releases:
+    $ref: ./domains/detention-statistics.yaml#/pathItems/DetentionRequestsStatisticsUpcomingReleases
   /api/v1/detention-requests:
-    $ref: "./domains/detention-requests.yaml#/paths/~1api~1v1~1detention-requests"
+    $ref: ./domains/detention-requests.yaml#/pathItems/DetentionRequests
 
-  /api/v1/detention-requests/{id}:
-    $ref: "./domains/detention-requests.yaml#/paths/~1api~1v1~1detention-requests~1{id}"
+  "/api/v1/detention-requests/{id}":
+    $ref: ./domains/detention-requests.yaml#/pathItems/DetentionRequestsById
 
-  /api/v1/detention-requests/{id}/status:
-    $ref: "./domains/detention-requests.yaml#/paths/~1api~1v1~1detention-requests~1{id}~1status"
+  "/api/v1/detention-requests/{id}/status":
+    $ref: ./domains/detention-requests.yaml#/pathItems/DetentionRequestsByIdStatus
 
-  /api/v1/detention-requests/{id}/history:
-    $ref: "./domains/detention-requests.yaml#/paths/~1api~1v1~1detention-requests~1{id}~1history"
+  "/api/v1/detention-requests/{id}/history":
+    $ref: ./domains/detention-requests.yaml#/pathItems/DetentionRequestsByIdHistory
 
+  /api/v1/equipment/statistics/received-count:
+    $ref: ./domains/equipment-statistics.yaml#/pathItems/EquipmentStatisticsReceivedCount
+  /api/v1/equipment/statistics/issued-count:
+    $ref: ./domains/equipment-statistics.yaml#/pathItems/EquipmentStatisticsIssuedCount
+  /api/v1/equipment/statistics/returned-count:
+    $ref: ./domains/equipment-statistics.yaml#/pathItems/EquipmentStatisticsReturnedCount
+  /api/v1/equipment/statistics/total-at-to:
+    $ref: ./domains/equipment-statistics.yaml#/pathItems/EquipmentStatisticsTotalAtTo
+  /api/v1/equipment/statistics/available-at-to:
+    $ref: ./domains/equipment-statistics.yaml#/pathItems/EquipmentStatisticsAvailableAtTo
+  /api/v1/equipment/statistics/issued-at-to:
+    $ref: ./domains/equipment-statistics.yaml#/pathItems/EquipmentStatisticsIssuedAtTo
+  /api/v1/equipment/statistics/trend:
+    $ref: ./domains/equipment-statistics.yaml#/pathItems/EquipmentStatisticsTrend
+  /api/v1/equipment/statistics/inventory-by-type:
+    $ref: ./domains/equipment-statistics.yaml#/pathItems/EquipmentStatisticsInventoryByType
+  /api/v1/equipment/statistics/open-requests:
+    $ref: ./domains/equipment-statistics.yaml#/pathItems/EquipmentStatisticsOpenRequests
+  /api/v1/equipment/statistics/expected-deliveries-by-type:
+    $ref: ./domains/equipment-statistics.yaml#/pathItems/EquipmentStatisticsExpectedDeliveriesByType
+  /api/v1/equipment/statistics/outstanding-by-incident:
+    $ref: ./domains/equipment-statistics.yaml#/pathItems/EquipmentStatisticsOutstandingByIncident
   /api/v1/equipment:
-    $ref: "./domains/equipment.yaml#/paths/~1api~1v1~1equipment"
+    $ref: ./domains/equipment.yaml#/pathItems/Equipment
 
-  /api/v1/equipment/{id}:
-    $ref: "./domains/equipment.yaml#/paths/~1api~1v1~1equipment~1{id}"
+  "/api/v1/equipment/{id}":
+    $ref: ./domains/equipment.yaml#/pathItems/EquipmentById
 
-  /api/v1/equipment/{id}/history:
-    $ref: "./domains/equipment.yaml#/paths/~1api~1v1~1equipment~1{id}~1history"
+  "/api/v1/equipment/{id}/history":
+    $ref: ./domains/equipment.yaml#/pathItems/EquipmentByIdHistory
 
   /api/v1/equipment-movements:
-    $ref: "./domains/equipment-movements.yaml#/paths/~1api~1v1~1equipment-movements"
+    $ref: ./domains/equipment-movements.yaml#/pathItems/EquipmentMovements
 
-  /api/v1/equipment-movements/{id}:
-    $ref: "./domains/equipment-movements.yaml#/paths/~1api~1v1~1equipment-movements~1{id}"
+  "/api/v1/equipment-movements/{id}":
+    $ref: ./domains/equipment-movements.yaml#/pathItems/EquipmentMovementsById
 
-  /api/v1/equipment-movements/{id}/history:
-    $ref: "./domains/equipment-movements.yaml#/paths/~1api~1v1~1equipment-movements~1{id}~1history"
+  "/api/v1/equipment-movements/{id}/history":
+    $ref: ./domains/equipment-movements.yaml#/pathItems/EquipmentMovementsByIdHistory
 
-  /api/v1/equipment-movements/{id}/status:
-    $ref: "./domains/equipment-movements.yaml#/paths/~1api~1v1~1equipment-movements~1{id}~1status"
+  "/api/v1/equipment-movements/{id}/status":
+    $ref: ./domains/equipment-movements.yaml#/pathItems/EquipmentMovementsByIdStatus
 
   /api/v1/integration/monitoring/events:
-    $ref: "./domains/integration.yaml#/paths/~1api~1v1~1integration~1monitoring~1events"
+    $ref: ./domains/integration.yaml#/pathItems/IntegrationMonitoringEvents
 
   /api/v1/monitoring/alerts:
-    $ref: "./domains/monitoring.yaml#/paths/~1api~1v1~1monitoring~1alerts"
+    $ref: ./domains/monitoring.yaml#/pathItems/MonitoringAlerts
 
-  /api/v1/monitoring/alerts/{id}:
-    $ref: "./domains/monitoring.yaml#/paths/~1api~1v1~1monitoring~1alerts~1{id}"
+  "/api/v1/monitoring/alerts/{id}":
+    $ref: ./domains/monitoring.yaml#/pathItems/MonitoringAlertsById
 
 components:
-  parameters:
-    Page:
-      $ref: "./common.yaml#/components/parameters/Page"
-    Size:
-      $ref: "./common.yaml#/components/parameters/Size"
 
   securitySchemes:
     bearerAuth:
@@ -180,262 +254,3 @@ components:
       type: apiKey
       in: header
       name: X-Integration-Api-Key
-
-  schemas:
-    Login:
-      $ref: "./domains/auth.yaml#/components/schemas/Login"
-
-    Password:
-      $ref: "./domains/auth.yaml#/components/schemas/Password"
-
-    AccessToken:
-      $ref: "./domains/auth.yaml#/components/schemas/AccessToken"
-
-    RoleName:
-      $ref: "./domains/auth.yaml#/components/schemas/RoleName"
-
-    PermissionCode:
-      $ref: "./domains/auth.yaml#/components/schemas/PermissionCode"
-
-    SignInRequest:
-      $ref: "./domains/auth.yaml#/components/schemas/SignInRequest"
-
-    SignInResponse:
-      $ref: "./domains/auth.yaml#/components/schemas/SignInResponse"
-
-    AuthMeResponse:
-      $ref: "./domains/auth.yaml#/components/schemas/AuthMeResponse"
-
-    NotificationItem:
-      $ref: "./domains/notifications.yaml#/components/schemas/NotificationItem"
-
-    NotificationListResponse:
-      $ref: "./domains/notifications.yaml#/components/schemas/NotificationListResponse"
-
-    UnreadCountResponse:
-      $ref: "./domains/notifications.yaml#/components/schemas/UnreadCountResponse"
-
-    FileUploadResponse:
-      $ref: "./domains/files.yaml#/components/schemas/FileUploadResponse"
-
-    IncidentStatusApi:
-      $ref: "./domains/incidents.yaml#/components/schemas/IncidentStatusApi"
-
-    CleanupStatusApi:
-      $ref: "./domains/incidents.yaml#/components/schemas/CleanupStatusApi"
-
-    UserSummary:
-      $ref: "./domains/users.yaml#/components/schemas/UserSummary"
-
-    UserSearchResponse:
-      $ref: "./domains/users.yaml#/components/schemas/UserSearchResponse"
-
-    BatchUsersRequest:
-      $ref: "./domains/users.yaml#/components/schemas/BatchUsersRequest"
-
-    BatchUsersResponse:
-      $ref: "./domains/users.yaml#/components/schemas/BatchUsersResponse"
-
-    SetIncidentResponsibleRequest:
-      $ref: "./domains/incidents.yaml#/components/schemas/SetIncidentResponsibleRequest"
-
-    SetIncidentExecutorsRequest:
-      $ref: "./domains/incidents.yaml#/components/schemas/SetIncidentExecutorsRequest"
-
-    SaveAlienRequest:
-      $ref: "./domains/aliens.yaml#/components/schemas/SaveAlienRequest"
-
-    AlienListResponse:
-      $ref: "./domains/aliens.yaml#/components/schemas/AlienListResponse"
-
-    AlienResponse:
-      $ref: "./domains/aliens.yaml#/components/schemas/AlienResponse"
-
-    AlienSearchResponse:
-      $ref: "./domains/aliens.yaml#/components/schemas/AlienSearchResponse"
-
-    LinkIncidentAlienRequest:
-      $ref: "./domains/incidents.yaml#/components/schemas/LinkIncidentAlienRequest"
-
-    IncidentEventTypeApi:
-      $ref: "./domains/incidents.yaml#/components/schemas/IncidentEventTypeApi"
-
-    CreateIncidentRequest:
-      $ref: "./domains/incidents.yaml#/components/schemas/CreateIncidentRequest"
-
-    ChangeIncidentStatusRequest:
-      $ref: "./domains/incidents.yaml#/components/schemas/ChangeIncidentStatusRequest"
-
-    ChangeCleanupStatusRequest:
-      $ref: "./domains/incidents.yaml#/components/schemas/ChangeCleanupStatusRequest"
-
-    CreateCleanupReportRequest:
-      $ref: "./domains/incidents.yaml#/components/schemas/CreateCleanupReportRequest"
-
-    CleanupReportResponse:
-      $ref: "./domains/incidents.yaml#/components/schemas/CleanupReportResponse"
-
-    CreateIncidentCommentRequest:
-      $ref: "./domains/incidents.yaml#/components/schemas/CreateIncidentCommentRequest"
-
-    IncidentCommentResponse:
-      $ref: "./domains/incidents.yaml#/components/schemas/IncidentCommentResponse"
-
-    IncidentCommentListResponse:
-      $ref: "./domains/incidents.yaml#/components/schemas/IncidentCommentListResponse"
-
-    IncidentHistorySnapshot:
-      $ref: "./domains/incidents.yaml#/components/schemas/IncidentHistorySnapshot"
-
-    IncidentHistoryEntry:
-      $ref: "./domains/incidents.yaml#/components/schemas/IncidentHistoryEntry"
-
-    IncidentHistoryListResponse:
-      $ref: "./domains/incidents.yaml#/components/schemas/IncidentHistoryListResponse"
-
-    IncidentResponse:
-      $ref: "./domains/incidents.yaml#/components/schemas/IncidentResponse"
-
-    TenderStatusApi:
-      $ref: "./domains/tenders.yaml#/components/schemas/TenderStatusApi"
-
-    TenderParticipantStatusApi:
-      $ref: "./domains/tenders.yaml#/components/schemas/TenderParticipantStatusApi"
-
-    SaveTenderRequest:
-      $ref: "./domains/tenders.yaml#/components/schemas/SaveTenderRequest"
-
-    TenderResponse:
-      $ref: "./domains/tenders.yaml#/components/schemas/TenderResponse"
-
-    ChangeTenderStatusRequest:
-      $ref: "./domains/tenders.yaml#/components/schemas/ChangeTenderStatusRequest"
-
-    SelectTenderWinnerRequest:
-      $ref: "./domains/tenders.yaml#/components/schemas/SelectTenderWinnerRequest"
-
-    SaveTenderParticipantRequest:
-      $ref: "./domains/tenders.yaml#/components/schemas/SaveTenderParticipantRequest"
-
-    TenderParticipantListResponse:
-      $ref: "./domains/tenders.yaml#/components/schemas/TenderParticipantListResponse"
-
-    TenderParticipantResponse:
-      $ref: "./domains/tenders.yaml#/components/schemas/TenderParticipantResponse"
-
-    ReceiveTenderEquipmentRequest:
-      $ref: "./domains/tenders.yaml#/components/schemas/ReceiveTenderEquipmentRequest"
-
-    ReceiveTenderRequest:
-      $ref: "./domains/tenders.yaml#/components/schemas/ReceiveTenderRequest"
-
-    TenderReceiptResponse:
-      $ref: "./domains/tenders.yaml#/components/schemas/TenderReceiptResponse"
-
-    TenderHistorySnapshot:
-      $ref: "./domains/tenders.yaml#/components/schemas/TenderHistorySnapshot"
-
-    TenderHistoryEntry:
-      $ref: "./domains/tenders.yaml#/components/schemas/TenderHistoryEntry"
-
-    TenderListResponse:
-      $ref: "./domains/tenders.yaml#/components/schemas/TenderListResponse"
-
-    TenderHistoryListResponse:
-      $ref: "./domains/tenders.yaml#/components/schemas/TenderHistoryListResponse"
-
-    EquipmentTypeApi:
-      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentTypeApi"
-
-    EquipmentStatusApi:
-      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentStatusApi"
-
-    EquipmentHistoryEventApi:
-      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentHistoryEventApi"
-
-    SaveEquipmentRequest:
-      $ref: "./domains/equipment.yaml#/components/schemas/SaveEquipmentRequest"
-
-    EquipmentResponse:
-      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentResponse"
-
-    EquipmentListResponse:
-      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentListResponse"
-
-    EquipmentHistorySnapshot:
-      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentHistorySnapshot"
-
-    EquipmentHistoryEntry:
-      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentHistoryEntry"
-
-    EquipmentHistoryListResponse:
-      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentHistoryListResponse"
-
-    EquipmentMovementOperationApi:
-      $ref: "./domains/equipment-movements.yaml#/components/schemas/EquipmentMovementOperationApi"
-
-    EquipmentMovementStatusApi:
-      $ref: "./domains/equipment-movements.yaml#/components/schemas/EquipmentMovementStatusApi"
-
-    SaveEquipmentMovementRequest:
-      $ref: "./domains/equipment-movements.yaml#/components/schemas/SaveEquipmentMovementRequest"
-
-    EquipmentMovementResponse:
-      $ref: "./domains/equipment-movements.yaml#/components/schemas/EquipmentMovementResponse"
-
-    EquipmentMovementListResponse:
-      $ref: "./domains/equipment-movements.yaml#/components/schemas/EquipmentMovementListResponse"
-
-    EquipmentMovementHistorySnapshot:
-      $ref: "./domains/equipment-movements.yaml#/components/schemas/EquipmentMovementHistorySnapshot"
-
-    EquipmentMovementHistoryEntry:
-      $ref: "./domains/equipment-movements.yaml#/components/schemas/EquipmentMovementHistoryEntry"
-
-    EquipmentMovementHistoryListResponse:
-      $ref: "./domains/equipment-movements.yaml#/components/schemas/EquipmentMovementHistoryListResponse"
-
-    ChangeEquipmentMovementStatusRequest:
-      $ref: "./domains/equipment-movements.yaml#/components/schemas/ChangeEquipmentMovementStatusRequest"
-
-    MonitoringAlertStatusApi:
-      $ref: "./domains/monitoring.yaml#/components/schemas/MonitoringAlertStatusApi"
-
-    IngestMonitoringEventRequest:
-      $ref: "./domains/integration.yaml#/components/schemas/IngestMonitoringEventRequest"
-
-    MonitoringAlertResponse:
-      $ref: "./domains/monitoring.yaml#/components/schemas/MonitoringAlertResponse"
-
-    MonitoringAlertListResponse:
-      $ref: "./domains/monitoring.yaml#/components/schemas/MonitoringAlertListResponse"
-
-    IncidentListResponse:
-      $ref: "./domains/incidents.yaml#/components/schemas/IncidentListResponse"
-
-    DetentionRequestStatusApi:
-      $ref: "./domains/detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
-
-    ChangeDetentionRequestStatusRequest:
-      $ref: "./domains/detention-requests.yaml#/components/schemas/ChangeDetentionRequestStatusRequest"
-
-    SaveDetentionRequest:
-      $ref: "./domains/detention-requests.yaml#/components/schemas/SaveDetentionRequest"
-
-    DetentionRequestResponse:
-      $ref: "./domains/detention-requests.yaml#/components/schemas/DetentionRequestResponse"
-
-    DetentionRequestListResponse:
-      $ref: "./domains/detention-requests.yaml#/components/schemas/DetentionRequestListResponse"
-
-    DetentionRequestHistorySnapshot:
-      $ref: "./domains/detention-requests.yaml#/components/schemas/DetentionRequestHistorySnapshot"
-
-    DetentionRequestHistoryEntry:
-      $ref: "./domains/detention-requests.yaml#/components/schemas/DetentionRequestHistoryEntry"
-
-    DetentionRequestHistoryListResponse:
-      $ref: "./domains/detention-requests.yaml#/components/schemas/DetentionRequestHistoryListResponse"
-
-    ErrorObject:
-      $ref: "./common.yaml#/components/schemas/ErrorObject"

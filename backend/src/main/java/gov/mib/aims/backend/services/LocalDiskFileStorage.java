@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,6 +20,7 @@ import java.util.UUID;
 public class LocalDiskFileStorage implements FileStorage {
 
     private final StorageProperties storageProperties;
+    private final ChronoService chronoService;
 
     @Override
     public FileDescriptor store(String originalFileName, String contentType, InputStream content, long sizeBytes) {
@@ -37,7 +37,7 @@ public class LocalDiskFileStorage implements FileStorage {
                 originalFileName,
                 contentType,
                 sizeBytes,
-                Instant.now()
+                chronoService.now()
         );
     }
 

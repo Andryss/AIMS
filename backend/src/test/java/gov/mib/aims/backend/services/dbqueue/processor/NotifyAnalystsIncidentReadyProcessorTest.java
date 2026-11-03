@@ -1,7 +1,7 @@
 package gov.mib.aims.backend.services.dbqueue.processor;
 
 import gov.mib.aims.backend.BaseDbTest;
-import gov.mib.aims.backend.config.TestClockConfig;
+import gov.mib.aims.backend.config.TestChronoConfig;
 import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.model.IncidentEventType;
 import gov.mib.aims.backend.model.IncidentStatus;
@@ -38,7 +38,7 @@ class NotifyAnalystsIncidentReadyProcessorTest extends BaseDbTest {
     void executeSendsNotificationToAnalyst() {
         Long operatorId = appUserRepository.findByLogin("operator").orElseThrow().getId();
         Long analystId = appUserRepository.findByLogin("analyst").orElseThrow().getId();
-        LocalDateTime now = TestClockConfig.FIXED_LOCAL_DATE_TIME;
+        LocalDateTime now = TestChronoConfig.FIXED_LOCAL_DATE_TIME;
         IncidentEntity incident = incidentRepository.save(IncidentEntity.builder()
                 .status(IncidentStatus.READY_FOR_ANALYSIS)
                 .eventType(IncidentEventType.UNIDENTIFIED_SIGHTING)

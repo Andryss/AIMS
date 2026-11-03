@@ -1,5 +1,6 @@
 package gov.mib.aims.backend.controller;
 
+import gov.mib.aims.backend.config.TestChronoConfig;
 import gov.mib.aims.backend.entity.AppUserEntity;
 import gov.mib.aims.backend.generated.model.SignInRequest;
 import gov.mib.aims.backend.model.EntityRef;
@@ -68,7 +69,8 @@ class NotificationsApiTest extends BaseApiTest {
                 .andExpect(jsonPath("$.items", hasSize(1)))
                 .andExpect(jsonPath("$.items[0].message").value("Incident ready for analysis"))
                 .andExpect(jsonPath("$.items[0].relatedEntities[0]").value("INCIDENT:612"))
-                .andExpect(jsonPath("$.items[0].read").value(false));
+                .andExpect(jsonPath("$.items[0].read").value(false))
+                .andExpect(jsonPath("$.items[0].createdAt").value(TestChronoConfig.FIXED_INSTANT.toString()));
 
         mockMvc.perform(patch(NOTIFICATIONS_URL + "/" + notificationId + "/read")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
@@ -80,7 +82,8 @@ class NotificationsApiTest extends BaseApiTest {
 
         mockMvc.perform(get(NOTIFICATIONS_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.items[0].read").value(true));
+                .andExpect(jsonPath("$.items[0].read").value(true))
+                .andExpect(jsonPath("$.items[0].readAt").value(TestChronoConfig.FIXED_INSTANT.toString()));
     }
 
     @Test

@@ -4,12 +4,10 @@ import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.model.IncidentStatus;
 import gov.mib.aims.backend.repository.IncidentRepository;
+import gov.mib.aims.backend.services.ChronoService;
 import gov.mib.aims.backend.services.status.AbstractStatusWorkflow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.Clock;
-import java.time.LocalDateTime;
 
 /**
  * Workflow смены статуса инцидента.
@@ -21,7 +19,7 @@ public class IncidentStatusWorkflow
 
     private final IncidentStatusTransitionGraph transitionGraph;
     private final IncidentRepository incidentRepository;
-    private final Clock clock;
+    private final ChronoService chronoService;
 
     /**
      * Меняет статус инцидента с проверкой pre/post действий.
@@ -42,7 +40,7 @@ public class IncidentStatusWorkflow
     @Override
     protected IncidentEntity applyStatus(IncidentEntity incident, IncidentStatus target) {
         incident.setStatus(target);
-        incident.setUpdatedAt(LocalDateTime.now(clock));
+        incident.setUpdatedAt(chronoService.localDateTimeNow());
 
         return incidentRepository.save(incident);
     }

@@ -1,0 +1,564 @@
+pathItems:
+  EquipmentStatisticsReceivedCount:
+    get:
+      operationId: "getEquipmentReceivedCount"
+      tags:
+        - "equipment-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "equipmentType"
+          in: "query"
+          schema:
+            $ref: "./equipment.yaml#/components/schemas/EquipmentTypeApi"
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  EquipmentStatisticsIssuedCount:
+    get:
+      operationId: "getEquipmentIssuedCount"
+      tags:
+        - "equipment-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "equipmentType"
+          in: "query"
+          schema:
+            $ref: "./equipment.yaml#/components/schemas/EquipmentTypeApi"
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  EquipmentStatisticsReturnedCount:
+    get:
+      operationId: "getEquipmentReturnedCount"
+      tags:
+        - "equipment-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "equipmentType"
+          in: "query"
+          schema:
+            $ref: "./equipment.yaml#/components/schemas/EquipmentTypeApi"
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  EquipmentStatisticsTotalAtTo:
+    get:
+      operationId: "getEquipmentTotalAtTo"
+      tags:
+        - "equipment-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "equipmentType"
+          in: "query"
+          schema:
+            $ref: "./equipment.yaml#/components/schemas/EquipmentTypeApi"
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  EquipmentStatisticsAvailableAtTo:
+    get:
+      operationId: "getEquipmentAvailableAtTo"
+      tags:
+        - "equipment-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "equipmentType"
+          in: "query"
+          schema:
+            $ref: "./equipment.yaml#/components/schemas/EquipmentTypeApi"
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  EquipmentStatisticsIssuedAtTo:
+    get:
+      operationId: "getEquipmentIssuedAtTo"
+      tags:
+        - "equipment-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "equipmentType"
+          in: "query"
+          schema:
+            $ref: "./equipment.yaml#/components/schemas/EquipmentTypeApi"
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  EquipmentStatisticsTrend:
+    get:
+      operationId: "getEquipmentTrend"
+      tags:
+        - "equipment-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "equipmentType"
+          in: "query"
+          schema:
+            $ref: "./equipment.yaml#/components/schemas/EquipmentTypeApi"
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/TrendAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  EquipmentStatisticsInventoryByType:
+    get:
+      operationId: "getEquipmentInventoryByType"
+      tags:
+        - "equipment-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "equipmentType"
+          in: "query"
+          schema:
+            $ref: "./equipment.yaml#/components/schemas/EquipmentTypeApi"
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/EquipmentInventoryAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  EquipmentStatisticsOpenRequests:
+    get:
+      operationId: "getEquipmentOpenRequests"
+      tags:
+        - "equipment-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "equipmentType"
+          in: "query"
+          schema:
+            $ref: "./equipment.yaml#/components/schemas/EquipmentTypeApi"
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/OpenEquipmentRequestsAnalyticsRespo\
+                  nse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  EquipmentStatisticsExpectedDeliveriesByType:
+    get:
+      operationId: "getEquipmentExpectedDeliveriesByType"
+      tags:
+        - "equipment-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "equipmentType"
+          in: "query"
+          schema:
+            $ref: "./equipment.yaml#/components/schemas/EquipmentTypeApi"
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/ExpectedDeliveriesAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  EquipmentStatisticsOutstandingByIncident:
+    get:
+      operationId: "getEquipmentOutstandingByIncident"
+      tags:
+        - "equipment-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "equipmentType"
+          in: "query"
+          schema:
+            $ref: "./equipment.yaml#/components/schemas/EquipmentTypeApi"
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/OutstandingEquipmentAnalyticsRespon\
+                  se"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden

@@ -1,5 +1,5 @@
-paths:
-  /api/v1/detention-requests:
+pathItems:
+  DetentionRequests:
     get:
       operationId: listDetentionRequests
       tags:
@@ -31,35 +31,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/DetentionRequestListResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
     post:
       operationId: createDetentionRequest
       tags:
@@ -80,36 +60,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/DetentionRequestResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
-  /api/v1/detention-requests/{id}:
+          $ref: ../common.yaml#/components/responses/Conflict
+  DetentionRequestsById:
     get:
       operationId: getDetentionRequest
       tags:
@@ -132,35 +92,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/DetentionRequestResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
     put:
       operationId: updateDetentionRequest
       tags:
@@ -189,36 +129,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/DetentionRequestResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
-  /api/v1/detention-requests/{id}/status:
+          $ref: ../common.yaml#/components/responses/Conflict
+  DetentionRequestsByIdStatus:
     patch:
       operationId: changeDetentionRequestStatus
       tags:
@@ -247,36 +167,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/DetentionRequestResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
-  /api/v1/detention-requests/{id}/history:
+          $ref: ../common.yaml#/components/responses/Conflict
+  DetentionRequestsByIdHistory:
     get:
       operationId: listDetentionRequestHistory
       tags:
@@ -301,45 +201,33 @@ paths:
               schema:
                 $ref: "#/components/schemas/DetentionRequestHistoryListResponse"
         400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/BadRequest
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Unauthorized
         403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Forbidden
         404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/NotFound
         409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "../common.yaml#/components/schemas/ErrorObject"
+          $ref: ../common.yaml#/components/responses/Conflict
 
 components:
   schemas:
     DetentionRequestStatusApi:
       type: string
-      enum: [NEW, ACCEPTED, IN_CUSTODY, RELEASED, REJECTED, CANCELLED]
+      enum:
+        [
+          NEW,
+          ACCEPTED,
+          IN_CUSTODY,
+          RELEASED,
+          REJECTED,
+          CANCELLED
+        ]
 
     ChangeDetentionRequestStatusRequest:
       type: object
-      required: [status]
+      required: [ status ]
       properties:
         status:
           $ref: "#/components/schemas/DetentionRequestStatusApi"
@@ -349,7 +237,13 @@ components:
 
     SaveDetentionRequest:
       type: object
-      required: [incidentId, subjectName, subjectDescription, durationDays]
+      required:
+        [
+          incidentId,
+          subjectName,
+          subjectDescription,
+          durationDays
+        ]
       properties:
         incidentId:
           type: integer
@@ -379,7 +273,18 @@ components:
 
     DetentionRequestResponse:
       type: object
-      required: [id, incidentId, subjectName, subjectDescription, durationDays, status, createdByUserId, createdAt, updatedAt]
+      required:
+        [
+          id,
+          incidentId,
+          subjectName,
+          subjectDescription,
+          durationDays,
+          status,
+          createdByUserId,
+          createdAt,
+          updatedAt
+        ]
       properties:
         id:
           type: integer
@@ -423,7 +328,7 @@ components:
 
     DetentionRequestHistorySnapshot:
       type: object
-      required: [request]
+      required: [ request ]
       properties:
         request:
           $ref: "#/components/schemas/DetentionRequestResponse"
@@ -432,7 +337,7 @@ components:
 
     DetentionRequestHistoryEntry:
       type: object
-      required: [id, changedAt, changedByUserId, snapshot]
+      required: [ id, changedAt, changedByUserId, snapshot ]
       properties:
         id:
           type: integer
@@ -448,7 +353,7 @@ components:
 
     DetentionRequestListResponse:
       type: object
-      required: [items, page, size, totalElements, totalPages]
+      required: [ items, page, size, totalElements, totalPages ]
       properties:
         items:
           type: array
@@ -466,7 +371,7 @@ components:
 
     DetentionRequestHistoryListResponse:
       type: object
-      required: [items, page, size, totalElements, totalPages]
+      required: [ items, page, size, totalElements, totalPages ]
       properties:
         items:
           type: array

@@ -26,12 +26,11 @@ import gov.mib.aims.backend.services.validation.AttachmentValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,19 +53,19 @@ public class IncidentServiceImpl implements IncidentService {
     private final ExecutorAssignmentNotifier executorAssignmentNotifier;
     private final IncidentMapper incidentMapper;
     private final AttachmentValidator attachmentValidator;
-    private final Clock clock;
+    private final ChronoService chronoService;
 
     @Override
     @Transactional
     public IncidentResponse create(CreateIncidentRequest request) {
         attachmentValidator.assertAllExist(request.getAttachmentFileIds());
         MonitoringAlertEntity linkedAlert = resolveMonitoringAlertForCreate(request.getMonitoringAlertId());
-        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime now = chronoService.localDateTimeNow();
         IncidentEntity entity = IncidentEntity.builder()
                 .status(IncidentStatus.DRAFT)
                 .eventType(incidentMapper.toModelEventType(request.getEventType()))
                 .location(request.getLocation().trim())
-                .detectedAt(request.getDetectedAt().toLocalDateTime())
+                .detectedAt(chronoService.toLocalDateTime(request.getDetectedAt()))
                 .description(request.getDescription().trim())
                 .attachmentFileIds(request.getAttachmentFileIds())
                 .executorUserIds(new ArrayList<>())
@@ -149,7 +148,7 @@ public class IncidentServiceImpl implements IncidentService {
         }
 
         entity.setAlienId(alienId);
-        entity.setUpdatedAt(LocalDateTime.now(clock));
+        entity.setUpdatedAt(chronoService.localDateTimeNow());
         entity = incidentRepository.save(entity);
 
         entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
@@ -184,7 +183,7 @@ public class IncidentServiceImpl implements IncidentService {
         }
 
         entity.setResponsibleUserId(userId);
-        entity.setUpdatedAt(LocalDateTime.now(clock));
+        entity.setUpdatedAt(chronoService.localDateTimeNow());
         entity = incidentRepository.save(entity);
 
         entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
@@ -208,7 +207,7 @@ public class IncidentServiceImpl implements IncidentService {
                 ? new ArrayList<>(entity.getExecutorUserIds())
                 : new ArrayList<>();
         entity.setExecutorUserIds(new ArrayList<>(userIds));
-        entity.setUpdatedAt(LocalDateTime.now(clock));
+        entity.setUpdatedAt(chronoService.localDateTimeNow());
         entity = incidentRepository.save(entity);
 
         entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);

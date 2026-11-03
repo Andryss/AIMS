@@ -1,0 +1,664 @@
+pathItems:
+  DetentionRequestsStatisticsCreatedCount:
+    get:
+      operationId: "getDetentionCreatedCount"
+      tags:
+        - "detention-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "status"
+          in: "query"
+          schema:
+            $ref: "./detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  DetentionRequestsStatisticsAdmittedCount:
+    get:
+      operationId: "getDetentionAdmittedCount"
+      tags:
+        - "detention-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "status"
+          in: "query"
+          schema:
+            $ref: "./detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  DetentionRequestsStatisticsReleasedCount:
+    get:
+      operationId: "getDetentionReleasedCount"
+      tags:
+        - "detention-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "status"
+          in: "query"
+          schema:
+            $ref: "./detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  DetentionRequestsStatisticsAwaitingAtTo:
+    get:
+      operationId: "getDetentionAwaitingAtTo"
+      tags:
+        - "detention-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "status"
+          in: "query"
+          schema:
+            $ref: "./detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  DetentionRequestsStatisticsInCustodyAtTo:
+    get:
+      operationId: "getDetentionInCustodyAtTo"
+      tags:
+        - "detention-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "status"
+          in: "query"
+          schema:
+            $ref: "./detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  DetentionRequestsStatisticsOverdueAtTo:
+    get:
+      operationId: "getDetentionOverdueAtTo"
+      tags:
+        - "detention-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "status"
+          in: "query"
+          schema:
+            $ref: "./detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/CountAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  DetentionRequestsStatisticsCustodyDuration:
+    get:
+      operationId: "getDetentionCustodyDuration"
+      tags:
+        - "detention-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "status"
+          in: "query"
+          schema:
+            $ref: "./detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/DurationAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  DetentionRequestsStatisticsTrend:
+    get:
+      operationId: "getDetentionTrend"
+      tags:
+        - "detention-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "status"
+          in: "query"
+          schema:
+            $ref: "./detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/TrendAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  DetentionRequestsStatisticsByStatus:
+    get:
+      operationId: "getDetentionByStatus"
+      tags:
+        - "detention-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "status"
+          in: "query"
+          schema:
+            $ref: "./detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/GroupedAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  DetentionRequestsStatisticsByAlien:
+    get:
+      operationId: "getDetentionByAlien"
+      tags:
+        - "detention-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "status"
+          in: "query"
+          schema:
+            $ref: "./detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/GroupedAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  DetentionRequestsStatisticsByAssignedTerm:
+    get:
+      operationId: "getDetentionByAssignedTerm"
+      tags:
+        - "detention-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "status"
+          in: "query"
+          schema:
+            $ref: "./detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/GroupedAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  DetentionRequestsStatisticsByRemainingTime:
+    get:
+      operationId: "getDetentionByRemainingTime"
+      tags:
+        - "detention-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "status"
+          in: "query"
+          schema:
+            $ref: "./detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/GroupedAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  DetentionRequestsStatisticsUpcomingReleases:
+    get:
+      operationId: "getDetentionUpcomingReleases"
+      tags:
+        - "detention-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "status"
+          in: "query"
+          schema:
+            $ref: "./detention-requests.yaml#/components/schemas/DetentionRequestStatusApi"
+        - name: "incidentId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/UpcomingReleasesAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden

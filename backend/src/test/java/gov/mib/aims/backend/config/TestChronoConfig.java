@@ -14,7 +14,7 @@ import java.time.ZoneOffset;
  */
 @Configuration
 @Profile("test")
-public class TestClockConfig {
+public class TestChronoConfig {
 
     /**
      * Фиксированный момент времени в UTC (совпадает с типичными датами в тестах API).
