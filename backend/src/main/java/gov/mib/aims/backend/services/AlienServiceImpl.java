@@ -7,6 +7,7 @@ import gov.mib.aims.backend.generated.model.AlienResponse;
 import gov.mib.aims.backend.generated.model.AlienSearchResponse;
 import gov.mib.aims.backend.generated.model.SaveAlienRequest;
 import gov.mib.aims.backend.repository.AlienRepository;
+import gov.mib.aims.backend.services.validation.AttachmentValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Реализация {@link AlienService}.
@@ -23,8 +26,10 @@ import java.util.Locale;
 public class AlienServiceImpl implements AlienService {
 
     private static final int SEARCH_LIMIT = 20;
+    private static final int MAX_PHOTOS = 20;
 
     private final AlienRepository alienRepository;
+    private final AttachmentValidator attachmentValidator;
 
     @Override
     @Transactional(readOnly = true)
@@ -56,6 +61,20 @@ public class AlienServiceImpl implements AlienService {
         entity.setName(request.getName().trim());
         entity.setDescription(request.getDescription().trim());
         entity.setThreatLevel(request.getThreatLevel().shortValue());
+
+        if (request.getPhotoFileIds() != null) {
+            validatePhotos(request.getPhotoFileIds());
+            entity.setPhotoFileIds(request.getPhotoFileIds());
+        }
+    }
+
+    private void validatePhotos(List<Long> fileIds) {
+        if (fileIds.size() > MAX_PHOTOS || fileIds.stream().anyMatch(id -> id == null || id <= 0)
+                || new HashSet<>(fileIds).size() != fileIds.size()) {
+            throw Errors.validationError("Укажите до 20 разных фотографий");
+        }
+
+        attachmentValidator.assertAllExist(fileIds);
     }
 
     @Override
@@ -89,6 +108,7 @@ public class AlienServiceImpl implements AlienService {
                 .id(entity.getId())
                 .name(entity.getName())
                 .description(entity.getDescription())
-                .threatLevel(entity.getThreatLevel().intValue());
+                .threatLevel(entity.getThreatLevel().intValue())
+                .photoFileIds(entity.getPhotoFileIds());
     }
 }

@@ -115,3 +115,14 @@ describe('FileUploadField', () => {
     expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
   });
 });
+
+it('shows an image preview from the selected original and releases its URL', async () => {
+  URL.createObjectURL = jest.fn(() => 'blob:original');
+  URL.revokeObjectURL = jest.fn();
+  const { unmount } = render(<Wrapper />);
+  const file = new File(['photo'], 'preview.png', { type: 'image/png' });
+  await userEvent.upload(document.querySelector('input[type="file"]') as HTMLInputElement, file);
+  expect(await screen.findByAltText('preview.png')).toHaveAttribute('src', 'blob:original');
+  unmount();
+  expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:original');
+});

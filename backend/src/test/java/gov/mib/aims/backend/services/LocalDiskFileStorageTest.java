@@ -8,12 +8,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.time.ZoneOffset;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Тесты {@link LocalDiskFileStorage}.
@@ -52,5 +55,26 @@ class LocalDiskFileStorageTest {
     @Test
     void readReturnsEmptyWhenFileMissing() {
         assertThat(storage.read("non-existent-id")).isEmpty();
+    }
+
+    @Test
+    void interruptedWriteDoesNotLeavePartialFile() throws Exception {
+        InputStream broken = new InputStream() {
+            private int position;
+
+            @Override
+            public int read() throws IOException {
+                if (position++ == 0) {
+                    return 1;
+                }
+                throw new IOException("Interrupted upload");
+            }
+        };
+
+        assertThatThrownBy(() -> storage.store("photo.jpg", "image/jpeg", broken, 2))
+                .isInstanceOf(IllegalStateException.class);
+        try (var files = Files.list(tempDir)) {
+            assertThat(files).isEmpty();
+        }
     }
 }

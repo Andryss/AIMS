@@ -3,22 +3,35 @@ package gov.mib.aims.backend.services;
 import gov.mib.aims.backend.entity.StoredFileEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.generated.model.FileUploadResponse;
+import gov.mib.aims.backend.generated.model.BatchFilesRequest;
+import gov.mib.aims.backend.generated.model.BatchFilesResponse;
 import gov.mib.aims.backend.model.FileDescriptor;
 import gov.mib.aims.backend.model.FileDownload;
 import gov.mib.aims.backend.repository.StoredFileRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Сервис загрузки и скачивания файлов.
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FileService {
+
+    private static final int BATCH_MAX = 100;
 
     private final ChronoService chronoService;
 
@@ -35,16 +48,31 @@ public class FileService {
     @Transactional
     public FileUploadResponse upload(MultipartFile file) {
         validateUpload(file);
-        Long userId = currentUserService.getCurrentUserId();
         String fileName = file.getOriginalFilename() != null ? file.getOriginalFilename() : "file";
         String contentType = file.getContentType() != null ? file.getContentType() : "application/octet-stream";
-        long size = file.getSize();
-        FileDescriptor descriptor;
-        try {
-            descriptor = fileStorage.store(fileName, contentType, file.getInputStream(), size);
+        try (InputStream content = file.getInputStream()) {
+            return store(fileName, contentType, content, file.getSize());
         } catch (IOException e) {
             throw Errors.fileUploadFailed();
         }
+    }
+
+    private FileUploadResponse store(String fileName, String contentType, InputStream content, long size) {
+        Long userId = currentUserService.getCurrentUserId();
+        FileDescriptor descriptor = fileStorage.store(fileName, contentType, content, size);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCompletion(int status) {
+                if (status == STATUS_ROLLED_BACK) {
+                    try {
+                        fileStorage.delete(descriptor.storageId());
+                    } catch (RuntimeException e) {
+                        log.error("Failed to remove rolled-back upload {}", descriptor.storageId(), e);
+                    }
+                }
+            }
+        });
+
         StoredFileEntity entity = StoredFileEntity.builder()
                 .storageId(descriptor.storageId())
                 .fileName(descriptor.originalFileName())
@@ -54,6 +82,10 @@ public class FileService {
                 .createdByUserId(userId)
                 .build();
         entity = storedFileRepository.save(entity);
+        return toResponse(entity);
+    }
+
+    private FileUploadResponse toResponse(StoredFileEntity entity) {
         return new FileUploadResponse()
                 .id(entity.getId())
                 .fileName(entity.getFileName())
@@ -75,6 +107,25 @@ public class FileService {
         byte[] content = fileStorage.read(entity.getStorageId())
                 .orElseThrow(Errors::fileNotFound);
         return new FileDownload(content, entity.getContentType(), entity.getFileName());
+    }
+
+    /**
+     * Возвращает метаданные существующих файлов в порядке запрошенных id.
+     *
+     * @param request идентификаторы файлов
+     * @return метаданные без чтения содержимого
+     */
+    @Transactional(readOnly = true)
+    public BatchFilesResponse batch(BatchFilesRequest request) {
+        List<Long> ids = request.getIds();
+        if (ids == null || ids.size() > BATCH_MAX || ids.stream().anyMatch(id -> id == null || id <= 0)) {
+            throw Errors.validationError("Укажите до 100 положительных идентификаторов файлов");
+        }
+        Map<Long, StoredFileEntity> byId = new HashMap<>();
+        storedFileRepository.findAllById(ids).forEach(file -> byId.put(file.getId(), file));
+
+        return new BatchFilesResponse().items(ids.stream().map(byId::get).filter(Objects::nonNull)
+                .map(this::toResponse).toList());
     }
 
     private void validateUpload(MultipartFile file) {

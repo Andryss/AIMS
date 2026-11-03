@@ -771,3 +771,20 @@
   border-radius: var(--radius-md);
   min-width: 0;
 }
+
+.attachment-card__preview,
+.attachment-card__placeholder {
+  width: 6rem;
+  height: 4rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  object-fit: contain;
+  background: var(--color-bg-surface);
+}
+
+.attachment-card__placeholder {
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+  font-size: 1.5rem;
+}

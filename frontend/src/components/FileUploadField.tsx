@@ -1,4 +1,4 @@
-import React, { DragEvent, useId, useRef, useState } from 'react';
+import React, { DragEvent, useEffect, useId, useRef, useState } from 'react';
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) {
@@ -19,6 +19,7 @@ interface FileUploadFieldProps {
   files: File[];
   onChange: (files: File[]) => void;
   disabled?: boolean;
+  accept?: string;
 }
 
 export function FileUploadField({
@@ -26,7 +27,18 @@ export function FileUploadField({
   files,
   onChange,
   disabled = false,
+  accept,
 }: FileUploadFieldProps) {
+  const [previews, setPreviews] = useState<Map<File, string>>(new Map());
+  useEffect(() => {
+    const urls = new Map<File, string>();
+    files.filter((file) => file.type.startsWith('image/')).forEach((file) => {
+      if (URL.createObjectURL) { urls.set(file, URL.createObjectURL(file)); }
+    });
+    setPreviews(urls);
+    return () => urls.forEach((url) => URL.revokeObjectURL(url));
+  }, [files]);
+
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -85,6 +97,7 @@ export function FileUploadField({
         ref={inputRef}
         id={inputId}
         type="file"
+        accept={accept}
         multiple
         className="file-upload__input"
         disabled={disabled}
@@ -127,6 +140,7 @@ export function FileUploadField({
         <ul className="file-upload__list">
           {files.map((file, index) => (
             <li key={fileKey(file)} className="file-upload__item">
+              {previews.get(file) && <img className="file-upload__preview" src={previews.get(file)} alt={file.name} />}
               <div className="file-upload__item-info">
                 <span className="file-upload__item-name" title={file.name}>
                   {file.name}

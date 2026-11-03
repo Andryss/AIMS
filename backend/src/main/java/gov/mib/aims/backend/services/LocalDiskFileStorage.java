@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,6 +31,13 @@ public class LocalDiskFileStorage implements FileStorage {
             Files.createDirectories(targetPath.getParent());
             Files.copy(content, targetPath);
         } catch (IOException e) {
+            if (!(e instanceof FileAlreadyExistsException)) {
+                try {
+                    Files.deleteIfExists(targetPath);
+                } catch (IOException cleanupError) {
+                    e.addSuppressed(cleanupError);
+                }
+            }
             throw new IllegalStateException("Failed to store file: " + storageId, e);
         }
         return new FileDescriptor(

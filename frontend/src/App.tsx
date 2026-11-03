@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import * as api from './api/client';
+import { clearFileCache } from './utils/fileCache';
 import { AnalyticsTab } from './components/AnalyticsTab';
 import { AppHeader } from './components/AppHeader';
 import { AlienKnowledgeBaseTab } from './components/AlienKnowledgeBaseTab';
@@ -111,6 +112,7 @@ function App() {
       .catch((err: unknown) => {
         const message = err instanceof Error ? err.message : 'Не удалось загрузить профиль';
         setError(message);
+        clearFileCache();
         setAccessToken(null);
         localStorage.removeItem(TOKEN_STORAGE_KEY);
       })
@@ -135,6 +137,7 @@ function App() {
   };
 
   const handleSignOut = () => {
+    clearFileCache();
     setAccessToken(null);
     setProfile(null);
     setUnreadCount(0);

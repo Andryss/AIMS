@@ -48,6 +48,9 @@ paths:
   /api/v1/files:
     $ref: ./domains/files.yaml#/pathItems/Files
 
+  /api/v1/files/batch:
+    $ref: ./domains/files.yaml#/pathItems/FilesBatch
+
   "/api/v1/files/{id}":
     $ref: ./domains/files.yaml#/pathItems/FilesById
 

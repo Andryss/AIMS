@@ -118,7 +118,7 @@ select r.id, p.id
 from role r, permission p
 where r.name = 'MANAGEMENT' and p.code in (
     'ANALYTICS_READ', 'INCIDENT_READ', 'EQUIPMENT_READ', 'EQUIPMENT_MOVEMENT_READ',
-    'TENDER_READ', 'DETENTION_READ', 'ALIEN_READ', 'USER_READ'
+    'TENDER_READ', 'DETENTION_READ', 'ALIEN_READ', 'USER_READ', 'FILE_READ'
 );
 
 insert into role_permission (role_id, permission_id)

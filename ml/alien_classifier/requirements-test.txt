@@ -1,2 +1,4 @@
 -r requirements-export.txt
 pytest>=8,<10
+
+-r demo/requirements.txt

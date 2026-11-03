@@ -133,7 +133,8 @@ public enum Role {
             Permission.TENDER_READ,
             Permission.DETENTION_READ,
             Permission.ALIEN_READ,
-            Permission.USER_READ
+            Permission.USER_READ,
+            Permission.FILE_READ
     ),
     /** Тюремный надзиратель. */
     PRISON_GUARD(

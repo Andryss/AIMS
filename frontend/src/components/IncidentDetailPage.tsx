@@ -372,10 +372,10 @@ export function IncidentDetailPage({
     return enrichAlienDiffValue(label, value);
   };
 
-  const handleDownload = async (fileId: number) => {
+  const handleDownload = async (fileId: number, fileName?: string) => {
     setDownloadingId(fileId);
     try {
-      await api.downloadFile(token, fileId, `attachment-${fileId}`);
+      await api.downloadFile(token, fileId, fileName || `attachment-${fileId}`);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Не удалось скачать файл';
       setError(message);
@@ -917,7 +917,7 @@ export function IncidentDetailPage({
                   {incident.attachmentFileIds.length === 0 ? (
                     '—'
                   ) : (
-                    <AttachmentDownloadList
+                    <AttachmentDownloadList token={token}
                       fileIds={incident.attachmentFileIds}
                       downloadingId={downloadingId}
                       onDownload={handleDownload}

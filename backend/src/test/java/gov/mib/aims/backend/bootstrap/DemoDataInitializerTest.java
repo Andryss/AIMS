@@ -135,7 +135,7 @@ class DemoDataInitializerTest extends BaseApiTest {
                 select p.code from permission p join role_permission rp on rp.permission_id=p.id
                 join role r on r.id=rp.role_id where r.name='MANAGEMENT'
                 """, String.class)).containsExactlyInAnyOrder("ANALYTICS_READ", "INCIDENT_READ", "EQUIPMENT_READ",
-                        "EQUIPMENT_MOVEMENT_READ", "TENDER_READ", "DETENTION_READ", "ALIEN_READ", "USER_READ");
+                        "EQUIPMENT_MOVEMENT_READ", "TENDER_READ", "DETENTION_READ", "ALIEN_READ", "USER_READ", "FILE_READ");
     }
 
     @Test

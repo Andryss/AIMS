@@ -2,8 +2,11 @@ package gov.mib.aims.backend.controller;
 
 import gov.mib.aims.backend.generated.api.FilesApi;
 import gov.mib.aims.backend.generated.model.FileUploadResponse;
+import gov.mib.aims.backend.generated.model.BatchFilesRequest;
+import gov.mib.aims.backend.generated.model.BatchFilesResponse;
 import gov.mib.aims.backend.model.FileDownload;
 import gov.mib.aims.backend.services.FileService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
@@ -21,6 +24,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class FilesApiImpl implements FilesApi {
 
     private final FileService fileService;
+
+    @Override
+    @PreAuthorize("hasAuthority('FILE_READ')")
+    public BatchFilesResponse batchFiles(@Valid BatchFilesRequest request) {
+        log.info("POST /api/v1/files/batch");
+        return fileService.batch(request);
+    }
 
     @Override
     @PreAuthorize("hasAuthority('FILE_UPLOAD')")

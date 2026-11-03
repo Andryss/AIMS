@@ -16,7 +16,7 @@ interface CleanupReportDrawerProps {
   report: CleanupReportResponse | null;
   onClose: () => void;
   onCreated: (report: CleanupReportResponse) => void;
-  onDownloadFile: (fileId: number) => void;
+  onDownloadFile: (fileId: number, fileName?: string) => void;
   downloadingId: number | null;
 }
 
@@ -123,7 +123,7 @@ export function CleanupReportDrawer({
           <section className="section">
             <h3 className="section__title">Материалы</h3>
             {report.attachmentFileIds.length > 0 ? (
-              <AttachmentDownloadList
+              <AttachmentDownloadList token={token}
                 fileIds={report.attachmentFileIds}
                 downloadingId={downloadingId}
                 onDownload={onDownloadFile}

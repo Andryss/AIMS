@@ -486,3 +486,11 @@
   background: var(--color-danger-bg);
   color: var(--color-danger);
 }
+
+.file-upload__preview {
+  width: 5rem;
+  height: 3.5rem;
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}

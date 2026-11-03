@@ -1,0 +1,1308 @@
+{
+  "dataset": "Starfield Fauna 240p",
+  "repository": "https://github.com/tesselwait/Starfield_Fauna",
+  "usage": "Demo knowledge-base photos selected from the training split; not an independent evaluation set.",
+  "imageProvenance": "Screenshots from Starfield; upstream repository license does not establish a separate license for game artwork.",
+  "items": [
+    {
+      "classificationKey": "starfield_angler",
+      "photos": [
+        {
+          "sourcePath": "train/angler/164-angler.png",
+          "sourceUrl": "https://drive.google.com/file/d/1dChc4cnVtYQ6PgBOpfjeA5jAKqujFmy0/view",
+          "image": "photos/starfield_angler.jpg",
+          "sourceSha256": "79724182a7ec97d81ed64619d9857380e4e3de908bc7d1c7fec535e4a1fca7ae",
+          "imageSha256": "079edb91827e1286bae52f9080d4bafc40c473ba0ef9b8168e817e72fb615f51"
+        },
+        {
+          "sourcePath": "train/angler/213-angler.png",
+          "sourceUrl": "https://drive.google.com/file/d/1-hGAmuJKzxceSSy61I3BbgaIC9RA7vvV/view",
+          "image": "photos/starfield_angler-2.png",
+          "sourceSha256": "9347c4ad14d642bf4f33366b9d5a32515ffe9cd1f697e5efec98e3e146084ad7",
+          "imageSha256": "9347c4ad14d642bf4f33366b9d5a32515ffe9cd1f697e5efec98e3e146084ad7"
+        },
+        {
+          "sourcePath": "train/angler/185-angler.png",
+          "sourceUrl": "https://drive.google.com/file/d/15G23lDZSMWiRcSv8dtygaOmghHdt4tUi/view",
+          "image": "photos/starfield_angler-3.png",
+          "sourceSha256": "0068adc8c15080a3f00f5b25c974bffd6f9204cf7c07f4d19189c5cc6a988732",
+          "imageSha256": "0068adc8c15080a3f00f5b25c974bffd6f9204cf7c07f4d19189c5cc6a988732"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_anklyosaurus",
+      "photos": [
+        {
+          "sourcePath": "train/anklyosaurus/243-anklyosaurus.png",
+          "sourceUrl": "https://drive.google.com/file/d/12eQh-CwwzjfjfdVEhAAkSuCO1RYcbA_-/view",
+          "image": "photos/starfield_anklyosaurus.jpg",
+          "sourceSha256": "bcff35fa2c121d61a7a59fa3702bc251ef15eb140cb8dd0f89c3f1c6b59544ba",
+          "imageSha256": "4390386b403458014eeec43e4fa7ad65ae9a7adee0fe08f155b8dbca9918b5ab"
+        },
+        {
+          "sourcePath": "train/anklyosaurus/205-anklyosaurus.png",
+          "sourceUrl": "https://drive.google.com/file/d/1ooJBikV6E7ne0BKWxlB5Lp1rCha41q2r/view",
+          "image": "photos/starfield_anklyosaurus-2.png",
+          "sourceSha256": "654c2d3a8ef1119101635f2b796955d68f491abfd3f3a5ddbad9f480c8b5c603",
+          "imageSha256": "654c2d3a8ef1119101635f2b796955d68f491abfd3f3a5ddbad9f480c8b5c603"
+        },
+        {
+          "sourcePath": "train/anklyosaurus/257-anklyosaurus.png",
+          "sourceUrl": "https://drive.google.com/file/d/1zAedgmd3_Qj9kCwvlPnxxkMKPDCeNOQ3/view",
+          "image": "photos/starfield_anklyosaurus-3.png",
+          "sourceSha256": "788d273582dffc0fdeada86c37a35219e8c89051f3d46c27af5bbe6f20886a6a",
+          "imageSha256": "788d273582dffc0fdeada86c37a35219e8c89051f3d46c27af5bbe6f20886a6a"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_ashta",
+      "photos": [
+        {
+          "sourcePath": "train/ashta/248-ashta.png",
+          "sourceUrl": "https://drive.google.com/file/d/1o5Eci8KgXoJb4iAPOXghASl2nT1mATol/view",
+          "image": "photos/starfield_ashta.jpg",
+          "sourceSha256": "c4b3375b7446053bc0b9c1f39b3a6aed1feba05f0eff8d01baf9b8e64f0bf003",
+          "imageSha256": "cca047fe048d88dff42ba21c3d15ae8ab063ccc005ac865a308f290048e3f060"
+        },
+        {
+          "sourcePath": "train/ashta/120-ashta.png",
+          "sourceUrl": "https://drive.google.com/file/d/1Yl2f69YTert1kS3GWJ9JJHUykFNpFfu_/view",
+          "image": "photos/starfield_ashta-2.png",
+          "sourceSha256": "cf3e95fc2fe390314e1dbf5db7da0c6633d3d5e0ec453eb66e016ed6a2d138d2",
+          "imageSha256": "cf3e95fc2fe390314e1dbf5db7da0c6633d3d5e0ec453eb66e016ed6a2d138d2"
+        },
+        {
+          "sourcePath": "train/ashta/108-ashta.png",
+          "sourceUrl": "https://drive.google.com/file/d/1XW-TN7-5Gx1ZPXsi9Vg3-XF5mEvfeq3M/view",
+          "image": "photos/starfield_ashta-3.png",
+          "sourceSha256": "b92a97269af3aa0b0374e3a56987884a1ec18b510d305937128688821e1140c9",
+          "imageSha256": "b92a97269af3aa0b0374e3a56987884a1ec18b510d305937128688821e1140c9"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_beetlecrab",
+      "photos": [
+        {
+          "sourcePath": "train/beetlecrab/124-beetlecrab.png",
+          "sourceUrl": "https://drive.google.com/file/d/1JokacFIKQ5S3bhDKKlCyNJhZNPGzBpo4/view",
+          "image": "photos/starfield_beetlecrab.jpg",
+          "sourceSha256": "0f38afc40a5c89c8e9814375ff7be00203906ad9093d78e31ed3c00737549846",
+          "imageSha256": "7f8d7b561dd150c3a49894a0ceb8d26fd4c00750c76b40c420a8cd67a5fca794"
+        },
+        {
+          "sourcePath": "train/beetlecrab/245-beetlecrab.png",
+          "sourceUrl": "https://drive.google.com/file/d/1L6yN85hB7C7BDoUQ_9AQpNlpb67AwRd8/view",
+          "image": "photos/starfield_beetlecrab-2.png",
+          "sourceSha256": "6cea9853654b60f2b407f78075400d513b45066e658e19786be0bf9c5d1c1228",
+          "imageSha256": "6cea9853654b60f2b407f78075400d513b45066e658e19786be0bf9c5d1c1228"
+        },
+        {
+          "sourcePath": "train/beetlecrab/132-beetlecrab.png",
+          "sourceUrl": "https://drive.google.com/file/d/1hMSkEkSf_e9WCx3Gsw5o2Zi9OGJHpwKz/view",
+          "image": "photos/starfield_beetlecrab-3.png",
+          "sourceSha256": "49f1e31df4d7a952771566f1fe86090c4d18be9573bbf81517800d2e65d6da4f",
+          "imageSha256": "49f1e31df4d7a952771566f1fe86090c4d18be9573bbf81517800d2e65d6da4f"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_bighorn",
+      "photos": [
+        {
+          "sourcePath": "train/bighorn/264-bighorn.png",
+          "sourceUrl": "https://drive.google.com/file/d/1uKhZbEnIrF8zepNdHoqSq4ZapPtIdqgA/view",
+          "image": "photos/starfield_bighorn.jpg",
+          "sourceSha256": "fc1c05aab58f32311e1f737db3912394e4b8d92f862a8fc2663360ab3a25b0db",
+          "imageSha256": "56e9408d2feee102f85c1a5faf7a48a1b027b1c4145af61465658377e9d809c4"
+        },
+        {
+          "sourcePath": "train/bighorn/126-bighorn.png",
+          "sourceUrl": "https://drive.google.com/file/d/1Ou98XwalT8raNGJk7rUA3ee13sDWwf9H/view",
+          "image": "photos/starfield_bighorn-2.png",
+          "sourceSha256": "27d0516fa257b4f8109f5fdafcacf45cc948469a1f9e4fc45d1fad1b3cbadab0",
+          "imageSha256": "27d0516fa257b4f8109f5fdafcacf45cc948469a1f9e4fc45d1fad1b3cbadab0"
+        },
+        {
+          "sourcePath": "train/bighorn/185-bighorn.png",
+          "sourceUrl": "https://drive.google.com/file/d/1-UVJwi4sj3YEfGOq8eX0dwqhMwyywCLb/view",
+          "image": "photos/starfield_bighorn-3.png",
+          "sourceSha256": "bb7b27b1b01e9542c17c834a23e9e1408f0d04365efc23045bc72644ec7f4ca8",
+          "imageSha256": "bb7b27b1b01e9542c17c834a23e9e1408f0d04365efc23045bc72644ec7f4ca8"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_bladeback",
+      "photos": [
+        {
+          "sourcePath": "train/bladeback/132-bladeback.png",
+          "sourceUrl": "https://drive.google.com/file/d/1AslfxtqtzIxSvjRg7W0IxHVI3Y3pUUeq/view",
+          "image": "photos/starfield_bladeback.jpg",
+          "sourceSha256": "cbc6786ea349256453266145d409df4cc3e46c72468f1323ca98938fee9f0cab",
+          "imageSha256": "cbd5d1d5769ff8964889a41c566bba8c7038d6fc05bcda32e427bd9226d092a6"
+        },
+        {
+          "sourcePath": "train/bladeback/274-bladeback.png",
+          "sourceUrl": "https://drive.google.com/file/d/19iqeel6l34JW_6xQ30Uk7rcxZsYSLYQw/view",
+          "image": "photos/starfield_bladeback-2.png",
+          "sourceSha256": "1ac6659738c368cd0dcd0e6e127df68f4087f81502102fd8df46c4e23b49ad6f",
+          "imageSha256": "1ac6659738c368cd0dcd0e6e127df68f4087f81502102fd8df46c4e23b49ad6f"
+        },
+        {
+          "sourcePath": "train/bladeback/150-bladeback.png",
+          "sourceUrl": "https://drive.google.com/file/d/1nJsow4uMReISKU9-PZpR7KOUCF9Ia3jV/view",
+          "image": "photos/starfield_bladeback-3.png",
+          "sourceSha256": "7dfcd5130ed987fe1eafbaa0087e64935a55c909cb645db8572ef422d54635c3",
+          "imageSha256": "7dfcd5130ed987fe1eafbaa0087e64935a55c909cb645db8572ef422d54635c3"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_blistercrab",
+      "photos": [
+        {
+          "sourcePath": "train/blistercrab/200-blistercrab.png",
+          "sourceUrl": "https://drive.google.com/file/d/1GbZISscu9Mo69M0lcg55-EX8ctkkoKif/view",
+          "image": "photos/starfield_blistercrab.jpg",
+          "sourceSha256": "19afcd06cb160f755aecce7c848830295f48cf46d4c36ede6c3e207a0b3537b3",
+          "imageSha256": "4243a914ef5914cb8a55c0f7ac51383b2a24b8d1e1e15d420c807547233ac56c"
+        },
+        {
+          "sourcePath": "train/blistercrab/160-blistercrab.png",
+          "sourceUrl": "https://drive.google.com/file/d/1Ckx1tgSIubJKH-9rSvBVyQ6J9Mx4OFr_/view",
+          "image": "photos/starfield_blistercrab-2.png",
+          "sourceSha256": "6fc3c9d4cc4d463e382dd09e628c9f045d41b3baa76daeed2120aad78954af86",
+          "imageSha256": "6fc3c9d4cc4d463e382dd09e628c9f045d41b3baa76daeed2120aad78954af86"
+        },
+        {
+          "sourcePath": "train/blistercrab/102-blistercrab.png",
+          "sourceUrl": "https://drive.google.com/file/d/1YjrcAdHg6TRxXDQqFHP0uCKAN-2MKRhC/view",
+          "image": "photos/starfield_blistercrab-3.png",
+          "sourceSha256": "16ee2e9664080b681a7a1d74d74d54c84151ee87e3a1325b472a215071482505",
+          "imageSha256": "16ee2e9664080b681a7a1d74d74d54c84151ee87e3a1325b472a215071482505"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_boneback",
+      "photos": [
+        {
+          "sourcePath": "train/boneback/144-boneback.png",
+          "sourceUrl": "https://drive.google.com/file/d/1X5ri4Reeamn2CY7Jxw8OUVEUU-BPwTog/view",
+          "image": "photos/starfield_boneback.jpg",
+          "sourceSha256": "1245d3d7bfdfe273cbf0e06ecb2460706bcd4600988b9192a65387a20351f652",
+          "imageSha256": "f97a9e42fa5a765c331f257802ea6b605ae8617b67cfa5f70d80a99d69e1f0e9"
+        },
+        {
+          "sourcePath": "train/boneback/260-boneback.png",
+          "sourceUrl": "https://drive.google.com/file/d/13YkVSz2XutcccVxeTOdF6YWWtzU5Hp2W/view",
+          "image": "photos/starfield_boneback-2.png",
+          "sourceSha256": "33221e94970309e37a26bad64e1d01de745c1e6829a86b51e5b14f265c34796f",
+          "imageSha256": "33221e94970309e37a26bad64e1d01de745c1e6829a86b51e5b14f265c34796f"
+        },
+        {
+          "sourcePath": "train/boneback/148-boneback.png",
+          "sourceUrl": "https://drive.google.com/file/d/1Hvqkmj0lEf4RoptnUoLLkp5iQWh-ObaF/view",
+          "image": "photos/starfield_boneback-3.png",
+          "sourceSha256": "2c0539acd212bbb70247aaf7535d033d5d44294ddb74025317d57828729bbc96",
+          "imageSha256": "2c0539acd212bbb70247aaf7535d033d5d44294ddb74025317d57828729bbc96"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_bonefrill",
+      "photos": [
+        {
+          "sourcePath": "train/bonefrill/152-bonefrill.png",
+          "sourceUrl": "https://drive.google.com/file/d/1JPkbRJuG3kYJvS-jU5l8168HjMrQHXxs/view",
+          "image": "photos/starfield_bonefrill.jpg",
+          "sourceSha256": "8f2346e17bc3934e747a2f4ce3defa9560ee932a9831226687a97a1a6a2b4380",
+          "imageSha256": "ab4b50aee47ed5c64270b347e6f74d3758341a4a80099a6052d78ce29aca6b58"
+        },
+        {
+          "sourcePath": "train/bonefrill/255-bonefrill.png",
+          "sourceUrl": "https://drive.google.com/file/d/1kBuV3xzevF6oDADWc77dIn3aHN518UaZ/view",
+          "image": "photos/starfield_bonefrill-2.png",
+          "sourceSha256": "7a82ad86f9992cfd7b406ca455de8342e3e62fe9108d1e051e68f58172a9ef87",
+          "imageSha256": "7a82ad86f9992cfd7b406ca455de8342e3e62fe9108d1e051e68f58172a9ef87"
+        },
+        {
+          "sourcePath": "train/bonefrill/263-bonefrill.png",
+          "sourceUrl": "https://drive.google.com/file/d/1vA4hcLp8Ng8NZVZ0rkBhXMwZbEQvLf3f/view",
+          "image": "photos/starfield_bonefrill-3.png",
+          "sourceSha256": "8710dff0cecc022b9858d18ecb4a8658c8e8a7a0576f1bf3be6dd1b1c065a8ee",
+          "imageSha256": "8710dff0cecc022b9858d18ecb4a8658c8e8a7a0576f1bf3be6dd1b1c065a8ee"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_bonemane",
+      "photos": [
+        {
+          "sourcePath": "train/bonemane/204-bonemane.png",
+          "sourceUrl": "https://drive.google.com/file/d/1sFRlBkfG3DLLL5YspbwI37UWYw8GFjdN/view",
+          "image": "photos/starfield_bonemane.jpg",
+          "sourceSha256": "c79b7085a27ddbf9bb621ea23ccf89f9ed78da7d70d81c162fdf25a1cecc0fe4",
+          "imageSha256": "ff07b80c7c2ee7fbe298b6b30c8b47b3bbde88c1a0831b404b55642cb689d5e0"
+        },
+        {
+          "sourcePath": "train/bonemane/266-bonemane.png",
+          "sourceUrl": "https://drive.google.com/file/d/1spr_m_OhHlCEsi7tdFV5zg8gvfMbzk9-/view",
+          "image": "photos/starfield_bonemane-2.png",
+          "sourceSha256": "13faf8343ca74728e5566664435bbbac424afbc149a471351615722284098b27",
+          "imageSha256": "13faf8343ca74728e5566664435bbbac424afbc149a471351615722284098b27"
+        },
+        {
+          "sourcePath": "train/bonemane/231-bonemane.png",
+          "sourceUrl": "https://drive.google.com/file/d/1zkcIL5b5SA_dEOQflzCL3IYZplLp8okh/view",
+          "image": "photos/starfield_bonemane-3.png",
+          "sourceSha256": "9bdc3e656b61cbb844f3c398c364009eb607ea2af29dcee10f1f9edfa14d5cd5",
+          "imageSha256": "9bdc3e656b61cbb844f3c398c364009eb607ea2af29dcee10f1f9edfa14d5cd5"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_brainsprout",
+      "photos": [
+        {
+          "sourcePath": "train/brainsprout/136-brainsprout.png",
+          "sourceUrl": "https://drive.google.com/file/d/110w6sAhLJuoiGxAnKUEuzooSoQN3USOm/view",
+          "image": "photos/starfield_brainsprout.jpg",
+          "sourceSha256": "cda1b7e1b5349e5b8fb9dfc60b14180d705f2a68080a5f073518412b7c5083d6",
+          "imageSha256": "41897584975462d8b02519632845515c882f9226cd5771cc79011f3482613568"
+        },
+        {
+          "sourcePath": "train/brainsprout/241-brainsprout.png",
+          "sourceUrl": "https://drive.google.com/file/d/1WSZZpRCXT2IYxB7EgLXNZW0S-LVR3aaY/view",
+          "image": "photos/starfield_brainsprout-2.png",
+          "sourceSha256": "3bcd8fbae6b3e0c24c9ee810dd1300c58a8a9fb38a2a6f77c1a2de9c6c2e706a",
+          "imageSha256": "3bcd8fbae6b3e0c24c9ee810dd1300c58a8a9fb38a2a6f77c1a2de9c6c2e706a"
+        },
+        {
+          "sourcePath": "train/brainsprout/277-brainsprout.png",
+          "sourceUrl": "https://drive.google.com/file/d/1hq-REVswuKZ_Wa1CPLVK6umMZ00f2kyQ/view",
+          "image": "photos/starfield_brainsprout-3.png",
+          "sourceSha256": "009f3d6a21013c8f523620ee81c16bd8d8558a876de9ef13a9e7b02f468d9ccf",
+          "imageSha256": "009f3d6a21013c8f523620ee81c16bd8d8558a876de9ef13a9e7b02f468d9ccf"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_brainsquid",
+      "photos": [
+        {
+          "sourcePath": "train/brainsquid/112-brainsquid.png",
+          "sourceUrl": "https://drive.google.com/file/d/1eUKmCbMjtmLbnMUayvzw_sYPXyDqvgzc/view",
+          "image": "photos/starfield_brainsquid.jpg",
+          "sourceSha256": "1ed2a25c57a4e62b316f4382c843538c3b923493c7ea1f23f0c31804ffc8b257",
+          "imageSha256": "469d6d92d3aa390ec766bbf7d1df5941bd0cb3557f92cdecad0120fccd6ed975"
+        },
+        {
+          "sourcePath": "train/brainsquid/100-brainsquid.png",
+          "sourceUrl": "https://drive.google.com/file/d/13KmIPM_zHEDk7mJa8577yRjjINjTgDHH/view",
+          "image": "photos/starfield_brainsquid-2.png",
+          "sourceSha256": "a99a3a2a9eba495461e7b3b20886f02269f2f260c5bdeb6735244ce2fc71abce",
+          "imageSha256": "a99a3a2a9eba495461e7b3b20886f02269f2f260c5bdeb6735244ce2fc71abce"
+        },
+        {
+          "sourcePath": "train/brainsquid/151-brainsquid.png",
+          "sourceUrl": "https://drive.google.com/file/d/1eQ-ZFlteWkXMr4xz-rrcL_QCBShw6bvf/view",
+          "image": "photos/starfield_brainsquid-3.png",
+          "sourceSha256": "63a5eaa2194fef4da3e4632cc84c939be065ea3ce0a09f1333b8ce62d93a53fb",
+          "imageSha256": "63a5eaa2194fef4da3e4632cc84c939be065ea3ce0a09f1333b8ce62d93a53fb"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_brightcage",
+      "photos": [
+        {
+          "sourcePath": "train/brightcage/232-brightcage.png",
+          "sourceUrl": "https://drive.google.com/file/d/1QcS06QS32QWTuq05vUo3P4QxlfhT5SwT/view",
+          "image": "photos/starfield_brightcage.jpg",
+          "sourceSha256": "4acc7a8f62036e2b53e947b6bb4887a84869711175addbece7a7ddd3f9603200",
+          "imageSha256": "8c14f657f93a7bf4f91e8ee9f365de923179afd09cb594b518c19f2cb41ff00c"
+        },
+        {
+          "sourcePath": "train/brightcage/195-brightcage.png",
+          "sourceUrl": "https://drive.google.com/file/d/1X-QBjUNBmrruQ9OWdA-oBahBqrD1etR8/view",
+          "image": "photos/starfield_brightcage-2.png",
+          "sourceSha256": "f56d32a90af2fb3b82d905986d7461e09feed40f91181b99f6e0f7816cf23d44",
+          "imageSha256": "f56d32a90af2fb3b82d905986d7461e09feed40f91181b99f6e0f7816cf23d44"
+        },
+        {
+          "sourcePath": "train/brightcage/211-brightcage.png",
+          "sourceUrl": "https://drive.google.com/file/d/1m2dKjrMyNRAP7BZ9oxFkLWH4Ipw3gCg4/view",
+          "image": "photos/starfield_brightcage-3.png",
+          "sourceSha256": "d8b1f55886616610bd4cfb4d5b5876d3c70291f02e380cd1b572ad9a426f11ce",
+          "imageSha256": "d8b1f55886616610bd4cfb4d5b5876d3c70291f02e380cd1b572ad9a426f11ce"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_cagebrain",
+      "photos": [
+        {
+          "sourcePath": "train/cagebrain/296-cagebrain.png",
+          "sourceUrl": "https://drive.google.com/file/d/1Uata22qmRzd5zqIw6JwFgmMBMZqi614D/view",
+          "image": "photos/starfield_cagebrain.jpg",
+          "sourceSha256": "7f8a0c16437c62efcae9f55097a1a56ce214459445721aa985bc5880499c2179",
+          "imageSha256": "1355d9a46ad6089b32950f879e5d437c82435cc84a604bd6412b0090938a4738"
+        },
+        {
+          "sourcePath": "train/cagebrain/160-cagebrain.png",
+          "sourceUrl": "https://drive.google.com/file/d/15AVBSv2AK5I37XYuJb1OeTzrOdb-2Vip/view",
+          "image": "photos/starfield_cagebrain-2.png",
+          "sourceSha256": "6fe73244e91feb96ecf57df90ee39479bb0b8ba5546160e20e41707574440148",
+          "imageSha256": "6fe73244e91feb96ecf57df90ee39479bb0b8ba5546160e20e41707574440148"
+        },
+        {
+          "sourcePath": "train/cagebrain/232-cagebrain.png",
+          "sourceUrl": "https://drive.google.com/file/d/1UOWXf1t0nxizwRs7Wdq9r5xT178vJC-O/view",
+          "image": "photos/starfield_cagebrain-3.png",
+          "sourceSha256": "b0275078350c562421a401d7b095d67a3294a6e33aaf863d27433bc37d09c26a",
+          "imageSha256": "b0275078350c562421a401d7b095d67a3294a6e33aaf863d27433bc37d09c26a"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_clawback",
+      "photos": [
+        {
+          "sourcePath": "train/clawback/108-clawback.png",
+          "sourceUrl": "https://drive.google.com/file/d/1h_9x2rM85t10f3mfGS7m1WLKsndzF6EF/view",
+          "image": "photos/starfield_clawback.jpg",
+          "sourceSha256": "03846386e62a7863dc9c2417c9df6498c4e72f649188457585f1e529de05d932",
+          "imageSha256": "01d51ba50f4af57f5676c045b6bc091af6e3722e161b22ea16735e27d79a499e"
+        },
+        {
+          "sourcePath": "train/clawback/219-clawback.png",
+          "sourceUrl": "https://drive.google.com/file/d/1C95oREx_9EvXaBS69k-j-6wsl6kfQCXV/view",
+          "image": "photos/starfield_clawback-2.png",
+          "sourceSha256": "5e0773a67cc4d43892cc81649d09b018b580685ed2ed1476369f3c5e5e1c0f7d",
+          "imageSha256": "5e0773a67cc4d43892cc81649d09b018b580685ed2ed1476369f3c5e5e1c0f7d"
+        },
+        {
+          "sourcePath": "train/clawback/296-clawback.png",
+          "sourceUrl": "https://drive.google.com/file/d/1bPbsQOAkNsmETZDkHCpSb_XgM1L-HkwY/view",
+          "image": "photos/starfield_clawback-3.png",
+          "sourceSha256": "09bca6db554e609776216aa5525b6d4f3c5b87dc7dab69e0036e39315ec79bbd",
+          "imageSha256": "09bca6db554e609776216aa5525b6d4f3c5b87dc7dab69e0036e39315ec79bbd"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_coralbug",
+      "photos": [
+        {
+          "sourcePath": "train/coralbug/236-coralbug.png",
+          "sourceUrl": "https://drive.google.com/file/d/1BUHQJKiff3j5MOVh4sX3OWJPgJXT6GNL/view",
+          "image": "photos/starfield_coralbug.jpg",
+          "sourceSha256": "b050dffb4bcc1093afd950e0cfebafe59ad600b5284ba115ee8c3a1476b05b84",
+          "imageSha256": "528b589997b06fba618bc2089ff6fc8ab3b32789f41f4dcd385c91164c2c300d"
+        },
+        {
+          "sourcePath": "train/coralbug/140-coralbug.png",
+          "sourceUrl": "https://drive.google.com/file/d/1umGdwI2JIzoB-vmN0PpSxn7v4F4LuDIm/view",
+          "image": "photos/starfield_coralbug-2.png",
+          "sourceSha256": "103e145d37944f7536bc9d4d7fa397ba05cb97f3013b7702280178c8e0f32c63",
+          "imageSha256": "103e145d37944f7536bc9d4d7fa397ba05cb97f3013b7702280178c8e0f32c63"
+        },
+        {
+          "sourcePath": "train/coralbug/189-coralbug.png",
+          "sourceUrl": "https://drive.google.com/file/d/1VQYx1yjgN1AUF9Zq86meQiLsrwecEJFJ/view",
+          "image": "photos/starfield_coralbug-3.png",
+          "sourceSha256": "5bc84b7424d546625a83903d5a6b4d3190d4ea8aa910fb59aa7989e945e4ea7c",
+          "imageSha256": "5bc84b7424d546625a83903d5a6b4d3190d4ea8aa910fb59aa7989e945e4ea7c"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_coralcrawler",
+      "photos": [
+        {
+          "sourcePath": "train/coralcrawler/276-coralcrawler.png",
+          "sourceUrl": "https://drive.google.com/file/d/1xkSWgr1K9AycJQ7dQHD7A51VHn3LrSwl/view",
+          "image": "photos/starfield_coralcrawler.jpg",
+          "sourceSha256": "92c0d264eb693eeca3190175a18389eb303ced6f9003e52e4a7db1f4cb78504f",
+          "imageSha256": "9d3fc4d3f11263c92fcb1bfee8104394a31b3e9e2df2957a6fde471f0edd5a03"
+        },
+        {
+          "sourcePath": "train/coralcrawler/167-coralcrawler.png",
+          "sourceUrl": "https://drive.google.com/file/d/1dU7A6cBgneigFZ7FwQMPdqZUwrncwXpi/view",
+          "image": "photos/starfield_coralcrawler-2.png",
+          "sourceSha256": "ecde47dd26ea569656d7a7006b6d5c5e8f04aa13d79319347cb54514d70d0cb0",
+          "imageSha256": "ecde47dd26ea569656d7a7006b6d5c5e8f04aa13d79319347cb54514d70d0cb0"
+        },
+        {
+          "sourcePath": "train/coralcrawler/221-coralcrawler.png",
+          "sourceUrl": "https://drive.google.com/file/d/1pLSnxR9A4hNrD7U8ewc9f8Zz0caxYTDB/view",
+          "image": "photos/starfield_coralcrawler-3.png",
+          "sourceSha256": "39df305a43853b56f4937df1df5a9a7517fd54a2cd6128b03e4857893f15bf29",
+          "imageSha256": "39df305a43853b56f4937df1df5a9a7517fd54a2cd6128b03e4857893f15bf29"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_crab",
+      "photos": [
+        {
+          "sourcePath": "train/crab/112-crab.png",
+          "sourceUrl": "https://drive.google.com/file/d/1zkybcKAdAhgjJdXNo3r-U2HErOpj9f1K/view",
+          "image": "photos/starfield_crab.jpg",
+          "sourceSha256": "b1aad738c9d8e8bc5d4f036cdc6a3e27ffae6f6f151e24402fb2811672e4550f",
+          "imageSha256": "c48c33cc2aa99c7703bf6ea42f61d0c06d7ec1a689c52a35bb507ebb8859135f"
+        },
+        {
+          "sourcePath": "train/crab/137-crab.png",
+          "sourceUrl": "https://drive.google.com/file/d/12j2UC0PRVINN5968saNkdK8eUa-Ku-M2/view",
+          "image": "photos/starfield_crab-2.png",
+          "sourceSha256": "0d5055fc5b80c3243357ad01ecf962232b96ede0f7451225803926933d328448",
+          "imageSha256": "0d5055fc5b80c3243357ad01ecf962232b96ede0f7451225803926933d328448"
+        },
+        {
+          "sourcePath": "train/crab/254-crab.png",
+          "sourceUrl": "https://drive.google.com/file/d/1x4m9qscUdQRzbV8ab4DU-NC6EEYWIFlS/view",
+          "image": "photos/starfield_crab-3.png",
+          "sourceSha256": "9adb03327089f164b34a37bca88eb71238f9ded47c6ae3e73adda66df1bedb7e",
+          "imageSha256": "9adb03327089f164b34a37bca88eb71238f9ded47c6ae3e73adda66df1bedb7e"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_cricket",
+      "photos": [
+        {
+          "sourcePath": "train/cricket/272-cricket.png",
+          "sourceUrl": "https://drive.google.com/file/d/1C95Tw1LxDTH0MYvP2RF0qn2tT_AwfDpr/view",
+          "image": "photos/starfield_cricket.jpg",
+          "sourceSha256": "5764aa2935a179af2efe1128f4a442b9a4021bc2f6ff359d680cef7615c94f1a",
+          "imageSha256": "22ce1e88a7a0a9960be93cc8cbe31dae1895dc2b5ac81749f117dbb449ff2a97"
+        },
+        {
+          "sourcePath": "train/cricket/149-cricket.png",
+          "sourceUrl": "https://drive.google.com/file/d/1b84ilxuDoRVhOAfyu0T1mlofVVMwdlMp/view",
+          "image": "photos/starfield_cricket-2.png",
+          "sourceSha256": "28bd5d4442feed8d6d38ab3706e41cbfed147eee895e27b5050d7701fbc10bd8",
+          "imageSha256": "28bd5d4442feed8d6d38ab3706e41cbfed147eee895e27b5050d7701fbc10bd8"
+        },
+        {
+          "sourcePath": "train/cricket/143-cricket.png",
+          "sourceUrl": "https://drive.google.com/file/d/14nzdVqX53aqu_0-fQW41bIuqJYOkd5WF/view",
+          "image": "photos/starfield_cricket-3.png",
+          "sourceSha256": "ed0bf1535740e6fec09c7a3c0a1b5d4a900fc8c0abe9feee09742870ae7fc6a3",
+          "imageSha256": "ed0bf1535740e6fec09c7a3c0a1b5d4a900fc8c0abe9feee09742870ae7fc6a3"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_crocalypse",
+      "photos": [
+        {
+          "sourcePath": "train/crocalypse/118-crocalypse.png",
+          "sourceUrl": "https://drive.google.com/file/d/1XYG-ynKdbCMmX9Isrw-CTNRwpn6IgLbB/view",
+          "image": "photos/starfield_crocalypse.jpg",
+          "sourceSha256": "69abc1ade81b7e8ad8f8eebcd65295c151b0b7f4da27e403c0a77ae4ea7b3f02",
+          "imageSha256": "b2bd1b241de1741d684ea071bfe79ac59d0092ef440dccae63d3bfdf5b2e5561"
+        },
+        {
+          "sourcePath": "train/crocalypse/185-crocalypse.png",
+          "sourceUrl": "https://drive.google.com/file/d/1QAYJnRabzQZ0NcOUHd2piQ3Guy8XdvNq/view",
+          "image": "photos/starfield_crocalypse-2.png",
+          "sourceSha256": "b4adb62611f12b3453a6ac57875055c2de7c8538346c0e98dec6f4a2d9df3d76",
+          "imageSha256": "b4adb62611f12b3453a6ac57875055c2de7c8538346c0e98dec6f4a2d9df3d76"
+        },
+        {
+          "sourcePath": "train/crocalypse/177-crocalypse.png",
+          "sourceUrl": "https://drive.google.com/file/d/1JYbUVtJpiGMrb9H0N9KGd9N08g60o1i6/view",
+          "image": "photos/starfield_crocalypse-3.png",
+          "sourceSha256": "2e21682461d56f6c8ec20556ae605b483e115bce190d6f69b8ba74a86c8fbd64",
+          "imageSha256": "2e21682461d56f6c8ec20556ae605b483e115bce190d6f69b8ba74a86c8fbd64"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_crocodaunt",
+      "photos": [
+        {
+          "sourcePath": "train/crocodaunt/124-crocodaunt.png",
+          "sourceUrl": "https://drive.google.com/file/d/1IfuqnqhHU7lPZlrYnArkVXb1vN70BmaI/view",
+          "image": "photos/starfield_crocodaunt.jpg",
+          "sourceSha256": "04ac3e6cc66e7789c729a336d48c7e768f6087e17bba4628c7b77f0538433a64",
+          "imageSha256": "ca7a6955d7e5f4ebc88a791f12e41dd355741441aa4ad595d382ec4814cc3082"
+        },
+        {
+          "sourcePath": "train/crocodaunt/239-crocodaunt.png",
+          "sourceUrl": "https://drive.google.com/file/d/1JnqNJYdHKieox_fpRNr_R_s-zoQh-QDe/view",
+          "image": "photos/starfield_crocodaunt-2.png",
+          "sourceSha256": "0610f78f889799ed901f56075a10858985baa1c545f527569fc9782989d06124",
+          "imageSha256": "0610f78f889799ed901f56075a10858985baa1c545f527569fc9782989d06124"
+        },
+        {
+          "sourcePath": "train/crocodaunt/255-crocodaunt.png",
+          "sourceUrl": "https://drive.google.com/file/d/1O0Fuwkrt8dkYFzto6BECU3_xa7DsET-D/view",
+          "image": "photos/starfield_crocodaunt-3.png",
+          "sourceSha256": "2fb8692cdba9c5e1cda7017b614e4f397b546c93a954a5ad2225d11776f2b95a",
+          "imageSha256": "2fb8692cdba9c5e1cda7017b614e4f397b546c93a954a5ad2225d11776f2b95a"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_cutterhead",
+      "photos": [
+        {
+          "sourcePath": "train/cutterhead/112-cutterhead.png",
+          "sourceUrl": "https://drive.google.com/file/d/1MSi_AQx0ILpdIJYxRxdvYwZmer_B-SE6/view",
+          "image": "photos/starfield_cutterhead.jpg",
+          "sourceSha256": "2472c014963ca3be2fc8cc6f19596d1ad19f23a8709ebf30cb0aa8a777acec1c",
+          "imageSha256": "55ccfec4097732142bc760f05aed07433a3e2c4713d6b2e84259bd2ff564d8d9"
+        },
+        {
+          "sourcePath": "train/cutterhead/189-cutterhead.png",
+          "sourceUrl": "https://drive.google.com/file/d/1wrn193VmrNP8YbgLLuvO7lg-62sP-KpP/view",
+          "image": "photos/starfield_cutterhead-2.png",
+          "sourceSha256": "3d8cfc7ec01b99efae8f1bfe626b0aa30ceb07bf232d5867d2ac97e4754c6210",
+          "imageSha256": "3d8cfc7ec01b99efae8f1bfe626b0aa30ceb07bf232d5867d2ac97e4754c6210"
+        },
+        {
+          "sourcePath": "train/cutterhead/260-cutterhead.png",
+          "sourceUrl": "https://drive.google.com/file/d/1DVlJe6ANSJVJaBWWBfIaXCkLQw_pJbYr/view",
+          "image": "photos/starfield_cutterhead-3.png",
+          "sourceSha256": "20255a8f6b6682ffe9a0d586f21648c9d27166db81b2468b73b72e24cbc5126c",
+          "imageSha256": "20255a8f6b6682ffe9a0d586f21648c9d27166db81b2468b73b72e24cbc5126c"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_dodo",
+      "photos": [
+        {
+          "sourcePath": "train/dodo/160-dodo.png",
+          "sourceUrl": "https://drive.google.com/file/d/1H-OVVPgePKoCcZGO13G54VL1B4L-uu1l/view",
+          "image": "photos/starfield_dodo.jpg",
+          "sourceSha256": "cfbc3c79d646f52cd2983063e2639c057a2a4c03541dd1e9592ed6bdbbf3c4fb",
+          "imageSha256": "0095c6962d7c52fa8b513f6d6d3771d180f7374b26a18c58c17775eb325eea61"
+        },
+        {
+          "sourcePath": "train/dodo/111-dodo.png",
+          "sourceUrl": "https://drive.google.com/file/d/1o85EcEyt4yhUkLp-fJh367o9PSnKpHl-/view",
+          "image": "photos/starfield_dodo-2.png",
+          "sourceSha256": "b9c26c32e3180566a07f9627def89b71ef13071cf58b9be887f59df87111e6a1",
+          "imageSha256": "b9c26c32e3180566a07f9627def89b71ef13071cf58b9be887f59df87111e6a1"
+        },
+        {
+          "sourcePath": "train/dodo/105-dodo.png",
+          "sourceUrl": "https://drive.google.com/file/d/1N2-pKmYPpkCjYmJddj9iJTjXtKXihVTf/view",
+          "image": "photos/starfield_dodo-3.png",
+          "sourceSha256": "e6291b8cdb673aaa11576049e6a12d0981fd1538db22857b9aaeaa6ae40dcd4d",
+          "imageSha256": "e6291b8cdb673aaa11576049e6a12d0981fd1538db22857b9aaeaa6ae40dcd4d"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_eggback",
+      "photos": [
+        {
+          "sourcePath": "train/eggback/264-eggback.png",
+          "sourceUrl": "https://drive.google.com/file/d/1l8hGtof05N2uxd547ukYY54ElzmvBRzW/view",
+          "image": "photos/starfield_eggback.jpg",
+          "sourceSha256": "bdfeb9c35201f7cd274728a1b1cfe1bdec2d7b3f4afb1147e2f3b395b4be2aca",
+          "imageSha256": "b137293bfccb1c6663edab3a497e1eaf77983f3f842cd43c5ef3af5f28ef8d56"
+        },
+        {
+          "sourcePath": "train/eggback/117-eggback.png",
+          "sourceUrl": "https://drive.google.com/file/d/143t2UBUP2_vbn1qSX_pT4Uk-z5xwBWFm/view",
+          "image": "photos/starfield_eggback-2.png",
+          "sourceSha256": "142ec0f84c4e3c32e4a47dd4bb59d3bb0fbc7c148b9670ce6155ff920bc72047",
+          "imageSha256": "142ec0f84c4e3c32e4a47dd4bb59d3bb0fbc7c148b9670ce6155ff920bc72047"
+        },
+        {
+          "sourcePath": "train/eggback/211-eggback.png",
+          "sourceUrl": "https://drive.google.com/file/d/1XV0BEQ-7ez97Z1hf-T7545DINwHQw1Sf/view",
+          "image": "photos/starfield_eggback-3.png",
+          "sourceSha256": "da6fb353936f701e9e96dbbd83d58f3f419bfe63a6f3d007616e4986030c4bed",
+          "imageSha256": "da6fb353936f701e9e96dbbd83d58f3f419bfe63a6f3d007616e4986030c4bed"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_eyespine",
+      "photos": [
+        {
+          "sourcePath": "train/eyespine/120-eyespine.png",
+          "sourceUrl": "https://drive.google.com/file/d/12O-m_-3l7TMScJ4pPvwMbYEl6JxeI1NP/view",
+          "image": "photos/starfield_eyespine.jpg",
+          "sourceSha256": "5563bbfd79c7a9c814f60a9e11e21143ec949f11b0a53d2271420dcefa94434d",
+          "imageSha256": "9339e0f90f5261a42bcb32b9ff82531e4e8c780deb3a0c6439e1a3fc303904c4"
+        },
+        {
+          "sourcePath": "train/eyespine/231-eyespine.png",
+          "sourceUrl": "https://drive.google.com/file/d/18mpXE89NitYldqgkUDRD0fFIlKd8mNRT/view",
+          "image": "photos/starfield_eyespine-2.png",
+          "sourceSha256": "1e55072ec86fc968dfe420a7345c88417a273b053d405af2952a172f2f576ad0",
+          "imageSha256": "1e55072ec86fc968dfe420a7345c88417a273b053d405af2952a172f2f576ad0"
+        },
+        {
+          "sourcePath": "train/eyespine/261-eyespine.png",
+          "sourceUrl": "https://drive.google.com/file/d/1Z1ugQX3CFGL3TpwrFw8MLOjAqpH0ioWB/view",
+          "image": "photos/starfield_eyespine-3.png",
+          "sourceSha256": "5e38980d4a9b85847ee36b0b9f73de1478cf8e97c41fb1ca0f52e4334eab8835",
+          "imageSha256": "5e38980d4a9b85847ee36b0b9f73de1478cf8e97c41fb1ca0f52e4334eab8835"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_hammersaur",
+      "photos": [
+        {
+          "sourcePath": "train/hammersaur/148-hammersaur.png",
+          "sourceUrl": "https://drive.google.com/file/d/1hsE-X5NS4Ck6JzSWnFC4VoaImqZaQCs4/view",
+          "image": "photos/starfield_hammersaur.jpg",
+          "sourceSha256": "c203782744a31548d8b0824b6f207d0dfa74edd004ec8bf4939d5a2115753b73",
+          "imageSha256": "4b258f64753e7a759c4e000c1e83b880b6f8a2c6d4057d852f587f3139e15385"
+        },
+        {
+          "sourcePath": "train/hammersaur/104-hammersaur.png",
+          "sourceUrl": "https://drive.google.com/file/d/1RlwBDZ3O9gftD8Brom9LZWYuZF-gjllP/view",
+          "image": "photos/starfield_hammersaur-2.png",
+          "sourceSha256": "7b5fb65f6bd1874ffbe6d6f793715c19057dbdcfbea341db0b4ae52e433a0a18",
+          "imageSha256": "7b5fb65f6bd1874ffbe6d6f793715c19057dbdcfbea341db0b4ae52e433a0a18"
+        },
+        {
+          "sourcePath": "train/hammersaur/215-hammersaur.png",
+          "sourceUrl": "https://drive.google.com/file/d/10tvnxZz06gH7btkNZ52aguAN74XnXZ2e/view",
+          "image": "photos/starfield_hammersaur-3.png",
+          "sourceSha256": "d129b3fb08cf6570a543bebfc48db5594e9a0823044e2b657c96494b97bf6a0d",
+          "imageSha256": "d129b3fb08cf6570a543bebfc48db5594e9a0823044e2b657c96494b97bf6a0d"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_hornface",
+      "photos": [
+        {
+          "sourcePath": "train/hornface/268-hornface.png",
+          "sourceUrl": "https://drive.google.com/file/d/1Mye-pag0S9U09qEL49wHgluzQlr2g7KI/view",
+          "image": "photos/starfield_hornface.jpg",
+          "sourceSha256": "8b1701b10f9601e950a1b739082d3d8e391dd4560c8b850e8803919b4de065fe",
+          "imageSha256": "14ebdca724b920a8d04b0b69a08ec40b27a488009ee3d2d80c7f2a92d22138bf"
+        },
+        {
+          "sourcePath": "train/hornface/237-hornface.png",
+          "sourceUrl": "https://drive.google.com/file/d/1bBwTQjbU1Fl18b9YDbTVadQgI0P9Zzcu/view",
+          "image": "photos/starfield_hornface-2.png",
+          "sourceSha256": "f6beec18d2b68a3a8eca13ebfc08393cfbede7a7cc482ef3a1294a1a8037ddb6",
+          "imageSha256": "f6beec18d2b68a3a8eca13ebfc08393cfbede7a7cc482ef3a1294a1a8037ddb6"
+        },
+        {
+          "sourcePath": "train/hornface/280-hornface.png",
+          "sourceUrl": "https://drive.google.com/file/d/1QqUt5I6SMO4hDQ72GqodwawHWtgjSULr/view",
+          "image": "photos/starfield_hornface-3.png",
+          "sourceSha256": "41c0f2ba85b798b5c1ba6fe965eb4c3ec217bc352704ed07f494cc360a33fd2e",
+          "imageSha256": "41c0f2ba85b798b5c1ba6fe965eb4c3ec217bc352704ed07f494cc360a33fd2e"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_horsemander",
+      "photos": [
+        {
+          "sourcePath": "train/horsemander/160-horsemander.png",
+          "sourceUrl": "https://drive.google.com/file/d/1hkFLZyELkPB8_FvaeEUPGZUIGWeyKlGF/view",
+          "image": "photos/starfield_horsemander.jpg",
+          "sourceSha256": "956a2cde05cfc6704c2908cd7450ccf2a6ab2d024e4197d5f1f99b1454516b85",
+          "imageSha256": "24b6924e8c4c4dd8afd84ac0b0f1dd9075cc3da0c25c152f085806619c1361f0"
+        },
+        {
+          "sourcePath": "train/horsemander/131-horsemander.png",
+          "sourceUrl": "https://drive.google.com/file/d/1bVP35KecvTLXaOwpbu29x2gr6UO0Vusg/view",
+          "image": "photos/starfield_horsemander-2.png",
+          "sourceSha256": "9b1ae03b7f75ce4c7be9d4662f07337d8aea4406f3ce637153b89d58ec5a0987",
+          "imageSha256": "9b1ae03b7f75ce4c7be9d4662f07337d8aea4406f3ce637153b89d58ec5a0987"
+        },
+        {
+          "sourcePath": "train/horsemander/154-horsemander.png",
+          "sourceUrl": "https://drive.google.com/file/d/1J7ErZ5Pf68qJGPAL_lNLnGYJEYG0eeUe/view",
+          "image": "photos/starfield_horsemander-3.png",
+          "sourceSha256": "f75eb401accebeac9adb8cb76267f4504258beda58356ccf28be54eb5fde706b",
+          "imageSha256": "f75eb401accebeac9adb8cb76267f4504258beda58356ccf28be54eb5fde706b"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_lacraia",
+      "photos": [
+        {
+          "sourcePath": "train/lacraia/292-lacraia.png",
+          "sourceUrl": "https://drive.google.com/file/d/1zYn2Djqf7N8BqK4Ttyhn-RSeA5iiCXUD/view",
+          "image": "photos/starfield_lacraia.jpg",
+          "sourceSha256": "a93ecec3089ecbb056ed90f838896a5acf2394785a890473b6b81c9cc751658e",
+          "imageSha256": "1ef57a0d5c06e6d55336eccea88e4834bf640e04d2cf6e8da351c7171ba5a50f"
+        },
+        {
+          "sourcePath": "train/lacraia/146-lacraia.png",
+          "sourceUrl": "https://drive.google.com/file/d/1cKecXpFT5k3MZwJVbdTfVu0J4i3SLSqt/view",
+          "image": "photos/starfield_lacraia-2.png",
+          "sourceSha256": "2305769ea562360ee85a49218793ca947fc90413770e5aa1bcc8b8de4a91cca0",
+          "imageSha256": "2305769ea562360ee85a49218793ca947fc90413770e5aa1bcc8b8de4a91cca0"
+        },
+        {
+          "sourcePath": "train/lacraia/263-lacraia.png",
+          "sourceUrl": "https://drive.google.com/file/d/1KP2mWSFE-ENxFQpE-FrmYTVmdFLoVxcl/view",
+          "image": "photos/starfield_lacraia-3.png",
+          "sourceSha256": "c67aec5b258ee962d47b5b3e4ed91cb2fc0a7190f4e5ae821b1bcc5fd0d01803",
+          "imageSha256": "c67aec5b258ee962d47b5b3e4ed91cb2fc0a7190f4e5ae821b1bcc5fd0d01803"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_leafbug",
+      "photos": [
+        {
+          "sourcePath": "train/leafbug/220-leafbug.png",
+          "sourceUrl": "https://drive.google.com/file/d/1b_dpZ6-qd0YI0Kn_-A7sRZq2uV5udI72/view",
+          "image": "photos/starfield_leafbug.jpg",
+          "sourceSha256": "5493dd4c48b989f94cdc58275ca89f4a17fd99c7f1ff1f23c6d5b2763e8e5fcb",
+          "imageSha256": "2f54cea090aeb4b5362970426652caf542093089a635720eeb2b99b6f18725c2"
+        },
+        {
+          "sourcePath": "train/leafbug/264-leafbug.png",
+          "sourceUrl": "https://drive.google.com/file/d/1gxXdz0trX390bPxz6DpuDuh1FKHe9jFj/view",
+          "image": "photos/starfield_leafbug-2.png",
+          "sourceSha256": "43aa0b3b181a92eaf5152a97958194ada24eb3f76aa6f7b38c7ff9db91c52201",
+          "imageSha256": "43aa0b3b181a92eaf5152a97958194ada24eb3f76aa6f7b38c7ff9db91c52201"
+        },
+        {
+          "sourcePath": "train/leafbug/195-leafbug.png",
+          "sourceUrl": "https://drive.google.com/file/d/13Gd4xLj6X6tmlm7y4NE-6HdSj9ujOpHf/view",
+          "image": "photos/starfield_leafbug-3.png",
+          "sourceSha256": "c4c3a8e27a3f4c15a5feab5e55b2022887523226e953f94721a0eba37f90cb2c",
+          "imageSha256": "c4c3a8e27a3f4c15a5feab5e55b2022887523226e953f94721a0eba37f90cb2c"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_leafstrider",
+      "photos": [
+        {
+          "sourcePath": "train/leafstrider/228-leafstrider.png",
+          "sourceUrl": "https://drive.google.com/file/d/1IUQe1zkl6EG7Rr5qa9Yzn8QxCNjg-fNL/view",
+          "image": "photos/starfield_leafstrider.jpg",
+          "sourceSha256": "9872d3f8389ec8a01ae84ed70f4367f96f630e8870e0607632c64ad53b543c27",
+          "imageSha256": "48a6b8024415e0349d10edf397d6f325482999371f8248efd9bb06aeac8588dd"
+        },
+        {
+          "sourcePath": "train/leafstrider/108-leafstrider.png",
+          "sourceUrl": "https://drive.google.com/file/d/16F2z8QdL1QZ_b9mQakTqYa3J6BvqbPZq/view",
+          "image": "photos/starfield_leafstrider-2.png",
+          "sourceSha256": "9f205e439f115cbf13c75355df35af1e85c03ef91306b3a52181f5155426d337",
+          "imageSha256": "9f205e439f115cbf13c75355df35af1e85c03ef91306b3a52181f5155426d337"
+        },
+        {
+          "sourcePath": "train/leafstrider/288-leafstrider.png",
+          "sourceUrl": "https://drive.google.com/file/d/1qxhcAlKSjuuS7n1k9Ms3vs43WAKzcZc0/view",
+          "image": "photos/starfield_leafstrider-3.png",
+          "sourceSha256": "a7de44c2f6fd2450e0887b9d331925091aa962dcc5bc99cf07fd2c2b9110e543",
+          "imageSha256": "a7de44c2f6fd2450e0887b9d331925091aa962dcc5bc99cf07fd2c2b9110e543"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_longhorn",
+      "photos": [
+        {
+          "sourcePath": "train/longhorn/164-longhorn.png",
+          "sourceUrl": "https://drive.google.com/file/d/1m6C2EmI-sJmqlkqxaH3z9tuimdSDQ3rh/view",
+          "image": "photos/starfield_longhorn.jpg",
+          "sourceSha256": "87eea4c3d99b9972a91a6e56de4b3c2b4a2ce59b35983803a6d4faf078fb4761",
+          "imageSha256": "4bd6c7cc1f82b9bb1eb2a41379847aad049c61b10e5f465024abc5e18dd64ab5"
+        },
+        {
+          "sourcePath": "train/longhorn/261-longhorn.png",
+          "sourceUrl": "https://drive.google.com/file/d/1ZaSwgP39VMPx7eFpPJ6xh6w0RVJ_xkCY/view",
+          "image": "photos/starfield_longhorn-2.png",
+          "sourceSha256": "88361f3ae64f195fce5caec625a1835bdc2acb43e6456e5ce9fb955c31cdebe5",
+          "imageSha256": "88361f3ae64f195fce5caec625a1835bdc2acb43e6456e5ce9fb955c31cdebe5"
+        },
+        {
+          "sourcePath": "train/longhorn/118-longhorn.png",
+          "sourceUrl": "https://drive.google.com/file/d/1CIwBQpSg8WS0lpz8Majj8Ml6BdsuKBKt/view",
+          "image": "photos/starfield_longhorn-3.png",
+          "sourceSha256": "3391f8d32f969a00f724194e9f73b80a32cf3ce97ee6625a5936c58f70e3380c",
+          "imageSha256": "3391f8d32f969a00f724194e9f73b80a32cf3ce97ee6625a5936c58f70e3380c"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_maw",
+      "photos": [
+        {
+          "sourcePath": "train/maw/165-maw.png",
+          "sourceUrl": "https://drive.google.com/file/d/1KdWSERQHlQzbM5Ybu07iSqdMOeFMK_RZ/view",
+          "image": "photos/starfield_maw.jpg",
+          "sourceSha256": "112821627bf07bf68affa5d6f03d246fc9aa040333a2ad786a6440e8c2dc1b8b",
+          "imageSha256": "8e110ea906a437998a54b5b30903fe67a45a3aa9ac4bfef0c13c1651bd736fec"
+        },
+        {
+          "sourcePath": "train/maw/171-maw.png",
+          "sourceUrl": "https://drive.google.com/file/d/1W5xiUzLXMmCwTKiK17sx15R8pqXkLye1/view",
+          "image": "photos/starfield_maw-2.png",
+          "sourceSha256": "816e3e8ac0773d3e4006a87aedff4733e19d3938b414564ea5fecbbbee525264",
+          "imageSha256": "816e3e8ac0773d3e4006a87aedff4733e19d3938b414564ea5fecbbbee525264"
+        },
+        {
+          "sourcePath": "train/maw/158-maw.png",
+          "sourceUrl": "https://drive.google.com/file/d/1EebYqcK42sIuxSjZBNiUxtzPq98VWIQw/view",
+          "image": "photos/starfield_maw-3.png",
+          "sourceSha256": "e3d4904ac483a7bbac1c8b3fa1c88e3d546cdb2fbbe438ec09a23e9c6f58f224",
+          "imageSha256": "e3d4904ac483a7bbac1c8b3fa1c88e3d546cdb2fbbe438ec09a23e9c6f58f224"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_monitor",
+      "photos": [
+        {
+          "sourcePath": "train/monitor/268-monitor.png",
+          "sourceUrl": "https://drive.google.com/file/d/1Qq_xg7nMlXuwoOV2gpuwgc2kVbn_KHzQ/view",
+          "image": "photos/starfield_monitor.jpg",
+          "sourceSha256": "e3af7c03d065281e3a4c3f21182f2d5d5fa35b00c14bfeb3187bb316c2e4856d",
+          "imageSha256": "1afc94641950241894573f1530157e540b0a202a62656e75f00de9f2a41fb867"
+        },
+        {
+          "sourcePath": "train/monitor/233-monitor.png",
+          "sourceUrl": "https://drive.google.com/file/d/18Y3HIEpVAFzBTKFy2ijvZ3jMuUfqlw1j/view",
+          "image": "photos/starfield_monitor-2.png",
+          "sourceSha256": "541e76ea91d4894e1ed5c8da709a72a4831c69c3f9ac1f3e731327c0bbb5938f",
+          "imageSha256": "541e76ea91d4894e1ed5c8da709a72a4831c69c3f9ac1f3e731327c0bbb5938f"
+        },
+        {
+          "sourcePath": "train/monitor/116-monitor.png",
+          "sourceUrl": "https://drive.google.com/file/d/1C0nYivGWlAtysziUW_GAsJ4Uh5Tne9NI/view",
+          "image": "photos/starfield_monitor-3.png",
+          "sourceSha256": "cd9019a23b5c3fdb606e9ef740776afbee191a1afccf5a67555495d84425b7f3",
+          "imageSha256": "cd9019a23b5c3fdb606e9ef740776afbee191a1afccf5a67555495d84425b7f3"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_mossgnath",
+      "photos": [
+        {
+          "sourcePath": "train/mossgnath/200-mossgnath.png",
+          "sourceUrl": "https://drive.google.com/file/d/1XL3g5fyT8VL6NB_dOc3C-GftdA089qE6/view",
+          "image": "photos/starfield_mossgnath.jpg",
+          "sourceSha256": "6db97472d9829d220fac99d534061067e39a84fde2577647faf63d8cb7e56af6",
+          "imageSha256": "e4161f14b635704ba67b5d03a4f5ee7e3d594bbcfcd59a5b485df7577843e2bf"
+        },
+        {
+          "sourcePath": "train/mossgnath/276-mossgnath.png",
+          "sourceUrl": "https://drive.google.com/file/d/1Zv2a619MR_ht7uzGEWzIjXdLxmBldkqG/view",
+          "image": "photos/starfield_mossgnath-2.png",
+          "sourceSha256": "3148f1869f958bf047d384612a8c43949fc36dbdd2132213c465db8920d68b3f",
+          "imageSha256": "3148f1869f958bf047d384612a8c43949fc36dbdd2132213c465db8920d68b3f"
+        },
+        {
+          "sourcePath": "train/mossgnath/127-mossgnath.png",
+          "sourceUrl": "https://drive.google.com/file/d/1Aa37TxLQTtWCjdwIibBAWaziCkqkQKxS/view",
+          "image": "photos/starfield_mossgnath-3.png",
+          "sourceSha256": "a47e86fd197ad76996ce20c5eae152cbff59ddf2511572a123cf3b7e093a4310",
+          "imageSha256": "a47e86fd197ad76996ce20c5eae152cbff59ddf2511572a123cf3b7e093a4310"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_reefwalker",
+      "photos": [
+        {
+          "sourcePath": "train/reefwalker/144-reefwalker.png",
+          "sourceUrl": "https://drive.google.com/file/d/170yMhg1jwamH5RSlue72paAClvZLsuaz/view",
+          "image": "photos/starfield_reefwalker.jpg",
+          "sourceSha256": "272b0cb325c4901916f31dfad2224dfceea511aab84813b8b807cb2c0ec562c8",
+          "imageSha256": "8c32168cc1469818e43939cb71f50dcabcaace3651ce8a8166b6ff2ce1a2d1be"
+        },
+        {
+          "sourcePath": "train/reefwalker/243-reefwalker.png",
+          "sourceUrl": "https://drive.google.com/file/d/1zK_Jt4kk3PDlLePSeTvfkCcTI7eASfz3/view",
+          "image": "photos/starfield_reefwalker-2.png",
+          "sourceSha256": "0934899097f18a7d3c1a4505bf409d025cf5a4df5610724094f82e3c04910fd3",
+          "imageSha256": "0934899097f18a7d3c1a4505bf409d025cf5a4df5610724094f82e3c04910fd3"
+        },
+        {
+          "sourcePath": "train/reefwalker/123-reefwalker.png",
+          "sourceUrl": "https://drive.google.com/file/d/1Fr-jrh6UdTy3PGa8r2IRKq86LgyzmYqK/view",
+          "image": "photos/starfield_reefwalker-3.png",
+          "sourceSha256": "eccfed24be6e97c1a67ba6f2fce1118300d0f6dd7257a0939f063f91d6f33c7b",
+          "imageSha256": "eccfed24be6e97c1a67ba6f2fce1118300d0f6dd7257a0939f063f91d6f33c7b"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_sailgator",
+      "photos": [
+        {
+          "sourcePath": "train/sailgator/108-sailgator.png",
+          "sourceUrl": "https://drive.google.com/file/d/1F6i4dwTAbWX1XB9fI5eR3OSAXVjlODNr/view",
+          "image": "photos/starfield_sailgator.jpg",
+          "sourceSha256": "d554dbe0a5893d720d14d27041ed428554f8c9718d2a6986f8fce875aa06eced",
+          "imageSha256": "99718dda24ad62e5ff2ef70bcf8f1dbc707f85dd5c12293a6b098412cc0a5edb"
+        },
+        {
+          "sourcePath": "train/sailgator/240-sailgator.png",
+          "sourceUrl": "https://drive.google.com/file/d/1KMadmcByv9kPNERUKP6uw2m3ZjIA-K2h/view",
+          "image": "photos/starfield_sailgator-2.png",
+          "sourceSha256": "4b936ffe3cac86bee87f22fc1cd407583eae43083728aa5176a69b7f407b76fa",
+          "imageSha256": "4b936ffe3cac86bee87f22fc1cd407583eae43083728aa5176a69b7f407b76fa"
+        },
+        {
+          "sourcePath": "train/sailgator/266-sailgator.png",
+          "sourceUrl": "https://drive.google.com/file/d/1qAYVe0oVSdQ_F89Eh6VptVQ1mZSrjeuU/view",
+          "image": "photos/starfield_sailgator-3.png",
+          "sourceSha256": "bce5cf3004ac22e1c89a45a9564245438a0c11e45b37650cb3a0f443aad6d615",
+          "imageSha256": "bce5cf3004ac22e1c89a45a9564245438a0c11e45b37650cb3a0f443aad6d615"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_scorpion",
+      "photos": [
+        {
+          "sourcePath": "train/scorpion/188-scorpion.png",
+          "sourceUrl": "https://drive.google.com/file/d/1SrXo17OP3rmAFxX7Uv1ZCTveOCOIW7YD/view",
+          "image": "photos/starfield_scorpion.jpg",
+          "sourceSha256": "f95c9eee199f1e5c53c89c80fea52602d1ae71184b060dcb6c2ac855b9f55355",
+          "imageSha256": "77e0dd2451939f06da985314be8df25aa353677c292f4546d91e47641b9b7313"
+        },
+        {
+          "sourcePath": "train/scorpion/179-scorpion.png",
+          "sourceUrl": "https://drive.google.com/file/d/1azFq88tNBbQwe88_SNGzILmdu5jS8tuA/view",
+          "image": "photos/starfield_scorpion-2.png",
+          "sourceSha256": "ad1119be65291add8e493788d3b0bb5ac4275e9ba659791fbde24e3126e74c11",
+          "imageSha256": "ad1119be65291add8e493788d3b0bb5ac4275e9ba659791fbde24e3126e74c11"
+        },
+        {
+          "sourcePath": "train/scorpion/233-scorpion.png",
+          "sourceUrl": "https://drive.google.com/file/d/1e8ThgxiJrJ-Gp2ew_RuyDp_7fCisOB6k/view",
+          "image": "photos/starfield_scorpion-3.png",
+          "sourceSha256": "3bea4febc77104988e30d5673abd884d06602d40079f87d75da7072afd8c89ac",
+          "imageSha256": "3bea4febc77104988e30d5673abd884d06602d40079f87d75da7072afd8c89ac"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_seahorse",
+      "photos": [
+        {
+          "sourcePath": "train/seahorse/146-seahorse.png",
+          "sourceUrl": "https://drive.google.com/file/d/1tB5XnpzSXnnktM812aFCK-kA9T1cVEQB/view",
+          "image": "photos/starfield_seahorse.jpg",
+          "sourceSha256": "df1726e2bcc5f6bcb6d2c962e0e8820abbfb27d9205952504b69e84ab283e8e8",
+          "imageSha256": "c7ebe98818906b01b052eee859db4f926f38076c724207701f07742b616bbb2c"
+        },
+        {
+          "sourcePath": "train/seahorse/106-seahorse.png",
+          "sourceUrl": "https://drive.google.com/file/d/1ekXmDqDNeMFbOIlpOu3-97fcuTsJ1Hgs/view",
+          "image": "photos/starfield_seahorse-2.png",
+          "sourceSha256": "b672127c88a61203fe59529b3ef430c9c1e431a8d1d7c32f71c1962648106b6e",
+          "imageSha256": "b672127c88a61203fe59529b3ef430c9c1e431a8d1d7c32f71c1962648106b6e"
+        },
+        {
+          "sourcePath": "train/seahorse/184-seahorse.png",
+          "sourceUrl": "https://drive.google.com/file/d/13z25RAKENZfm0LuoBEas-_kJt3kt4uEy/view",
+          "image": "photos/starfield_seahorse-3.png",
+          "sourceSha256": "cad6875455391a6d3a372f49bcdb96fbe435671ed5618d310df58e08ea88ff26",
+          "imageSha256": "cad6875455391a6d3a372f49bcdb96fbe435671ed5618d310df58e08ea88ff26"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_shieldshell",
+      "photos": [
+        {
+          "sourcePath": "train/shieldshell/288-shieldshell.png",
+          "sourceUrl": "https://drive.google.com/file/d/1X8g9FBMa0uO6vbCMjr7Y73Td7l21oA80/view",
+          "image": "photos/starfield_shieldshell.jpg",
+          "sourceSha256": "f55d8bd7d1a57fb0f4cbd5c84bbbbd506791faf88affb2928cf04a71fd2d8f01",
+          "imageSha256": "f455471dde592f5d51374cee6c7b5a3133718d5b9c71ac0d65e0f54bc69d2767"
+        },
+        {
+          "sourcePath": "train/shieldshell/115-shieldshell.png",
+          "sourceUrl": "https://drive.google.com/file/d/1JZcKhpEb9HNt2psdNNE8PpNtUklAy6CJ/view",
+          "image": "photos/starfield_shieldshell-2.png",
+          "sourceSha256": "d71c655615ee3795b1984bac12d617deb46ad2cefc3f5b4b5d3b53646b6ed192",
+          "imageSha256": "d71c655615ee3795b1984bac12d617deb46ad2cefc3f5b4b5d3b53646b6ed192"
+        },
+        {
+          "sourcePath": "train/shieldshell/101-shieldshell.png",
+          "sourceUrl": "https://drive.google.com/file/d/1HnVUd1BhbiCKyZMDKWYtdwYdN7FL39lY/view",
+          "image": "photos/starfield_shieldshell-3.png",
+          "sourceSha256": "55fb737fab65842314265d3cc5277185dd28f475f3814a3db3269889062bdd4f",
+          "imageSha256": "55fb737fab65842314265d3cc5277185dd28f475f3814a3db3269889062bdd4f"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_shroomhead",
+      "photos": [
+        {
+          "sourcePath": "train/shroomhead/244-shroomhead.png",
+          "sourceUrl": "https://drive.google.com/file/d/1n9MkqfQRSzekI4-Gn9BS60RWKW3EBhqR/view",
+          "image": "photos/starfield_shroomhead.jpg",
+          "sourceSha256": "500b717fee48262baac92532a96f8fae9b8be4fd19f8996e6a386ccc6d04d5e1",
+          "imageSha256": "cf8b0b6d716f04b2a41cfd6b4596b870185fbef408347977b0644d780702acef"
+        },
+        {
+          "sourcePath": "train/shroomhead/130-shroomhead.png",
+          "sourceUrl": "https://drive.google.com/file/d/1JjHqWJeFQRLLdYE4lzbIwoHhPhOujLC5/view",
+          "image": "photos/starfield_shroomhead-2.png",
+          "sourceSha256": "1ef3cf7984291e3a21d5e8cc1d7570d954506c216467eff0b2b93becb7991731",
+          "imageSha256": "1ef3cf7984291e3a21d5e8cc1d7570d954506c216467eff0b2b93becb7991731"
+        },
+        {
+          "sourcePath": "train/shroomhead/160-shroomhead.png",
+          "sourceUrl": "https://drive.google.com/file/d/17qSFtTb4gej1Nxng8kJKqHHMO5x8cmq1/view",
+          "image": "photos/starfield_shroomhead-3.png",
+          "sourceSha256": "f21212648ae068d78388f1e26e9166adb1eab9659037311aa2b0ae0de6843140",
+          "imageSha256": "f21212648ae068d78388f1e26e9166adb1eab9659037311aa2b0ae0de6843140"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_siren",
+      "photos": [
+        {
+          "sourcePath": "train/siren/286-siren.png",
+          "sourceUrl": "https://drive.google.com/file/d/1tLjb1iggWLQa6Jxr_zgdEWdkK7USOnUw/view",
+          "image": "photos/starfield_siren.jpg",
+          "sourceSha256": "8abec69ec6d724b13e20b293945843c912e49f3f117d38f32b6ca602da052bc2",
+          "imageSha256": "c5eb0cfacb7a6e79f7855045e0e25d7a3ebdfc585bc37d411fec6a3b271fe13f"
+        },
+        {
+          "sourcePath": "train/siren/170-siren.png",
+          "sourceUrl": "https://drive.google.com/file/d/1qJ-aFCI6QZHerAavMn-mvMa62TbpLocR/view",
+          "image": "photos/starfield_siren-2.png",
+          "sourceSha256": "1b63fbc719b3709fe5b1c5a974232248d54ed2461ec01ea61a22f3c0727d46f6",
+          "imageSha256": "1b63fbc719b3709fe5b1c5a974232248d54ed2461ec01ea61a22f3c0727d46f6"
+        },
+        {
+          "sourcePath": "train/siren/115-siren.png",
+          "sourceUrl": "https://drive.google.com/file/d/1yiHfpoR-2hn3XF7lvAyHbNzx5fXW5-TY/view",
+          "image": "photos/starfield_siren-3.png",
+          "sourceSha256": "8cf5d93a524a67fd038a874ebb05065030eb30b59e6f48fe5d5a400b230efcef",
+          "imageSha256": "8cf5d93a524a67fd038a874ebb05065030eb30b59e6f48fe5d5a400b230efcef"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_sunflower",
+      "photos": [
+        {
+          "sourcePath": "train/sunflower/180-sunflower.png",
+          "sourceUrl": "https://drive.google.com/file/d/1MmVlpxqIcu8D0s53-i18yPhS5NYL4vqZ/view",
+          "image": "photos/starfield_sunflower.jpg",
+          "sourceSha256": "157c56971d0f9026d5257b571a2e7485f122327fbd5d96624cb97146d823daa5",
+          "imageSha256": "d95a1041e7fac36be4c3e7d861f42a97cd3930bc73320364cf181fdec52fc6fa"
+        },
+        {
+          "sourcePath": "train/sunflower/178-sunflower.png",
+          "sourceUrl": "https://drive.google.com/file/d/1zAX6n3ovrPzd3ve2fbhWCCMVSZf7_osZ/view",
+          "image": "photos/starfield_sunflower-2.png",
+          "sourceSha256": "10fab16133cf39a07bbc303c9e4f89e6d69babff444bc1f670d6d0fbc9189d93",
+          "imageSha256": "10fab16133cf39a07bbc303c9e4f89e6d69babff444bc1f670d6d0fbc9189d93"
+        },
+        {
+          "sourcePath": "train/sunflower/254-sunflower.png",
+          "sourceUrl": "https://drive.google.com/file/d/15hSbia7RcNKNilJiaWJFJlxwQSZwOgpz/view",
+          "image": "photos/starfield_sunflower-3.png",
+          "sourceSha256": "22f8fe8e52465d40ac20bc830c8f6bfa2b2bdfd6301505a1c752a2e7a217cfa5",
+          "imageSha256": "22f8fe8e52465d40ac20bc830c8f6bfa2b2bdfd6301505a1c752a2e7a217cfa5"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_terrormorph",
+      "photos": [
+        {
+          "sourcePath": "train/terrormorph/120-terrormorph.png",
+          "sourceUrl": "https://drive.google.com/file/d/1591K4TjWEKXBLPd_6DRTtnN0r0USzzJN/view",
+          "image": "photos/starfield_terrormorph.jpg",
+          "sourceSha256": "75c15ad12e600cd538708020d0d3dcc41953fc9c642241387a8dd778f63bf078",
+          "imageSha256": "62bc39ba0626370556fe16e6b8fe7acebf3971ddb9c280e4ea4afcb2add97a7a"
+        },
+        {
+          "sourcePath": "train/terrormorph/238-terrormorph.png",
+          "sourceUrl": "https://drive.google.com/file/d/1X5dcbtYnshN0iWszzviGaqJZsiQSWVNj/view",
+          "image": "photos/starfield_terrormorph-2.png",
+          "sourceSha256": "ae117675087d5a9fa498b4e6fc9df8ec1d7601e4ad4623281081e76e16a172e5",
+          "imageSha256": "ae117675087d5a9fa498b4e6fc9df8ec1d7601e4ad4623281081e76e16a172e5"
+        },
+        {
+          "sourcePath": "train/terrormorph/100-terrormorph.png",
+          "sourceUrl": "https://drive.google.com/file/d/1dHze8RD8Lf58vpO3zgb563hYogzRl5IX/view",
+          "image": "photos/starfield_terrormorph-3.png",
+          "sourceSha256": "d3d11faf8ed311930e074f19411cbedcd7fd1d7576e768063dd8d0230278b381",
+          "imageSha256": "d3d11faf8ed311930e074f19411cbedcd7fd1d7576e768063dd8d0230278b381"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_thornmantis",
+      "photos": [
+        {
+          "sourcePath": "train/thornmantis/128-thornmantis.png",
+          "sourceUrl": "https://drive.google.com/file/d/1QVbAVJ79d0UCh3RhNB7eDiFQL2aILXwD/view",
+          "image": "photos/starfield_thornmantis.jpg",
+          "sourceSha256": "f08dbf61b2fbab52cebf16277592ca1dc783ea5dfc4e5af4a039be24889b094b",
+          "imageSha256": "764330c653b254dafef31d4fd0174c1303acd18c006f6cca3f63413d6c5d7588"
+        },
+        {
+          "sourcePath": "train/thornmantis/116-thornmantis.png",
+          "sourceUrl": "https://drive.google.com/file/d/1lD2AirJoNEh9eTv3mI9f5AVeQGUOrq5X/view",
+          "image": "photos/starfield_thornmantis-2.png",
+          "sourceSha256": "3dc1671ac088adef7c0129b21dd84303acf5feb47f904cd9191329c1f0765117",
+          "imageSha256": "3dc1671ac088adef7c0129b21dd84303acf5feb47f904cd9191329c1f0765117"
+        },
+        {
+          "sourcePath": "train/thornmantis/212-thornmantis.png",
+          "sourceUrl": "https://drive.google.com/file/d/19W5AXtzC_r6TvXZmyY-JbB8ml1didKGd/view",
+          "image": "photos/starfield_thornmantis-3.png",
+          "sourceSha256": "a8fc75092a7a22922939b5dec1ee05d155a332d96273645e29256b51814886e7",
+          "imageSha256": "a8fc75092a7a22922939b5dec1ee05d155a332d96273645e29256b51814886e7"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_toadface",
+      "photos": [
+        {
+          "sourcePath": "train/toadface/256-toadface.png",
+          "sourceUrl": "https://drive.google.com/file/d/1GcIZcLflqw4R1hrt2WgR3rUEyu9aZOdH/view",
+          "image": "photos/starfield_toadface.jpg",
+          "sourceSha256": "680f1708d1f2cdb1530a5e85c5a0825d8eeec8914742a177d5913844276405ee",
+          "imageSha256": "226761229c25cd91c75d008e74740355958129fece9371e21292b438398160b1"
+        },
+        {
+          "sourcePath": "train/toadface/273-toadface.png",
+          "sourceUrl": "https://drive.google.com/file/d/1p_WSuftMrZKGw8vtVj8uL_pJYruDY3Wk/view",
+          "image": "photos/starfield_toadface-2.png",
+          "sourceSha256": "9b51238694ebde32c2d6057a0e3e631fdbde4650e093a16e7c4a757d3ddbc5cc",
+          "imageSha256": "9b51238694ebde32c2d6057a0e3e631fdbde4650e093a16e7c4a757d3ddbc5cc"
+        },
+        {
+          "sourcePath": "train/toadface/126-toadface.png",
+          "sourceUrl": "https://drive.google.com/file/d/1q9qXLNXX-YupMur2MmQLDxESDQglMe47/view",
+          "image": "photos/starfield_toadface-3.png",
+          "sourceSha256": "f2dff5612dff9d99107999a35e8474ab7bae958d2614b42953b9acd3e7604037",
+          "imageSha256": "f2dff5612dff9d99107999a35e8474ab7bae958d2614b42953b9acd3e7604037"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_twistfin",
+      "photos": [
+        {
+          "sourcePath": "train/twistfin/176-twistfin.png",
+          "sourceUrl": "https://drive.google.com/file/d/1HE3oEjQfYPMi8YzzJQPUOoy_m7oAKoBJ/view",
+          "image": "photos/starfield_twistfin.jpg",
+          "sourceSha256": "4d962c785655f420881493a941582087f2c6022347f7c86a5b8e17d8af6c4c37",
+          "imageSha256": "1ea7456c7715179d970ab321680df1913c81b42eb28e873e749948d6b55b7bce"
+        },
+        {
+          "sourcePath": "train/twistfin/164-twistfin.png",
+          "sourceUrl": "https://drive.google.com/file/d/1ubOconPMDP5SDS7Pf3Tp1ni2Exq35Yj2/view",
+          "image": "photos/starfield_twistfin-2.png",
+          "sourceSha256": "e47a61fdbcae60527f3ba68017dd76cb666800dd221ed3b849fe26a9711a22b3",
+          "imageSha256": "e47a61fdbcae60527f3ba68017dd76cb666800dd221ed3b849fe26a9711a22b3"
+        },
+        {
+          "sourcePath": "train/twistfin/119-twistfin.png",
+          "sourceUrl": "https://drive.google.com/file/d/1-eM6cA-EqOd5gawJBpG3qGLZ6xXfO77Q/view",
+          "image": "photos/starfield_twistfin-3.png",
+          "sourceSha256": "1f3460382306498d4c04ab3c5dd7d95924c8d3fd89be2c08ca2ab8d3915bb2f0",
+          "imageSha256": "1f3460382306498d4c04ab3c5dd7d95924c8d3fd89be2c08ca2ab8d3915bb2f0"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_vectorback",
+      "photos": [
+        {
+          "sourcePath": "train/vectorback/287-vectorback.png",
+          "sourceUrl": "https://drive.google.com/file/d/10RE2jmDQXWWqfqvBdLZMBTzGy4E1QYEZ/view",
+          "image": "photos/starfield_vectorback.jpg",
+          "sourceSha256": "25297c119cab411926cbf2caeb3cf53974499bc40c4e2e368c770c12d42bdbaf",
+          "imageSha256": "0651e64fe70dc08f6bed70a0807e4f997ff3a1e58a4ecc258ba91f7b6fd1f52d"
+        },
+        {
+          "sourcePath": "train/vectorback/288-vectorback.png",
+          "sourceUrl": "https://drive.google.com/file/d/1943nZAengVVTaT_rYofMDcqm0C52xvBV/view",
+          "image": "photos/starfield_vectorback-2.png",
+          "sourceSha256": "d8dcc350c8ea8797b71a461569b81c4fc140e571764f2d1cd64d6332f5a3a057",
+          "imageSha256": "d8dcc350c8ea8797b71a461569b81c4fc140e571764f2d1cd64d6332f5a3a057"
+        },
+        {
+          "sourcePath": "train/vectorback/262-vectorback.png",
+          "sourceUrl": "https://drive.google.com/file/d/11Hs1oCcVQgixIGPCrIiMwYXhsI81Gmyo/view",
+          "image": "photos/starfield_vectorback-3.png",
+          "sourceSha256": "941612c42cf9d1879dc77872c4a6dc4c73da2720cf19bfd4200ddb890a6d5041",
+          "imageSha256": "941612c42cf9d1879dc77872c4a6dc4c73da2720cf19bfd4200ddb890a6d5041"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_vuvuzelisk",
+      "photos": [
+        {
+          "sourcePath": "train/vuvuzelisk/184-vuvuzelisk.png",
+          "sourceUrl": "https://drive.google.com/file/d/1Wpgl121D4pz2yFcXm-ra3XKFnfwlEZZW/view",
+          "image": "photos/starfield_vuvuzelisk.jpg",
+          "sourceSha256": "300f41da33845e155f1cff49cbf5f7e06f3e8bef20c22e21f6e6ce8310e2a90d",
+          "imageSha256": "943e95739b1d4bf3cb7957cc97edd7726291ce8ad5f09e6f5766a187eec42596"
+        },
+        {
+          "sourcePath": "train/vuvuzelisk/145-vuvuzelisk.png",
+          "sourceUrl": "https://drive.google.com/file/d/16qDeccjUPFb2KX427PGPvBQzYaff-_mv/view",
+          "image": "photos/starfield_vuvuzelisk-2.png",
+          "sourceSha256": "0cbf89a36791d599f141d40915ef63efb7bb628335dc0d8ef0af0e3872ee0356",
+          "imageSha256": "0cbf89a36791d599f141d40915ef63efb7bb628335dc0d8ef0af0e3872ee0356"
+        },
+        {
+          "sourcePath": "train/vuvuzelisk/226-vuvuzelisk.png",
+          "sourceUrl": "https://drive.google.com/file/d/1FcdCODmmUoC70wd1-TM0rZPro5fFEiFw/view",
+          "image": "photos/starfield_vuvuzelisk-3.png",
+          "sourceSha256": "d103c2e464e5b3c22d59589162648dfaa8d2fdf6bd226a6de951880d4a0a43fc",
+          "imageSha256": "d103c2e464e5b3c22d59589162648dfaa8d2fdf6bd226a6de951880d4a0a43fc"
+        }
+      ]
+    },
+    {
+      "classificationKey": "starfield_windbag",
+      "photos": [
+        {
+          "sourcePath": "train/windbag/160-windbag.png",
+          "sourceUrl": "https://drive.google.com/file/d/1PV1YCoDeFb9OF_8TBgtmh0TVAk04IKdL/view",
+          "image": "photos/starfield_windbag.jpg",
+          "sourceSha256": "d66cc0d5885803c57ca2f971accad2e1ea81344024e13ad6d1adda6adf4c8da5",
+          "imageSha256": "60857a776d68dd70943bdab79a390d89ac844275b8933702b4d0c69034123cd5"
+        },
+        {
+          "sourcePath": "train/windbag/170-windbag.png",
+          "sourceUrl": "https://drive.google.com/file/d/1g0i_nUOkxj02gTD86sHozT7Ep-Xputf9/view",
+          "image": "photos/starfield_windbag-2.png",
+          "sourceSha256": "86d40f63a1adc2916fbb557bb34df478d4b560471e15f22e24adb02e9c0772d1",
+          "imageSha256": "86d40f63a1adc2916fbb557bb34df478d4b560471e15f22e24adb02e9c0772d1"
+        },
+        {
+          "sourcePath": "train/windbag/283-windbag.png",
+          "sourceUrl": "https://drive.google.com/file/d/1hZIszy-rovbXHq-ivpcttxSsjaGwAxyI/view",
+          "image": "photos/starfield_windbag-3.png",
+          "sourceSha256": "a426ca894908091c2ff23119bc915211f6da819c680e89b764fa40a31085a692",
+          "imageSha256": "a426ca894908091c2ff23119bc915211f6da819c680e89b764fa40a31085a692"
+        }
+      ]
+    }
+  ]
+}

@@ -12,8 +12,12 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Запись справочника инопланетян.
@@ -40,6 +44,14 @@ public class AlienEntity {
 
     @Column(name = "threat_level", nullable = false)
     private Short threatLevel;
+
+    @Column(name = "classification_key", unique = true)
+    private String classificationKey;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "photo_file_ids", nullable = false)
+    @Builder.Default
+    private List<Long> photoFileIds = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;

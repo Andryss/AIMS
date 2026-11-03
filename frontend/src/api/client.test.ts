@@ -20,6 +20,9 @@ import {
   uploadFiles,
 } from './client';
 import * as api from './client';
+import { clearFileCache } from '../utils/fileCache';
+
+beforeEach(clearFileCache);
 
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
@@ -473,4 +476,39 @@ describe('statistics API', () => {
     const url = new URL(mockFetch.mock.calls[0][0], 'http://localhost');
     expect(Object.fromEntries(url.searchParams)).toEqual({ from: 'from', to: 'to', ...filters });
   });
+});
+
+describe('file metadata and original cache', () => {
+  beforeEach(() => mockFetch.mockReset());
+
+  it('loads metadata with a single batch request', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, { items: [] }));
+    await api.batchFiles('tok', [8, 3]);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/files/batch', expect.objectContaining({
+      method: 'POST', body: JSON.stringify({ ids: [8, 3] }),
+    }));
+  });
+
+  it('uses the already loaded original for explicit download', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, blob: async () => new Blob(['image']), headers: new Headers() });
+    await api.getFileBlob('file-test', 93);
+    await api.downloadFile('file-test', 93, 'photo.jpg');
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+});
+
+it('does not let a late upload from a previous session revoke current previews', async () => {
+  mockFetch.mockReset();
+  URL.createObjectURL = jest.fn(() => 'blob:current');
+  URL.revokeObjectURL = jest.fn();
+  let finishUpload!: (value: unknown) => void;
+  mockFetch.mockImplementationOnce(() => new Promise((resolve) => { finishUpload = resolve; }))
+    .mockResolvedValueOnce({ ok: true, blob: async () => new Blob(['current']), headers: new Headers() });
+  const uploading = api.uploadFile('old-session', new File(['old'], 'old.png', { type: 'image/png' }));
+  expect(await api.getFilePreviewUrl('new-session', 1)).toBe('blob:current');
+  finishUpload(jsonResponse(true, { id: 9, fileName: 'old.png', contentType: 'image/png', fileSize: 3, createdAt: '' }));
+  await uploading;
+  expect(URL.revokeObjectURL).not.toHaveBeenCalled();
+  expect(await api.getFilePreviewUrl('new-session', 1)).toBe('blob:current');
+  expect(mockFetch).toHaveBeenCalledTimes(2);
 });

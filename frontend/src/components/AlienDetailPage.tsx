@@ -5,6 +5,7 @@ import { Alien } from '../types';
 import { AlienEditorModal } from './AlienEditorModal';
 import { Button } from './ui/Button';
 import { LoadingBlock } from './ui/LoadingBlock';
+import { AttachmentDownloadList } from './AttachmentDownloadList';
 
 interface AlienDetailPageProps {
   token: string;
@@ -19,6 +20,7 @@ export function AlienDetailPage({ token, canWrite, canBrowseList = true }: Alien
   const [alien, setAlien] = useState<Alien | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const incidentId = location.state?.incidentId;
   const fromIncident = Number.isSafeInteger(incidentId) && incidentId > 0;
@@ -49,6 +51,13 @@ export function AlienDetailPage({ token, canWrite, canBrowseList = true }: Alien
     return () => { cancelled = true; };
   }, [token, alienId]);
 
+  const download = async (fileId: number, fileName?: string) => {
+    setDownloadingId(fileId);
+    try { await api.downloadFile(token, fileId, fileName); }
+    catch (err) { setError(err instanceof Error ? err.message : 'Не удалось скачать фотографию'); }
+    finally { setDownloadingId(null); }
+  };
+
   return (
     <section className="card" aria-busy={loading}>
       <div className="card__header">
@@ -75,6 +84,11 @@ export function AlienDetailPage({ token, canWrite, canBrowseList = true }: Alien
             <div className="data-list__row"><dt>Уровень угрозы</dt><dd>{alien.threatLevel}</dd></div>
             <div className="data-list__row"><dt>Описание</dt><dd className="text-pre-wrap">{alien.description}</dd></div>
           </dl>
+          {(alien.photoFileIds?.length ?? 0) > 0 && <section className="section">
+            <h3>Фотографии</h3>
+            <AttachmentDownloadList token={token} fileIds={alien.photoFileIds ?? []}
+              downloadingId={downloadingId} onDownload={download} />
+          </section>}
         </section>
       )}
       {alien && <AlienEditorModal token={token} open={editorOpen && canWrite} alien={alien}

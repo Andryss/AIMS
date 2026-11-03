@@ -6,6 +6,8 @@ create table alien (
     name text not null,
     description text not null,
     threat_level smallint not null,
+    classification_key text unique,
+    photo_file_ids jsonb not null default '[]'::jsonb,
     created_at timestamp not null default now()
 );
 

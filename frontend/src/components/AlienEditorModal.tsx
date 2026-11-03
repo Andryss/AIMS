@@ -1,9 +1,11 @@
-import React, { FormEvent, useEffect, useId, useState } from 'react';
+import React, { FormEvent, useEffect, useId, useRef, useState } from 'react';
 import * as api from '../api/client';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 import { Alien, SaveAlienRequest } from '../types';
 import { Button } from './ui/Button';
 import { FormField } from './ui/FormField';
+import { FileUploadField } from './FileUploadField';
+import { AttachmentDownloadList } from './AttachmentDownloadList';
 
 interface AlienEditorModalProps {
   token: string;
@@ -19,6 +21,10 @@ export function AlienEditorModal({ token, open, alien, onClose, onSaved }: Alien
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [threatLevel, setThreatLevel] = useState('');
+  const [photoIds, setPhotoIds] = useState<number[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
+  const [photosChanged, setPhotosChanged] = useState(false);
+  const uploaded = useRef(new Map<File, number>());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,6 +33,10 @@ export function AlienEditorModal({ token, open, alien, onClose, onSaved }: Alien
       setName(alien?.name ?? '');
       setDescription(alien?.description ?? '');
       setThreatLevel(alien ? String(alien.threatLevel) : '');
+      setPhotoIds(alien?.photoFileIds ?? []);
+      setFiles([]);
+      setPhotosChanged(false);
+      uploaded.current.clear();
       setError(null);
     }
   }, [open, alien]);
@@ -69,9 +79,26 @@ export function AlienEditorModal({ token, open, alien, onClose, onSaved }: Alien
       setError('Уровень угрозы должен быть целым числом от 1 до 10');
       return;
     }
+    if (photoIds.length + files.length > 20) {
+      setError('Можно добавить до 20 фотографий');
+      return;
+    }
+    if (files.some((file) => !['image/png', 'image/jpeg'].includes(file.type) || file.size > 10 * 1024 * 1024)) {
+      setError('Выберите PNG или JPEG размером до 10 МиБ');
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
+      for (const file of files) {
+        if (!uploaded.current.has(file)) {
+          const response = await api.uploadFile(token, file);
+          uploaded.current.set(file, response.id);
+        }
+      }
+      if (photosChanged) {
+        payload.photoFileIds = [...photoIds, ...files.map((file) => uploaded.current.get(file)!)];
+      }
       const saved = alien
         ? await api.updateAlien(token, alien.id, payload)
         : await api.createAlien(token, payload);
@@ -106,6 +133,11 @@ export function AlienEditorModal({ token, open, alien, onClose, onSaved }: Alien
             <input type="number" min={1} max={10} step={1} value={threatLevel}
               onChange={(event) => setThreatLevel(event.target.value)} disabled={submitting} required />
           </FormField>
+          <AttachmentDownloadList token={token} fileIds={photoIds} downloadingId={null} disabled={submitting}
+            onDownload={(id, fileName) => { api.downloadFile(token, id, fileName).catch((err) => setError(err.message)); }}
+            onRemove={(id) => { setPhotoIds((ids) => ids.filter((value) => value !== id)); setPhotosChanged(true); }} />
+          <FileUploadField label="Фотографии" files={files} disabled={submitting} accept="image/png,image/jpeg"
+            onChange={(next) => { setFiles(next); setPhotosChanged(true); }} />
           <div className="modal-actions">
             <Button variant="secondary" onClick={close} disabled={submitting}>Отмена</Button>
             <Button type="submit" loading={submitting}>Сохранить</Button>

@@ -204,6 +204,7 @@ export interface IncidentListResponse {
 }
 
 export interface Alien {
+  photoFileIds?: number[];
   id: number;
   name: string;
   description: string;
@@ -215,6 +216,7 @@ export interface AlienSearchResponse {
 }
 
 export interface SaveAlienRequest {
+  photoFileIds?: number[];
   name: string;
   description: string;
   threatLevel: number;

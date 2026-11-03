@@ -178,6 +178,15 @@ components:
           format: int32
           minimum: 1
           maximum: 10
+        photoFileIds:
+          description: Stored file IDs; omitted or null keeps existing photos, an empty array removes all links
+          type: array
+          nullable: true
+          maxItems: 20
+          items:
+            type: integer
+            format: int64
+            minimum: 1
 
     AlienListResponse:
       type: object
@@ -207,6 +216,7 @@ components:
         - name
         - description
         - threatLevel
+        - photoFileIds
       properties:
         id:
           type: integer
@@ -220,6 +230,11 @@ components:
           format: int32
           minimum: 1
           maximum: 10
+        photoFileIds:
+          type: array
+          items:
+            type: integer
+            format: int64
 
     AlienSearchResponse:
       type: object
