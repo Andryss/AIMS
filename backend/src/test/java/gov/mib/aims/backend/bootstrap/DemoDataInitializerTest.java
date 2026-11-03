@@ -45,7 +45,7 @@ class DemoDataInitializerTest extends BaseApiTest {
         assertThat(jdbcTemplate.queryForList("select distinct status from equipment_movement", String.class))
                 .contains("PENDING", "COMPLETED", "CANCELLED");
         assertThat(jdbcTemplate.queryForList("select distinct status from incident", String.class))
-                .contains("DRAFT", "READY_FOR_ANALYSIS", "READY_FOR_EXECUTION", "EXECUTING");
+                .contains("DRAFT", "READY_FOR_ANALYSIS", "READY_FOR_EXECUTION", "EXECUTING", "EXECUTION_COMPLETED");
         assertThat(jdbcTemplate.queryForObject("select count(*) from incident_comment", Integer.class)).isPositive();
         assertThat(jdbcTemplate.queryForObject("""
                 select count(*) from equipment_item e join tender t on t.id=e.source_tender_id
@@ -106,6 +106,36 @@ class DemoDataInitializerTest extends BaseApiTest {
         assertThat(appUserRepository.findByLogin("prison_guard").orElseThrow().getPasswordHash()).isEqualTo(hash);
         assertThat(jdbcTemplate.queryForObject("select subject_description from detention_request where status='NEW'",
                 String.class)).isEqualTo("Пользовательское уточнение");
+    }
+
+    @Test
+    void addsCompletedAnalyticsScenarioToExistingDemoWithoutChangingPasswordsOrProgress() {
+        clearDatabase();
+        initializer.run(new DefaultApplicationArguments());
+        String marker = "[DEMO] Завершённая операция для аналитики";
+        jdbcTemplate.update("delete from incident_comment where incident_id in"
+                + " (select id from incident where description=?)", marker);
+        jdbcTemplate.update("delete from entity_history where entity_type='INCIDENT' and entity_id in"
+                + " (select id from incident where description=?)", marker);
+        jdbcTemplate.update("delete from incident where description=?", marker);
+        String hash = passwordEncoder.encode("management-password");
+        jdbcTemplate.update("update app_user set password_hash=? where login='management'", hash);
+
+        initializer.run(new DefaultApplicationArguments());
+
+        assertThat(jdbcTemplate.queryForObject("select count(*) from incident where description=?"
+                + " and status='EXECUTION_COMPLETED'", Integer.class, marker)).isEqualTo(1);
+        assertThat(jdbcTemplate.queryForObject("select count(*) from equipment_movement m join incident i"
+                + " on i.id=m.incident_id where i.description=?", Integer.class, marker)).isZero();
+        Map<String, Object> before = counts();
+        initializer.run(new DefaultApplicationArguments());
+        assertThat(counts()).isEqualTo(before);
+        assertThat(appUserRepository.findByLogin("management").orElseThrow().getPasswordHash()).isEqualTo(hash);
+        assertThat(jdbcTemplate.queryForList("""
+                select p.code from permission p join role_permission rp on rp.permission_id=p.id
+                join role r on r.id=rp.role_id where r.name='MANAGEMENT'
+                """, String.class)).containsExactlyInAnyOrder("ANALYTICS_READ", "INCIDENT_READ", "EQUIPMENT_READ",
+                        "EQUIPMENT_MOVEMENT_READ", "TENDER_READ", "DETENTION_READ", "ALIEN_READ", "USER_READ");
     }
 
     @Test

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import * as api from './api/client';
+import { AnalyticsTab } from './components/AnalyticsTab';
 import { AppHeader } from './components/AppHeader';
 import { AlienKnowledgeBaseTab } from './components/AlienKnowledgeBaseTab';
 import { AlienDetailPage } from './components/AlienDetailPage';
@@ -41,6 +42,7 @@ function App() {
     [profile],
   );
 
+  const canReadAnalytics = profile?.permissions.includes('ANALYTICS_READ') ?? false;
   const canReadDetentions = profile?.permissions.includes('DETENTION_READ') ?? false;
   const canCreateDetentions = profile?.permissions.includes('DETENTION_CREATE') ?? false;
   const canReadTenders = profile?.permissions.includes('TENDER_READ') ?? false;
@@ -75,7 +77,8 @@ function App() {
   const canChangeCleanupStatus = profile?.permissions.includes('CLEANUP_STATUS_CHANGE') ?? false;
   const roles = profile?.roles ?? [];
   const currentUserId = profile?.userId;
-  const defaultPath = roles.includes('PRISON_GUARD') && canReadDetentions ? '/detention-requests'
+  const defaultPath = roles.includes('MANAGEMENT') && canReadAnalytics ? '/analytics'
+    : roles.includes('PRISON_GUARD') && canReadDetentions ? '/detention-requests'
     : roles.includes('TENDER_MANAGER') && canReadTenders ? '/tenders'
     : roles.includes('STOREKEEPER') && canReadEquipment ? '/equipment'
     : showIncidentsTab ? '/incidents' : '/profile';
@@ -185,6 +188,7 @@ function App() {
         showKnowledgeBaseTab={showKnowledgeBaseTab}
         showTendersTab={canReadTenders}
         showDetentionsTab={canReadDetentions}
+        showAnalyticsTab={canReadAnalytics}
         showEquipmentTab={canReadEquipment}
         showEquipmentMovementsTab={canReadMovements}
         onToggleNotifications={() => setNotificationsOpen((prev) => !prev)}
@@ -217,6 +221,8 @@ function App() {
               )
             }
           />
+          {canReadAnalytics && <Route path="/analytics" element={<AnalyticsTab key={accessToken}
+            token={accessToken} permissions={profile.permissions} />} />}
           {canReadDetentions && <>
             <Route path="/detention-requests" element={<DetentionRequestsTab token={accessToken}
               canReadIncidents={showIncidentsTab && profile.permissions.includes('INCIDENT_READ')} />} />

@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 import * as api from './api/client';
 import { TOKEN_STORAGE_KEY, SYSTEM_NAME } from './constants';
+import { analyticsPath, analyticsPeriod, mockAnalyticsRequests } from './test/analyticsTestData';
 import { mockAlien, mockDetentionRequest, mockEquipment, mockEquipmentMovement, mockIncident, mockIncidentList, mockProfile, mockTender } from './test/testData';
 
 jest.mock('./api/client');
@@ -20,6 +21,7 @@ const listNotifications = api.listNotifications as jest.MockedFunction<typeof ap
 describe('App', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockAnalyticsRequests();
     localStorage.clear();
     getUnreadNotificationsCount.mockResolvedValue({ count: 0 });
     listIncidents.mockResolvedValue(mockIncidentList({ items: [] }));
@@ -57,6 +59,35 @@ describe('App', () => {
     expect(screen.queryByRole('link', { name: 'Заключение' })).not.toBeInTheDocument();
     expect(api.getDetentionRequest).not.toHaveBeenCalled();
     expect(api.listDetentionRequests).not.toHaveBeenCalled();
+  });
+
+  it('starts management on analytics and keeps incident cards available', async () => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile({ login: 'management', roles: ['MANAGEMENT'],
+      permissions: ['ANALYTICS_READ', 'INCIDENT_READ'] }));
+    render(<MemoryRouter><App /></MemoryRouter>);
+    expect(await screen.findByRole('heading', { name: 'Аналитика' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Инциденты' })).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryAllByText(/^Загрузка:/)).toHaveLength(0));
+  });
+
+  it('preserves a direct analytics URL while loading the profile', async () => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile({ roles: ['ADMIN'], permissions: ['ANALYTICS_READ'] }));
+    render(<MemoryRouter initialEntries={[analyticsPath('detentions')]}><App /></MemoryRouter>);
+    expect(await screen.findByRole('heading', { name: 'Аналитика' })).toBeInTheDocument();
+    await waitFor(() => expect(api.getDetentionCreatedCount).toHaveBeenCalledWith('saved-token', analyticsPeriod));
+    expect(api.getIncidentCreatedCount).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.queryAllByText(/^Загрузка:/)).toHaveLength(0));
+  });
+
+  it('does not expose analytics or fetch statistics without its permission', async () => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile());
+    render(<MemoryRouter initialEntries={['/analytics']}><App /></MemoryRouter>);
+    expect(await screen.findByRole('heading', { name: 'Инциденты' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Аналитика' })).not.toBeInTheDocument();
+    expect(api.getIncidentCreatedCount).not.toHaveBeenCalled();
   });
 
   it('lands the tender manager on tenders and restores a direct tender route', async () => {

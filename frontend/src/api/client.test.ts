@@ -407,3 +407,70 @@ describe('tenders API', () => {
     expect(new Headers(options.headers).get('Authorization')).toBe('Bearer tok');
   });
 });
+
+
+describe('statistics API', () => {
+  beforeEach(() => mockFetch.mockReset());
+
+  it.each([
+    ['getIncidentCreatedCount', api.getIncidentCreatedCount, '/incidents/statistics/created-count'],
+    ['getIncidentCompletedCount', api.getIncidentCompletedCount, '/incidents/statistics/completed-count'],
+    ['getIncidentTotalAtTo', api.getIncidentTotalAtTo, '/incidents/statistics/total-at-to'],
+    ['getIncidentCompletedAtTo', api.getIncidentCompletedAtTo, '/incidents/statistics/completed-at-to'],
+    ['getIncidentOpenAtTo', api.getIncidentOpenAtTo, '/incidents/statistics/open-at-to'],
+    ['getIncidentCompletionDuration', api.getIncidentCompletionDuration, '/incidents/statistics/completion-duration'],
+    ['getIncidentTrend', api.getIncidentTrend, '/incidents/statistics/trend'],
+    ['getIncidentByStatus', api.getIncidentByStatus, '/incidents/statistics/by-status'],
+    ['getIncidentByEventType', api.getIncidentByEventType, '/incidents/statistics/by-event-type'],
+    ['getIncidentByAlien', api.getIncidentByAlien, '/incidents/statistics/by-alien'],
+    ['getIncidentByLocation', api.getIncidentByLocation, '/incidents/statistics/by-location'],
+    ['getIncidentStale', api.getIncidentStale, '/incidents/statistics/stale'],
+    ['getEquipmentReceivedCount', api.getEquipmentReceivedCount, '/equipment/statistics/received-count'],
+    ['getEquipmentIssuedCount', api.getEquipmentIssuedCount, '/equipment/statistics/issued-count'],
+    ['getEquipmentReturnedCount', api.getEquipmentReturnedCount, '/equipment/statistics/returned-count'],
+    ['getEquipmentTotalAtTo', api.getEquipmentTotalAtTo, '/equipment/statistics/total-at-to'],
+    ['getEquipmentAvailableAtTo', api.getEquipmentAvailableAtTo, '/equipment/statistics/available-at-to'],
+    ['getEquipmentIssuedAtTo', api.getEquipmentIssuedAtTo, '/equipment/statistics/issued-at-to'],
+    ['getEquipmentTrend', api.getEquipmentTrend, '/equipment/statistics/trend'],
+    ['getEquipmentInventoryByType', api.getEquipmentInventoryByType, '/equipment/statistics/inventory-by-type'],
+    ['getEquipmentOpenRequests', api.getEquipmentOpenRequests, '/equipment/statistics/open-requests'],
+    ['getEquipmentExpectedDeliveriesByType', api.getEquipmentExpectedDeliveriesByType, '/equipment/statistics/expected-deliveries-by-type'],
+    ['getEquipmentOutstandingByIncident', api.getEquipmentOutstandingByIncident, '/equipment/statistics/outstanding-by-incident'],
+    ['getDetentionCreatedCount', api.getDetentionCreatedCount, '/detention-requests/statistics/created-count'],
+    ['getDetentionAdmittedCount', api.getDetentionAdmittedCount, '/detention-requests/statistics/admitted-count'],
+    ['getDetentionReleasedCount', api.getDetentionReleasedCount, '/detention-requests/statistics/released-count'],
+    ['getDetentionAwaitingAtTo', api.getDetentionAwaitingAtTo, '/detention-requests/statistics/awaiting-at-to'],
+    ['getDetentionInCustodyAtTo', api.getDetentionInCustodyAtTo, '/detention-requests/statistics/in-custody-at-to'],
+    ['getDetentionOverdueAtTo', api.getDetentionOverdueAtTo, '/detention-requests/statistics/overdue-at-to'],
+    ['getDetentionCustodyDuration', api.getDetentionCustodyDuration, '/detention-requests/statistics/custody-duration'],
+    ['getDetentionTrend', api.getDetentionTrend, '/detention-requests/statistics/trend'],
+    ['getDetentionByStatus', api.getDetentionByStatus, '/detention-requests/statistics/by-status'],
+    ['getDetentionByAlien', api.getDetentionByAlien, '/detention-requests/statistics/by-alien'],
+    ['getDetentionByAssignedTerm', api.getDetentionByAssignedTerm, '/detention-requests/statistics/by-assigned-term'],
+    ['getDetentionByRemainingTime', api.getDetentionByRemainingTime, '/detention-requests/statistics/by-remaining-time'],
+    ['getDetentionUpcomingReleases', api.getDetentionUpcomingReleases, '/detention-requests/statistics/upcoming-releases'],
+  ] as const)('requests %s independently with its period and filters', async (_, load, path) => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, {}));
+    await load('tok', { from: '2025-05-01T03:00:00+03:00', to: '2025-06-01T00:00:00Z' });
+    const url = new URL(mockFetch.mock.calls[0][0], 'http://localhost');
+    expect(url.pathname).toBe('/api/v1' + path);
+    expect(Object.fromEntries(url.searchParams)).toEqual({
+      from: '2025-05-01T03:00:00+03:00', to: '2025-06-01T00:00:00Z',
+    });
+    expect(new Headers(mockFetch.mock.calls[0][1].headers).get('Authorization')).toBe('Bearer tok');
+  });
+
+  it.each([
+    [() => api.getIncidentByStatus('tok', { from: 'from', to: 'to', eventType: 'ALIEN_CAPTURE', alienId: 2, responsibleUserId: 3 }),
+      { eventType: 'ALIEN_CAPTURE', alienId: '2', responsibleUserId: '3' }],
+    [() => api.getEquipmentInventoryByType('tok', { from: 'from', to: 'to', equipmentType: 'NEURALYZER' }),
+      { equipmentType: 'NEURALYZER' }],
+    [() => api.getDetentionByStatus('tok', { from: 'from', to: 'to', status: 'IN_CUSTODY', incidentId: 4, alienId: 2 }),
+      { status: 'IN_CUSTODY', incidentId: '4', alienId: '2' }],
+  ] as const)('encodes domain-specific filters %#', async (load, filters) => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, {}));
+    await load();
+    const url = new URL(mockFetch.mock.calls[0][0], 'http://localhost');
+    expect(Object.fromEntries(url.searchParams)).toEqual({ from: 'from', to: 'to', ...filters });
+  });
+});

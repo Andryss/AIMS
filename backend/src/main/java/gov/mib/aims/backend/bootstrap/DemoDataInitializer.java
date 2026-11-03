@@ -74,6 +74,7 @@ import java.util.function.Supplier;
 public class DemoDataInitializer implements ApplicationRunner {
 
     private static final String DEMO_INCIDENT = "[DEMO] Светящийся объект у обсерватории";
+    private static final String DEMO_ANALYTICS_INCIDENT = "[DEMO] Завершённая операция для аналитики";
     private static final String DEMO_DETENTION_INCIDENT = "[DEMO] Задержание у северного терминала";
     private static final Map<String, Role> DEMO_USERS = new LinkedHashMap<>();
 
@@ -122,6 +123,11 @@ public class DemoDataInitializer implements ApplicationRunner {
         if (!jdbcTemplate.queryForObject("SELECT EXISTS (SELECT 1 FROM incident WHERE description=?)",
                 Boolean.class, DEMO_DETENTION_INCIDENT)) {
             seedDetentionScenarios();
+        }
+
+        if (!jdbcTemplate.queryForObject("SELECT EXISTS (SELECT 1 FROM incident WHERE description=?)",
+                Boolean.class, DEMO_ANALYTICS_INCIDENT)) {
+            seedIncident(DEMO_ANALYTICS_INCIDENT, "Учебный полигон", IncidentStatusApi.EXECUTION_COMPLETED);
         }
 
         log.info("Demo data ready: users {}", DEMO_USERS.keySet());
@@ -273,7 +279,7 @@ public class DemoDataInitializer implements ApplicationRunner {
         asUser("agent", () -> incidentService.setExecutors(incident.getId(), new SetIncidentExecutorsRequest()
                 .userIds(List.of(userId("agent"), userId("agent2")))));
 
-        if (target == IncidentStatusApi.EXECUTING) {
+        if (target == IncidentStatusApi.EXECUTING || target == IncidentStatusApi.EXECUTION_COMPLETED) {
             asUser("agent", () -> incidentService.changeStatus(incident.getId(), new ChangeIncidentStatusRequest()
                     .status(IncidentStatusApi.PREPARATION_FOR_EXECUTION)
                     .comment("Оперативная группа готовится к выезду.")));
@@ -281,6 +287,11 @@ public class DemoDataInitializer implements ApplicationRunner {
                     .status(IncidentStatusApi.PREPARED_FOR_EXECUTION).comment("Группа и оборудование подготовлены.")));
             asUser("agent", () -> incidentService.changeStatus(incident.getId(), new ChangeIncidentStatusRequest()
                     .status(IncidentStatusApi.EXECUTING).comment("Выполняется операция, можно начать очистку.")));
+        }
+
+        if (target == IncidentStatusApi.EXECUTION_COMPLETED) {
+            asUser("agent", () -> incidentService.changeStatus(incident.getId(), new ChangeIncidentStatusRequest()
+                    .status(IncidentStatusApi.EXECUTION_COMPLETED).comment("Учебная операция завершена.")));
         }
 
         return incident.getId();

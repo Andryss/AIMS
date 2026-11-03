@@ -8,6 +8,7 @@ import './styles/status.css';
 import './styles/layout.css';
 import './styles/overlays.css';
 import './styles/data-display.css';
+import './styles/analytics.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
