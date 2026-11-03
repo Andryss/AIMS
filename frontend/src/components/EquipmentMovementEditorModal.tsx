@@ -1,15 +1,14 @@
 import React, { FormEvent, useEffect, useId, useRef, useState } from 'react';
 import * as api from '../api/client';
-import { EQUIPMENT_PAGE_SIZE, EQUIPMENT_TYPE_LABELS, outstandingEquipment } from '../equipmentLabels';
+import { EQUIPMENT_PAGE_SIZE, outstandingEquipment } from '../equipmentLabels';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 import { useUsersMap } from '../hooks/useUsersMap';
-import { EquipmentListResponse, EquipmentMovementResponse, EquipmentResponse, EquipmentType,
+import { EquipmentListResponse, EquipmentMovementResponse, EquipmentResponse,
   SaveEquipmentMovementRequest, UserSummary } from '../types';
 import { formatUserLabel } from '../utils/incidentUsers';
 import { EmployeeSearch } from './EmployeeSearch';
 import { UserChip } from './UserChip';
 import { Button } from './ui/Button';
-import { EmptyState } from './ui/EmptyState';
 import { FormField } from './ui/FormField';
 import { LoadingBlock } from './ui/LoadingBlock';
 import { Pagination } from './ui/Pagination';
@@ -36,7 +35,6 @@ export function EquipmentMovementEditorModal({ token, open, incidentId, movement
   const [comment, setComment] = useState('');
   const [input, setInput] = useState('');
   const [q, setQ] = useState('');
-  const [type, setType] = useState<EquipmentType | ''>('');
   const [page, setPage] = useState(0);
   const [result, setResult] = useState<EquipmentListResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -54,7 +52,7 @@ export function EquipmentMovementEditorModal({ token, open, incidentId, movement
     setSelected(new Map(movement?.equipment.map((item) => [item.id, item]) ?? []));
     setComment(movement?.comment ?? '');
     setSource(sourceIssue);
-    setInput(''); setQ(''); setType(''); setPage(0);
+    setInput(''); setQ(''); setPage(0);
     setResult(null); setError(null); setLoadError(null);
   }, [open, movement, sourceIssue]);
 
@@ -64,25 +62,37 @@ export function EquipmentMovementEditorModal({ token, open, incidentId, movement
   }, [input]);
 
   useEffect(() => {
-    if (!open) { return; }
+    if (!open || !returning || !sourceId) { return; }
     let cancelled = false;
     setLoading(true);
     setLoadError(null);
 
-    const request = returning && sourceId
-      ? api.getEquipmentMovement(token, sourceId).then((response) => {
-        if (!cancelled) { setSource(response); }
-      })
-      : returning ? Promise.resolve()
-        : api.listEquipment(token, { q, type: type || undefined, status: 'AVAILABLE', page, size: EQUIPMENT_PAGE_SIZE })
-          .then((response) => { if (!cancelled) { setResult(response); } });
-
-    request.catch((err: unknown) => {
-      if (!cancelled) { setLoadError(err instanceof Error ? err.message : 'Не удалось загрузить оборудование'); }
-    }).finally(() => { if (!cancelled) { setLoading(false); } });
+    api.getEquipmentMovement(token, sourceId)
+      .then((response) => { if (!cancelled) { setSource(response); } })
+      .catch((err: unknown) => {
+        if (!cancelled) { setLoadError(err instanceof Error ? err.message : 'Не удалось загрузить оборудование'); }
+      }).finally(() => { if (!cancelled) { setLoading(false); } });
 
     return () => { cancelled = true; };
-  }, [token, open, returning, sourceId, q, type, page, revision]);
+  }, [token, open, returning, sourceId, revision]);
+
+  useEffect(() => {
+    if (!open || returning) { return; }
+    setResult(null);
+    setLoadError(null);
+    setLoading(false);
+    if (input.trim().length < 2 || input.trim() !== q) { return; }
+    let cancelled = false;
+    setLoading(true);
+
+    api.listEquipment(token, { q, status: 'AVAILABLE', page, size: EQUIPMENT_PAGE_SIZE })
+      .then((response) => { if (!cancelled) { setResult(response); } })
+      .catch((err: unknown) => {
+        if (!cancelled) { setLoadError(err instanceof Error ? err.message : 'Не удалось загрузить оборудование'); }
+      }).finally(() => { if (!cancelled) { setLoading(false); } });
+
+    return () => { cancelled = true; };
+  }, [token, open, returning, input, q, page, revision]);
 
   useEffect(() => {
     if (!open) { return; }
@@ -96,11 +106,17 @@ export function EquipmentMovementEditorModal({ token, open, incidentId, movement
   if (!open) { return null; }
 
   const available = returning ? (source ? outstandingEquipment(source.equipment, source.id) : []) : result?.items ?? [];
+  const searching = input.trim().length >= 2 && input.trim() === q;
+  const matches = returning ? available.filter((item) =>
+    `${item.model} ${item.serialNumber}`.toLowerCase().includes(q.toLowerCase())) : available;
+  const candidates = (returning ? matches.slice(page * EQUIPMENT_PAGE_SIZE, (page + 1) * EQUIPMENT_PAGE_SIZE) : matches)
+    .filter((item) => !selected.has(item.id));
   const holderId = returning ? source?.responsibleUserId : responsible?.id;
   const close = () => { if (!submittingRef.current) { onClose(); } };
-  const toggle = (item: EquipmentResponse) => setSelected((previous) => {
+  const add = (item: EquipmentResponse) => setSelected((previous) => new Map(previous).set(item.id, item));
+  const remove = (id: number) => setSelected((previous) => {
     const next = new Map(previous);
-    if (next.has(item.id)) { next.delete(item.id); } else { next.set(item.id, item); }
+    next.delete(id);
     return next;
   });
 
@@ -158,44 +174,41 @@ export function EquipmentMovementEditorModal({ token, open, incidentId, movement
             <UserChip login={formatUserLabel(source?.responsibleUserId, users)} /></div>
             : <EmployeeSearch token={token} label="Ответственный" required value={selectedUser}
               onChange={setResponsible} disabled={submitting} />}
-          {!returning && <div className="equipment-filters">
-            <div className="field equipment-search-field"><input className="field__control" type="search" aria-label="Поиск оборудования"
-              placeholder="Модель или серийный номер" value={input} disabled={submitting}
-              onChange={(event) => setInput(event.target.value)} /></div>
-            <FormField label="Тип оборудования">
-              <select value={type} disabled={submitting} onChange={(event) => {
-                setType(event.target.value as EquipmentType | ''); setPage(0);
-              }}><option value="">Все типы</option>
-                {Object.entries(EQUIPMENT_TYPE_LABELS).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
-              </select>
-            </FormField>
-          </div>}
+          <div className="field">
+            <input className="field__control" type="search" aria-label="Поиск оборудования"
+              placeholder="Найти по модели или серийному номеру" value={input} disabled={submitting}
+              onChange={(event) => { setInput(event.target.value); setPage(0); }} />
+          </div>
+          {loadError && <div className="alert alert--error" role="alert">{loadError}</div>}
+          {loading && <LoadingBlock label="Загрузка доступного оборудования…" inline />}
+          {input.trim().length < 2 && <p className="field__help">Введите минимум 2 символа для поиска оборудования</p>}
+          {searching && !loading && !loadError && candidates.length > 0 && (
+            <ul className="equipment-search-results" aria-label="Найденное оборудование">
+              {candidates.map((item) => <li key={item.id}>
+                <Button variant="ghost" aria-label={`Добавить ${item.serialNumber}`} disabled={submitting}
+                  onClick={() => add(item)}>{item.model} · {item.serialNumber}</Button>
+              </li>)}
+            </ul>
+          )}
+          {searching && !loading && !loadError && candidates.length === 0 && <p className="field__help">
+            {matches.length > 0 ? 'Найденное оборудование уже выбрано' : 'Доступное оборудование не найдено'}
+          </p>}
+          {searching && !loadError && (returning ? matches.length > EQUIPMENT_PAGE_SIZE : result && result.totalPages > 1) && (
+            <Pagination page={page} totalPages={returning ? Math.ceil(matches.length / EQUIPMENT_PAGE_SIZE) : result!.totalPages}
+              totalElements={returning ? matches.length : result!.totalElements} loading={loading || submitting} onChange={setPage} />
+          )}
           <section aria-label="Выбранное оборудование" className="equipment-selection">
             <h3>Выбрано: {selected.size}</h3>
+            {selected.size === 0 && <p className="field__help">Добавьте оборудование из результатов поиска</p>}
             {Array.from(selected.values()).map((item) => <div key={item.id} className="equipment-selection__item">
               <span>{item.model} · {item.serialNumber}</span>
               <Button variant="ghost" size="sm" disabled={submitting} aria-label={`Убрать ${item.serialNumber}`}
-                onClick={() => toggle(item)}>×</Button>
+                onClick={() => remove(item.id)}>×</Button>
             </div>)}
           </section>
-          {loadError && <div className="alert alert--error" role="alert">{loadError}</div>}
-          {loading && <LoadingBlock label="Загрузка доступного оборудования…" inline />}
-          {!loading && !loadError && available.length === 0 && <EmptyState title={returning
-            ? 'Нет оборудования для возврата' : 'Доступное оборудование не найдено'} />}
-          {!loading && !loadError && available.length > 0 && <div className="incidents-table-wrapper">
-            <table className="incidents-table"><thead><tr><th>Выбор</th><th>Модель</th><th>Серийный номер</th></tr></thead>
-              <tbody>{available.map((item) => <tr key={item.id}>
-                <td><input type="checkbox" aria-label={`Выбрать ${item.serialNumber}`} checked={selected.has(item.id)}
-                  disabled={submitting} onChange={() => toggle(item)} /></td>
-                <td>{item.model}</td><td>{item.serialNumber}</td>
-              </tr>)}</tbody>
-            </table>
-          </div>}
-          {!returning && result && <Pagination page={page} totalPages={result.totalPages}
-            totalElements={result.totalElements} loading={loading || submitting} onChange={setPage} />}
-          <Button variant="outline" onClick={() => setRevision((value) => value + 1)} disabled={loading || submitting}>
+          {(error || loadError) && <Button variant="outline" onClick={() => setRevision((value) => value + 1)} disabled={loading || submitting}>
             Обновить доступность
-          </Button>
+          </Button>}
           <FormField label="Комментарий">
             <textarea value={comment} maxLength={4000} rows={3} disabled={submitting}
               onChange={(event) => setComment(event.target.value)} />

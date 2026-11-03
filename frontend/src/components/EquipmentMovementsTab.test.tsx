@@ -131,7 +131,8 @@ it('does not redirect a departed card when an old return creation completes', as
       canProcess currentUserId={1} canReadEquipment />} /></Routes>
   </MemoryRouter>);
   await userEvent.click(await screen.findByRole('button', { name: 'Оформить возврат' }));
-  await userEvent.click(await screen.findByRole('checkbox', { name: 'Выбрать SN-001' }));
+  fireEvent.change(screen.getByLabelText('Поиск оборудования'), { target: { value: 'SN' } });
+  await userEvent.click(await screen.findByRole('button', { name: 'Добавить SN-001' }));
   await userEvent.click(screen.getByRole('button', { name: 'Создать заявку' }));
   await userEvent.click(screen.getByRole('link', { name: 'Другая заявка' }));
   await screen.findByRole('heading', { name: 'Заявка #8 — Выдача' });

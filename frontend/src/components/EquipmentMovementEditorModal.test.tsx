@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as api from '../api/client';
 import { mockEquipment, mockEquipmentMovement } from '../test/testData';
@@ -24,7 +24,8 @@ it('creates an issue for a selected employee and specific equipment', async () =
   render(<EquipmentMovementEditorModal {...props} />);
   fireEvent.change(screen.getByLabelText(/Ответственный/), { target: { value: 'ag' } });
   await userEvent.click(await screen.findByRole('button', { name: 'agent' }));
-  await userEvent.click(await screen.findByRole('checkbox', { name: 'Выбрать SN-001' }));
+  fireEvent.change(screen.getByLabelText('Поиск оборудования'), { target: { value: 'SN-001' } });
+  await userEvent.click(await screen.findByRole('button', { name: 'Добавить SN-001' }));
   fireEvent.change(screen.getByLabelText('Комментарий'), { target: { value: '  Для обследования  ' } });
   await userEvent.click(screen.getByRole('button', { name: 'Создать заявку' }));
   await waitFor(() => expect(createMovement).toHaveBeenCalledWith('tok', {
@@ -39,14 +40,14 @@ it('prefills pending request editing and preserves the form on failure', async (
   updateMovement.mockRejectedValue(new Error('Оборудование уже выдано'));
   render(<EquipmentMovementEditorModal {...props} movement={mockEquipmentMovement()} />);
   expect(screen.getByLabelText('Комментарий')).toHaveValue('Обследование склада');
-  expect(await screen.findByRole('checkbox', { name: 'Выбрать SN-001' })).toBeChecked();
+  expect(within(screen.getByRole('region', { name: 'Выбранное оборудование' })).getByText(/SN-001/)).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
   expect(await screen.findByRole('alert')).toHaveTextContent('Оборудование уже выдано');
   expect(screen.getByLabelText('Комментарий')).toHaveValue('Обследование склада');
-  expect(screen.getByRole('checkbox', { name: 'Выбрать SN-001' })).toBeChecked();
+  expect(within(screen.getByRole('region', { name: 'Выбранное оборудование' })).getByText(/SN-001/)).toBeInTheDocument();
   expect(props.onClose).not.toHaveBeenCalled();
   await userEvent.click(screen.getByRole('button', { name: 'Обновить доступность' }));
-  await waitFor(() => expect(listEquipment).toHaveBeenCalledTimes(2));
+  expect(props.onSaved).not.toHaveBeenCalled();
 });
 
 it('returns a subset of the equipment still held under this exact issue', async () => {
@@ -57,9 +58,10 @@ it('returns a subset of the equipment still held under this exact issue', async 
   ] });
   (api.getEquipmentMovement as jest.Mock).mockResolvedValue(issue);
   render(<EquipmentMovementEditorModal {...props} sourceIssue={issue} />);
-  expect(screen.queryByRole('checkbox', { name: /RETURNED-002|REISSUED-003/ })).not.toBeInTheDocument();
-  expect(screen.queryByLabelText('Поиск оборудования')).not.toBeInTheDocument();
-  await userEvent.click(await screen.findByRole('checkbox', { name: 'Выбрать SN-001' }));
+  fireEvent.change(screen.getByLabelText('Поиск оборудования'), { target: { value: '00' } });
+  const add = await screen.findByRole('button', { name: 'Добавить SN-001' });
+  expect(screen.queryByRole('button', { name: /Добавить RETURNED-002|Добавить REISSUED-003/ })).not.toBeInTheDocument();
+  await userEvent.click(add);
   await userEvent.click(screen.getByRole('button', { name: 'Создать заявку' }));
   await waitFor(() => expect(createMovement).toHaveBeenCalledWith('tok', expect.objectContaining({
     operation: 'RETURN', sourceIssueMovementId: 7, responsibleUserId: 3, incidentId: 1, equipmentIds: [1],
@@ -69,12 +71,12 @@ it('returns a subset of the equipment still held under this exact issue', async 
 it('requires employee and equipment and prevents closing while submitting', async () => {
   createMovement.mockImplementation(() => new Promise(() => {}));
   render(<EquipmentMovementEditorModal {...props} />);
-  await screen.findByRole('checkbox', { name: 'Выбрать SN-001' });
   await userEvent.click(screen.getByRole('button', { name: 'Создать заявку' }));
   expect(screen.getByRole('alert')).toHaveTextContent('Укажите ответственного и выберите оборудование');
   fireEvent.change(screen.getByLabelText(/Ответственный/), { target: { value: 'ag' } });
   await userEvent.click(await screen.findByRole('button', { name: 'agent' }));
-  await userEvent.click(await screen.findByRole('checkbox', { name: 'Выбрать SN-001' }));
+  fireEvent.change(screen.getByLabelText('Поиск оборудования'), { target: { value: 'SN-001' } });
+  await userEvent.click(await screen.findByRole('button', { name: 'Добавить SN-001' }));
   await userEvent.click(screen.getByRole('button', { name: 'Создать заявку' }));
   expect(screen.getByRole('button', { name: 'Создать заявку' })).toBeDisabled();
   await userEvent.keyboard('{Escape}');
@@ -83,13 +85,58 @@ it('requires employee and equipment and prevents closing while submitting', asyn
 
 it('keeps selections when searching another page and permits removing them', async () => {
   render(<EquipmentMovementEditorModal {...props} />);
-  await userEvent.click(await screen.findByRole('checkbox', { name: 'Выбрать SN-001' }));
+  fireEvent.change(screen.getByLabelText('Поиск оборудования'), { target: { value: 'SN-001' } });
+  await userEvent.click(await screen.findByRole('button', { name: 'Добавить SN-001' }));
   listEquipment.mockResolvedValue({ items: [mockEquipment({ id: 2, serialNumber: 'SN-002' })],
     page: 0, size: 10, totalElements: 1, totalPages: 1 });
   fireEvent.change(screen.getByLabelText('Поиск оборудования'), { target: { value: '002' } });
-  await screen.findByRole('checkbox', { name: 'Выбрать SN-002' });
+  await screen.findByRole('button', { name: 'Добавить SN-002' });
   const selected = screen.getByRole('region', { name: 'Выбранное оборудование' });
   expect(within(selected).getByText(/SN-001/)).toBeInTheDocument();
   await userEvent.click(within(selected).getByRole('button', { name: 'Убрать SN-001' }));
   expect(within(selected).queryByText(/SN-001/)).not.toBeInTheDocument();
+});
+
+it('does not load the entire warehouse before the user enters a search', () => {
+  render(<EquipmentMovementEditorModal {...props} />);
+  expect(screen.queryByRole('table')).not.toBeInTheDocument();
+  expect(listEquipment).not.toHaveBeenCalled();
+  expect(screen.getByRole('region', { name: 'Выбранное оборудование' })).toBeInTheDocument();
+});
+
+it('keeps selected items below search and prevents duplicates across searches', async () => {
+  render(<EquipmentMovementEditorModal {...props} />);
+  fireEvent.change(screen.getByLabelText('Поиск оборудования'), { target: { value: 'SN' } });
+  await userEvent.click(await screen.findByRole('button', { name: 'Добавить SN-001' }));
+  expect(screen.queryByRole('button', { name: 'Добавить SN-001' })).not.toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText('Поиск оборудования'), { target: { value: '' } });
+  const selected = screen.getByRole('region', { name: 'Выбранное оборудование' });
+  expect(within(selected).getByText(/SN-001/)).toBeInTheDocument();
+  expect(screen.getByLabelText('Поиск оборудования').compareDocumentPosition(selected) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  await userEvent.click(within(selected).getByRole('button', { name: 'Убрать SN-001' }));
+  expect(within(selected).queryByText(/SN-001/)).not.toBeInTheDocument();
+});
+
+it('ignores an older search response after the query has changed', async () => {
+  let resolveOld!: (value: Awaited<ReturnType<typeof api.listEquipment>>) => void;
+  listEquipment.mockImplementationOnce(() => new Promise((resolve) => { resolveOld = resolve; }))
+    .mockResolvedValue({ items: [mockEquipment({ id: 2, serialNumber: 'SN-002' })],
+      page: 0, size: 10, totalElements: 1, totalPages: 1 });
+  render(<EquipmentMovementEditorModal {...props} />);
+  fireEvent.change(screen.getByLabelText('Поиск оборудования'), { target: { value: 'old' } });
+  await waitFor(() => expect(listEquipment).toHaveBeenCalledWith('tok', expect.objectContaining({ q: 'old' })));
+  fireEvent.change(screen.getByLabelText('Поиск оборудования'), { target: { value: 'new' } });
+  await screen.findByRole('button', { name: 'Добавить SN-002' });
+  await act(async () => resolveOld({ items: [mockEquipment()], page: 0, size: 10, totalElements: 1, totalPages: 1 }));
+  expect(screen.queryByRole('button', { name: 'Добавить SN-001' })).not.toBeInTheDocument();
+});
+
+it('allows retrying a failed search without losing the selected items', async () => {
+  listEquipment.mockRejectedValueOnce(new Error('Нет соединения'));
+  render(<EquipmentMovementEditorModal {...props} movement={mockEquipmentMovement()} />);
+  fireEvent.change(screen.getByLabelText('Поиск оборудования'), { target: { value: 'SN' } });
+  expect(await screen.findByRole('alert')).toHaveTextContent('Нет соединения');
+  await userEvent.click(screen.getByRole('button', { name: 'Обновить доступность' }));
+  await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument());
+  expect(within(screen.getByRole('region', { name: 'Выбранное оборудование' })).getByText(/SN-001/)).toBeInTheDocument();
 });
