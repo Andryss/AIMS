@@ -1,0 +1,4 @@
+-r requirements-train.txt
+onnx>=1.16,<2
+onnxruntime>=1.18,<2
+onnxscript>=0.3,<1

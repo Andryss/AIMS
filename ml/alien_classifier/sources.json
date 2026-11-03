@@ -19,7 +19,7 @@
   "sourceInventoryFile": "source_files.json",
   "sourceInventorySha256": "932dbee4da0171d8221afb7f2242c7f9b735b981f0ae270ca3a60999ac202c3c",
   "translation": "Own Russian translation for AIMS, not an official localization.",
-  "description": "Descriptions and threat level 5 are demo data, not Starfield canon or model output.",
+  "description": "Original Russian field-guide summaries informed by the linked Starfield wiki articles, game-data references and dataset photographs. Uncertain biology and visual inferences are stated explicitly; these are editorial demo records, not official lore text.",
   "imageProvenance": "Images are captured from Starfield; repository license does not establish a separate license for the underlying game artwork.",
   "weights": "torchvision MobileNet_V3_Small_Weights.IMAGENET1K_V1",
   "duplicateSourceNames": {
@@ -27,5 +27,395 @@
     "train/leafstrider/227-leafstrider.png": 2
   },
   "duplicateNamePolicy": "Keep both source images using --variant-N. ZIP CRC determines order; no claim about which Drive ID belongs to which variant.",
-  "downloadMethod": "Download the complete folder as ZIP using Google Drive; import all ZIP parts together."
+  "downloadMethod": "Download the complete folder as ZIP using Google Drive; import all ZIP parts together.",
+  "catalogThreatScale": {
+    "origin": "Editorial AIMS scale, not an official Starfield rating or a classifier output.",
+    "1-2": "Low risk: peaceful or skittish representative forms.",
+    "3-4": "Contact risk: wary or defensive animals, group response or limited observations.",
+    "5-6": "Significant risk: territorial groups, mixed predatory forms or dangerous close contact.",
+    "7-8": "High risk: strong predators, armor, ranged attacks or dangerous pack behavior.",
+    "9-10": "Critical risk: severe documented danger to people, xenoweapons or settlement-scale outbreaks.",
+    "variants": "Scores summarize the encounter described in each entry; this visual dataset does not identify planetary variants. Peaceful and predatory variants may share a class. Scores are not worst-case guarantees.",
+    "uncertainty": "Lacraia and Maw scores are provisional, based on sparse records or external appearance; missing observations do not imply safety."
+  },
+  "catalogReferences": {
+    "starfield_angler": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Copernicus_II"
+      ],
+      "image": "data/raw/train/angler/100-angler.png",
+      "threatRationaleRu": "Хищная форма; оборонительное поведение снижает вероятность нападения, но не последствия близкого контакта."
+    },
+    "starfield_anklyosaurus": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Hunting_Ankylosaurus",
+        "https://starfield.fandom.com/wiki/Polvo"
+      ],
+      "image": "data/raw/train/anklyosaurus/100-anklyosaurus.png",
+      "threatRationaleRu": "Броня, территориальное поведение и дистанционная атака охотничьей формы."
+    },
+    "starfield_ashta": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Ashta"
+      ],
+      "image": "data/raw/train/ashta/100-ashta.png",
+      "threatRationaleRu": "Подтверждённая смертельная угроза людям за пределами укреплений; особо опасные альфа-особи."
+    },
+    "starfield_beetlecrab": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Herding_Beetlecrab_Grazer",
+        "https://starfield.fandom.com/wiki/Nirvana_II"
+      ],
+      "image": "data/raw/train/beetlecrab/100-beetlecrab.png",
+      "threatRationaleRu": "Преимущественно мирные или настороженные популяции; сохраняется риск травмы при отлове."
+    },
+    "starfield_bighorn": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Eridani_II",
+        "https://starfield.fandom.com/wiki/Polvo"
+      ],
+      "image": "data/raw/train/bighorn/100-bighorn.png",
+      "threatRationaleRu": "Есть территориальные охотничьи популяции; миролюбие геофагов нельзя переносить на весь класс."
+    },
+    "starfield_bladeback": {
+      "urls": [
+        "https://nukesdragons.com/starfield/db/fauna/bladeback"
+      ],
+      "image": "data/raw/train/bladeback/100-bladeback.png",
+      "threatRationaleRu": "Стайный хищник с дистанционной атакой на Тернионе III; оценка не относится автоматически к травоядным формам."
+    },
+    "starfield_blistercrab": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Herding_Blistercrab_Filterer",
+        "https://starfield.fandom.com/wiki/Flocking_Blistercrab_Herbivore"
+      ],
+      "image": "data/raw/train/blistercrab/100-blistercrab.png",
+      "threatRationaleRu": "Коллективная защита, скорость и режущие клешни; нападение обычно связано с провокацией."
+    },
+    "starfield_boneback": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Herding_Boneback_Scavenger"
+      ],
+      "image": "data/raw/train/boneback/100-boneback.png",
+      "threatRationaleRu": "Умеренно опасная отдельная особь, но выраженная групповая защита и территориальность."
+    },
+    "starfield_bonefrill": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Hunting_Bonefrill",
+        "https://starfield.fandom.com/wiki/Nirvana_II"
+      ],
+      "image": "data/raw/train/bonefrill/100-bonefrill.png",
+      "threatRationaleRu": "Крупный бесстрашный хищник с мощной атакой в ближнем бою; у геофагов риск ниже."
+    },
+    "starfield_bonemane": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Herding_Bonemane_Grazer",
+        "https://starfield.fandom.com/wiki/Polvo"
+      ],
+      "image": "data/raw/train/bonemane/100-bonemane.png",
+      "threatRationaleRu": "Основная описанная стадная форма избегает конфликта, но опасна массой и коллективной защитой."
+    },
+    "starfield_brainsprout": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Brainsprout_Herbivore",
+        "https://starfield.fandom.com/wiki/Rutherford_III"
+      ],
+      "image": "data/raw/train/brainsprout/100-brainsprout.png",
+      "threatRationaleRu": "В основном спокойная травоядная форма, но есть опасные оборонительные реакции и территориальные варианты."
+    },
+    "starfield_brainsquid": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Bolivar_I"
+      ],
+      "image": "data/raw/train/brainsquid/100-brainsquid.png",
+      "threatRationaleRu": "Бесстрашная охотничья форма; внешнее сходство с мозгом не используется как признак особых способностей."
+    },
+    "starfield_brightcage": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Hunting_Brightcage",
+        "https://starfield.fandom.com/wiki/Swarming_Brightcage"
+      ],
+      "image": "data/raw/train/brightcage/100-brightcage.png",
+      "threatRationaleRu": "Охотничьи и роевые формы, включая варианты с дистанционной атакой."
+    },
+    "starfield_cagebrain": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Codos",
+        "https://starfield.fandom.com/wiki/Piazzi_IV-c"
+      ],
+      "image": "data/raw/train/cagebrain/100-cagebrain.png",
+      "threatRationaleRu": "Есть бесстрашная хищная популяция; спокойные болотные травоядные не представляют весь класс."
+    },
+    "starfield_clawback": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Syrma_IV"
+      ],
+      "image": "data/raw/train/clawback/100-clawback.png",
+      "threatRationaleRu": "Настороженные групповые падальщики; повышенная агрессивность или особые атаки не подтверждены выбранным источником."
+    },
+    "starfield_coralbug": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Pack_Coralbug"
+      ],
+      "image": "data/raw/train/coralbug/100-coralbug.png",
+      "threatRationaleRu": "Преследование при численном превосходстве и дистанционная атака; возможен групповой контакт."
+    },
+    "starfield_coralcrawler": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Herding_Coralcrawler_Grazer",
+        "https://starfield.fandom.com/wiki/Hunting_Coralcrawler",
+        "https://starfield.fandom.com/wiki/Herding_Coralcrawler_Filterer"
+      ],
+      "image": "data/raw/train/coralcrawler/100-coralcrawler.png",
+      "threatRationaleRu": "Быстрые охотничьи формы с дистанционной атакой; и у фильтраторов есть средства активной защиты."
+    },
+    "starfield_crab": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Hunting_Crab",
+        "https://starfield.fandom.com/wiki/Serpentis_IV"
+      ],
+      "image": "data/raw/train/crab/100-crab.png",
+      "threatRationaleRu": "Бронированный быстрый хищник с ядовитой дистанционной атакой; оценка ориентирована на охотничью форму."
+    },
+    "starfield_cricket": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Tau_Ceti_VIII-b",
+        "https://starfield.fandom.com/wiki/Copernicus_II"
+      ],
+      "image": "data/raw/train/cricket/100-cricket.png",
+      "threatRationaleRu": "Охотничья форма подтверждена, но сведений о поведении и особых атаках мало; оценка предварительная."
+    },
+    "starfield_crocalypse": {
+      "urls": [
+        "https://nukesdragons.com/starfield/db/fauna/crocalypse"
+      ],
+      "image": "data/raw/train/crocalypse/100-crocalypse.png",
+      "threatRationaleRu": "Мощные хищные варианты, дистанционные атаки и замедляющий плевок у стайной формы."
+    },
+    "starfield_crocodaunt": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Jemison",
+        "https://starfield.fandom.com/wiki/Vega_II-c"
+      ],
+      "image": "data/raw/train/crocodaunt/100-crocodaunt.png",
+      "threatRationaleRu": "Верховный территориальный хищник Джемисона; массивное тело увеличивает последствия нападения."
+    },
+    "starfield_cutterhead": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Flocking_Cutterhead_Grazer"
+      ],
+      "image": "data/raw/train/cutterhead/100-cutterhead.png",
+      "threatRationaleRu": "Групповая защита и режущие когти при относительно мирном поведении вне конфликта."
+    },
+    "starfield_dodo": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Montara_Luna"
+      ],
+      "image": "data/raw/train/dodo/100-dodo.png",
+      "threatRationaleRu": "Подтверждённая мирная травоядная форма; низкая вероятность самостоятельного нападения."
+    },
+    "starfield_eggback": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Eggback_Herbivore",
+        "https://starfield.fandom.com/wiki/Beta_Marae_I"
+      ],
+      "image": "data/raw/train/eggback/100-eggback.png",
+      "threatRationaleRu": "Низкая оценка относится к хорошо описанной пугливой форме Тау Кита II; роевые варианты опаснее."
+    },
+    "starfield_eyespine": {
+      "urls": [
+        "https://nukesdragons.com/starfield/db/fauna/eyespine"
+      ],
+      "image": "data/raw/train/eyespine/100-eyespine.png",
+      "threatRationaleRu": "Небольшая пугливая форма с низкой боевой опасностью по базе игровых характеристик."
+    },
+    "starfield_hammersaur": {
+      "urls": [
+        "https://nukesdragons.com/starfield/db/fauna/hammersaur"
+      ],
+      "image": "data/raw/train/hammersaur/100-hammersaur.png",
+      "threatRationaleRu": "Стайные хищники, дистанционные атаки и опасная зона от плевка у отдельной популяции."
+    },
+    "starfield_hornface": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Herding_Hornface_Herbivore",
+        "https://starfield.fandom.com/wiki/Codos"
+      ],
+      "image": "data/raw/train/hornface/100-hornface.png",
+      "threatRationaleRu": "В основном настороженное травоядное, но есть территориальные стада и риск травмы при сближении."
+    },
+    "starfield_horsemander": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Herding_Horsamander_Herbivore"
+      ],
+      "image": "data/raw/train/horsemander/100-horsemander.png",
+      "threatRationaleRu": "Ядовитость повышает риск контакта даже при травоядном рационе и настороженном поведении."
+    },
+    "starfield_lacraia": {
+      "urls": [
+        "https://starfield.fandom.com/es/wiki/Lacraia"
+      ],
+      "image": "data/raw/train/lacraia/100-lacraia.png",
+      "threatRationaleRu": "Предварительная оценка по строению на фотографиях; поведенческих данных недостаточно."
+    },
+    "starfield_leafbug": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Herding_Leafbug_Grazer",
+        "https://starfield.fandom.com/wiki/Heisenberg_II"
+      ],
+      "image": "data/raw/train/leafbug/100-leafbug.png",
+      "threatRationaleRu": "Пугливая форма избегает боя даже при провокации; для оборонительной популяции риск выше."
+    },
+    "starfield_leafstrider": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Eridani_II",
+        "https://starfield.fandom.com/wiki/Beta_Marae_I"
+      ],
+      "image": "data/raw/train/leafstrider/100-leafstrider.png",
+      "threatRationaleRu": "Территориальная охотничья форма; растительный силуэт затрудняет визуальное обнаружение по фото."
+    },
+    "starfield_longhorn": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Alpha_Andraste_III"
+      ],
+      "image": "data/raw/train/longhorn/100-longhorn.png",
+      "threatRationaleRu": "Групповая форма с оборонительным поведением; опасность возрастает при близком контакте."
+    },
+    "starfield_maw": {
+      "urls": [],
+      "image": "data/raw/train/maw/100-maw.png",
+      "threatRationaleRu": "Предварительная авторская оценка по массивной пасти и телосложению; поведение и точная таксономия не подтверждены."
+    },
+    "starfield_monitor": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Toliman_II"
+      ],
+      "image": "data/raw/train/monitor/100-monitor.png",
+      "threatRationaleRu": "Территориальное стадное травоядное; размер тела повышает риск при вторжении в стадо."
+    },
+    "starfield_mossgnath": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Mossgnath"
+      ],
+      "image": "data/raw/train/mossgnath/100-mossgnath.png",
+      "threatRationaleRu": "Оборонительное поведение при огромной массе, устойчивости к повреждениям и быстром восстановлении."
+    },
+    "starfield_reefwalker": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Jemison"
+      ],
+      "image": "data/raw/train/reefwalker/100-reefwalker.png",
+      "threatRationaleRu": "Оборонительный стадный падальщик; опасность в первую очередь при близком вторжении."
+    },
+    "starfield_sailgator": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Hunting_Sailgator",
+        "https://starfield.fandom.com/wiki/Rutherford_III"
+      ],
+      "image": "data/raw/train/sailgator/100-sailgator.png",
+      "threatRationaleRu": "Подтверждённая охотничья форма с дистанционной атакой; более спокойные варианты существуют."
+    },
+    "starfield_scorpion": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Swarming_Stalker_Scorpion",
+        "https://starfield.fandom.com/wiki/Serpentis_IV"
+      ],
+      "image": "data/raw/train/scorpion/100-scorpion.png",
+      "threatRationaleRu": "Стайная охота и устойчивость к электромагнитному воздействию у формы Нииры; яд не обобщается на весь класс."
+    },
+    "starfield_seahorse": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Serpentis_IV"
+      ],
+      "image": "data/raw/train/seahorse/100-seahorse.png",
+      "threatRationaleRu": "Пугливая травоядная форма без подтверждённой склонности к нападению."
+    },
+    "starfield_shieldshell": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Hunting_Shieldshell"
+      ],
+      "image": "data/raw/train/shieldshell/100-shieldshell.png",
+      "threatRationaleRu": "Бесстрашие, защитный панцирь и дистанционная атака делают охотничью форму особо опасной."
+    },
+    "starfield_shroomhead": {
+      "urls": [
+        "https://nukesdragons.com/starfield/db/planets/groombridge-viii-a",
+        "https://www.starfielddb.com/enemies/flocking-shroomhead-grazer/"
+      ],
+      "image": "data/raw/train/shroomhead/100-shroomhead.png",
+      "threatRationaleRu": "Травоядная стадная форма с оборонительным поведением; высокая агрессивность не подтверждена."
+    },
+    "starfield_siren": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Siren"
+      ],
+      "image": "data/raw/train/siren/100-siren.png",
+      "threatRationaleRu": "Бронированный агрессивный хищник с историей применения в качестве ксенооружия."
+    },
+    "starfield_sunflower": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Altair_II",
+        "https://starfield.fandom.com/wiki/Copernicus_IV",
+        "https://starfield.fandom.com/wiki/Montara_Luna"
+      ],
+      "image": "data/raw/train/sunflower/100-sunflower.png",
+      "threatRationaleRu": "Роевые территориальные и охотничьи варианты при наличии сравнительно спокойных фильтраторов."
+    },
+    "starfield_terrormorph": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Terrormorph"
+      ],
+      "image": "data/raw/train/terrormorph/100-terrormorph.png",
+      "threatRationaleRu": "Крайне высокая физическая опасность, воздействие на людей и фауну, подтверждённые катастрофические вспышки."
+    },
+    "starfield_thornmantis": {
+      "urls": [
+        "https://nukesdragons.com/starfield/db/fauna/thornmantis"
+      ],
+      "image": "data/raw/train/thornmantis/100-thornmantis.png",
+      "threatRationaleRu": "Бесстрашные хищные формы, групповая охота и ядовитые атаки у популяции Хокинга I."
+    },
+    "starfield_toadface": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Kumasi_III",
+        "https://nukesdragons.com/starfield/db/fauna/toadface"
+      ],
+      "image": "data/raw/train/toadface/100-toadface.png",
+      "threatRationaleRu": "Есть территориальные охотничьи формы, но многие популяции травоядны и избегают конфликта."
+    },
+    "starfield_twistfin": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Hunting_Twistfin",
+        "https://starfield.fandom.com/wiki/Kumasi_I"
+      ],
+      "image": "data/raw/train/twistfin/100-twistfin.png",
+      "threatRationaleRu": "Охотничья форма и групповые варианты; оценка учитывает риск близкого контакта с хищником."
+    },
+    "starfield_vectorback": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Beta_Marae_I",
+        "https://starfield.fandom.com/wiki/Guniibuu_VI-b",
+        "https://starfield.fandom.com/wiki/Nesoi"
+      ],
+      "image": "data/raw/train/vectorback/100-vectorback.png",
+      "threatRationaleRu": "Бесстрашная охотничья форма не позволяет считать весь визуальный класс мирным."
+    },
+    "starfield_vuvuzelisk": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Eridani_II",
+        "https://starfield.fandom.com/wiki/Eridani_III",
+        "https://starfield.fandom.com/wiki/Nesoi"
+      ],
+      "image": "data/raw/train/vuvuzelisk/100-vuvuzelisk.png",
+      "threatRationaleRu": "Смешанный класс: мирные травоядные и бесстрашные охотники; опасность требует уточнения популяции."
+    },
+    "starfield_windbag": {
+      "urls": [
+        "https://starfield.fandom.com/wiki/Heisenberg_II",
+        "https://starfield.fandom.com/wiki/Copernicus_II"
+      ],
+      "image": "data/raw/train/windbag/100-windbag.png",
+      "threatRationaleRu": "Настороженные и оборонительные стадные формы; опасные свойства мешка не подтверждены."
+    }
+  }
 }

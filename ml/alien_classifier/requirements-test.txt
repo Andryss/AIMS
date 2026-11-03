@@ -1,2 +1,2 @@
--r requirements-train.txt
+-r requirements-export.txt
 pytest>=8,<10
