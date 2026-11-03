@@ -1,0 +1,402 @@
+[
+  {
+    "classificationKey": "starfield_angler",
+    "datasetLabel": "angler",
+    "nameEn": "Angler",
+    "nameRu": "Удильщик",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Удильщик (Angler). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_anklyosaurus",
+    "datasetLabel": "anklyosaurus",
+    "nameEn": "Ankylosaurus",
+    "nameRu": "Анкилозавр",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Анкилозавр (Ankylosaurus). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_ashta",
+    "datasetLabel": "ashta",
+    "nameEn": "Ashta",
+    "nameRu": "Ашта",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Ашта (Ashta). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_beetlecrab",
+    "datasetLabel": "beetlecrab",
+    "nameEn": "Beetlecrab",
+    "nameRu": "Жукокраб",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Жукокраб (Beetlecrab). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_bighorn",
+    "datasetLabel": "bighorn",
+    "nameEn": "Bighorn",
+    "nameRu": "Большерог",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Большерог (Bighorn). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_bladeback",
+    "datasetLabel": "bladeback",
+    "nameEn": "Bladeback",
+    "nameRu": "Клинкоспин",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Клинкоспин (Bladeback). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_blistercrab",
+    "datasetLabel": "blistercrab",
+    "nameEn": "Blistercrab",
+    "nameRu": "Пузырекраб",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Пузырекраб (Blistercrab). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_boneback",
+    "datasetLabel": "boneback",
+    "nameEn": "Boneback",
+    "nameRu": "Костеспин",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Костеспин (Boneback). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_bonefrill",
+    "datasetLabel": "bonefrill",
+    "nameEn": "Bonefrill",
+    "nameRu": "Костеворот",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Костеворот (Bonefrill). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_bonemane",
+    "datasetLabel": "bonemane",
+    "nameEn": "Bonemane",
+    "nameRu": "Костегрив",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Костегрив (Bonemane). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_brainsprout",
+    "datasetLabel": "brainsprout",
+    "nameEn": "Brainsprout",
+    "nameRu": "Мозгорост",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Мозгорост (Brainsprout). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_brainsquid",
+    "datasetLabel": "brainsquid",
+    "nameEn": "Brainsquid",
+    "nameRu": "Мозгокальмар",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Мозгокальмар (Brainsquid). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_brightcage",
+    "datasetLabel": "brightcage",
+    "nameEn": "Brightcage",
+    "nameRu": "Светоклет",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Светоклет (Brightcage). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_cagebrain",
+    "datasetLabel": "cagebrain",
+    "nameEn": "Cagebrain",
+    "nameRu": "Клеткомозг",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Клеткомозг (Cagebrain). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_clawback",
+    "datasetLabel": "clawback",
+    "nameEn": "Clawback",
+    "nameRu": "Когтеспин",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Когтеспин (Clawback). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_coralbug",
+    "datasetLabel": "coralbug",
+    "nameEn": "Coralbug",
+    "nameRu": "Коралловый жук",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Коралловый жук (Coralbug). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_coralcrawler",
+    "datasetLabel": "coralcrawler",
+    "nameEn": "Coralcrawler",
+    "nameRu": "Коралловый ползун",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Коралловый ползун (Coralcrawler). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_crab",
+    "datasetLabel": "crab",
+    "nameEn": "Crab",
+    "nameRu": "Краб",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Краб (Crab). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_cricket",
+    "datasetLabel": "cricket",
+    "nameEn": "Cricket",
+    "nameRu": "Сверчок",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Сверчок (Cricket). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_crocalypse",
+    "datasetLabel": "crocalypse",
+    "nameEn": "Crocalypse",
+    "nameRu": "Крокалипс",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Крокалипс (Crocalypse). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_crocodaunt",
+    "datasetLabel": "crocodaunt",
+    "nameEn": "Crocodaunt",
+    "nameRu": "Крокодонт",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Крокодонт (Crocodaunt). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_cutterhead",
+    "datasetLabel": "cutterhead",
+    "nameEn": "Cutterhead",
+    "nameRu": "Резоголов",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Резоголов (Cutterhead). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_dodo",
+    "datasetLabel": "dodo",
+    "nameEn": "Dodo",
+    "nameRu": "Додо",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Додо (Dodo). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_eggback",
+    "datasetLabel": "eggback",
+    "nameEn": "Eggback",
+    "nameRu": "Яйцеспин",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Яйцеспин (Eggback). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_eyespine",
+    "datasetLabel": "eyespine",
+    "nameEn": "Eyespine",
+    "nameRu": "Глазошип",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Глазошип (Eyespine). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_hammersaur",
+    "datasetLabel": "hammersaur",
+    "nameEn": "Hammersaur",
+    "nameRu": "Молотозавр",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Молотозавр (Hammersaur). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_hornface",
+    "datasetLabel": "hornface",
+    "nameEn": "Hornface",
+    "nameRu": "Рогоморд",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Рогоморд (Hornface). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_horsemander",
+    "datasetLabel": "horsemander",
+    "nameEn": "Horsemander",
+    "nameRu": "Конесаламандра",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Конесаламандра (Horsemander). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_lacraia",
+    "datasetLabel": "lacraia",
+    "nameEn": "Lacraia",
+    "nameRu": "Лакрайя",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Лакрайя (Lacraia). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_leafbug",
+    "datasetLabel": "leafbug",
+    "nameEn": "Leafbug",
+    "nameRu": "Листожук",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Листожук (Leafbug). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_leafstrider",
+    "datasetLabel": "leafstrider",
+    "nameEn": "Leafstrider",
+    "nameRu": "Листоход",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Листоход (Leafstrider). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_longhorn",
+    "datasetLabel": "longhorn",
+    "nameEn": "Longhorn",
+    "nameRu": "Длиннорог",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Длиннорог (Longhorn). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_maw",
+    "datasetLabel": "maw",
+    "nameEn": "Maw",
+    "nameRu": "Пасть",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Пасть (Maw). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_monitor",
+    "datasetLabel": "monitor",
+    "nameEn": "Monitor",
+    "nameRu": "Варан",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Варан (Monitor). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_mossgnath",
+    "datasetLabel": "mossgnath",
+    "nameEn": "Mossgnath",
+    "nameRu": "Мохочелюст",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Мохочелюст (Mossgnath). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_reefwalker",
+    "datasetLabel": "reefwalker",
+    "nameEn": "Reefwalker",
+    "nameRu": "Рифоход",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Рифоход (Reefwalker). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_sailgator",
+    "datasetLabel": "sailgator",
+    "nameEn": "Sailgator",
+    "nameRu": "Парусный аллигатор",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Парусный аллигатор (Sailgator). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_scorpion",
+    "datasetLabel": "scorpion",
+    "nameEn": "Scorpion",
+    "nameRu": "Скорпион",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Скорпион (Scorpion). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_seahorse",
+    "datasetLabel": "seahorse",
+    "nameEn": "Seahorse",
+    "nameRu": "Морской конёк",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Морской конёк (Seahorse). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_shieldshell",
+    "datasetLabel": "shieldshell",
+    "nameEn": "Shieldshell",
+    "nameRu": "Щитопанцирник",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Щитопанцирник (Shieldshell). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_shroomhead",
+    "datasetLabel": "shroomhead",
+    "nameEn": "Shroomhead",
+    "nameRu": "Грибоголов",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Грибоголов (Shroomhead). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_siren",
+    "datasetLabel": "siren",
+    "nameEn": "Siren",
+    "nameRu": "Сирена",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Сирена (Siren). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_sunflower",
+    "datasetLabel": "sunflower",
+    "nameEn": "Sunflower",
+    "nameRu": "Подсолнух",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Подсолнух (Sunflower). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_terrormorph",
+    "datasetLabel": "terrormorph",
+    "nameEn": "Terrormorph",
+    "nameRu": "Терроморф",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Терроморф (Terrormorph). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_thornmantis",
+    "datasetLabel": "thornmantis",
+    "nameEn": "Thornmantis",
+    "nameRu": "Шипастый богомол",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Шипастый богомол (Thornmantis). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_toadface",
+    "datasetLabel": "toadface",
+    "nameEn": "Toadface",
+    "nameRu": "Жабоморд",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Жабоморд (Toadface). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_twistfin",
+    "datasetLabel": "twistfin",
+    "nameEn": "Twistfin",
+    "nameRu": "Витоплавник",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Витоплавник (Twistfin). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_vectorback",
+    "datasetLabel": "vectorback",
+    "nameEn": "Vectorback",
+    "nameRu": "Вектороспин",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Вектороспин (Vectorback). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_vuvuzelisk",
+    "datasetLabel": "vuvuzelisk",
+    "nameEn": "Vuvuzelisk",
+    "nameRu": "Вувузелиск",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Вувузелиск (Vuvuzelisk). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  },
+  {
+    "classificationKey": "starfield_windbag",
+    "datasetLabel": "windbag",
+    "nameEn": "Windbag",
+    "nameRu": "Ветромех",
+    "descriptionRu": "Демонстрационная запись фауны Starfield: Ветромех (Windbag). Название переведено для AIMS; описание можно уточнить по фотографиям.",
+    "threatLevel": 5
+  }
+]

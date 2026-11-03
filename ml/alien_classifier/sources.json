@@ -1,0 +1,31 @@
+{
+  "dataset": "Starfield Fauna",
+  "repository": "https://github.com/tesselwait/Starfield_Fauna",
+  "repositoryCommit": "96e9d40544e3721f8ecdee42fd5f853ceded7b44",
+  "variant": "240p",
+  "imageSize": [
+    426,
+    240
+  ],
+  "folderId": "1xQqYR1VHP3TSzQ7bXP3OKtWqcF34q8yz",
+  "folderUrl": "https://drive.google.com/drive/folders/1xQqYR1VHP3TSzQ7bXP3OKtWqcF34q8yz",
+  "inventoryRetrievedOn": "2026-11-03",
+  "sourceFileCount": 20002,
+  "sourceSplitCounts": {
+    "test": 5000,
+    "train": 10002,
+    "validation": 5000
+  },
+  "sourceInventoryFile": "source_files.json",
+  "sourceInventorySha256": "932dbee4da0171d8221afb7f2242c7f9b735b981f0ae270ca3a60999ac202c3c",
+  "translation": "Own Russian translation for AIMS, not an official localization.",
+  "description": "Descriptions and threat level 5 are demo data, not Starfield canon or model output.",
+  "imageProvenance": "Images are captured from Starfield; repository license does not establish a separate license for the underlying game artwork.",
+  "weights": "torchvision MobileNet_V3_Small_Weights.IMAGENET1K_V1",
+  "duplicateSourceNames": {
+    "train/crocodaunt/177-crocodaunt.png": 2,
+    "train/leafstrider/227-leafstrider.png": 2
+  },
+  "duplicateNamePolicy": "Keep both source images using --variant-N. ZIP CRC determines order; no claim about which Drive ID belongs to which variant.",
+  "downloadMethod": "Download the complete folder as ZIP using Google Drive; import all ZIP parts together."
+}
