@@ -14,6 +14,7 @@ import { AttachmentDownloadList } from './AttachmentDownloadList';
 import { CleanupReportDrawer } from './CleanupReportDrawer';
 import { CleanupStatusSelect } from './CleanupStatusSelect';
 import { IncidentStatusSelect } from './IncidentStatusSelect';
+import { IncidentDetentionSection } from './IncidentDetentionSection';
 import { IncidentEquipmentSection } from './IncidentEquipmentSection';
 import { UserChip } from './UserChip';
 import { UserPickerDrawer } from './UserPickerDrawer';
@@ -44,7 +45,7 @@ function formatDate(iso: string): string {
   }
 }
 
-type DetailTab = 'comments' | 'history' | 'equipment';
+type DetailTab = 'comments' | 'history' | 'equipment' | 'detention';
 
 interface IncidentDetailPageProps {
   token: string;
@@ -60,6 +61,8 @@ interface IncidentDetailPageProps {
   canChangeCleanupStatus: boolean;
   canReadEquipmentMovements?: boolean;
   canCreateEquipmentMovements?: boolean;
+  canReadDetentions?: boolean;
+  canCreateDetentions?: boolean;
 }
 
 export function IncidentDetailPage({
@@ -76,6 +79,8 @@ export function IncidentDetailPage({
   canChangeCleanupStatus,
   canReadEquipmentMovements = false,
   canCreateEquipmentMovements = false,
+  canReadDetentions = false,
+  canCreateDetentions = false,
 }: IncidentDetailPageProps) {
   const { id: idParam } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -962,6 +967,10 @@ export function IncidentDetailPage({
                 onClick={() => setActiveTab('equipment')}>
                 Оборудование
               </button>}
+              {canReadDetentions && <button type="button" role="tab" id="incident-tab-detention"
+                aria-selected={activeTab === 'detention'} aria-controls="incident-tab-panel-detention"
+                className={activeTab === 'detention' ? 'tabs__tab tabs__tab--active' : 'tabs__tab'}
+                onClick={() => setActiveTab('detention')}>Заключение</button>}
             </div>
 
             {activeTab === 'comments' && (
@@ -1016,6 +1025,15 @@ export function IncidentDetailPage({
                 <IncidentEquipmentSection key={incident.id} token={token} incidentId={incident.id}
                   incidentStatus={incident.status} currentUserId={currentUserId} canRead={canReadEquipmentMovements}
                   canCreate={canCreateEquipmentMovements} />
+              </div>
+            )}
+
+            {activeTab === 'detention' && canReadDetentions && (
+              <div id="incident-tab-panel-detention" className="tabs__panel" role="tabpanel"
+                aria-labelledby="incident-tab-detention">
+                <IncidentDetentionSection token={token} incidentId={incident.id} incidentStatus={incident.status}
+                  initialAlienId={incident.alienId} canRead={canReadDetentions} canCreate={canCreateDetentions}
+                  canReadAliens={canReadAliens} />
               </div>
             )}
 

@@ -61,6 +61,7 @@
 }
 
 /* Inventory and movement statuses */
+.status-chip--released,
 .status-chip--available,
 .status-chip--completed {
   background: var(--status-execution-completed-bg);
@@ -68,6 +69,8 @@
   border-color: var(--status-execution-completed-border);
 }
 
+.status-chip--accepted,
+.status-chip--in_custody,
 .status-chip--issued,
 .status-chip--processing,
 .status-chip--collecting_offers,
@@ -170,6 +173,7 @@
   border-color: var(--status-cleanup-completed-border);
 }
 
+.status-chip--new,
 .status-chip--need {
   background: var(--status-draft-bg);
   color: var(--status-draft-text);

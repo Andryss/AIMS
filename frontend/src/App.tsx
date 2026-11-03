@@ -4,6 +4,8 @@ import * as api from './api/client';
 import { AppHeader } from './components/AppHeader';
 import { AlienKnowledgeBaseTab } from './components/AlienKnowledgeBaseTab';
 import { AlienDetailPage } from './components/AlienDetailPage';
+import { DetentionRequestsTab } from './components/DetentionRequestsTab';
+import { DetentionRequestDetailPage } from './components/DetentionRequestDetailPage';
 import { TendersTab } from './components/TendersTab';
 import { TenderDetailPage } from './components/TenderDetailPage';
 import { EquipmentTab } from './components/EquipmentTab';
@@ -39,6 +41,8 @@ function App() {
     [profile],
   );
 
+  const canReadDetentions = profile?.permissions.includes('DETENTION_READ') ?? false;
+  const canCreateDetentions = profile?.permissions.includes('DETENTION_CREATE') ?? false;
   const canReadTenders = profile?.permissions.includes('TENDER_READ') ?? false;
   const canCreateTenders = profile?.permissions.includes('TENDER_CREATE') ?? false;
   const canReadEquipment = profile?.permissions.includes('EQUIPMENT_READ') ?? false;
@@ -71,7 +75,8 @@ function App() {
   const canChangeCleanupStatus = profile?.permissions.includes('CLEANUP_STATUS_CHANGE') ?? false;
   const roles = profile?.roles ?? [];
   const currentUserId = profile?.userId;
-  const defaultPath = roles.includes('TENDER_MANAGER') && canReadTenders ? '/tenders'
+  const defaultPath = roles.includes('PRISON_GUARD') && canReadDetentions ? '/detention-requests'
+    : roles.includes('TENDER_MANAGER') && canReadTenders ? '/tenders'
     : roles.includes('STOREKEEPER') && canReadEquipment ? '/equipment'
     : showIncidentsTab ? '/incidents' : '/profile';
 
@@ -179,6 +184,7 @@ function App() {
         showMonitoringAlertsTab={canReadMonitoringAlerts}
         showKnowledgeBaseTab={showKnowledgeBaseTab}
         showTendersTab={canReadTenders}
+        showDetentionsTab={canReadDetentions}
         showEquipmentTab={canReadEquipment}
         showEquipmentMovementsTab={canReadMovements}
         onToggleNotifications={() => setNotificationsOpen((prev) => !prev)}
@@ -211,6 +217,13 @@ function App() {
               )
             }
           />
+          {canReadDetentions && <>
+            <Route path="/detention-requests" element={<DetentionRequestsTab token={accessToken}
+              canReadIncidents={showIncidentsTab && profile.permissions.includes('INCIDENT_READ')} />} />
+            <Route path="/detention-requests/:id" element={<DetentionRequestDetailPage token={accessToken}
+              permissions={profile.permissions} currentUserId={currentUserId} canReadAliens={canReadAliens}
+              canReadIncidents={showIncidentsTab && profile.permissions.includes('INCIDENT_READ')} />} />
+          </>}
           {canReadTenders && <>
             <Route path="/tenders" element={<TendersTab token={accessToken} canCreate={canCreateTenders} />} />
             <Route path="/tenders/:id" element={<TenderDetailPage token={accessToken} permissions={profile.permissions}
@@ -275,6 +288,8 @@ function App() {
                     canChangeCleanupStatus={canChangeCleanupStatus}
                     canReadEquipmentMovements={canReadMovements}
                     canCreateEquipmentMovements={canCreateMovements}
+                    canReadDetentions={canReadDetentions}
+                    canCreateDetentions={canCreateDetentions}
                   />
                 }
               />

@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 import * as api from './api/client';
 import { TOKEN_STORAGE_KEY, SYSTEM_NAME } from './constants';
-import { mockAlien, mockEquipment, mockEquipmentMovement, mockIncident, mockIncidentList, mockProfile, mockTender } from './test/testData';
+import { mockAlien, mockDetentionRequest, mockEquipment, mockEquipmentMovement, mockIncident, mockIncidentList, mockProfile, mockTender } from './test/testData';
 
 jest.mock('./api/client');
 
@@ -33,6 +33,30 @@ describe('App', () => {
     (api.getIncident as jest.Mock).mockResolvedValue(mockIncident());
     (api.listEquipmentMovementHistory as jest.Mock).mockResolvedValue({ items: [], page: 0, size: 10,
       totalElements: 0, totalPages: 0 });
+  });
+
+  it.each(['/', '/detention-requests/7'])('opens detention pages for the guard from %s', async (path) => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile({ login: 'prison_guard', roles: ['PRISON_GUARD'],
+      permissions: ['DETENTION_READ', 'DETENTION_EDIT', 'DETENTION_PROCESS', 'INCIDENT_READ', 'ALIEN_READ', 'USER_READ'] }));
+    (api.listDetentionRequests as jest.Mock).mockResolvedValue({ items: [mockDetentionRequest()], page: 0, size: 10,
+      totalPages: 1, totalElements: 1 });
+    (api.getDetentionRequest as jest.Mock).mockResolvedValue(mockDetentionRequest());
+    (api.listDetentionRequestHistory as jest.Mock).mockResolvedValue({ items: [], page: 0, size: 10, totalPages: 0, totalElements: 0 });
+    render(<MemoryRouter initialEntries={[path]}><App /></MemoryRouter>);
+    await screen.findByRole('heading', { name: path === '/' ? 'Заявки на заключение' : 'Заявка на заключение #7' });
+    expect(screen.getByRole('link', { name: 'Заключение' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Инциденты' })).toBeInTheDocument();
+  });
+
+  it.each(['/detention-requests', '/detention-requests/7'])('guards detention routes %s without read permission', async (path) => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile());
+    render(<MemoryRouter initialEntries={[path]}><App /></MemoryRouter>);
+    await screen.findByRole('link', { name: 'Инциденты' });
+    expect(screen.queryByRole('link', { name: 'Заключение' })).not.toBeInTheDocument();
+    expect(api.getDetentionRequest).not.toHaveBeenCalled();
+    expect(api.listDetentionRequests).not.toHaveBeenCalled();
   });
 
   it('lands the tender manager on tenders and restores a direct tender route', async () => {

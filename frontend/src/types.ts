@@ -19,7 +19,7 @@ export type IncidentStatus =
 
 export type CleanupStatus = 'PREPARATION' | 'EXECUTION' | 'COMPLETED';
 
-export type RoleName = 'OPERATOR' | 'ANALYST' | 'ADMIN' | 'AGENT' | 'STOREKEEPER' | 'TENDER_MANAGER' | 'CLEANER';
+export type RoleName = 'OPERATOR' | 'ANALYST' | 'ADMIN' | 'AGENT' | 'STOREKEEPER' | 'TENDER_MANAGER' | 'PRISON_GUARD' | 'CLEANER';
 
 export interface SignInRequest {
   login: string;
@@ -440,6 +440,75 @@ export interface EquipmentMovementHistoryEntry {
 
 export interface EquipmentMovementHistoryListResponse {
   items: EquipmentMovementHistoryEntry[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export type DetentionRequestStatus = 'NEW' | 'ACCEPTED' | 'IN_CUSTODY' | 'RELEASED' | 'REJECTED' | 'CANCELLED';
+
+export interface DetentionRequestResponse {
+  id: number;
+  incidentId: number;
+  subjectName: string;
+  subjectDescription: string;
+  alienId?: number | null;
+  durationDays: number;
+  status: DetentionRequestStatus;
+  createdByUserId: number;
+  reviewedByUserId?: number | null;
+  createdAt: string;
+  updatedAt: string;
+  admittedAt?: string | null;
+  plannedReleaseAt?: string | null;
+  releasedAt?: string | null;
+}
+
+export interface SaveDetentionRequest {
+  incidentId: number;
+  subjectName: string;
+  subjectDescription: string;
+  alienId?: number | null;
+  durationDays: number;
+  comment?: string;
+}
+
+export interface ChangeDetentionRequestStatusRequest {
+  status: DetentionRequestStatus;
+  comment?: string;
+}
+
+export interface DetentionRequestListQuery {
+  q?: string;
+  incidentId?: number;
+  status?: DetentionRequestStatus;
+  page: number;
+  size: number;
+}
+
+export interface DetentionRequestListResponse {
+  items: DetentionRequestResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface DetentionRequestHistorySnapshot {
+  request: DetentionRequestResponse;
+  transitionComment?: string | null;
+}
+
+export interface DetentionRequestHistoryEntry {
+  id: number;
+  changedAt: string;
+  changedByUserId: number;
+  snapshot: DetentionRequestHistorySnapshot;
+}
+
+export interface DetentionRequestHistoryListResponse {
+  items: DetentionRequestHistoryEntry[];
   page: number;
   size: number;
   totalElements: number;

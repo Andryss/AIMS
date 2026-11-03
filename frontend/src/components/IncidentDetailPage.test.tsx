@@ -73,6 +73,23 @@ function renderAt(
   );
 }
 
+it('places detention after equipment and opens the incident request list', async () => {
+  getIncident.mockResolvedValue(mockIncident({ id: 8, status: 'EXECUTING', alienId: undefined }));
+  batchUsers.mockResolvedValue({ items: [] });
+  listIncidentComments.mockResolvedValue({ items: [], page: 0, size: 50, totalPages: 0, totalElements: 0 });
+  (api.listDetentionRequests as jest.Mock).mockResolvedValue({ items: [], page: 0, size: 10, totalPages: 0, totalElements: 0 });
+  render(<MemoryRouter initialEntries={['/incidents/8']}><Routes><Route path="/incidents/:id" element={
+    <IncidentDetailPage token="tok" roles={['AGENT']} canChangeStatus={false} canReadAliens={false} canLinkAlien={false}
+      canComment={false} canAssign={false} canReadCleanupReport={false} canCreateCleanupReport={false}
+      canChangeCleanupStatus={false} canReadEquipmentMovements canReadDetentions canCreateDetentions />
+  } /></Routes></MemoryRouter>);
+  await screen.findByRole('tab', { name: 'Заключение' });
+  expect(screen.getAllByRole('tab').map((tab) => tab.textContent?.trim())).toEqual(['Комментарии', 'История', 'Оборудование', 'Заключение']);
+  await userEvent.click(screen.getByRole('tab', { name: 'Заключение' }));
+  expect(await screen.findByText('Заявок на заключение пока нет')).toBeInTheDocument();
+  expect(api.listDetentionRequests).toHaveBeenCalledWith('tok', { incidentId: 8, page: 0, size: 10 });
+});
+
 describe('IncidentDetailPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();

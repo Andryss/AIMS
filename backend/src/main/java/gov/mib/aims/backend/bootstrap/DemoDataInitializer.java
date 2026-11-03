@@ -6,6 +6,9 @@ import gov.mib.aims.backend.entity.RoleEntity;
 import gov.mib.aims.backend.generated.model.ChangeEquipmentMovementStatusRequest;
 import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.ChangeTenderStatusRequest;
+import gov.mib.aims.backend.generated.model.ChangeDetentionRequestStatusRequest;
+import gov.mib.aims.backend.generated.model.DetentionRequestStatusApi;
+import gov.mib.aims.backend.generated.model.SaveDetentionRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentCommentRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
 import gov.mib.aims.backend.generated.model.EquipmentMovementOperationApi;
@@ -31,6 +34,7 @@ import gov.mib.aims.backend.repository.PermissionRepository;
 import gov.mib.aims.backend.repository.RoleRepository;
 import gov.mib.aims.backend.security.UserInfo;
 import gov.mib.aims.backend.services.EquipmentMovementService;
+import gov.mib.aims.backend.services.DetentionRequestService;
 import gov.mib.aims.backend.services.EquipmentService;
 import gov.mib.aims.backend.services.IncidentCommentService;
 import gov.mib.aims.backend.services.IncidentService;
@@ -70,6 +74,7 @@ import java.util.function.Supplier;
 public class DemoDataInitializer implements ApplicationRunner {
 
     private static final String DEMO_INCIDENT = "[DEMO] Светящийся объект у обсерватории";
+    private static final String DEMO_DETENTION_INCIDENT = "[DEMO] Задержание у северного терминала";
     private static final Map<String, Role> DEMO_USERS = new LinkedHashMap<>();
 
     static {
@@ -96,6 +101,7 @@ public class DemoDataInitializer implements ApplicationRunner {
     private final TenderService tenderService;
     private final TenderParticipantService participantService;
     private final TenderReceiptService receiptService;
+    private final DetentionRequestService detentionService;
     private final Clock clock;
 
     @Override
@@ -111,6 +117,10 @@ public class DemoDataInitializer implements ApplicationRunner {
         if (!jdbcTemplate.queryForObject("SELECT EXISTS (SELECT 1 FROM incident WHERE description=?)",
                 Boolean.class, DEMO_INCIDENT)) {
             seedScenarios();
+        }
+        if (!jdbcTemplate.queryForObject("SELECT EXISTS (SELECT 1 FROM incident WHERE description=?)",
+                Boolean.class, DEMO_DETENTION_INCIDENT)) {
+            seedDetentionScenarios();
         }
 
         log.info("Demo data ready: users {}", DEMO_USERS.keySet());
@@ -186,6 +196,52 @@ public class DemoDataInitializer implements ApplicationRunner {
                 "[DEMO] Обновление нейтрализатора");
         seedTender(TenderStatusApi.COMPLETED, EquipmentTypeApi.NEURALYZER, 1, "[DEMO] Поставка учебного оборудования");
         seedTender(TenderStatusApi.CANCELLED, EquipmentTypeApi.NEUTRALIZER, 1, "[DEMO] Закупка отменена");
+    }
+
+    private void seedDetentionScenarios() {
+        Long incidentId = seedIncident(DEMO_DETENTION_INCIDENT, "Северный терминал", IncidentStatusApi.EXECUTING);
+        Long alienId = jdbcTemplate.queryForObject("SELECT alien_id FROM incident WHERE id=?", Long.class, incidentId);
+
+        seedDetention(incidentId, alienId, "[DEMO] Неизвестный пассажир", DetentionRequestStatusApi.NEW);
+        seedDetention(incidentId, alienId, "[DEMO] Нарушитель карантина", DetentionRequestStatusApi.ACCEPTED);
+        seedDetention(incidentId, alienId, "[DEMO] Задержанный у шлюза", DetentionRequestStatusApi.IN_CUSTODY);
+        seedDetention(incidentId, alienId, "[DEMO] Освобождённый пассажир", DetentionRequestStatusApi.RELEASED);
+        seedDetention(incidentId, alienId, "[DEMO] Ошибочно задержанный", DetentionRequestStatusApi.REJECTED);
+        seedDetention(incidentId, alienId, "[DEMO] Заявка отозвана агентом", DetentionRequestStatusApi.CANCELLED);
+    }
+
+    private void seedDetention(Long incidentId, Long alienId, String name, DetentionRequestStatusApi target) {
+        var request = asUser("agent", () -> detentionService.create(new SaveDetentionRequest()
+                .incidentId(incidentId).alienId(alienId).subjectName(name).durationDays(30)
+                .subjectDescription("Задержан при проверке документов в северном терминале.")));
+        if (target == DetentionRequestStatusApi.NEW) {
+            return;
+        }
+        if (target == DetentionRequestStatusApi.REJECTED || target == DetentionRequestStatusApi.CANCELLED) {
+            asUser(target == DetentionRequestStatusApi.CANCELLED ? "agent" : "prison_guard",
+                    () -> detentionService.changeStatus(request.getId(), new ChangeDetentionRequestStatusRequest()
+                            .status(target)
+                            .comment("Дополнительная проверка не подтвердила оснований для заключения.")));
+            return;
+        }
+
+        asUser("prison_guard", () -> detentionService.changeStatus(request.getId(),
+                new ChangeDetentionRequestStatusRequest().status(DetentionRequestStatusApi.ACCEPTED)));
+        if (target == DetentionRequestStatusApi.ACCEPTED) {
+            return;
+        }
+
+        asUser("prison_guard", () -> detentionService.changeStatus(request.getId(),
+                new ChangeDetentionRequestStatusRequest().status(DetentionRequestStatusApi.IN_CUSTODY)));
+        asUser("prison_guard", () -> detentionService.update(request.getId(), new SaveDetentionRequest()
+                .incidentId(incidentId).alienId(alienId).subjectName(name).durationDays(15)
+                .subjectDescription("Личность и обстоятельства задержания уточнены надзирателем.")
+                .comment("Срок сокращён по результатам дополнительного рассмотрения.")));
+        if (target == DetentionRequestStatusApi.RELEASED) {
+            asUser("prison_guard", () -> detentionService.changeStatus(request.getId(),
+                    new ChangeDetentionRequestStatusRequest().status(DetentionRequestStatusApi.RELEASED)
+                            .comment("Досрочно освобождён после проверки обстоятельств задержания.")));
+        }
     }
 
     private Long seedIncident(String description, String location, IncidentStatusApi target) {

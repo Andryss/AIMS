@@ -91,6 +91,7 @@
 
 .app-header__nav {
   display: flex;
+  flex-wrap: wrap;
   align-items: stretch;
   gap: var(--space-1);
   flex: 1;
@@ -109,6 +110,7 @@
   font-weight: 500;
   font-size: var(--font-size-base);
   text-decoration: none;
+  white-space: nowrap;
   cursor: pointer;
   border-radius: 0;
 }

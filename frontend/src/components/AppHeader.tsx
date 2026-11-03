@@ -31,6 +31,7 @@ interface AppHeaderProps {
   showMonitoringAlertsTab: boolean;
   showKnowledgeBaseTab: boolean;
   showTendersTab?: boolean;
+  showDetentionsTab?: boolean;
   showEquipmentTab?: boolean;
   showEquipmentMovementsTab?: boolean;
   onToggleNotifications: () => void;
@@ -48,6 +49,7 @@ export function AppHeader({
   showMonitoringAlertsTab,
   showKnowledgeBaseTab,
   showTendersTab,
+  showDetentionsTab,
   showEquipmentTab,
   showEquipmentMovementsTab,
   onToggleNotifications,
@@ -61,7 +63,7 @@ export function AppHeader({
         <img src={MIB_LOGO_PATH} alt="MIB" className="app-header__logo" />
       </div>
 
-      {(showIncidentsTab || showMonitoringAlertsTab || showKnowledgeBaseTab || showEquipmentTab || showEquipmentMovementsTab || showTendersTab) && (
+      {(showIncidentsTab || showMonitoringAlertsTab || showKnowledgeBaseTab || showEquipmentTab || showEquipmentMovementsTab || showTendersTab || showDetentionsTab) && (
         <nav className="app-header__nav" aria-label="Разделы">
           {showIncidentsTab && (
             <NavLink
@@ -97,6 +99,8 @@ export function AppHeader({
           )}
           {showTendersTab && <NavLink to="/tenders" className={({ isActive }) =>
             isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'}>Тендеры</NavLink>}
+          {showDetentionsTab && <NavLink to="/detention-requests" className={({ isActive }) =>
+            isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'}>Заключение</NavLink>}
           {showKnowledgeBaseTab && (
             <NavLink to="/aliens" className={({ isActive }) =>
               isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'}>

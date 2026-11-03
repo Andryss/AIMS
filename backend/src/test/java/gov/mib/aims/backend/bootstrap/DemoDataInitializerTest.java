@@ -73,6 +73,42 @@ class DemoDataInitializerTest extends BaseApiTest {
     }
 
     @Test
+    void addsDetentionScenariosToExistingDemoAndPreservesProgress() {
+        clearDatabase();
+        initializer.run(new DefaultApplicationArguments());
+        String marker = "[DEMO] Задержание у северного терминала";
+        jdbcTemplate.update("delete from entity_history where entity_type='DETENTION_REQUEST'");
+        jdbcTemplate.update("delete from detention_request");
+        jdbcTemplate.update("delete from incident_comment where incident_id in"
+                + " (select id from incident where description=?)", marker);
+        jdbcTemplate.update("delete from entity_history where entity_type='INCIDENT' and entity_id in"
+                + " (select id from incident where description=?)", marker);
+        jdbcTemplate.update("delete from incident where description=?", marker);
+        String hash = passwordEncoder.encode("guard-password");
+        jdbcTemplate.update("update app_user set password_hash=? where login='prison_guard'", hash);
+
+        initializer.run(new DefaultApplicationArguments());
+
+        assertThat(jdbcTemplate.queryForList("select distinct status from detention_request", String.class))
+                .containsExactlyInAnyOrder("NEW", "ACCEPTED", "IN_CUSTODY", "RELEASED", "REJECTED", "CANCELLED");
+        assertThat(jdbcTemplate.queryForObject("select count(*) from detention_request", Integer.class)).isEqualTo(6);
+        assertThat(jdbcTemplate.queryForObject("select count(*) from detention_request"
+                + " where status='IN_CUSTODY' and admitted_at is not null and released_at is null", Integer.class))
+                .isEqualTo(1);
+        jdbcTemplate.update("update detention_request set subject_description='Пользовательское уточнение'"
+                + " where status='NEW'");
+        Map<String, Object> before = counts();
+
+        initializer.run(new DefaultApplicationArguments());
+        initializer.run(new DefaultApplicationArguments());
+
+        assertThat(counts()).isEqualTo(before);
+        assertThat(appUserRepository.findByLogin("prison_guard").orElseThrow().getPasswordHash()).isEqualTo(hash);
+        assertThat(jdbcTemplate.queryForObject("select subject_description from detention_request where status='NEW'",
+                String.class)).isEqualTo("Пользовательское уточнение");
+    }
+
+    @Test
     void addsMissingDemoUsersWhenOtherUsersAlreadyExist() {
         clearDatabase();
         String hash = passwordEncoder.encode("existing-password");
@@ -130,6 +166,7 @@ class DemoDataInitializerTest extends BaseApiTest {
                     (select count(*) from equipment_item) as equipment,
                     (select count(*) from equipment_movement) as movements, (select count(*) from tender) as tenders,
                     (select count(*) from tender_participant) as participants,
+                    (select count(*) from detention_request) as detention_requests,
                     (select count(*) from entity_history) as history
                 """);
     }

@@ -24,6 +24,36 @@ import * as api from './client';
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
+describe('detention API', () => {
+  beforeEach(() => mockFetch.mockReset());
+
+  it('encodes search, incident and unified status filters', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, { items: [] }));
+    await api.listDetentionRequests('tok', { q: '  Субъект  ', incidentId: 8, status: 'IN_CUSTODY', page: 1, size: 10 });
+    const url = new URL(mockFetch.mock.calls[0][0], 'http://localhost');
+    expect(url.pathname).toBe('/api/v1/detention-requests');
+    expect(Object.fromEntries(url.searchParams)).toEqual({ q: 'Субъект', incidentId: '8', status: 'IN_CUSTODY', page: '1', size: '10' });
+  });
+
+  it.each([
+    [() => api.getDetentionRequest('tok', 7), '/detention-requests/7', 'GET'],
+    [() => api.listDetentionRequestHistory('tok', 7, 1, 10), '/detention-requests/7/history?page=1&size=10', 'GET'],
+    [() => api.changeDetentionRequestStatus('tok', 7, { status: 'RELEASED', comment: 'Причина' }), '/detention-requests/7/status', 'PATCH'],
+  ] as const)('uses detention endpoint %#', async (run, path, method) => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, {})); await run();
+    expect(mockFetch).toHaveBeenCalledWith(`/api/v1${path}`, expect.objectContaining({ method }));
+  });
+
+  it.each([false, true])('sends only editable fields, updating=%s', async (updating) => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, {}));
+    const body = { incidentId: 8, subjectName: 'Субъект', subjectDescription: 'Описание', alienId: 1, durationDays: 30 };
+    if (updating) { await api.updateDetentionRequest('tok', 7, body); }
+    else { await api.createDetentionRequest('tok', body); }
+    expect(JSON.parse(mockFetch.mock.calls[0][1].body)).toEqual(body);
+    expect(new Headers(mockFetch.mock.calls[0][1].headers).get('Authorization')).toBe('Bearer tok');
+  });
+});
+
 describe('equipment API', () => {
   beforeEach(() => mockFetch.mockReset());
 

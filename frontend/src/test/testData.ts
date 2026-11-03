@@ -1,4 +1,5 @@
-import { TenderResponse, TenderParticipantResponse } from '../types';
+import {
+  DetentionRequestResponse, TenderResponse, TenderParticipantResponse } from '../types';
 import {
   Alien,
   EquipmentResponse,
@@ -129,4 +130,9 @@ export const mockTender = (overrides: Partial<TenderResponse> = {}): TenderRespo
 export const mockTenderParticipant = (overrides: Partial<TenderParticipantResponse> = {}): TenderParticipantResponse => ({
   id: 7, tenderId: 4, name: 'ООО Орбита', proposal: 'Поставка за пять дней', status: 'PARTICIPATING',
   createdByUserId: 2, createdAt: '2026-11-03T12:00:00Z', updatedAt: '2026-11-03T12:00:00Z', ...overrides,
+});
+
+export const mockDetentionRequest = (overrides: Partial<DetentionRequestResponse> = {}): DetentionRequestResponse => ({
+  id: 7, incidentId: 8, subjectName: 'Субъект 7', subjectDescription: 'Задержан у вокзала', durationDays: 30,
+  status: 'NEW', createdByUserId: 2, createdAt: '2026-11-03T12:00:00Z', updatedAt: '2026-11-03T12:00:00Z', ...overrides,
 });
