@@ -14,7 +14,7 @@ import java.time.Clock;
 import java.util.List;
 
 /**
- * Начало сбора предложений и отмена закупки в транзакции сервиса.
+ * Переходы тендера и выбор победителя в транзакции сервиса.
  */
 @Component
 @RequiredArgsConstructor
@@ -30,17 +30,33 @@ public class TenderWorkflow extends AbstractStatusWorkflow<TenderEntity, TenderS
         TenderStatus from = entity.getStatus();
         boolean cancellation = target == TenderStatus.CANCELLED;
         boolean allowed = (from == TenderStatus.NEED && target == TenderStatus.COLLECTING_OFFERS)
-                || (cancellation && (from == TenderStatus.NEED || from == TenderStatus.COLLECTING_OFFERS));
+                || (cancellation && (from == TenderStatus.NEED || from == TenderStatus.COLLECTING_OFFERS
+                || from == TenderStatus.AWAITING_DELIVERY));
         if (!allowed) {
             throw Errors.validationError("Недопустимый переход статуса тендера");
         }
 
         var transition = StatusTransition.<TenderEntity, TenderStatus>builder().from(from).to(target)
                 .preconditions(List.of(tender -> assertActor(tender, cancellation), tender -> {
-                    if (cancellation && (comment == null || comment.isBlank())) {
+                    if (cancellation && (comment == null || comment.trim().isBlank())) {
                         throw Errors.validationError("Укажите причину отмены тендера");
                     }
                 })).postActions(List.of()).build();
+
+        return applyTransition(entity, transition);
+    }
+
+    /**
+     * Переводит тендер в ожидание поставки при выборе участника сервисом.
+     */
+    public TenderEntity selectWinner(TenderEntity entity) {
+        if (entity.getStatus() != TenderStatus.COLLECTING_OFFERS) {
+            throw Errors.tenderConflict("Выбрать победителя можно только во время сбора предложений");
+        }
+
+        var transition = StatusTransition.<TenderEntity, TenderStatus>builder()
+                .from(entity.getStatus()).to(TenderStatus.AWAITING_DELIVERY)
+                .preconditions(List.of(tender -> assertActor(tender, false))).postActions(List.of()).build();
 
         return applyTransition(entity, transition);
     }

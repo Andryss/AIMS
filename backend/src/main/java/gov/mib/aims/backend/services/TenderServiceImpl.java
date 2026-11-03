@@ -5,6 +5,7 @@ import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.generated.model.ChangeTenderStatusRequest;
 import gov.mib.aims.backend.generated.model.EquipmentTypeApi;
 import gov.mib.aims.backend.generated.model.SaveTenderRequest;
+import gov.mib.aims.backend.generated.model.SelectTenderWinnerRequest;
 import gov.mib.aims.backend.generated.model.TenderHistoryEntry;
 import gov.mib.aims.backend.generated.model.TenderHistoryListResponse;
 import gov.mib.aims.backend.generated.model.TenderHistorySnapshot;
@@ -74,7 +75,7 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
     public TenderResponse getById(Long id) {
         TenderEntity tender = find(id);
         Long winner = participantRepository.findByTenderIdInAndStatus(List.of(id), TenderParticipantStatus.WINNER)
@@ -115,7 +116,7 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
     public TenderListResponse list(String q, TenderStatusApi status, EquipmentTypeApi type,
                                    Long incidentId, int page, int size) {
         String query = q == null ? "" : q.trim().toLowerCase(Locale.ROOT);
@@ -141,6 +142,22 @@ public class TenderServiceImpl implements TenderService {
         workflow.changeStatus(entity, TenderStatus.valueOf(request.getStatus().name()), request.getComment());
 
         return save(entity, request.getComment());
+    }
+
+    @Override
+    @Retryable(interceptor = "retryInterceptor")
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public TenderResponse selectWinner(Long id, SelectTenderWinnerRequest request) {
+        TenderEntity entity = find(id);
+        var participant = participantRepository.findByIdAndTenderId(request.getParticipantId(), id)
+                .orElseThrow(Errors::tenderParticipantNotFound);
+        workflow.selectWinner(entity);
+
+        participant.setStatus(TenderParticipantStatus.WINNER);
+        participant.setUpdatedAt(entity.getUpdatedAt());
+        participantRepository.save(participant);
+
+        return save(entity, null);
     }
 
     @Override

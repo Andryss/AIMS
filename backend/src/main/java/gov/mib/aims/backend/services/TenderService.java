@@ -3,13 +3,14 @@ package gov.mib.aims.backend.services;
 import gov.mib.aims.backend.generated.model.ChangeTenderStatusRequest;
 import gov.mib.aims.backend.generated.model.EquipmentTypeApi;
 import gov.mib.aims.backend.generated.model.SaveTenderRequest;
+import gov.mib.aims.backend.generated.model.SelectTenderWinnerRequest;
 import gov.mib.aims.backend.generated.model.TenderHistoryListResponse;
 import gov.mib.aims.backend.generated.model.TenderListResponse;
 import gov.mib.aims.backend.generated.model.TenderResponse;
 import gov.mib.aims.backend.generated.model.TenderStatusApi;
 
 /**
- * Тендеры на закупку и начальный жизненный цикл.
+ * Тендеры на закупку и их жизненный цикл.
  */
 public interface TenderService {
 
@@ -38,6 +39,11 @@ public interface TenderService {
      * Начинает сбор предложений либо отменяет тендер.
      */
     TenderResponse changeStatus(Long id, ChangeTenderStatusRequest request);
+
+    /**
+     * Выбирает победителя и переводит тендер в ожидание поставки.
+     */
+    TenderResponse selectWinner(Long id, SelectTenderWinnerRequest request);
 
     /**
      * Возвращает хронологические снимки изменений.

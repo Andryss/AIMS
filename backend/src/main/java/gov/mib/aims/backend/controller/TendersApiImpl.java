@@ -5,6 +5,7 @@ import gov.mib.aims.backend.generated.model.ChangeTenderStatusRequest;
 import gov.mib.aims.backend.generated.model.EquipmentTypeApi;
 import gov.mib.aims.backend.generated.model.SaveTenderRequest;
 import gov.mib.aims.backend.generated.model.SaveTenderParticipantRequest;
+import gov.mib.aims.backend.generated.model.SelectTenderWinnerRequest;
 import gov.mib.aims.backend.generated.model.TenderParticipantListResponse;
 import gov.mib.aims.backend.generated.model.TenderParticipantResponse;
 import gov.mib.aims.backend.generated.model.TenderHistoryListResponse;
@@ -70,6 +71,14 @@ public class TendersApiImpl implements TendersApi {
         log.info("PATCH /api/v1/tenders/{}/status", id);
 
         return service.changeStatus(id, request);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('TENDER_MANAGE')")
+    public TenderResponse selectTenderWinner(Long id, SelectTenderWinnerRequest request) {
+        log.info("POST /api/v1/tenders/{}/winner participantId={}", id, request.getParticipantId());
+
+        return service.selectWinner(id, request);
     }
 
     @Override

@@ -513,6 +513,71 @@ paths:
               schema:
                 $ref: "../common.yaml#/components/schemas/ErrorObject"
 
+  /api/v1/tenders/{id}/winner:
+    post:
+      operationId: selectTenderWinner
+      tags:
+        - tenders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SelectTenderWinnerRequest"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenderResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
   /api/v1/tenders/{id}/history:
     get:
       operationId: listTenderHistory
@@ -662,6 +727,16 @@ components:
         comment:
           type: string
           maxLength: 4000
+
+    SelectTenderWinnerRequest:
+      type: object
+      required:
+        - participantId
+      properties:
+        participantId:
+          type: integer
+          format: int64
+          minimum: 1
 
     SaveTenderParticipantRequest:
       type: object

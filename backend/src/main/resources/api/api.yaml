@@ -111,6 +111,9 @@ paths:
   /api/v1/tenders/{id}/participants/{participantId}:
     $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1participants~1{participantId}"
 
+  /api/v1/tenders/{id}/winner:
+    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1winner"
+
   /api/v1/tenders/{id}/history:
     $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1history"
 
@@ -290,6 +293,9 @@ components:
 
     ChangeTenderStatusRequest:
       $ref: "./domains/tenders.yaml#/components/schemas/ChangeTenderStatusRequest"
+
+    SelectTenderWinnerRequest:
+      $ref: "./domains/tenders.yaml#/components/schemas/SelectTenderWinnerRequest"
 
     SaveTenderParticipantRequest:
       $ref: "./domains/tenders.yaml#/components/schemas/SaveTenderParticipantRequest"
