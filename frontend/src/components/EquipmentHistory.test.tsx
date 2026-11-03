@@ -92,3 +92,27 @@ it('uses the previous page when comparing request history statuses', async () =>
   expect(await screen.findByText('Обрабатывается → Выполнена')).toBeInTheDocument();
   expect(screen.queryByText('Операция:')).not.toBeInTheDocument();
 });
+
+
+it.each([true, false])('renders receipt provenance with tender permission=%s', async (canReadTenders) => {
+  listHistory.mockResolvedValue({ items: [{ ...created, snapshot: { event: 'RECEIVED',
+    equipment: mockEquipment({ sourceTenderId: 6 }) } }], page: 0, size: 10, totalElements: 1, totalPages: 1 });
+  render(<MemoryRouter><EquipmentHistory token="tok" equipmentId={1} canReadMovements
+    canReadTenders={canReadTenders} /></MemoryRouter>);
+  expect(await screen.findByText('Поступление по тендеру')).toBeInTheDocument();
+  if (canReadTenders) {
+    expect(screen.getByRole('link', { name: 'Тендер #6' })).toHaveAttribute('href', '/tenders/6');
+  } else {
+    expect(screen.getByText('Тендер #6')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Тендер #6' })).not.toBeInTheDocument();
+  }
+});
+
+it('treats a missing source in old snapshots and an explicit null as the same value', async () => {
+  listHistory.mockResolvedValue({ items: [registered, { ...registered, id: 2, snapshot: { event: 'UPDATED',
+    equipment: mockEquipment({ model: 'Новое название', sourceTenderId: null }) } }],
+    page: 0, size: 10, totalElements: 2, totalPages: 1 });
+  render(<MemoryRouter><EquipmentHistory token="tok" equipmentId={1} canReadMovements /></MemoryRouter>);
+  const changed = await screen.findByText('Изменены реквизиты');
+  expect(within(changed.closest('li')!).queryByText('Тендер-основание:')).not.toBeInTheDocument();
+});

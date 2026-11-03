@@ -13,13 +13,13 @@ import { buildEquipmentHistoryDiff } from '../utils/equipmentHistoryDiff';
 import { EquipmentHistoryChanges } from './EquipmentHistoryChanges';
 
 const EVENT_LABELS: Record<EquipmentHistoryEntry['snapshot']['event'], string> = {
-  REGISTERED: 'Добавлено на склад', UPDATED: 'Изменены реквизиты',
+  REGISTERED: 'Добавлено на склад', RECEIVED: 'Поступление по тендеру', UPDATED: 'Изменены реквизиты',
   ISSUED: 'Выдача сотруднику', RETURNED: 'Возврат на склад',
 };
 
-interface EquipmentHistoryProps { token: string; equipmentId: number; revision?: number; canReadMovements: boolean; }
+interface EquipmentHistoryProps { token: string; equipmentId: number; revision?: number; canReadMovements: boolean; canReadTenders?: boolean; }
 
-export function EquipmentHistory({ token, equipmentId, revision, canReadMovements }: EquipmentHistoryProps) {
+export function EquipmentHistory({ token, equipmentId, revision, canReadMovements, canReadTenders = false }: EquipmentHistoryProps) {
   const [page, setPage] = useState(0);
   const [result, setResult] = useState<EquipmentHistoryListResponse | null>(null);
   const [previousEntry, setPreviousEntry] = useState<EquipmentHistoryEntry | undefined>();
@@ -62,7 +62,7 @@ export function EquipmentHistory({ token, equipmentId, revision, canReadMovement
           </div>
           <EquipmentHistoryChanges rows={buildEquipmentHistoryDiff(entry.snapshot.equipment,
             (index > 0 ? result.items[index - 1] : previousEntry)?.snapshot.equipment)} users={users}
-            canReadMovements={canReadMovements} equipmentId={equipmentId} />
+            canReadMovements={canReadMovements} canReadTenders={canReadTenders} equipmentId={equipmentId} />
           {entry.snapshot.movementId != null && <p>Основание: {canReadMovements
             ? <Link to={`/equipment-movements/${entry.snapshot.movementId}`} state={{ equipmentId }}>
               Заявка #{entry.snapshot.movementId}

@@ -151,6 +151,7 @@
   --focus-ring: 2px solid var(--color-primary);
   --focus-ring-offset: 2px;
   --data-list-label-width: 8.5rem;
+  --status-control-width: 15rem;
 }
 
 body {

@@ -13,9 +13,9 @@ import { LoadingBlock } from './ui/LoadingBlock';
 import { StatusChip } from './ui/StatusChip';
 import { HistoryTab } from './ui/HistoryTab';
 
-interface EquipmentDetailPageProps { token: string; canWrite: boolean; canReadMovements: boolean; }
+interface EquipmentDetailPageProps { token: string; canWrite: boolean; canReadMovements: boolean; canReadTenders?: boolean; }
 
-export function EquipmentDetailPage({ token, canWrite, canReadMovements }: EquipmentDetailPageProps) {
+export function EquipmentDetailPage({ token, canWrite, canReadMovements, canReadTenders = false }: EquipmentDetailPageProps) {
   const { id } = useParams<{ id: string }>();
   const equipmentId = positiveId(id);
   const activeRoute = useRef<{ id?: number; token: string } | null>(null);
@@ -57,8 +57,8 @@ export function EquipmentDetailPage({ token, canWrite, canReadMovements }: Equip
   return (
     <section className="card" aria-busy={loading}>
       <div className="card__header">
-        <div className="knowledge-base__heading">
-          <h2>{equipment?.model ?? 'Карточка оборудования'}</h2>
+        <h2>{equipment?.model ?? 'Карточка оборудования'}</h2>
+        <div className="card__actions" role="group" aria-label="Действия оборудования">
           {!loading && equipment && canWrite && <Button variant="ghost" className="icon-button"
             aria-label="Редактировать оборудование" title="Редактировать оборудование" onClick={() => setEditorOpen(true)}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
@@ -66,20 +66,22 @@ export function EquipmentDetailPage({ token, canWrite, canReadMovements }: Equip
               <path d="m16 3 5 5M3 21l5-1L21 7a2.1 2.1 0 0 0-5-5L3 15z" />
             </svg>
           </Button>}
+          {!loading && equipment && canReadMovements && <Button variant="outline"
+            to={`/equipment-movements?equipmentId=${equipment.id}`}>Все движения оборудования</Button>}
+          <Button variant="outline" to={movementId ? `/equipment-movements/${movementId}` : `/equipment${location.search}`}>
+            {movementId ? '← К заявке' : '← К списку'}
+          </Button>
         </div>
-        <Button variant="outline" to={movementId ? `/equipment-movements/${movementId}` : `/equipment${location.search}`}>
-          {movementId ? '← К заявке' : '← К списку'}
-        </Button>
       </div>
       {error && <div className="alert alert--error" role="alert">{error}</div>}
       {loading && <LoadingBlock label="Загрузка оборудования…" skeleton rows={4} />}
       {!loading && equipment && <>
         <section className="section">
           <dl className="data-list">
+            <div className="data-list__row"><dt>Статус</dt><dd><StatusChip status={equipment.status.toLowerCase()}
+              label={EQUIPMENT_STATUS_LABELS[equipment.status]} /></dd></div>
             <div className="data-list__row"><dt>Тип</dt><dd>{EQUIPMENT_TYPE_LABELS[equipment.type]}</dd></div>
             <div className="data-list__row"><dt>Серийный номер</dt><dd>{equipment.serialNumber}</dd></div>
-            <div className="data-list__row"><dt>Состояние</dt><dd><StatusChip status={equipment.status.toLowerCase()}
-              label={EQUIPMENT_STATUS_LABELS[equipment.status]} /></dd></div>
             <div className="data-list__row"><dt>Держатель</dt><dd>{equipment.holderUserId
               ? <UserChip login={formatUserLabel(equipment.holderUserId, users)} /> : '—'}</dd></div>
             {equipment.currentIssueMovementId != null && <div className="data-list__row"><dt>Текущая выдача</dt><dd>
@@ -87,15 +89,16 @@ export function EquipmentDetailPage({ token, canWrite, canReadMovements }: Equip
                 state={{ equipmentId }}>Заявка #{equipment.currentIssueMovementId}</Link>
                 : `Заявка #${equipment.currentIssueMovementId}`}
             </dd></div>}
+            {equipment.sourceTenderId != null && <div className="data-list__row"><dt>Тендер-основание</dt><dd>
+              {canReadTenders ? <Link to={`/tenders/${equipment.sourceTenderId}`}>Тендер #{equipment.sourceTenderId}</Link>
+                : `Тендер #${equipment.sourceTenderId}`}
+            </dd></div>}
             <div className="data-list__row"><dt>Добавлено</dt><dd>{formatEquipmentDate(equipment.createdAt)}</dd></div>
           </dl>
-          {canReadMovements && <Button variant="outline" to={`/equipment-movements?equipmentId=${equipment.id}`}>
-            Все движения оборудования
-          </Button>}
         </section>
         <HistoryTab>
           <EquipmentHistory key={equipment.id} token={token} equipmentId={equipment.id} revision={revision}
-            canReadMovements={canReadMovements} />
+            canReadMovements={canReadMovements} canReadTenders={canReadTenders} />
         </HistoryTab>
       </>}
       {equipment && <EquipmentEditorModal token={token} open={editorOpen && canWrite} equipment={equipment}

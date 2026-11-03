@@ -21,6 +21,7 @@
 }
 
 .main-content {
+  box-sizing: border-box;
   flex: 1;
   max-width: var(--content-max-width);
   width: 100%;

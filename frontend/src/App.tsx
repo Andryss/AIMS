@@ -4,6 +4,8 @@ import * as api from './api/client';
 import { AppHeader } from './components/AppHeader';
 import { AlienKnowledgeBaseTab } from './components/AlienKnowledgeBaseTab';
 import { AlienDetailPage } from './components/AlienDetailPage';
+import { TendersTab } from './components/TendersTab';
+import { TenderDetailPage } from './components/TenderDetailPage';
 import { EquipmentTab } from './components/EquipmentTab';
 import { EquipmentDetailPage } from './components/EquipmentDetailPage';
 import { EquipmentMovementsTab } from './components/EquipmentMovementsTab';
@@ -37,6 +39,8 @@ function App() {
     [profile],
   );
 
+  const canReadTenders = profile?.permissions.includes('TENDER_READ') ?? false;
+  const canCreateTenders = profile?.permissions.includes('TENDER_CREATE') ?? false;
   const canReadEquipment = profile?.permissions.includes('EQUIPMENT_READ') ?? false;
   const canWriteEquipment = profile?.permissions.includes('EQUIPMENT_WRITE') ?? false;
   const canReadMovements = profile?.permissions.includes('EQUIPMENT_MOVEMENT_READ') ?? false;
@@ -67,7 +71,8 @@ function App() {
   const canChangeCleanupStatus = profile?.permissions.includes('CLEANUP_STATUS_CHANGE') ?? false;
   const roles = profile?.roles ?? [];
   const currentUserId = profile?.userId;
-  const defaultPath = roles.includes('STOREKEEPER') && canReadEquipment ? '/equipment'
+  const defaultPath = roles.includes('TENDER_MANAGER') && canReadTenders ? '/tenders'
+    : roles.includes('STOREKEEPER') && canReadEquipment ? '/equipment'
     : showIncidentsTab ? '/incidents' : '/profile';
 
   const loadProfile = useCallback(async (token: string) => {
@@ -173,6 +178,7 @@ function App() {
         showIncidentsTab={showIncidentsTab}
         showMonitoringAlertsTab={canReadMonitoringAlerts}
         showKnowledgeBaseTab={showKnowledgeBaseTab}
+        showTendersTab={canReadTenders}
         showEquipmentTab={canReadEquipment}
         showEquipmentMovementsTab={canReadMovements}
         onToggleNotifications={() => setNotificationsOpen((prev) => !prev)}
@@ -205,10 +211,15 @@ function App() {
               )
             }
           />
+          {canReadTenders && <>
+            <Route path="/tenders" element={<TendersTab token={accessToken} canCreate={canCreateTenders} />} />
+            <Route path="/tenders/:id" element={<TenderDetailPage token={accessToken} permissions={profile.permissions}
+              currentUserId={currentUserId} canReadIncidents={showIncidentsTab && profile.permissions.includes('INCIDENT_READ')} canReadEquipment={canReadEquipment} />} />
+          </>}
           {canReadEquipment && <>
-            <Route path="/equipment" element={<EquipmentTab token={accessToken} canWrite={canWriteEquipment} />} />
+            <Route path="/equipment" element={<EquipmentTab token={accessToken} canWrite={canWriteEquipment} canCreateTenders={canReadTenders && canCreateTenders} />} />
             <Route path="/equipment/:id" element={<EquipmentDetailPage token={accessToken}
-              canWrite={canWriteEquipment} canReadMovements={canReadMovements} />} />
+              canWrite={canWriteEquipment} canReadTenders={canReadTenders} canReadMovements={canReadMovements} />} />
           </>}
           {canReadMovements && <>
             <Route path="/equipment-movements" element={<EquipmentMovementsTab token={accessToken} />} />

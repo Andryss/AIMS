@@ -333,3 +333,47 @@ describe('api client', () => {
     expect(result).toBeUndefined();
   });
 });
+
+
+describe('tenders API', () => {
+  beforeEach(() => mockFetch.mockReset());
+
+  it('encodes tender filters and authorization', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, { items: [] }));
+    await api.listTenders('tok', { q: '  неделя  ', status: 'NEED', equipmentType: 'NEURALYZER',
+      incidentId: 8, page: 1, size: 10 });
+    const [url, options] = mockFetch.mock.calls[0];
+    const parsed = new URL(url, 'http://localhost');
+    expect(parsed.pathname).toBe('/api/v1/tenders');
+    expect(Object.fromEntries(parsed.searchParams)).toEqual({ q: 'неделя', status: 'NEED',
+      equipmentType: 'NEURALYZER', incidentId: '8', page: '1', size: '10' });
+    expect(new Headers(options.headers).get('Authorization')).toBe('Bearer tok');
+  });
+
+  it.each([
+    [() => api.getTender('tok', 4), '/tenders/4', 'GET', undefined],
+    [() => api.createTender('tok', { equipmentType: 'NEURALYZER', quantity: 2 }), '/tenders', 'POST',
+      { equipmentType: 'NEURALYZER', quantity: 2 }],
+    [() => api.updateTender('tok', 4, { equipmentType: 'NEURALYZER', quantity: 3 }), '/tenders/4', 'PUT',
+      { equipmentType: 'NEURALYZER', quantity: 3 }],
+    [() => api.changeTenderStatus('tok', 4, { status: 'CANCELLED', comment: 'Причина' }),
+      '/tenders/4/status', 'PATCH', { status: 'CANCELLED', comment: 'Причина' }],
+    [() => api.listTenderParticipants('tok', 4, 1, 10), '/tenders/4/participants?page=1&size=10', 'GET', undefined],
+    [() => api.createTenderParticipant('tok', 4, { name: 'Orbit', proposal: 'Delivery' }),
+      '/tenders/4/participants', 'POST', { name: 'Orbit', proposal: 'Delivery' }],
+    [() => api.updateTenderParticipant('tok', 4, 7, { name: 'Orbit', proposal: 'Updated' }),
+      '/tenders/4/participants/7', 'PUT', { name: 'Orbit', proposal: 'Updated' }],
+    [() => api.selectTenderWinner('tok', 4, { participantId: 7 }), '/tenders/4/winner', 'POST', { participantId: 7 }],
+    [() => api.receiveTender('tok', 4, { equipment: [{ model: 'N', serialNumber: 'SN' }] }),
+      '/tenders/4/receipt', 'POST', { equipment: [{ model: 'N', serialNumber: 'SN' }] }],
+    [() => api.listTenderHistory('tok', 4, 1, 10), '/tenders/4/history?page=1&size=10', 'GET', undefined],
+  ] as const)('sends the tender operation %s', async (run, path, method, body) => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, {}));
+    await run();
+    const [url, options] = mockFetch.mock.calls[0];
+    expect(url).toBe(`/api/v1${path}`);
+    expect(options.method).toBe(method);
+    expect(options.body).toBe(body ? JSON.stringify(body) : undefined);
+    expect(new Headers(options.headers).get('Authorization')).toBe('Bearer tok');
+  });
+});

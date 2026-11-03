@@ -124,3 +124,24 @@ it('ignores an old save after navigating to another equipment card', async () =>
   expect(screen.getByRole('heading', { name: 'Модель 2' })).toBeInTheDocument();
   expect(screen.queryByRole('heading', { name: 'Старая модель' })).not.toBeInTheDocument();
 });
+
+it.each([true, false])('links the equipment source only with tender read permission=%s', async (canReadTenders) => {
+  getEquipment.mockResolvedValue(mockEquipment({ sourceTenderId: 6 }));
+  render(<MemoryRouter initialEntries={['/equipment/1']}><Routes>
+    <Route path="/equipment/:id" element={<EquipmentDetailPage token="tok" canWrite={false}
+      canReadMovements={false} canReadTenders={canReadTenders} />} />
+  </Routes></MemoryRouter>);
+  await screen.findByRole('heading', { name: 'Нейралайзер Н-1' });
+  expect(screen.getByText('Тендер #6')).toBeInTheDocument();
+  expect(Boolean(screen.queryByRole('link', { name: 'Тендер #6' }))).toBe(canReadTenders);
+});
+
+it('groups inventory actions with the back link in the card header', async () => {
+  renderAt('/equipment/1');
+  await screen.findByRole('heading', { name: 'Нейралайзер Н-1' });
+  const actions = screen.getByRole('group', { name: 'Действия оборудования' });
+  expect(actions).toContainElement(screen.getByRole('button', { name: 'Редактировать оборудование' }));
+  expect(actions).toContainElement(screen.getByRole('link', { name: 'Все движения оборудования' }));
+  expect(actions).toContainElement(screen.getByRole('link', { name: /К списку/ }));
+  expect(screen.getByText('Статус', { exact: true }).tagName).toBe('DT');
+});

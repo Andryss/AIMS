@@ -3,7 +3,7 @@ import { EQUIPMENT_STATUS_LABELS, EQUIPMENT_TYPE_LABELS, MOVEMENT_OPERATION_LABE
 import { EquipmentMovementResponse, EquipmentResponse } from '../types';
 
 export type EquipmentHistoryValue = string
-  | { kind: 'user' | 'movement' | 'incident'; id: number | null }
+  | { kind: 'user' | 'movement' | 'incident' | 'tender'; id: number | null }
   | { kind: 'equipment'; items: Array<Pick<EquipmentResponse, 'id' | 'model' | 'serialNumber'>> };
 
 export interface EquipmentHistoryDiffRow {
@@ -27,6 +27,7 @@ function equipmentFields(item: EquipmentResponse): Fields {
     'Серийный номер': item.serialNumber,
     'Состояние': EQUIPMENT_STATUS_LABELS[item.status],
     'Держатель': { kind: 'user', id: item.holderUserId ?? null },
+    'Тендер-основание': { kind: 'tender', id: item.sourceTenderId ?? null },
     'Текущая выдача': { kind: 'movement', id: item.currentIssueMovementId ?? null },
   };
 }

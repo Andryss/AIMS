@@ -4,16 +4,16 @@
   gap: var(--space-2);
 }
 
-.status-select-wrap--modal .status-select {
-  width: 15rem;
-}
-
 .status-select-wrap--modal {
   flex-wrap: wrap;
 }
 
 .status-select,
 .status-chip {
+  width: var(--status-control-width);
+  box-sizing: border-box;
+  white-space: nowrap;
+  flex-shrink: 0;
   font: inherit;
   font-size: var(--font-size-sm);
   font-weight: 500;
@@ -26,9 +26,7 @@
 
 .status-select {
   cursor: pointer;
-  width: 15rem;
   max-width: 100%;
-  box-sizing: border-box;
 }
 
 .status-chip {
@@ -71,7 +69,9 @@
 }
 
 .status-chip--issued,
-.status-chip--processing {
+.status-chip--processing,
+.status-chip--collecting_offers,
+.status-chip--awaiting_delivery {
   background: var(--status-executing-bg);
   color: var(--status-executing-text);
   border-color: var(--status-executing-border);
@@ -168,4 +168,10 @@
   background: var(--status-cleanup-completed-bg);
   color: var(--status-cleanup-completed-text);
   border-color: var(--status-cleanup-completed-border);
+}
+
+.status-chip--need {
+  background: var(--status-draft-bg);
+  color: var(--status-draft-text);
+  border-color: var(--status-draft-border);
 }

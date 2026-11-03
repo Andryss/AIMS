@@ -89,3 +89,16 @@ describe('formatUserLabel', () => {
     expect(formatUserLabel(null, map)).toBe('—');
   });
 });
+
+
+it('resolves all users when the requested list exceeds the batch API limit', async () => {
+  const ids = Array.from({ length: 205 }, (_, index) => index + 1);
+  const boundedApi = async (_token: string, batch: number[]) => {
+    if (batch.length > 100) { throw new Error('The API accepts at most 100 IDs'); }
+    return { items: batch.map((id) => ({ id, login: `user-${id}` })) };
+  };
+  const users = await loadUsersMap('tok', ids, boundedApi);
+  expect(users.size).toBe(205);
+  expect(users.get(1)).toBe('user-1');
+  expect(users.get(205)).toBe('user-205');
+});

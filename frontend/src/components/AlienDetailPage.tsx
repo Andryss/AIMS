@@ -52,8 +52,8 @@ export function AlienDetailPage({ token, canWrite, canBrowseList = true }: Alien
   return (
     <section className="card" aria-busy={loading}>
       <div className="card__header">
-        <div className="knowledge-base__heading">
-          <h2>{alien?.name ?? 'Карточка вида'}</h2>
+        <h2>{alien?.name ?? 'Карточка вида'}</h2>
+        <div className="card__actions" role="group" aria-label="Действия вида">
           {!loading && alien && canWrite && (
             <Button variant="ghost" className="icon-button" aria-label="Редактировать вид"
               title="Редактировать вид" onClick={() => setEditorOpen(true)}>
@@ -63,8 +63,8 @@ export function AlienDetailPage({ token, canWrite, canBrowseList = true }: Alien
               </svg>
             </Button>
           )}
+          <Button variant="outline" to={backTo}>{backLabel}</Button>
         </div>
-        <Button variant="outline" to={backTo}>{backLabel}</Button>
       </div>
       {error && <div className="alert alert--error" role="alert" aria-live="polite">{error}</div>}
       {loading && <LoadingBlock label="Загрузка вида…" skeleton rows={3} />}

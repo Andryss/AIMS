@@ -1,3 +1,4 @@
+import { USER_BATCH_SIZE } from '../constants';
 import {
   IncidentComment,
   IncidentHistoryEntry,
@@ -35,9 +36,13 @@ export async function loadUsersMap(
   if (ids.length === 0) {
     return new Map();
   }
-  const response = await batchUsers(token, ids);
+  const batches: number[][] = [];
+  for (let start = 0; start < ids.length; start += USER_BATCH_SIZE) {
+    batches.push(ids.slice(start, start + USER_BATCH_SIZE));
+  }
+  const responses = await Promise.all(batches.map((batch) => batchUsers(token, batch)));
   const map = new Map<number, string>();
-  response.items.forEach((user) => map.set(user.id, user.login));
+  responses.forEach((response) => response.items.forEach((user) => map.set(user.id, user.login)));
   return map;
 }
 

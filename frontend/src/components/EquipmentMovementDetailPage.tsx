@@ -79,8 +79,8 @@ export function EquipmentMovementDetailPage({ token, canCreate, canProcess, curr
   return (
     <section className="card" aria-busy={loading}>
       <div className="card__header">
-        <div className="knowledge-base__heading">
-          <h2>{movement ? `Заявка #${movement.id} — ${MOVEMENT_OPERATION_LABELS[movement.operation]}` : 'Заявка на оборудование'}</h2>
+        <h2>{movement ? `Заявка #${movement.id} — ${MOVEMENT_OPERATION_LABELS[movement.operation]}` : 'Заявка на оборудование'}</h2>
+        <div className="card__actions" role="group" aria-label="Действия заявки">
           {canEdit && <Button variant="ghost" className="icon-button" aria-label="Редактировать заявку"
             title="Редактировать заявку" onClick={() => setEditor('edit')}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
@@ -88,8 +88,9 @@ export function EquipmentMovementDetailPage({ token, canCreate, canProcess, curr
               <path d="m16 3 5 5M3 21l5-1L21 7a2.1 2.1 0 0 0-5-5L3 15z" />
             </svg>
           </Button>}
+          {canReturn && <Button onClick={() => setEditor('return')}>Оформить возврат</Button>}
+          <Button variant="outline" to={backTo}>{backLabel}</Button>
         </div>
-        <Button variant="outline" to={backTo}>{backLabel}</Button>
       </div>
       {error && <div className="alert alert--error" role="alert">{error}</div>}
       {loading && <LoadingBlock label="Загрузка заявки…" skeleton rows={4} />}
@@ -135,7 +136,6 @@ export function EquipmentMovementDetailPage({ token, canCreate, canProcess, curr
           {movement.operation === 'ISSUE' && movement.status === 'COMPLETED' && <p>
             Не возвращено по этой выдаче: {remaining.length}
           </p>}
-          {canReturn && <Button onClick={() => setEditor('return')}>Оформить возврат</Button>}
         </section>
         <HistoryTab>
           <EquipmentMovementHistory key={movement.id} token={token} movementId={movement.id} revision={revision} />

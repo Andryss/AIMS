@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 import * as api from './api/client';
 import { TOKEN_STORAGE_KEY, SYSTEM_NAME } from './constants';
-import { mockAlien, mockEquipment, mockEquipmentMovement, mockIncident, mockIncidentList, mockProfile } from './test/testData';
+import { mockAlien, mockEquipment, mockEquipmentMovement, mockIncident, mockIncidentList, mockProfile, mockTender } from './test/testData';
 
 jest.mock('./api/client');
 
@@ -33,6 +33,55 @@ describe('App', () => {
     (api.getIncident as jest.Mock).mockResolvedValue(mockIncident());
     (api.listEquipmentMovementHistory as jest.Mock).mockResolvedValue({ items: [], page: 0, size: 10,
       totalElements: 0, totalPages: 0 });
+  });
+
+  it('lands the tender manager on tenders and restores a direct tender route', async () => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile({ login: 'tender_manager', roles: ['TENDER_MANAGER'],
+      permissions: ['TENDER_READ', 'TENDER_CREATE', 'TENDER_MANAGE', 'EQUIPMENT_READ', 'INCIDENT_READ'] }));
+    (api.listTenders as jest.Mock).mockResolvedValue({ items: [mockTender()], page: 0, size: 10,
+      totalElements: 1, totalPages: 1 });
+    render(<MemoryRouter><App /></MemoryRouter>);
+    expect(await screen.findByRole('heading', { name: 'Тендеры' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Тендеры' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Создать тендер' })).toBeInTheDocument();
+  });
+
+  it.each(['/tenders', '/tenders/4'])('guards the tender route %s without read permission', async (path) => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile());
+    render(<MemoryRouter initialEntries={[path]}><App /></MemoryRouter>);
+    await screen.findByRole('link', { name: 'Инциденты' });
+    expect(screen.queryByRole('link', { name: 'Тендеры' })).not.toBeInTheDocument();
+    expect(api.getTender).not.toHaveBeenCalled();
+    expect(api.listTenders).not.toHaveBeenCalled();
+  });
+
+  it('preserves the direct tender route until the profile is loaded', async () => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile({ roles: ['STOREKEEPER'],
+      permissions: ['TENDER_READ', 'EQUIPMENT_READ'] }));
+    (api.getTender as jest.Mock).mockResolvedValue(mockTender());
+    (api.listTenderParticipants as jest.Mock).mockResolvedValue({ items: [], page: 0, size: 10,
+      totalElements: 0, totalPages: 0 });
+    (api.listTenderHistory as jest.Mock).mockResolvedValue({ items: [], page: 0, size: 10,
+      totalElements: 0, totalPages: 0 });
+    render(<MemoryRouter initialEntries={['/tenders/4']}><App /></MemoryRouter>);
+    expect(await screen.findByRole('heading', { name: 'Тендер #4' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Редактировать тендер' })).not.toBeInTheDocument();
+  });
+
+  it('does not link an incident from a tender when incident read permission is absent', async () => {
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'saved-token');
+    getAuthMe.mockResolvedValue(mockProfile({ roles: ['STOREKEEPER'], permissions: ['TENDER_READ'] }));
+    (api.getTender as jest.Mock).mockResolvedValue(mockTender({ incidentId: 8 }));
+    (api.listTenderParticipants as jest.Mock).mockResolvedValue({ items: [], page: 0, size: 10,
+      totalElements: 0, totalPages: 0 });
+    (api.listTenderHistory as jest.Mock).mockResolvedValue({ items: [], page: 0, size: 10,
+      totalElements: 0, totalPages: 0 });
+    render(<MemoryRouter initialEntries={['/tenders/4']}><App /></MemoryRouter>);
+    expect(await screen.findByText('Инцидент #8')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Инцидент #8' })).not.toBeInTheDocument();
   });
 
   it('lands the storekeeper on the warehouse and retains incident navigation', async () => {

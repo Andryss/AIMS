@@ -25,6 +25,18 @@ import {
   SaveEquipmentMovementRequest,
   ChangeEquipmentMovementStatusRequest,
   EquipmentMovementHistoryListResponse,
+  TenderResponse,
+  TenderListQuery,
+  TenderListResponse,
+  SaveTenderRequest,
+  ChangeTenderStatusRequest,
+  SaveTenderParticipantRequest,
+  TenderParticipantResponse,
+  TenderParticipantListResponse,
+  SelectTenderWinnerRequest,
+  ReceiveTenderRequest,
+  TenderReceiptResponse,
+  TenderHistoryListResponse,
   FileUploadResponse,
   IncidentComment,
   IncidentCommentListResponse,
@@ -278,7 +290,56 @@ export function updateAlien(token: string, id: number, payload: SaveAlienRequest
   return requestJson<Alien>(`/aliens/${id}`, { method: 'PUT', body: JSON.stringify(payload) }, token);
 }
 
-function equipmentQueryString(query: EquipmentListQuery | EquipmentMovementListQuery): string {
+export function listTenders(token: string, query: TenderListQuery): Promise<TenderListResponse> {
+  return requestJson<TenderListResponse>(`/tenders?${queryString(query)}`, { method: 'GET' }, token);
+}
+
+export function getTender(token: string, id: number): Promise<TenderResponse> {
+  return requestJson<TenderResponse>(`/tenders/${id}`, { method: 'GET' }, token);
+}
+
+export function createTender(token: string, payload: SaveTenderRequest): Promise<TenderResponse> {
+  return requestJson<TenderResponse>('/tenders', { method: 'POST', body: JSON.stringify(payload) }, token);
+}
+
+export function updateTender(token: string, id: number, payload: SaveTenderRequest): Promise<TenderResponse> {
+  return requestJson<TenderResponse>(`/tenders/${id}`, { method: 'PUT', body: JSON.stringify(payload) }, token);
+}
+
+export function changeTenderStatus(token: string, id: number, payload: ChangeTenderStatusRequest): Promise<TenderResponse> {
+  return requestJson<TenderResponse>(`/tenders/${id}/status`, { method: 'PATCH', body: JSON.stringify(payload) }, token);
+}
+
+export function listTenderParticipants(token: string, id: number, page: number, size: number): Promise<TenderParticipantListResponse> {
+  return requestJson<TenderParticipantListResponse>(`/tenders/${id}/participants?page=${page}&size=${size}`,
+    { method: 'GET' }, token);
+}
+
+export function createTenderParticipant(token: string, id: number, payload: SaveTenderParticipantRequest): Promise<TenderParticipantResponse> {
+  return requestJson<TenderParticipantResponse>(`/tenders/${id}/participants`,
+    { method: 'POST', body: JSON.stringify(payload) }, token);
+}
+
+export function updateTenderParticipant(token: string, id: number, participantId: number,
+  payload: SaveTenderParticipantRequest): Promise<TenderParticipantResponse> {
+  return requestJson<TenderParticipantResponse>(`/tenders/${id}/participants/${participantId}`,
+    { method: 'PUT', body: JSON.stringify(payload) }, token);
+}
+
+export function selectTenderWinner(token: string, id: number, payload: SelectTenderWinnerRequest): Promise<TenderResponse> {
+  return requestJson<TenderResponse>(`/tenders/${id}/winner`, { method: 'POST', body: JSON.stringify(payload) }, token);
+}
+
+export function receiveTender(token: string, id: number, payload: ReceiveTenderRequest): Promise<TenderReceiptResponse> {
+  return requestJson<TenderReceiptResponse>(`/tenders/${id}/receipt`, { method: 'POST', body: JSON.stringify(payload) }, token);
+}
+
+export function listTenderHistory(token: string, id: number, page: number, size: number): Promise<TenderHistoryListResponse> {
+  return requestJson<TenderHistoryListResponse>(`/tenders/${id}/history?page=${page}&size=${size}`,
+    { method: 'GET' }, token);
+}
+
+function queryString(query: EquipmentListQuery | EquipmentMovementListQuery | TenderListQuery): string {
   const params = new URLSearchParams();
   Object.entries(query).forEach(([key, value]) => {
     if (value !== undefined && value !== null && String(value).trim()) {
@@ -290,7 +351,7 @@ function equipmentQueryString(query: EquipmentListQuery | EquipmentMovementListQ
 }
 
 export function listEquipment(token: string, query: EquipmentListQuery): Promise<EquipmentListResponse> {
-  return requestJson<EquipmentListResponse>(`/equipment?${equipmentQueryString(query)}`, { method: 'GET' }, token);
+  return requestJson<EquipmentListResponse>(`/equipment?${queryString(query)}`, { method: 'GET' }, token);
 }
 
 export function getEquipment(token: string, id: number): Promise<EquipmentResponse> {
@@ -315,7 +376,7 @@ export function listEquipmentHistory(
 export function listEquipmentMovements(
   token: string, query: EquipmentMovementListQuery,
 ): Promise<EquipmentMovementListResponse> {
-  return requestJson<EquipmentMovementListResponse>(`/equipment-movements?${equipmentQueryString(query)}`,
+  return requestJson<EquipmentMovementListResponse>(`/equipment-movements?${queryString(query)}`,
     { method: 'GET' }, token);
 }
 

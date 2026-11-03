@@ -19,7 +19,7 @@ export type IncidentStatus =
 
 export type CleanupStatus = 'PREPARATION' | 'EXECUTION' | 'COMPLETED';
 
-export type RoleName = 'OPERATOR' | 'ANALYST' | 'ADMIN' | 'AGENT' | 'STOREKEEPER' | 'CLEANER';
+export type RoleName = 'OPERATOR' | 'ANALYST' | 'ADMIN' | 'AGENT' | 'STOREKEEPER' | 'TENDER_MANAGER' | 'CLEANER';
 
 export interface SignInRequest {
   login: string;
@@ -228,6 +228,104 @@ export interface AlienListResponse {
   totalPages: number;
 }
 
+export type TenderStatus = 'NEED' | 'COLLECTING_OFFERS' | 'AWAITING_DELIVERY' | 'COMPLETED' | 'CANCELLED';
+export type TenderParticipantStatus = 'PARTICIPATING' | 'WINNER';
+
+export interface SaveTenderRequest {
+  equipmentType: EquipmentType;
+  quantity: number;
+  conditions?: string | null;
+  incidentId?: number | null;
+}
+
+export interface TenderResponse extends SaveTenderRequest {
+  id: number;
+  status: TenderStatus;
+  createdByUserId: number;
+  winnerParticipantId?: number | null;
+  createdAt: string;
+  updatedAt: string;
+  completedAt?: string | null;
+}
+
+export interface TenderListQuery {
+  q?: string;
+  status?: TenderStatus;
+  equipmentType?: EquipmentType;
+  incidentId?: number;
+  page: number;
+  size: number;
+}
+
+export interface TenderListResponse {
+  items: TenderResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface ChangeTenderStatusRequest {
+  status: TenderStatus;
+  comment?: string;
+}
+
+export interface SaveTenderParticipantRequest {
+  name: string;
+  proposal: string;
+}
+
+export interface TenderParticipantResponse extends SaveTenderParticipantRequest {
+  id: number;
+  tenderId: number;
+  status: TenderParticipantStatus;
+  createdByUserId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TenderParticipantListResponse {
+  items: TenderParticipantResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface SelectTenderWinnerRequest { participantId: number; }
+
+export interface ReceiveTenderRequest {
+  equipment: Array<{ model: string; serialNumber: string }>;
+  comment?: string;
+}
+
+export interface TenderReceiptResponse {
+  tender: TenderResponse;
+  equipment: EquipmentResponse[];
+}
+
+export interface TenderHistorySnapshot {
+  tender: TenderResponse;
+  participants: TenderParticipantResponse[];
+  transitionComment?: string | null;
+  receivedEquipmentIds: number[];
+}
+
+export interface TenderHistoryEntry {
+  id: number;
+  changedAt: string;
+  changedByUserId: number;
+  snapshot: TenderHistorySnapshot;
+}
+
+export interface TenderHistoryListResponse {
+  items: TenderHistoryEntry[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
 export type EquipmentType = 'NEURALYZER' | 'NEUTRALIZER';
 export type EquipmentStatus = 'AVAILABLE' | 'ISSUED';
 export type EquipmentMovementOperation = 'ISSUE' | 'RETURN';
@@ -244,6 +342,7 @@ export interface EquipmentResponse extends SaveEquipmentRequest {
   status: EquipmentStatus;
   holderUserId?: number | null;
   currentIssueMovementId?: number | null;
+  sourceTenderId?: number | null;
   createdAt: string;
 }
 
@@ -269,7 +368,7 @@ export interface EquipmentHistoryEntry {
   changedAt: string;
   changedByUserId: number;
   snapshot: {
-    event: 'REGISTERED' | 'UPDATED' | 'ISSUED' | 'RETURNED';
+    event: 'REGISTERED' | 'RECEIVED' | 'UPDATED' | 'ISSUED' | 'RETURNED';
     movementId?: number | null;
     equipment: EquipmentResponse;
   };

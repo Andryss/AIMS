@@ -1,3 +1,4 @@
+import { TenderResponse, TenderParticipantResponse } from '../types';
 import {
   Alien,
   EquipmentResponse,
@@ -118,4 +119,14 @@ export const mockEquipmentMovement = (
   completedAt: null,
   equipment: [mockEquipment()],
   ...overrides,
+});
+
+export const mockTender = (overrides: Partial<TenderResponse> = {}): TenderResponse => ({
+  id: 4, equipmentType: 'NEURALYZER', quantity: 2, conditions: 'Поставка за неделю', status: 'NEED',
+  createdByUserId: 2, createdAt: '2026-11-03T12:00:00Z', updatedAt: '2026-11-03T12:00:00Z', ...overrides,
+});
+
+export const mockTenderParticipant = (overrides: Partial<TenderParticipantResponse> = {}): TenderParticipantResponse => ({
+  id: 7, tenderId: 4, name: 'ООО Орбита', proposal: 'Поставка за пять дней', status: 'PARTICIPATING',
+  createdByUserId: 2, createdAt: '2026-11-03T12:00:00Z', updatedAt: '2026-11-03T12:00:00Z', ...overrides,
 });

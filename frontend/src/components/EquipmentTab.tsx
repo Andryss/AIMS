@@ -15,9 +15,9 @@ import { Pagination } from './ui/Pagination';
 import { StatusChip } from './ui/StatusChip';
 import { UserChip } from './UserChip';
 
-interface EquipmentTabProps { token: string; canWrite: boolean; }
+interface EquipmentTabProps { token: string; canWrite: boolean; canCreateTenders?: boolean; }
 
-export function EquipmentTab({ token, canWrite }: EquipmentTabProps) {
+export function EquipmentTab({ token, canWrite, canCreateTenders = false }: EquipmentTabProps) {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const q = params.get('q') ?? '';
@@ -90,7 +90,10 @@ export function EquipmentTab({ token, canWrite }: EquipmentTabProps) {
     <section className="card" aria-busy={loading}>
       <div className="card__header">
         <h2>Склад</h2>
-        {canWrite && <Button onClick={() => setEditorOpen(true)}>Добавить оборудование</Button>}
+        <div className="tender-actions">
+          {canCreateTenders && <Button variant="outline" to="/tenders?create=1">Создать тендер</Button>}
+          {canWrite && <Button onClick={() => setEditorOpen(true)}>Добавить оборудование</Button>}
+        </div>
       </div>
       <div className="equipment-filters">
         <div className="field equipment-search-field">
