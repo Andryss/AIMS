@@ -7,11 +7,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 
 /**
  * Складской учет отдельных экземпляров.
  */
 public interface EquipmentRepository extends JpaRepository<EquipmentEntity, Long> {
+
+    /**
+     * Возвращает принятые по тендеру экземпляры для снимка истории.
+     */
+    @Query(value = "SELECT id FROM equipment_item WHERE source_tender_id = :tender ORDER BY id", nativeQuery = true)
+    List<Long> findIdsBySourceTenderId(@Param("tender") Long tenderId);
 
     /**
      * Проверяет невозвращенные экземпляры по текущей выдаче для инцидента.

@@ -61,6 +61,25 @@ public class TenderWorkflow extends AbstractStatusWorkflow<TenderEntity, TenderS
         return applyTransition(entity, transition);
     }
 
+    /**
+     * Завершает тендер при полной приёмке поставки в транзакции сервиса.
+     */
+    public TenderEntity receive(TenderEntity entity) {
+        if (entity.getStatus() != TenderStatus.AWAITING_DELIVERY) {
+            throw Errors.tenderConflict("Приёмка доступна только в ожидании поставки");
+        }
+
+        var transition = StatusTransition.<TenderEntity, TenderStatus>builder()
+                .from(entity.getStatus()).to(TenderStatus.COMPLETED)
+                .preconditions(List.of(tender -> {
+                    if (!currentUserService.hasPermission(Permission.TENDER_RECEIVE)) {
+                        throw Errors.accessDenied();
+                    }
+                })).postActions(List.of()).build();
+
+        return applyTransition(entity, transition);
+    }
+
     private void assertActor(TenderEntity entity, boolean cancellation) {
         boolean manager = currentUserService.hasPermission(Permission.TENDER_MANAGE);
         boolean ownNeed = entity.getStatus() == TenderStatus.NEED
@@ -74,6 +93,9 @@ public class TenderWorkflow extends AbstractStatusWorkflow<TenderEntity, TenderS
     protected TenderEntity applyStatus(TenderEntity entity, TenderStatus target) {
         entity.setStatus(target);
         entity.setUpdatedAt(clock.instant());
+        if (target == TenderStatus.COMPLETED) {
+            entity.setCompletedAt(entity.getUpdatedAt());
+        }
 
         return entity;
     }

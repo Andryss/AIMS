@@ -22,6 +22,7 @@ public class EquipmentMapper {
                 .type(EquipmentTypeApi.valueOf(entity.getType().name())).model(entity.getModel())
                 .serialNumber(entity.getSerialNumber()).status(EquipmentStatusApi.valueOf(entity.getStatus().name()))
                 .holderUserId(entity.getHolderUserId()).currentIssueMovementId(entity.getCurrentIssueMovementId())
+                .sourceTenderId(entity.getSourceTenderId())
                 .createdAt(entity.getCreatedAt().atOffset(ZoneOffset.UTC));
     }
 }

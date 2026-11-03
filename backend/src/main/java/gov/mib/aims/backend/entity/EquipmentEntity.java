@@ -50,6 +50,9 @@ public class EquipmentEntity {
     @Column(name = "current_issue_movement_id")
     private Long currentIssueMovementId;
 
+    @Column(name = "source_tender_id")
+    private Long sourceTenderId;
+
     @Generated(event = EventType.INSERT)
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private Instant createdAt;

@@ -114,6 +114,9 @@ paths:
   /api/v1/tenders/{id}/winner:
     $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1winner"
 
+  /api/v1/tenders/{id}/receipt:
+    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1receipt"
+
   /api/v1/tenders/{id}/history:
     $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1history"
 
@@ -305,6 +308,15 @@ components:
 
     TenderParticipantResponse:
       $ref: "./domains/tenders.yaml#/components/schemas/TenderParticipantResponse"
+
+    ReceiveTenderEquipmentRequest:
+      $ref: "./domains/tenders.yaml#/components/schemas/ReceiveTenderEquipmentRequest"
+
+    ReceiveTenderRequest:
+      $ref: "./domains/tenders.yaml#/components/schemas/ReceiveTenderRequest"
+
+    TenderReceiptResponse:
+      $ref: "./domains/tenders.yaml#/components/schemas/TenderReceiptResponse"
 
     TenderHistorySnapshot:
       $ref: "./domains/tenders.yaml#/components/schemas/TenderHistorySnapshot"

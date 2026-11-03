@@ -578,6 +578,71 @@ paths:
               schema:
                 $ref: "../common.yaml#/components/schemas/ErrorObject"
 
+  /api/v1/tenders/{id}/receipt:
+    post:
+      operationId: receiveTender
+      tags:
+        - tenders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReceiveTenderRequest"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenderReceiptResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
   /api/v1/tenders/{id}/history:
     get:
       operationId: listTenderHistory
@@ -814,6 +879,50 @@ components:
         updatedAt:
           type: string
           format: date-time
+
+    ReceiveTenderEquipmentRequest:
+      type: object
+      required:
+        - model
+        - serialNumber
+      properties:
+        model:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: "(?s).*\\S.*"
+        serialNumber:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: "(?s).*\\S.*"
+
+    ReceiveTenderRequest:
+      type: object
+      required:
+        - equipment
+      properties:
+        equipment:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/ReceiveTenderEquipmentRequest"
+        comment:
+          type: string
+          maxLength: 4000
+
+    TenderReceiptResponse:
+      type: object
+      required:
+        - tender
+        - equipment
+      properties:
+        tender:
+          $ref: "#/components/schemas/TenderResponse"
+        equipment:
+          type: array
+          items:
+            $ref: "./equipment.yaml#/components/schemas/EquipmentResponse"
 
     TenderHistorySnapshot:
       type: object

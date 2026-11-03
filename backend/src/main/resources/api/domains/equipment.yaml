@@ -301,6 +301,7 @@ components:
       type: string
       enum:
         - REGISTERED
+        - RECEIVED
         - UPDATED
         - ISSUED
         - RETURNED
@@ -355,6 +356,12 @@ components:
           type: integer
           format: int64
           minimum: 1
+        sourceTenderId:
+          type: integer
+          format: int64
+          minimum: 1
+          nullable: true
+          readOnly: true
         createdAt:
           type: string
           format: date-time

@@ -9,10 +9,12 @@ create table equipment_item (
     status text not null,
     holder_user_id bigint references app_user(id),
     current_issue_movement_id bigint references equipment_movement(id),
+    source_tender_id bigint references tender(id),
     created_at timestamptz not null default now()
 );
 
 create unique index equipment_serial_number_unique on equipment_item (lower(serial_number));
 create index equipment_current_issue_idx on equipment_item (current_issue_movement_id);
+create index equipment_source_tender_idx on equipment_item (source_tender_id);
 
 comment on table equipment_item is 'Individually tracked equipment units';

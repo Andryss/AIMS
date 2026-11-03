@@ -35,6 +35,11 @@ public interface TenderParticipantRepository extends JpaRepository<TenderPartici
     boolean existsByTenderId(Long tenderId);
 
     /**
+     * Проверяет наличие выбранного победителя перед приёмкой поставки.
+     */
+    boolean existsByTenderIdAndStatus(Long tenderId, TenderParticipantStatus status);
+
+    /**
      * Загружает победителей страницы тендеров одним запросом.
      */
     List<TenderParticipantEntity> findByTenderIdInAndStatus(List<Long> tenderIds, TenderParticipantStatus status);

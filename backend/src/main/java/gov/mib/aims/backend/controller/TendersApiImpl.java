@@ -6,6 +6,8 @@ import gov.mib.aims.backend.generated.model.EquipmentTypeApi;
 import gov.mib.aims.backend.generated.model.SaveTenderRequest;
 import gov.mib.aims.backend.generated.model.SaveTenderParticipantRequest;
 import gov.mib.aims.backend.generated.model.SelectTenderWinnerRequest;
+import gov.mib.aims.backend.generated.model.ReceiveTenderRequest;
+import gov.mib.aims.backend.generated.model.TenderReceiptResponse;
 import gov.mib.aims.backend.generated.model.TenderParticipantListResponse;
 import gov.mib.aims.backend.generated.model.TenderParticipantResponse;
 import gov.mib.aims.backend.generated.model.TenderHistoryListResponse;
@@ -14,6 +16,7 @@ import gov.mib.aims.backend.generated.model.TenderResponse;
 import gov.mib.aims.backend.generated.model.TenderStatusApi;
 import gov.mib.aims.backend.services.TenderService;
 import gov.mib.aims.backend.services.TenderParticipantService;
+import gov.mib.aims.backend.services.TenderReceiptService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +34,7 @@ public class TendersApiImpl implements TendersApi {
 
     private final TenderService service;
     private final TenderParticipantService participantService;
+    private final TenderReceiptService receiptService;
 
     @Override
     @PreAuthorize("hasAuthority('TENDER_READ')")
@@ -79,6 +83,14 @@ public class TendersApiImpl implements TendersApi {
         log.info("POST /api/v1/tenders/{}/winner participantId={}", id, request.getParticipantId());
 
         return service.selectWinner(id, request);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('TENDER_RECEIVE')")
+    public TenderReceiptResponse receiveTender(Long id, ReceiveTenderRequest request) {
+        log.info("POST /api/v1/tenders/{}/receipt", id);
+
+        return receiptService.receive(id, request);
     }
 
     @Override

@@ -12,13 +12,12 @@ import gov.mib.aims.backend.generated.model.EquipmentStatusApi;
 import gov.mib.aims.backend.generated.model.EquipmentTypeApi;
 import gov.mib.aims.backend.generated.model.SaveEquipmentRequest;
 import gov.mib.aims.backend.model.EntityType;
-import gov.mib.aims.backend.model.EquipmentStatus;
 import gov.mib.aims.backend.model.EquipmentType;
 import gov.mib.aims.backend.repository.EntityHistoryRepository;
 import gov.mib.aims.backend.repository.EquipmentRepository;
 import gov.mib.aims.backend.services.mapping.EquipmentMapper;
+import gov.mib.aims.backend.services.equipment.EquipmentRegistrationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -39,7 +38,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     private final EquipmentRepository equipmentRepository;
     private final EntityHistoryRepository historyRepository;
-    private final EntityHistoryService historyService;
+    private final EquipmentRegistrationService registrationService;
     private final ObjectMapperWrapper objectMapper;
     private final EquipmentMapper mapper;
 
@@ -60,10 +59,8 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     @Transactional
     public EquipmentResponse create(SaveEquipmentRequest request) {
-        EquipmentEntity entity = new EquipmentEntity();
-        entity.setStatus(EquipmentStatus.AVAILABLE);
-
-        return save(entity, request, EquipmentHistoryEventApi.REGISTERED);
+        return registrationService.register(EquipmentType.valueOf(request.getType().name()),
+                request.getModel(), request.getSerialNumber(), null, EquipmentHistoryEventApi.REGISTERED);
     }
 
     @Override
@@ -72,27 +69,8 @@ public class EquipmentServiceImpl implements EquipmentService {
     public EquipmentResponse update(Long id, SaveEquipmentRequest request) {
         EquipmentEntity entity = equipmentRepository.findById(id).orElseThrow(Errors::equipmentNotFound);
 
-        return save(entity, request, EquipmentHistoryEventApi.UPDATED);
-    }
-
-    private EquipmentResponse save(EquipmentEntity entity, SaveEquipmentRequest request,
-                                   EquipmentHistoryEventApi event) {
-        entity.setType(EquipmentType.valueOf(request.getType().name()));
-        entity.setModel(request.getModel().trim());
-        entity.setSerialNumber(request.getSerialNumber().trim());
-
-        try {
-            equipmentRepository.saveAndFlush(entity);
-        } catch (DataIntegrityViolationException ex) {
-            throw Errors.equipmentConflict("Оборудование с таким серийным номером уже существует");
-        }
-
-        EquipmentResponse response = mapper.toResponse(entity);
-
-        historyService.recordChange(EntityType.EQUIPMENT, entity.getId(),
-                new EquipmentHistorySnapshot().event(event).equipment(response));
-
-        return response;
+        return registrationService.update(entity, EquipmentType.valueOf(request.getType().name()),
+                request.getModel(), request.getSerialNumber());
     }
 
     @Override
