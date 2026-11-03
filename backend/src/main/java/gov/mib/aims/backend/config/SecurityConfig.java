@@ -95,6 +95,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/equipment", "/api/v1/equipment/**").authenticated()
                         .requestMatchers("/api/v1/equipment-movements",
                                 "/api/v1/equipment-movements/**").authenticated()
+                        .requestMatchers("/api/v1/tenders", "/api/v1/tenders/**").authenticated()
                         .requestMatchers("/api/v1/users", "/api/v1/users/**").authenticated()
                         .requestMatchers(HttpMethod.POST, IntegrationApiKeyFilter.INGEST_PATH)
                         .hasAuthority(IntegrationAuthentication.INGEST_AUTHORITY)

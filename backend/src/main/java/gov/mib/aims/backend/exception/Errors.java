@@ -25,6 +25,29 @@ public final class Errors {
     }
 
     /**
+     * Тендер не найден.
+     */
+    public static BaseException tenderNotFound() {
+        return BaseException.builder().code(404).message("tender.not_found")
+                .humanMessage("Тендер не найден").build();
+    }
+
+    /**
+     * Предложение участника в указанном тендере не найдено.
+     */
+    public static BaseException tenderParticipantNotFound() {
+        return BaseException.builder().code(404).message("tender_participant.not_found")
+                .humanMessage("Участник тендера не найден").build();
+    }
+
+    /**
+     * Конфликт состояния тендера.
+     */
+    public static BaseException tenderConflict(String message) {
+        return BaseException.builder().code(409).message("tender.conflict").humanMessage(message).build();
+    }
+
+    /**
      * Конфликт складского учета.
      */
     public static BaseException equipmentConflict(String message) {

@@ -2,11 +2,13 @@ package gov.mib.aims.backend.services;
 
 import gov.mib.aims.backend.entity.RoleEntity;
 import gov.mib.aims.backend.model.Role;
+import gov.mib.aims.backend.model.Permission;
 import gov.mib.aims.backend.repository.RoleRepository;
 import gov.mib.aims.backend.security.UserInfo;
 import gov.mib.aims.backend.security.SecurityContextUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -46,6 +48,16 @@ public class CurrentUserService {
      */
     public String getCurrentLogin() {
         return getCurrentUserInfo().login();
+    }
+
+    /**
+     * Проверяет разрешение из текущей аутентификации.
+     */
+    public boolean hasPermission(Permission permission) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        return authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(authority -> permission.getCode().equals(authority.getAuthority()));
     }
 
     /**

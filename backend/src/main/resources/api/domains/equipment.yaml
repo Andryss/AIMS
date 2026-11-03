@@ -1,0 +1,443 @@
+paths:
+  /api/v1/equipment:
+    get:
+      operationId: listEquipment
+      tags:
+        - equipment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "q"
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: "type"
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EquipmentTypeApi"
+        - name: "status"
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EquipmentStatusApi"
+        - name: "holderUserId"
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - $ref: "../common.yaml#/components/parameters/Page"
+        - $ref: "../common.yaml#/components/parameters/Size"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EquipmentListResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+    post:
+      operationId: createEquipment
+      tags:
+        - equipment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveEquipmentRequest"
+      responses:
+        201:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EquipmentResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+  /api/v1/equipment/{id}:
+    get:
+      operationId: getEquipment
+      tags:
+        - equipment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EquipmentResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+    put:
+      operationId: updateEquipment
+      tags:
+        - equipment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveEquipmentRequest"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EquipmentResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+  /api/v1/equipment/{id}/history:
+    get:
+      operationId: listEquipmentHistory
+      tags:
+        - equipment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - $ref: "../common.yaml#/components/parameters/Page"
+        - $ref: "../common.yaml#/components/parameters/Size"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EquipmentHistoryListResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+components:
+  schemas:
+    EquipmentTypeApi:
+      type: string
+      enum:
+        - NEURALYZER
+        - NEUTRALIZER
+
+    EquipmentStatusApi:
+      type: string
+      enum:
+        - AVAILABLE
+        - ISSUED
+
+    EquipmentHistoryEventApi:
+      type: string
+      enum:
+        - REGISTERED
+        - UPDATED
+        - ISSUED
+        - RETURNED
+
+    SaveEquipmentRequest:
+      type: object
+      required:
+        - type
+        - model
+        - serialNumber
+      properties:
+        type:
+          $ref: "#/components/schemas/EquipmentTypeApi"
+        model:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: "(?s).*\\S.*"
+        serialNumber:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: "(?s).*\\S.*"
+
+    EquipmentResponse:
+      type: object
+      required:
+        - id
+        - type
+        - model
+        - serialNumber
+        - status
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+        type:
+          $ref: "#/components/schemas/EquipmentTypeApi"
+        model:
+          type: string
+        serialNumber:
+          type: string
+        status:
+          $ref: "#/components/schemas/EquipmentStatusApi"
+        holderUserId:
+          type: integer
+          format: int64
+          minimum: 1
+        currentIssueMovementId:
+          type: integer
+          format: int64
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+
+    EquipmentListResponse:
+      type: object
+      required:
+        - items
+        - page
+        - size
+        - totalElements
+        - totalPages
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/EquipmentResponse"
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    EquipmentHistorySnapshot:
+      type: object
+      required:
+        - event
+        - equipment
+      properties:
+        event:
+          $ref: "#/components/schemas/EquipmentHistoryEventApi"
+        movementId:
+          type: integer
+          format: int64
+          minimum: 1
+        equipment:
+          $ref: "#/components/schemas/EquipmentResponse"
+
+    EquipmentHistoryEntry:
+      type: object
+      required:
+        - id
+        - changedAt
+        - changedByUserId
+        - snapshot
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+        changedAt:
+          type: string
+          format: date-time
+        changedByUserId:
+          type: integer
+          format: int64
+          minimum: 1
+        snapshot:
+          $ref: "#/components/schemas/EquipmentHistorySnapshot"
+
+    EquipmentHistoryListResponse:
+      type: object
+      required:
+        - items
+        - page
+        - size
+        - totalElements
+        - totalPages
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/EquipmentHistoryEntry"
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer

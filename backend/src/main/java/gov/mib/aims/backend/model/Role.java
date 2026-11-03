@@ -61,6 +61,11 @@ public enum Role {
             Permission.EQUIPMENT_MOVEMENT_READ,
             Permission.EQUIPMENT_MOVEMENT_CREATE,
             Permission.EQUIPMENT_MOVEMENT_PROCESS,
+            Permission.TENDER_READ,
+            Permission.TENDER_CREATE,
+            Permission.TENDER_EDIT,
+            Permission.TENDER_MANAGE,
+            Permission.TENDER_RECEIVE,
             Permission.CLEANUP_REPORT_READ,
             Permission.FILE_UPLOAD,
             Permission.FILE_READ,
@@ -92,7 +97,23 @@ public enum Role {
             Permission.EQUIPMENT_WRITE,
             Permission.EQUIPMENT_MOVEMENT_READ,
             Permission.EQUIPMENT_MOVEMENT_CREATE,
-            Permission.EQUIPMENT_MOVEMENT_PROCESS
+            Permission.EQUIPMENT_MOVEMENT_PROCESS,
+            Permission.TENDER_READ,
+            Permission.TENDER_CREATE,
+            Permission.TENDER_EDIT,
+            Permission.TENDER_RECEIVE
+    ),
+    /** Менеджер закупок. */
+    TENDER_MANAGER(
+            "Менеджер закупок",
+            Permission.INCIDENT_READ,
+            Permission.USER_READ,
+            Permission.EQUIPMENT_READ,
+            Permission.TENDER_READ,
+            Permission.TENDER_CREATE,
+            Permission.TENDER_EDIT,
+            Permission.TENDER_MANAGE,
+            Permission.TENDER_RECEIVE
     ),
     /** Специалист по прикрытию. */
     CLEANER(

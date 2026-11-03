@@ -31,2089 +31,126 @@ tags:
 
 paths:
   /api/v1/auth/signin:
-    post:
-      summary: Sign in with login and password
-      operationId: signIn
-      tags:
-        - auth
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SignInRequest"
-      responses:
-        200:
-          description: Signed in successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SignInResponse"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Invalid credentials
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/auth.yaml#/paths/~1api~1v1~1auth~1signin"
 
   /api/v1/auth/me:
-    get:
-      summary: Get current authenticated user profile
-      operationId: getAuthMe
-      tags:
-        - auth
-      security:
-        - bearerAuth: []
-      responses:
-        200:
-          description: Current user profile
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthMeResponse"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/auth.yaml#/paths/~1api~1v1~1auth~1me"
 
   /api/v1/files:
-    post:
-      summary: Upload a file
-      operationId: uploadFile
-      tags:
-        - files
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              required:
-                - file
-              properties:
-                file:
-                  type: string
-                  format: binary
-      responses:
-        200:
-          description: File uploaded successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FileUploadResponse"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/files.yaml#/paths/~1api~1v1~1files"
 
   /api/v1/files/{id}:
-    get:
-      summary: Download file content by id
-      operationId: downloadFile
-      tags:
-        - files
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        200:
-          description: File content
-          content:
-            application/octet-stream:
-              schema:
-                type: string
-                format: binary
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: File not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/files.yaml#/paths/~1api~1v1~1files~1{id}"
 
   /api/v1/notifications:
-    get:
-      summary: List notifications for current user
-      operationId: listNotifications
-      tags:
-        - notifications
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/Size"
-      responses:
-        200:
-          description: Paginated notification list
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotificationListResponse"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/notifications.yaml#/paths/~1api~1v1~1notifications"
 
   /api/v1/notifications/unread-count:
-    get:
-      summary: Get unread notifications count
-      operationId: getUnreadNotificationsCount
-      tags:
-        - notifications
-      security:
-        - bearerAuth: []
-      responses:
-        200:
-          description: Unread count
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UnreadCountResponse"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/notifications.yaml#/paths/~1api~1v1~1notifications~1unread-count"
 
   /api/v1/notifications/{id}/read:
-    patch:
-      summary: Mark notification as read
-      operationId: markNotificationRead
-      tags:
-        - notifications
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        200:
-          description: Notification marked as read
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Notification not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/notifications.yaml#/paths/~1api~1v1~1notifications~1{id}~1read"
 
   /api/v1/users/search:
-    get:
-      summary: Search users by login
-      operationId: searchUsers
-      tags:
-        - users
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: q
-          in: query
-          required: true
-          schema:
-            type: string
-            minLength: 2
-        - name: role
-          in: query
-          required: false
-          schema:
-            $ref: "#/components/schemas/RoleName"
-      responses:
-        200:
-          description: Search results
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserSearchResponse"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/users.yaml#/paths/~1api~1v1~1users~1search"
 
   /api/v1/users/batch:
-    post:
-      summary: Batch load users by ids
-      operationId: batchUsers
-      tags:
-        - users
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/BatchUsersRequest"
-      responses:
-        200:
-          description: Users found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BatchUsersResponse"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/users.yaml#/paths/~1api~1v1~1users~1batch"
 
   /api/v1/incidents:
-    get:
-      summary: List incidents
-      operationId: listIncidents
-      tags:
-        - incidents
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/Size"
-      responses:
-        200:
-          description: Paginated incident list
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IncidentListResponse"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-    post:
-      summary: Create incident
-      operationId: createIncident
-      tags:
-        - incidents
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateIncidentRequest"
-      responses:
-        200:
-          description: Incident created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IncidentResponse"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents"
 
   /api/v1/incidents/{id}:
-    get:
-      summary: Get incident by id
-      operationId: getIncident
-      tags:
-        - incidents
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        200:
-          description: Incident
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IncidentResponse"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Incident not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}"
 
   /api/v1/aliens:
-    get:
-      summary: List and search alien knowledge base
-      operationId: listAliens
-      tags: [aliens]
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: q
-          in: query
-          schema:
-            type: string
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/Size"
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AlienListResponse"
-        400:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-    post:
-      summary: Create alien knowledge base entry
-      operationId: createAlien
-      tags: [aliens]
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SaveAlienRequest"
-      responses:
-        201:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AlienResponse"
-        400:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/aliens.yaml#/paths/~1api~1v1~1aliens"
 
   /api/v1/aliens/search:
-    get:
-      summary: Search aliens in knowledge base
-      operationId: searchAliens
-      tags:
-        - aliens
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: q
-          in: query
-          required: true
-          schema:
-            type: string
-            minLength: 1
-      responses:
-        200:
-          description: Search results
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AlienSearchResponse"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/aliens.yaml#/paths/~1api~1v1~1aliens~1search"
 
   /api/v1/aliens/{id}:
-    get:
-      summary: Get alien by id
-      operationId: getAlien
-      tags:
-        - aliens
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        200:
-          description: Alien entry
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AlienResponse"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Alien not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-
-    put:
-      summary: Update alien knowledge base entry
-      operationId: updateAlien
-      tags: [aliens]
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SaveAlienRequest"
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AlienResponse"
-        400:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/aliens.yaml#/paths/~1api~1v1~1aliens~1{id}"
 
   /api/v1/incidents/{id}/alien:
-    put:
-      summary: Link alien type to incident
-      operationId: linkIncidentAlien
-      tags:
-        - incidents
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LinkIncidentAlienRequest"
-      responses:
-        200:
-          description: Incident with linked alien
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IncidentResponse"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Incident or alien not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1alien"
 
   /api/v1/incidents/{id}/comments:
-    get:
-      summary: List incident comments
-      operationId: listIncidentComments
-      tags:
-        - incidents
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - $ref: "#/components/parameters/Page"
-        - name: size
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 50
-            maximum: 100
-      responses:
-        200:
-          description: Paginated comments
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IncidentCommentListResponse"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Incident not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-    post:
-      summary: Create incident comment
-      operationId: createIncidentComment
-      tags:
-        - incidents
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateIncidentCommentRequest"
-      responses:
-        201:
-          description: Comment created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IncidentCommentResponse"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Incident not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1comments"
 
   /api/v1/incidents/{id}/history:
-    get:
-      summary: List incident change history
-      operationId: listIncidentHistory
-      tags:
-        - incidents
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - $ref: "#/components/parameters/Page"
-        - name: size
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 50
-            maximum: 100
-      responses:
-        200:
-          description: Paginated history entries
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IncidentHistoryListResponse"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Incident not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1history"
 
   /api/v1/incidents/{id}/responsible:
-    put:
-      summary: Set incident responsible agent
-      operationId: setIncidentResponsible
-      tags:
-        - incidents
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SetIncidentResponsibleRequest"
-      responses:
-        200:
-          description: Incident updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IncidentResponse"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Incident or user not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1responsible"
 
   /api/v1/incidents/{id}/executors:
-    put:
-      summary: Replace incident executors list
-      operationId: setIncidentExecutors
-      tags:
-        - incidents
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SetIncidentExecutorsRequest"
-      responses:
-        200:
-          description: Incident updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IncidentResponse"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Incident or user not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1executors"
 
   /api/v1/incidents/{id}/status:
-    post:
-      summary: Change incident status
-      operationId: changeIncidentStatus
-      tags:
-        - incidents
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ChangeIncidentStatusRequest"
-      responses:
-        200:
-          description: Incident status changed
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IncidentResponse"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Incident not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1status"
 
   /api/v1/incidents/{id}/cleanup-report:
-    get:
-      summary: Get cleanup report for incident
-      operationId: getIncidentCleanupReport
-      tags:
-        - incidents
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        200:
-          description: Cleanup report
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CleanupReportResponse"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Incident or cleanup report not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-    post:
-      summary: Create cleanup report for incident
-      operationId: createIncidentCleanupReport
-      tags:
-        - incidents
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateCleanupReportRequest"
-      responses:
-        201:
-          description: Cleanup report created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CleanupReportResponse"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Incident not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        409:
-          description: Cleanup report already exists
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1cleanup-report"
 
   /api/v1/incidents/{id}/cleanup-status:
-    post:
-      summary: Change cleanup status for incident
-      operationId: changeIncidentCleanupStatus
-      tags:
-        - incidents
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ChangeCleanupStatusRequest"
-      responses:
-        200:
-          description: Incident with updated cleanup status
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IncidentResponse"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Incident not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/incidents.yaml#/paths/~1api~1v1~1incidents~1{id}~1cleanup-status"
+
+  /api/v1/tenders:
+    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders"
+
+  /api/v1/tenders/{id}:
+    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}"
+
+  /api/v1/tenders/{id}/status:
+    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1status"
+
+  /api/v1/tenders/{id}/participants:
+    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1participants"
+
+  /api/v1/tenders/{id}/participants/{participantId}:
+    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1participants~1{participantId}"
+
+  /api/v1/tenders/{id}/history:
+    $ref: "./domains/tenders.yaml#/paths/~1api~1v1~1tenders~1{id}~1history"
 
   /api/v1/equipment:
-    get:
-      operationId: listEquipment
-      tags:
-        - equipment
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: "q"
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: "type"
-          in: query
-          required: false
-          schema:
-            $ref: "#/components/schemas/EquipmentTypeApi"
-        - name: "status"
-          in: query
-          required: false
-          schema:
-            $ref: "#/components/schemas/EquipmentStatusApi"
-        - name: "holderUserId"
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/Size"
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EquipmentListResponse"
-        400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-    post:
-      operationId: createEquipment
-      tags:
-        - equipment
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SaveEquipmentRequest"
-      responses:
-        201:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EquipmentResponse"
-        400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/equipment.yaml#/paths/~1api~1v1~1equipment"
+
   /api/v1/equipment/{id}:
-    get:
-      operationId: getEquipment
-      tags:
-        - equipment
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: "id"
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EquipmentResponse"
-        400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-    put:
-      operationId: updateEquipment
-      tags:
-        - equipment
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: "id"
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SaveEquipmentRequest"
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EquipmentResponse"
-        400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/equipment.yaml#/paths/~1api~1v1~1equipment~1{id}"
+
   /api/v1/equipment/{id}/history:
-    get:
-      operationId: listEquipmentHistory
-      tags:
-        - equipment
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: "id"
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/Size"
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EquipmentHistoryListResponse"
-        400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/equipment.yaml#/paths/~1api~1v1~1equipment~1{id}~1history"
 
   /api/v1/equipment-movements:
-    get:
-      operationId: listEquipmentMovements
-      tags:
-        - equipment-movements
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: "incidentId"
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-        - name: "responsibleUserId"
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-        - name: "status"
-          in: query
-          required: false
-          schema:
-            $ref: "#/components/schemas/EquipmentMovementStatusApi"
-        - name: "operation"
-          in: query
-          required: false
-          schema:
-            $ref: "#/components/schemas/EquipmentMovementOperationApi"
-        - name: "equipmentId"
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/Size"
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EquipmentMovementListResponse"
-        400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-    post:
-      operationId: createEquipmentMovement
-      tags:
-        - equipment-movements
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SaveEquipmentMovementRequest"
-      responses:
-        201:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EquipmentMovementResponse"
-        400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/equipment-movements.yaml#/paths/~1api~1v1~1equipment-movements"
+
   /api/v1/equipment-movements/{id}:
-    get:
-      operationId: getEquipmentMovement
-      tags:
-        - equipment-movements
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: "id"
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EquipmentMovementResponse"
-        400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-    put:
-      operationId: updateEquipmentMovement
-      tags:
-        - equipment-movements
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: "id"
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SaveEquipmentMovementRequest"
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EquipmentMovementResponse"
-        400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/equipment-movements.yaml#/paths/~1api~1v1~1equipment-movements~1{id}"
+
   /api/v1/equipment-movements/{id}/history:
-    get:
-      operationId: listEquipmentMovementHistory
-      tags:
-        - equipment-movements
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: "id"
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/Size"
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EquipmentMovementHistoryListResponse"
-        400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/equipment-movements.yaml#/paths/~1api~1v1~1equipment-movements~1{id}~1history"
 
   /api/v1/equipment-movements/{id}/status:
-    patch:
-      operationId: changeEquipmentMovementStatus
-      tags:
-        - equipment-movements
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: "id"
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ChangeEquipmentMovementStatusRequest"
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EquipmentMovementResponse"
-        400:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/equipment-movements.yaml#/paths/~1api~1v1~1equipment-movements~1{id}~1status"
 
   /api/v1/integration/monitoring/events:
-    post:
-      summary: Ingest monitoring event from external system
-      operationId: ingestMonitoringEvent
-      tags:
-        - integration
-      security:
-        - integrationApiKey: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/IngestMonitoringEventRequest"
-      responses:
-        201:
-          description: Monitoring alert created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MonitoringAlertResponse"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        409:
-          description: Duplicate external event id
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/integration.yaml#/paths/~1api~1v1~1integration~1monitoring~1events"
 
   /api/v1/monitoring/alerts:
-    get:
-      summary: List monitoring alerts
-      operationId: listMonitoringAlerts
-      tags:
-        - monitoring
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: status
-          in: query
-          required: false
-          schema:
-            $ref: "#/components/schemas/MonitoringAlertStatusApi"
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/Size"
-      responses:
-        200:
-          description: Paginated monitoring alerts
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MonitoringAlertListResponse"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/monitoring.yaml#/paths/~1api~1v1~1monitoring~1alerts"
 
   /api/v1/monitoring/alerts/{id}:
-    get:
-      summary: Get monitoring alert by id
-      operationId: getMonitoringAlert
-      tags:
-        - monitoring
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        200:
-          description: Monitoring alert
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MonitoringAlertResponse"
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        404:
-          description: Monitoring alert not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./domains/monitoring.yaml#/paths/~1api~1v1~1monitoring~1alerts~1{id}"
 
 components:
   parameters:
     Page:
-      name: page
-      in: query
-      required: false
-      schema:
-        type: integer
-        format: int32
-        default: 0
-        minimum: 0
+      $ref: "./common.yaml#/components/parameters/Page"
     Size:
-      name: size
-      in: query
-      required: false
-      schema:
-        type: integer
-        format: int32
-        default: 20
-        minimum: 1
-        maximum: 100
+      $ref: "./common.yaml#/components/parameters/Size"
+
   securitySchemes:
     bearerAuth:
       type: http
@@ -2126,1147 +163,223 @@ components:
 
   schemas:
     Login:
-      type: string
-      description: User login
-      minLength: 1
-      maxLength: 100
-      example: "operator"
+      $ref: "./domains/auth.yaml#/components/schemas/Login"
 
     Password:
-      type: string
-      description: User password
-      minLength: 1
-      maxLength: 200
-      example: "operator"
+      $ref: "./domains/auth.yaml#/components/schemas/Password"
 
     AccessToken:
-      type: string
-      description: JWT access token (Bearer)
-      example: "eyJhbGciOiJIUzI1NiJ9..."
+      $ref: "./domains/auth.yaml#/components/schemas/AccessToken"
 
     RoleName:
-      type: string
-      description: Role name
-      example: "OPERATOR"
+      $ref: "./domains/auth.yaml#/components/schemas/RoleName"
 
     PermissionCode:
-      type: string
-      description: Permission code
-      example: "INCIDENT_READ"
+      $ref: "./domains/auth.yaml#/components/schemas/PermissionCode"
 
     SignInRequest:
-      description: Request body for sign in
-      type: object
-      required:
-        - login
-        - password
-      properties:
-        login:
-          $ref: "#/components/schemas/Login"
-        password:
-          $ref: "#/components/schemas/Password"
+      $ref: "./domains/auth.yaml#/components/schemas/SignInRequest"
 
     SignInResponse:
-      description: Response after successful sign in
-      type: object
-      required:
-        - accessToken
-      properties:
-        accessToken:
-          $ref: "#/components/schemas/AccessToken"
+      $ref: "./domains/auth.yaml#/components/schemas/SignInResponse"
 
     AuthMeResponse:
-      description: Current authenticated user profile
-      type: object
-      required:
-        - userId
-        - login
-        - roles
-        - permissions
-      properties:
-        userId:
-          type: integer
-          format: int64
-        login:
-          $ref: "#/components/schemas/Login"
-        roles:
-          type: array
-          items:
-            $ref: "#/components/schemas/RoleName"
-        permissions:
-          type: array
-          items:
-            $ref: "#/components/schemas/PermissionCode"
+      $ref: "./domains/auth.yaml#/components/schemas/AuthMeResponse"
 
     NotificationItem:
-      description: Notification for current user
-      type: object
-      required:
-        - id
-        - message
-        - relatedEntities
-        - read
-        - createdAt
-      properties:
-        id:
-          type: integer
-          format: int64
-        message:
-          type: string
-        relatedEntities:
-          type: array
-          items:
-            type: string
-          description: Entity references, e.g. INCIDENT:612
-        read:
-          type: boolean
-          description: Whether notification was read
-        readAt:
-          type: string
-          format: date-time
-          description: Read timestamp (UTC), if read
-        createdAt:
-          type: string
-          format: date-time
-          description: Creation timestamp (UTC)
+      $ref: "./domains/notifications.yaml#/components/schemas/NotificationItem"
 
     NotificationListResponse:
-      description: Paginated notifications
-      type: object
-      required:
-        - items
-        - page
-        - size
-        - totalElements
-        - totalPages
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/NotificationItem"
-        page:
-          type: integer
-          format: int32
-        size:
-          type: integer
-          format: int32
-        totalElements:
-          type: integer
-          format: int64
-        totalPages:
-          type: integer
-          format: int32
+      $ref: "./domains/notifications.yaml#/components/schemas/NotificationListResponse"
 
     UnreadCountResponse:
-      description: Unread notifications count
-      type: object
-      required:
-        - count
-      properties:
-        count:
-          type: integer
-          format: int64
+      $ref: "./domains/notifications.yaml#/components/schemas/UnreadCountResponse"
 
     FileUploadResponse:
-      description: Metadata of uploaded file
-      type: object
-      required:
-        - id
-        - fileName
-        - contentType
-        - fileSize
-        - createdAt
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: Numeric file identifier
-        fileName:
-          type: string
-          description: Original file name
-        contentType:
-          type: string
-          description: MIME type
-        fileSize:
-          type: integer
-          format: int64
-          description: Size in bytes
-        createdAt:
-          type: string
-          format: date-time
-          description: Upload timestamp (UTC)
+      $ref: "./domains/files.yaml#/components/schemas/FileUploadResponse"
 
     IncidentStatusApi:
-      type: string
-      enum:
-        - DRAFT
-        - READY_FOR_ANALYSIS
-        - READY_FOR_EXECUTION
-        - CLARIFICATION_REQUIRED
-        - PREPARATION_FOR_EXECUTION
-        - PREPARED_FOR_EXECUTION
-        - EXECUTING
-        - EXECUTION_COMPLETED
-        - REANALYSIS_REQUIRED
+      $ref: "./domains/incidents.yaml#/components/schemas/IncidentStatusApi"
 
     CleanupStatusApi:
-      type: string
-      enum:
-        - PREPARATION
-        - EXECUTION
-        - COMPLETED
+      $ref: "./domains/incidents.yaml#/components/schemas/CleanupStatusApi"
 
     UserSummary:
-      type: object
-      required:
-        - id
-        - login
-      properties:
-        id:
-          type: integer
-          format: int64
-        login:
-          $ref: "#/components/schemas/Login"
+      $ref: "./domains/users.yaml#/components/schemas/UserSummary"
 
     UserSearchResponse:
-      type: object
-      required:
-        - items
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/UserSummary"
+      $ref: "./domains/users.yaml#/components/schemas/UserSearchResponse"
 
     BatchUsersRequest:
-      type: object
-      required:
-        - ids
-      properties:
-        ids:
-          type: array
-          maxItems: 100
-          items:
-            type: integer
-            format: int64
+      $ref: "./domains/users.yaml#/components/schemas/BatchUsersRequest"
 
     BatchUsersResponse:
-      type: object
-      required:
-        - items
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/UserSummary"
+      $ref: "./domains/users.yaml#/components/schemas/BatchUsersResponse"
 
     SetIncidentResponsibleRequest:
-      type: object
-      properties:
-        userId:
-          type: integer
-          format: int64
-          nullable: true
+      $ref: "./domains/incidents.yaml#/components/schemas/SetIncidentResponsibleRequest"
 
     SetIncidentExecutorsRequest:
-      type: object
-      required:
-        - userIds
-      properties:
-        userIds:
-          type: array
-          items:
-            type: integer
-            format: int64
+      $ref: "./domains/incidents.yaml#/components/schemas/SetIncidentExecutorsRequest"
 
     SaveAlienRequest:
-      type: object
-      required: [name, description, threatLevel]
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 200
-          pattern: '(?s).*\S.*'
-        description:
-          type: string
-          minLength: 1
-          maxLength: 4000
-          pattern: '(?s).*\S.*'
-        threatLevel:
-          type: integer
-          format: int32
-          minimum: 1
-          maximum: 10
+      $ref: "./domains/aliens.yaml#/components/schemas/SaveAlienRequest"
 
     AlienListResponse:
-      type: object
-      required: [items, page, size, totalElements, totalPages]
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/AlienResponse"
-        page:
-          type: integer
-          format: int32
-        size:
-          type: integer
-          format: int32
-        totalElements:
-          type: integer
-          format: int64
-        totalPages:
-          type: integer
-          format: int32
+      $ref: "./domains/aliens.yaml#/components/schemas/AlienListResponse"
 
     AlienResponse:
-      type: object
-      required:
-        - id
-        - name
-        - description
-        - threatLevel
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        description:
-          type: string
-        threatLevel:
-          type: integer
-          format: int32
-          minimum: 1
-          maximum: 10
+      $ref: "./domains/aliens.yaml#/components/schemas/AlienResponse"
 
     AlienSearchResponse:
-      type: object
-      required:
-        - items
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/AlienResponse"
+      $ref: "./domains/aliens.yaml#/components/schemas/AlienSearchResponse"
 
     LinkIncidentAlienRequest:
-      type: object
-      required:
-        - alienId
-      properties:
-        alienId:
-          type: integer
-          format: int64
+      $ref: "./domains/incidents.yaml#/components/schemas/LinkIncidentAlienRequest"
 
     IncidentEventTypeApi:
-      type: string
-      enum:
-        - UNIDENTIFIED_SIGHTING
-        - CONTACT_SUSPECT
-        - ILLEGAL_UFO_LANDING
-        - MEMORY_ANOMALY
-        - ALIEN_ARTIFACT
-        - ALIEN_CAPTURE
+      $ref: "./domains/incidents.yaml#/components/schemas/IncidentEventTypeApi"
 
     CreateIncidentRequest:
-      type: object
-      required:
-        - eventType
-        - location
-        - detectedAt
-        - description
-        - attachmentFileIds
-      properties:
-        eventType:
-          $ref: "#/components/schemas/IncidentEventTypeApi"
-        location:
-          type: string
-          minLength: 1
-        detectedAt:
-          type: string
-          format: date-time
-        description:
-          type: string
-          minLength: 1
-        attachmentFileIds:
-          type: array
-          minItems: 1
-          items:
-            type: integer
-            format: int64
-        monitoringAlertId:
-          type: integer
-          format: int64
-          description: Optional link to inbound monitoring alert
+      $ref: "./domains/incidents.yaml#/components/schemas/CreateIncidentRequest"
 
     ChangeIncidentStatusRequest:
-      type: object
-      required:
-        - status
-      properties:
-        status:
-          $ref: "#/components/schemas/IncidentStatusApi"
-        comment:
-          type: string
-          minLength: 1
-          maxLength: 4000
-          description: Optional comment saved together with status change
+      $ref: "./domains/incidents.yaml#/components/schemas/ChangeIncidentStatusRequest"
 
     ChangeCleanupStatusRequest:
-      type: object
-      required:
-        - status
-      properties:
-        status:
-          $ref: "#/components/schemas/CleanupStatusApi"
+      $ref: "./domains/incidents.yaml#/components/schemas/ChangeCleanupStatusRequest"
 
     CreateCleanupReportRequest:
-      type: object
-      required:
-        - description
-        - attachmentFileIds
-      properties:
-        description:
-          type: string
-          minLength: 1
-        attachmentFileIds:
-          type: array
-          minItems: 1
-          items:
-            type: integer
-            format: int64
+      $ref: "./domains/incidents.yaml#/components/schemas/CreateCleanupReportRequest"
 
     CleanupReportResponse:
-      type: object
-      required:
-        - id
-        - incidentId
-        - description
-        - attachmentFileIds
-        - createdByUserId
-        - createdAt
-      properties:
-        id:
-          type: integer
-          format: int64
-        incidentId:
-          type: integer
-          format: int64
-        description:
-          type: string
-        attachmentFileIds:
-          type: array
-          items:
-            type: integer
-            format: int64
-        createdByUserId:
-          type: integer
-          format: int64
-        createdAt:
-          type: string
-          format: date-time
+      $ref: "./domains/incidents.yaml#/components/schemas/CleanupReportResponse"
 
     CreateIncidentCommentRequest:
-      type: object
-      required:
-        - text
-      properties:
-        text:
-          type: string
-          minLength: 1
-          maxLength: 4000
+      $ref: "./domains/incidents.yaml#/components/schemas/CreateIncidentCommentRequest"
 
     IncidentCommentResponse:
-      type: object
-      required:
-        - id
-        - incidentId
-        - authorUserId
-        - text
-        - createdAt
-      properties:
-        id:
-          type: integer
-          format: int64
-        incidentId:
-          type: integer
-          format: int64
-        authorUserId:
-          type: integer
-          format: int64
-        text:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
+      $ref: "./domains/incidents.yaml#/components/schemas/IncidentCommentResponse"
 
     IncidentCommentListResponse:
-      type: object
-      required:
-        - items
-        - page
-        - size
-        - totalElements
-        - totalPages
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/IncidentCommentResponse"
-        page:
-          type: integer
-          format: int32
-        size:
-          type: integer
-          format: int32
-        totalElements:
-          type: integer
-          format: int64
-        totalPages:
-          type: integer
-          format: int32
+      $ref: "./domains/incidents.yaml#/components/schemas/IncidentCommentListResponse"
 
     IncidentHistorySnapshot:
-      type: object
-      description: Parsed JSON snapshot of incident state at change time
-      required:
-        - status
-        - eventType
-        - location
-        - detectedAt
-        - description
-        - attachmentFileIds
-        - executorUserIds
-      properties:
-        status:
-          $ref: "#/components/schemas/IncidentStatusApi"
-        eventType:
-          $ref: "#/components/schemas/IncidentEventTypeApi"
-        location:
-          type: string
-        detectedAt:
-          type: string
-          format: date-time
-        description:
-          type: string
-        attachmentFileIds:
-          type: array
-          items:
-            type: integer
-            format: int64
-        alienId:
-          type: integer
-          format: int64
-          nullable: true
-        responsibleUserId:
-          type: integer
-          format: int64
-          nullable: true
-        executorUserIds:
-          type: array
-          items:
-            type: integer
-            format: int64
-        cleanupStatus:
-          $ref: "#/components/schemas/CleanupStatusApi"
-          nullable: true
-        cleanupReportId:
-          type: integer
-          format: int64
-          nullable: true
+      $ref: "./domains/incidents.yaml#/components/schemas/IncidentHistorySnapshot"
 
     IncidentHistoryEntry:
-      type: object
-      required:
-        - id
-        - changedAt
-        - changedByUserId
-        - snapshot
-      properties:
-        id:
-          type: integer
-          format: int64
-        changedAt:
-          type: string
-          format: date-time
-        changedByUserId:
-          type: integer
-          format: int64
-        snapshot:
-          $ref: "#/components/schemas/IncidentHistorySnapshot"
+      $ref: "./domains/incidents.yaml#/components/schemas/IncidentHistoryEntry"
 
     IncidentHistoryListResponse:
-      type: object
-      required:
-        - items
-        - page
-        - size
-        - totalElements
-        - totalPages
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/IncidentHistoryEntry"
-        page:
-          type: integer
-          format: int32
-        size:
-          type: integer
-          format: int32
-        totalElements:
-          type: integer
-          format: int64
-        totalPages:
-          type: integer
-          format: int32
+      $ref: "./domains/incidents.yaml#/components/schemas/IncidentHistoryListResponse"
 
     IncidentResponse:
-      type: object
-      required:
-        - id
-        - status
-        - eventType
-        - location
-        - detectedAt
-        - description
-        - attachmentFileIds
-        - executorUserIds
-        - createdAt
-        - updatedAt
-      properties:
-        id:
-          type: integer
-          format: int64
-        status:
-          $ref: "#/components/schemas/IncidentStatusApi"
-        eventType:
-          $ref: "#/components/schemas/IncidentEventTypeApi"
-        location:
-          type: string
-        detectedAt:
-          type: string
-          format: date-time
-        description:
-          type: string
-        attachmentFileIds:
-          type: array
-          items:
-            type: integer
-            format: int64
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        alienId:
-          type: integer
-          format: int64
-        responsibleUserId:
-          type: integer
-          format: int64
-          nullable: true
-        executorUserIds:
-          type: array
-          items:
-            type: integer
-            format: int64
-        cleanupStatus:
-          $ref: "#/components/schemas/CleanupStatusApi"
-          nullable: true
-        cleanupReportId:
-          type: integer
-          format: int64
-          nullable: true
-        monitoringAlertId:
-          type: integer
-          format: int64
-          nullable: true
+      $ref: "./domains/incidents.yaml#/components/schemas/IncidentResponse"
+
+    TenderStatusApi:
+      $ref: "./domains/tenders.yaml#/components/schemas/TenderStatusApi"
+
+    TenderParticipantStatusApi:
+      $ref: "./domains/tenders.yaml#/components/schemas/TenderParticipantStatusApi"
+
+    SaveTenderRequest:
+      $ref: "./domains/tenders.yaml#/components/schemas/SaveTenderRequest"
+
+    TenderResponse:
+      $ref: "./domains/tenders.yaml#/components/schemas/TenderResponse"
+
+    ChangeTenderStatusRequest:
+      $ref: "./domains/tenders.yaml#/components/schemas/ChangeTenderStatusRequest"
+
+    SaveTenderParticipantRequest:
+      $ref: "./domains/tenders.yaml#/components/schemas/SaveTenderParticipantRequest"
+
+    TenderParticipantListResponse:
+      $ref: "./domains/tenders.yaml#/components/schemas/TenderParticipantListResponse"
+
+    TenderParticipantResponse:
+      $ref: "./domains/tenders.yaml#/components/schemas/TenderParticipantResponse"
+
+    TenderHistorySnapshot:
+      $ref: "./domains/tenders.yaml#/components/schemas/TenderHistorySnapshot"
+
+    TenderHistoryEntry:
+      $ref: "./domains/tenders.yaml#/components/schemas/TenderHistoryEntry"
+
+    TenderListResponse:
+      $ref: "./domains/tenders.yaml#/components/schemas/TenderListResponse"
+
+    TenderHistoryListResponse:
+      $ref: "./domains/tenders.yaml#/components/schemas/TenderHistoryListResponse"
 
     EquipmentTypeApi:
-      type: string
-      enum:
-        - NEURALYZER
-        - NEUTRALIZER
+      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentTypeApi"
+
     EquipmentStatusApi:
-      type: string
-      enum:
-        - AVAILABLE
-        - ISSUED
+      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentStatusApi"
+
     EquipmentHistoryEventApi:
-      type: string
-      enum:
-        - REGISTERED
-        - UPDATED
-        - ISSUED
-        - RETURNED
+      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentHistoryEventApi"
+
     SaveEquipmentRequest:
-      type: object
-      required:
-        - type
-        - model
-        - serialNumber
-      properties:
-        type:
-          $ref: "#/components/schemas/EquipmentTypeApi"
-        model:
-          type: string
-          minLength: 1
-          maxLength: 200
-          pattern: "(?s).*\\S.*"
-        serialNumber:
-          type: string
-          minLength: 1
-          maxLength: 100
-          pattern: "(?s).*\\S.*"
+      $ref: "./domains/equipment.yaml#/components/schemas/SaveEquipmentRequest"
+
     EquipmentResponse:
-      type: object
-      required:
-        - id
-        - type
-        - model
-        - serialNumber
-        - status
-        - createdAt
-      properties:
-        id:
-          type: integer
-          format: int64
-          minimum: 1
-        type:
-          $ref: "#/components/schemas/EquipmentTypeApi"
-        model:
-          type: string
-        serialNumber:
-          type: string
-        status:
-          $ref: "#/components/schemas/EquipmentStatusApi"
-        holderUserId:
-          type: integer
-          format: int64
-          minimum: 1
-        currentIssueMovementId:
-          type: integer
-          format: int64
-          minimum: 1
-        createdAt:
-          type: string
-          format: date-time
+      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentResponse"
+
     EquipmentListResponse:
-      type: object
-      required:
-        - items
-        - page
-        - size
-        - totalElements
-        - totalPages
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/EquipmentResponse"
-        page:
-          type: integer
-        size:
-          type: integer
-        totalElements:
-          type: integer
-          format: int64
-        totalPages:
-          type: integer
+      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentListResponse"
+
     EquipmentHistorySnapshot:
-      type: object
-      required:
-        - event
-        - equipment
-      properties:
-        event:
-          $ref: "#/components/schemas/EquipmentHistoryEventApi"
-        movementId:
-          type: integer
-          format: int64
-          minimum: 1
-        equipment:
-          $ref: "#/components/schemas/EquipmentResponse"
+      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentHistorySnapshot"
+
     EquipmentHistoryEntry:
-      type: object
-      required:
-        - id
-        - changedAt
-        - changedByUserId
-        - snapshot
-      properties:
-        id:
-          type: integer
-          format: int64
-          minimum: 1
-        changedAt:
-          type: string
-          format: date-time
-        changedByUserId:
-          type: integer
-          format: int64
-          minimum: 1
-        snapshot:
-          $ref: "#/components/schemas/EquipmentHistorySnapshot"
+      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentHistoryEntry"
+
     EquipmentHistoryListResponse:
-      type: object
-      required:
-        - items
-        - page
-        - size
-        - totalElements
-        - totalPages
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/EquipmentHistoryEntry"
-        page:
-          type: integer
-        size:
-          type: integer
-        totalElements:
-          type: integer
-          format: int64
-        totalPages:
-          type: integer
+      $ref: "./domains/equipment.yaml#/components/schemas/EquipmentHistoryListResponse"
 
     EquipmentMovementOperationApi:
-      type: string
-      enum:
-        - ISSUE
-        - RETURN
+      $ref: "./domains/equipment-movements.yaml#/components/schemas/EquipmentMovementOperationApi"
+
     EquipmentMovementStatusApi:
-      type: string
-      enum:
-        - PENDING
-        - PROCESSING
-        - COMPLETED
-        - CANCELLED
-        - REJECTED
+      $ref: "./domains/equipment-movements.yaml#/components/schemas/EquipmentMovementStatusApi"
+
     SaveEquipmentMovementRequest:
-      type: object
-      required:
-        - operation
-        - incidentId
-        - responsibleUserId
-        - equipmentIds
-      properties:
-        operation:
-          $ref: "#/components/schemas/EquipmentMovementOperationApi"
-        incidentId:
-          type: integer
-          format: int64
-          minimum: 1
-        responsibleUserId:
-          type: integer
-          format: int64
-          minimum: 1
-        sourceIssueMovementId:
-          type: integer
-          format: int64
-          minimum: 1
-        equipmentIds:
-          type: array
-          minItems: 1
-          items:
-            type: integer
-            format: int64
-            minimum: 1
-        comment:
-          type: string
-          maxLength: 4000
+      $ref: "./domains/equipment-movements.yaml#/components/schemas/SaveEquipmentMovementRequest"
+
     EquipmentMovementResponse:
-      type: object
-      required:
-        - id
-        - operation
-        - status
-        - incidentId
-        - responsibleUserId
-        - createdByUserId
-        - createdAt
-        - equipment
-      properties:
-        id:
-          type: integer
-          format: int64
-          minimum: 1
-        operation:
-          $ref: "#/components/schemas/EquipmentMovementOperationApi"
-        status:
-          $ref: "#/components/schemas/EquipmentMovementStatusApi"
-        incidentId:
-          type: integer
-          format: int64
-          minimum: 1
-        responsibleUserId:
-          type: integer
-          format: int64
-          minimum: 1
-        sourceIssueMovementId:
-          type: integer
-          format: int64
-          minimum: 1
-        createdByUserId:
-          type: integer
-          format: int64
-          minimum: 1
-        comment:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        completedAt:
-          type: string
-          format: date-time
-        equipment:
-          type: array
-          items:
-            $ref: "#/components/schemas/EquipmentResponse"
+      $ref: "./domains/equipment-movements.yaml#/components/schemas/EquipmentMovementResponse"
+
     EquipmentMovementListResponse:
-      type: object
-      required:
-        - items
-        - page
-        - size
-        - totalElements
-        - totalPages
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/EquipmentMovementResponse"
-        page:
-          type: integer
-        size:
-          type: integer
-        totalElements:
-          type: integer
-          format: int64
-        totalPages:
-          type: integer
+      $ref: "./domains/equipment-movements.yaml#/components/schemas/EquipmentMovementListResponse"
+
     EquipmentMovementHistorySnapshot:
-      type: object
-      required:
-        - movement
-      properties:
-        movement:
-          $ref: "#/components/schemas/EquipmentMovementResponse"
-        transitionComment:
-          type: string
+      $ref: "./domains/equipment-movements.yaml#/components/schemas/EquipmentMovementHistorySnapshot"
+
     EquipmentMovementHistoryEntry:
-      type: object
-      required:
-        - id
-        - changedAt
-        - changedByUserId
-        - snapshot
-      properties:
-        id:
-          type: integer
-          format: int64
-          minimum: 1
-        changedAt:
-          type: string
-          format: date-time
-        changedByUserId:
-          type: integer
-          format: int64
-          minimum: 1
-        snapshot:
-          $ref: "#/components/schemas/EquipmentMovementHistorySnapshot"
+      $ref: "./domains/equipment-movements.yaml#/components/schemas/EquipmentMovementHistoryEntry"
+
     EquipmentMovementHistoryListResponse:
-      type: object
-      required:
-        - items
-        - page
-        - size
-        - totalElements
-        - totalPages
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/EquipmentMovementHistoryEntry"
-        page:
-          type: integer
-        size:
-          type: integer
-        totalElements:
-          type: integer
-          format: int64
-        totalPages:
-          type: integer
+      $ref: "./domains/equipment-movements.yaml#/components/schemas/EquipmentMovementHistoryListResponse"
 
     ChangeEquipmentMovementStatusRequest:
-      type: object
-      required:
-        - status
-      properties:
-        status:
-          $ref: "#/components/schemas/EquipmentMovementStatusApi"
-        comment:
-          type: string
-          maxLength: 4000
+      $ref: "./domains/equipment-movements.yaml#/components/schemas/ChangeEquipmentMovementStatusRequest"
 
     MonitoringAlertStatusApi:
-      type: string
-      enum:
-        - NEW
-        - INCIDENT_CREATED
+      $ref: "./domains/monitoring.yaml#/components/schemas/MonitoringAlertStatusApi"
 
     IngestMonitoringEventRequest:
-      type: object
-      required:
-        - externalEventId
-        - detectedAt
-        - location
-        - eventType
-        - description
-      properties:
-        externalEventId:
-          type: string
-          minLength: 1
-          maxLength: 200
-        sourceSystem:
-          type: string
-          minLength: 1
-          maxLength: 100
-          default: EXTERNAL_MONITORING_V1
-        detectedAt:
-          type: string
-          format: date-time
-        location:
-          type: string
-          minLength: 1
-        eventType:
-          $ref: "#/components/schemas/IncidentEventTypeApi"
-        description:
-          type: string
-          minLength: 1
-        mediaUrls:
-          type: array
-          items:
-            type: string
-            format: uri
+      $ref: "./domains/integration.yaml#/components/schemas/IngestMonitoringEventRequest"
 
     MonitoringAlertResponse:
-      type: object
-      required:
-        - id
-        - externalEventId
-        - sourceSystem
-        - status
-        - eventType
-        - location
-        - detectedAt
-        - description
-        - mediaUrls
-        - receivedAt
-        - createdAt
-      properties:
-        id:
-          type: integer
-          format: int64
-        externalEventId:
-          type: string
-        sourceSystem:
-          type: string
-        status:
-          $ref: "#/components/schemas/MonitoringAlertStatusApi"
-        eventType:
-          $ref: "#/components/schemas/IncidentEventTypeApi"
-        location:
-          type: string
-        detectedAt:
-          type: string
-          format: date-time
-        description:
-          type: string
-        mediaUrls:
-          type: array
-          items:
-            type: string
-        incidentId:
-          type: integer
-          format: int64
-          nullable: true
-        receivedAt:
-          type: string
-          format: date-time
-        createdAt:
-          type: string
-          format: date-time
+      $ref: "./domains/monitoring.yaml#/components/schemas/MonitoringAlertResponse"
 
     MonitoringAlertListResponse:
-      type: object
-      required:
-        - items
-        - page
-        - size
-        - totalElements
-        - totalPages
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/MonitoringAlertResponse"
-        page:
-          type: integer
-          format: int32
-        size:
-          type: integer
-          format: int32
-        totalElements:
-          type: integer
-          format: int64
-        totalPages:
-          type: integer
-          format: int32
+      $ref: "./domains/monitoring.yaml#/components/schemas/MonitoringAlertListResponse"
 
     IncidentListResponse:
-      description: Paginated incidents
-      type: object
-      required:
-        - items
-        - page
-        - size
-        - totalElements
-        - totalPages
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/IncidentResponse"
-        page:
-          type: integer
-          format: int32
-        size:
-          type: integer
-          format: int32
-        totalElements:
-          type: integer
-          format: int64
-        totalPages:
-          type: integer
-          format: int32
+      $ref: "./domains/incidents.yaml#/components/schemas/IncidentListResponse"
 
     ErrorObject:
-      description: Error response object
-      type: object
-      properties:
-        code:
-          description: Numeric error code
-          type: integer
-          format: int32
-        message:
-          description: Unique text identifier of the error
-          type: string
-        humanMessage:
-          description: Human-readable error description
-          type: string
+      $ref: "./common.yaml#/components/schemas/ErrorObject"

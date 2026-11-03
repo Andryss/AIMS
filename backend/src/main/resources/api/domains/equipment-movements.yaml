@@ -1,0 +1,540 @@
+paths:
+  /api/v1/equipment-movements:
+    get:
+      operationId: listEquipmentMovements
+      tags:
+        - equipment-movements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "incidentId"
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - name: "responsibleUserId"
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - name: "status"
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EquipmentMovementStatusApi"
+        - name: "operation"
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EquipmentMovementOperationApi"
+        - name: "equipmentId"
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - $ref: "../common.yaml#/components/parameters/Page"
+        - $ref: "../common.yaml#/components/parameters/Size"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EquipmentMovementListResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+    post:
+      operationId: createEquipmentMovement
+      tags:
+        - equipment-movements
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveEquipmentMovementRequest"
+      responses:
+        201:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EquipmentMovementResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+  /api/v1/equipment-movements/{id}:
+    get:
+      operationId: getEquipmentMovement
+      tags:
+        - equipment-movements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EquipmentMovementResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+    put:
+      operationId: updateEquipmentMovement
+      tags:
+        - equipment-movements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveEquipmentMovementRequest"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EquipmentMovementResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+  /api/v1/equipment-movements/{id}/history:
+    get:
+      operationId: listEquipmentMovementHistory
+      tags:
+        - equipment-movements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - $ref: "../common.yaml#/components/parameters/Page"
+        - $ref: "../common.yaml#/components/parameters/Size"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EquipmentMovementHistoryListResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+  /api/v1/equipment-movements/{id}/status:
+    patch:
+      operationId: changeEquipmentMovementStatus
+      tags:
+        - equipment-movements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeEquipmentMovementStatusRequest"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EquipmentMovementResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+components:
+  schemas:
+    EquipmentMovementOperationApi:
+      type: string
+      enum:
+        - ISSUE
+        - RETURN
+
+    EquipmentMovementStatusApi:
+      type: string
+      enum:
+        - PENDING
+        - PROCESSING
+        - COMPLETED
+        - CANCELLED
+        - REJECTED
+
+    SaveEquipmentMovementRequest:
+      type: object
+      required:
+        - operation
+        - incidentId
+        - responsibleUserId
+        - equipmentIds
+      properties:
+        operation:
+          $ref: "#/components/schemas/EquipmentMovementOperationApi"
+        incidentId:
+          type: integer
+          format: int64
+          minimum: 1
+        responsibleUserId:
+          type: integer
+          format: int64
+          minimum: 1
+        sourceIssueMovementId:
+          type: integer
+          format: int64
+          minimum: 1
+        equipmentIds:
+          type: array
+          minItems: 1
+          items:
+            type: integer
+            format: int64
+            minimum: 1
+        comment:
+          type: string
+          maxLength: 4000
+
+    EquipmentMovementResponse:
+      type: object
+      required:
+        - id
+        - operation
+        - status
+        - incidentId
+        - responsibleUserId
+        - createdByUserId
+        - createdAt
+        - equipment
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+        operation:
+          $ref: "#/components/schemas/EquipmentMovementOperationApi"
+        status:
+          $ref: "#/components/schemas/EquipmentMovementStatusApi"
+        incidentId:
+          type: integer
+          format: int64
+          minimum: 1
+        responsibleUserId:
+          type: integer
+          format: int64
+          minimum: 1
+        sourceIssueMovementId:
+          type: integer
+          format: int64
+          minimum: 1
+        createdByUserId:
+          type: integer
+          format: int64
+          minimum: 1
+        comment:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        equipment:
+          type: array
+          items:
+            $ref: "./equipment.yaml#/components/schemas/EquipmentResponse"
+
+    EquipmentMovementListResponse:
+      type: object
+      required:
+        - items
+        - page
+        - size
+        - totalElements
+        - totalPages
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/EquipmentMovementResponse"
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    EquipmentMovementHistorySnapshot:
+      type: object
+      required:
+        - movement
+      properties:
+        movement:
+          $ref: "#/components/schemas/EquipmentMovementResponse"
+        transitionComment:
+          type: string
+
+    EquipmentMovementHistoryEntry:
+      type: object
+      required:
+        - id
+        - changedAt
+        - changedByUserId
+        - snapshot
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+        changedAt:
+          type: string
+          format: date-time
+        changedByUserId:
+          type: integer
+          format: int64
+          minimum: 1
+        snapshot:
+          $ref: "#/components/schemas/EquipmentMovementHistorySnapshot"
+
+    EquipmentMovementHistoryListResponse:
+      type: object
+      required:
+        - items
+        - page
+        - size
+        - totalElements
+        - totalPages
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/EquipmentMovementHistoryEntry"
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    ChangeEquipmentMovementStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: "#/components/schemas/EquipmentMovementStatusApi"
+        comment:
+          type: string
+          maxLength: 4000

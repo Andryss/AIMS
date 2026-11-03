@@ -1,0 +1,1105 @@
+paths:
+  /api/v1/incidents:
+    get:
+      summary: List incidents
+      operationId: listIncidents
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "../common.yaml#/components/parameters/Page"
+        - $ref: "../common.yaml#/components/parameters/Size"
+      responses:
+        200:
+          description: Paginated incident list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentListResponse"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+    post:
+      summary: Create incident
+      operationId: createIncident
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateIncidentRequest"
+      responses:
+        200:
+          description: Incident created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+  /api/v1/incidents/{id}:
+    get:
+      summary: Get incident by id
+      operationId: getIncident
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Incident
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentResponse"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+  /api/v1/incidents/{id}/alien:
+    put:
+      summary: Link alien type to incident
+      operationId: linkIncidentAlien
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LinkIncidentAlienRequest"
+      responses:
+        200:
+          description: Incident with linked alien
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Incident or alien not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+  /api/v1/incidents/{id}/comments:
+    get:
+      summary: List incident comments
+      operationId: listIncidentComments
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - $ref: "../common.yaml#/components/parameters/Page"
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 50
+            maximum: 100
+      responses:
+        200:
+          description: Paginated comments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentCommentListResponse"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+    post:
+      summary: Create incident comment
+      operationId: createIncidentComment
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateIncidentCommentRequest"
+      responses:
+        201:
+          description: Comment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentCommentResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+  /api/v1/incidents/{id}/history:
+    get:
+      summary: List incident change history
+      operationId: listIncidentHistory
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - $ref: "../common.yaml#/components/parameters/Page"
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 50
+            maximum: 100
+      responses:
+        200:
+          description: Paginated history entries
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentHistoryListResponse"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+  /api/v1/incidents/{id}/responsible:
+    put:
+      summary: Set incident responsible agent
+      operationId: setIncidentResponsible
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetIncidentResponsibleRequest"
+      responses:
+        200:
+          description: Incident updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Incident or user not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+  /api/v1/incidents/{id}/executors:
+    put:
+      summary: Replace incident executors list
+      operationId: setIncidentExecutors
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetIncidentExecutorsRequest"
+      responses:
+        200:
+          description: Incident updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Incident or user not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+  /api/v1/incidents/{id}/status:
+    post:
+      summary: Change incident status
+      operationId: changeIncidentStatus
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeIncidentStatusRequest"
+      responses:
+        200:
+          description: Incident status changed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+  /api/v1/incidents/{id}/cleanup-report:
+    get:
+      summary: Get cleanup report for incident
+      operationId: getIncidentCleanupReport
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Cleanup report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CleanupReportResponse"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Incident or cleanup report not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+    post:
+      summary: Create cleanup report for incident
+      operationId: createIncidentCleanupReport
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCleanupReportRequest"
+      responses:
+        201:
+          description: Cleanup report created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CleanupReportResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Cleanup report already exists
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+  /api/v1/incidents/{id}/cleanup-status:
+    post:
+      summary: Change cleanup status for incident
+      operationId: changeIncidentCleanupStatus
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeCleanupStatusRequest"
+      responses:
+        200:
+          description: Incident with updated cleanup status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        404:
+          description: Incident not found
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+components:
+  schemas:
+    IncidentStatusApi:
+      type: string
+      enum:
+        - DRAFT
+        - READY_FOR_ANALYSIS
+        - READY_FOR_EXECUTION
+        - CLARIFICATION_REQUIRED
+        - PREPARATION_FOR_EXECUTION
+        - PREPARED_FOR_EXECUTION
+        - EXECUTING
+        - EXECUTION_COMPLETED
+        - REANALYSIS_REQUIRED
+
+    CleanupStatusApi:
+      type: string
+      enum:
+        - PREPARATION
+        - EXECUTION
+        - COMPLETED
+
+    SetIncidentResponsibleRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+          nullable: true
+
+    SetIncidentExecutorsRequest:
+      type: object
+      required:
+        - userIds
+      properties:
+        userIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+
+    LinkIncidentAlienRequest:
+      type: object
+      required:
+        - alienId
+      properties:
+        alienId:
+          type: integer
+          format: int64
+
+    IncidentEventTypeApi:
+      type: string
+      enum:
+        - UNIDENTIFIED_SIGHTING
+        - CONTACT_SUSPECT
+        - ILLEGAL_UFO_LANDING
+        - MEMORY_ANOMALY
+        - ALIEN_ARTIFACT
+        - ALIEN_CAPTURE
+
+    CreateIncidentRequest:
+      type: object
+      required:
+        - eventType
+        - location
+        - detectedAt
+        - description
+        - attachmentFileIds
+      properties:
+        eventType:
+          $ref: "#/components/schemas/IncidentEventTypeApi"
+        location:
+          type: string
+          minLength: 1
+        detectedAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+          minLength: 1
+        attachmentFileIds:
+          type: array
+          minItems: 1
+          items:
+            type: integer
+            format: int64
+        monitoringAlertId:
+          type: integer
+          format: int64
+          description: Optional link to inbound monitoring alert
+
+    ChangeIncidentStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: "#/components/schemas/IncidentStatusApi"
+        comment:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          description: Optional comment saved together with status change
+
+    ChangeCleanupStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: "#/components/schemas/CleanupStatusApi"
+
+    CreateCleanupReportRequest:
+      type: object
+      required:
+        - description
+        - attachmentFileIds
+      properties:
+        description:
+          type: string
+          minLength: 1
+        attachmentFileIds:
+          type: array
+          minItems: 1
+          items:
+            type: integer
+            format: int64
+
+    CleanupReportResponse:
+      type: object
+      required:
+        - id
+        - incidentId
+        - description
+        - attachmentFileIds
+        - createdByUserId
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+        incidentId:
+          type: integer
+          format: int64
+        description:
+          type: string
+        attachmentFileIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        createdByUserId:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateIncidentCommentRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 4000
+
+    IncidentCommentResponse:
+      type: object
+      required:
+        - id
+        - incidentId
+        - authorUserId
+        - text
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+        incidentId:
+          type: integer
+          format: int64
+        authorUserId:
+          type: integer
+          format: int64
+        text:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    IncidentCommentListResponse:
+      type: object
+      required:
+        - items
+        - page
+        - size
+        - totalElements
+        - totalPages
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/IncidentCommentResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+
+    IncidentHistorySnapshot:
+      type: object
+      description: Parsed JSON snapshot of incident state at change time
+      required:
+        - status
+        - eventType
+        - location
+        - detectedAt
+        - description
+        - attachmentFileIds
+        - executorUserIds
+      properties:
+        status:
+          $ref: "#/components/schemas/IncidentStatusApi"
+        eventType:
+          $ref: "#/components/schemas/IncidentEventTypeApi"
+        location:
+          type: string
+        detectedAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        attachmentFileIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        alienId:
+          type: integer
+          format: int64
+          nullable: true
+        responsibleUserId:
+          type: integer
+          format: int64
+          nullable: true
+        executorUserIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        cleanupStatus:
+          $ref: "#/components/schemas/CleanupStatusApi"
+          nullable: true
+        cleanupReportId:
+          type: integer
+          format: int64
+          nullable: true
+
+    IncidentHistoryEntry:
+      type: object
+      required:
+        - id
+        - changedAt
+        - changedByUserId
+        - snapshot
+      properties:
+        id:
+          type: integer
+          format: int64
+        changedAt:
+          type: string
+          format: date-time
+        changedByUserId:
+          type: integer
+          format: int64
+        snapshot:
+          $ref: "#/components/schemas/IncidentHistorySnapshot"
+
+    IncidentHistoryListResponse:
+      type: object
+      required:
+        - items
+        - page
+        - size
+        - totalElements
+        - totalPages
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/IncidentHistoryEntry"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+
+    IncidentResponse:
+      type: object
+      required:
+        - id
+        - status
+        - eventType
+        - location
+        - detectedAt
+        - description
+        - attachmentFileIds
+        - executorUserIds
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+        status:
+          $ref: "#/components/schemas/IncidentStatusApi"
+        eventType:
+          $ref: "#/components/schemas/IncidentEventTypeApi"
+        location:
+          type: string
+        detectedAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        attachmentFileIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        alienId:
+          type: integer
+          format: int64
+        responsibleUserId:
+          type: integer
+          format: int64
+          nullable: true
+        executorUserIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        cleanupStatus:
+          $ref: "#/components/schemas/CleanupStatusApi"
+          nullable: true
+        cleanupReportId:
+          type: integer
+          format: int64
+          nullable: true
+        monitoringAlertId:
+          type: integer
+          format: int64
+          nullable: true
+
+    IncidentListResponse:
+      description: Paginated incidents
+      type: object
+      required:
+        - items
+        - page
+        - size
+        - totalElements
+        - totalPages
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/IncidentResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32

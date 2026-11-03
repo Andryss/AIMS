@@ -1,0 +1,89 @@
+paths:
+  /api/v1/integration/monitoring/events:
+    post:
+      summary: Ingest monitoring event from external system
+      operationId: ingestMonitoringEvent
+      tags:
+        - integration
+      security:
+        - integrationApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IngestMonitoringEventRequest"
+      responses:
+        201:
+          description: Monitoring alert created
+          content:
+            application/json:
+              schema:
+                $ref: "./monitoring.yaml#/components/schemas/MonitoringAlertResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        409:
+          description: Duplicate external event id
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+components:
+  schemas:
+    IngestMonitoringEventRequest:
+      type: object
+      required:
+        - externalEventId
+        - detectedAt
+        - location
+        - eventType
+        - description
+      properties:
+        externalEventId:
+          type: string
+          minLength: 1
+          maxLength: 200
+        sourceSystem:
+          type: string
+          minLength: 1
+          maxLength: 100
+          default: EXTERNAL_MONITORING_V1
+        detectedAt:
+          type: string
+          format: date-time
+        location:
+          type: string
+          minLength: 1
+        eventType:
+          $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        description:
+          type: string
+          minLength: 1
+        mediaUrls:
+          type: array
+          items:
+            type: string
+            format: uri

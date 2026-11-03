@@ -14,6 +14,9 @@ public enum EntityType {
     /** Заявка на движение оборудования. */
     EQUIPMENT_MOVEMENT,
 
+    /** Тендер на закупку оборудования. */
+    TENDER,
+
     /** Алерт внешнего мониторинга. */
     MONITORING_ALERT
 }
