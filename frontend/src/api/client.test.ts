@@ -49,6 +49,27 @@ describe('incident threat API', () => {
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
+describe('incident risk analytics API', () => {
+  beforeEach(() => mockFetch.mockReset());
+
+  it.each([
+    ['by-threat-level', () => api.getIncidentByThreatLevel('tok', query)],
+    ['by-victim-count', () => api.getIncidentByVictimCount('tok', query)],
+  ] as const)('requests %s with the selected period and filters', async (path, load) => {
+    const response = { groups: [{ key: 'UNKNOWN', count: 2 }] };
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, response));
+    expect(await load()).toEqual(response);
+    const url = new URL(mockFetch.mock.calls[0][0], 'http://localhost');
+    expect(url.pathname).toBe(`/api/v1/incidents/statistics/${path}`);
+    expect(Object.fromEntries(url.searchParams)).toEqual({ ...query, alienId: '6', responsibleUserId: '3' });
+    expect(mockFetch.mock.calls[0][1].method).toBe('GET');
+    expect(new Headers(mockFetch.mock.calls[0][1].headers).get('Authorization')).toBe('Bearer tok');
+  });
+
+  const query = { from: '2025-05-01T00:00:00Z', to: '2025-05-02T00:00:00Z',
+    eventType: 'ATTACK_ON_PEOPLE' as const, alienId: 6, responsibleUserId: 3 };
+});
+
 describe('detention API', () => {
   beforeEach(() => mockFetch.mockReset());
 

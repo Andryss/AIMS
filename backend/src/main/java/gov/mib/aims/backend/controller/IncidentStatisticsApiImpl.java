@@ -119,6 +119,26 @@ public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
 
     @Override
     @PreAuthorize("hasAuthority('ANALYTICS_READ')")
+    public GroupedAnalyticsResponse getIncidentByThreatLevel(OffsetDateTime from, OffsetDateTime to,
+            IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
+        log.info("GET /api/v1/incidents/statistics/by-threat-level from={} to={}",
+                from, to);
+
+        return incidentService.byThreatLevel(from, to, eventType, alienId, responsibleUserId);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
+    public GroupedAnalyticsResponse getIncidentByVictimCount(OffsetDateTime from, OffsetDateTime to,
+            IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
+        log.info("GET /api/v1/incidents/statistics/by-victim-count from={} to={}",
+                from, to);
+
+        return incidentService.byVictimCount(from, to, eventType, alienId, responsibleUserId);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public GroupedAnalyticsResponse getIncidentByAlien(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/by-alien from={} to={}",

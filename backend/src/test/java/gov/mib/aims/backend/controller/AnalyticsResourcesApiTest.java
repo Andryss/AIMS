@@ -31,6 +31,8 @@ class AnalyticsResourcesApiTest extends BaseApiTest {
             "incidents/statistics/trend,buckets",
             "incidents/statistics/by-status,groups",
             "incidents/statistics/by-event-type,groups",
+            "incidents/statistics/by-threat-level,groups",
+            "incidents/statistics/by-victim-count,groups",
             "incidents/statistics/by-alien,groups",
             "incidents/statistics/by-location,groups",
             "incidents/statistics/stale,items",

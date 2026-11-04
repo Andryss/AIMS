@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import * as api from '../api/client';
+import { VICTIM_COUNT_LABELS } from '../analyticsLabels';
 import { EVENT_TYPE_LABELS, STATUS_LABELS } from '../incidentLabels';
 import { useUsersMap } from '../hooks/useUsersMap';
 import { IncidentAnalyticsQuery, StaleIncidentAnalyticsRow } from '../types';
@@ -61,6 +62,12 @@ export function IncidentAnalyticsDashboard({ token, query, permissions }: Incide
       }</AnalyticsWidget>
       <AnalyticsWidget {...props} title="По типам событий" load={api.getIncidentByEventType}>{(data) =>
         <AnalyticsGroups groups={data.groups} labels={EVENT_TYPE_LABELS} />
+      }</AnalyticsWidget>
+      <AnalyticsWidget {...props} title="По уровню угрозы" load={api.getIncidentByThreatLevel}>{(data) =>
+        <AnalyticsGroups groups={data.groups} />
+      }</AnalyticsWidget>
+      <AnalyticsWidget {...props} title="По количеству пострадавших" load={api.getIncidentByVictimCount}>{(data) =>
+        <AnalyticsGroups groups={data.groups} labels={VICTIM_COUNT_LABELS} />
       }</AnalyticsWidget>
       <AnalyticsWidget {...props} title="По видам" load={api.getIncidentByAlien}>{(data) =>
         <AnalyticsGroups groups={data.groups} canReadAliens={permissions.includes('ALIEN_READ')} />

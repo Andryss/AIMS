@@ -200,6 +200,41 @@ public interface IncidentAnalyticsRepository extends Repository<IncidentEntity, 
                   @Param("alienId") Long alienId, @Param("responsibleUserId") Long responsibleUserId);
 
     /**
+     * Распределение инцидентов по принятому уровню угрозы.
+     */
+    @Query(value = HISTORY + RESPONSE_START + """
+                , 'groups', (SELECT jsonb_agg(jsonb_build_object('key', key, 'count', (
+                    SELECT count(*) FROM selected WHERE coalesce(s->>'threatLevel', 'UNKNOWN') = key
+                )) ORDER BY level NULLS LAST) FROM (
+                    SELECT CAST(level AS text) AS key, level FROM generate_series(1, 10) codes(level)
+                    UNION ALL SELECT 'UNKNOWN', NULL
+                ) codes)
+            ) AS text)
+            """, nativeQuery = true)
+    String byThreatLevel(@Param("from") Instant from, @Param("to") Instant to,
+                  @Param("eventType") String eventType,
+                  @Param("alienId") Long alienId, @Param("responsibleUserId") Long responsibleUserId);
+
+    /**
+     * Распределение инцидентов по количеству пострадавших.
+     */
+    @Query(value = HISTORY + RESPONSE_START + """
+                , 'groups', (SELECT jsonb_agg(jsonb_build_object('key', key, 'count', (
+                    SELECT count(*) FROM selected WHERE CASE
+                        WHEN CAST(s->>'victimCount' AS integer) >= 9 THEN '9+'
+                        ELSE coalesce(s->>'victimCount', 'UNKNOWN') END = key
+                )) ORDER BY victims NULLS LAST) FROM (
+                    SELECT CASE WHEN victims = 9 THEN '9+' ELSE CAST(victims AS text) END AS key, victims
+                    FROM generate_series(0, 9) codes(victims)
+                    UNION ALL SELECT 'UNKNOWN', NULL
+                ) codes)
+            ) AS text)
+            """, nativeQuery = true)
+    String byVictimCount(@Param("from") Instant from, @Param("to") Instant to,
+                  @Param("eventType") String eventType,
+                  @Param("alienId") Long alienId, @Param("responsibleUserId") Long responsibleUserId);
+
+    /**
      * Распределение исторического среза по видам.
      */
     @Query(value = HISTORY + RESPONSE_START + """

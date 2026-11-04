@@ -11,3 +11,9 @@ it('keeps a literal OTHER location separate from remainder and unknown groups', 
   expect(screen.getByText('Не определён')).toBeInTheDocument();
   expect(screen.getByText('0')).toBeInTheDocument();
 });
+
+it('allows a domain-specific label for unknown data', () => {
+  render(<MemoryRouter><AnalyticsGroups groups={[{ key: 'UNKNOWN', count: 3 }]}
+    labels={{ UNKNOWN: 'Неизвестно' }} /></MemoryRouter>);
+  expect(screen.getByText('Неизвестно')).toBeInTheDocument();
+});

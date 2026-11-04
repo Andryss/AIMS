@@ -6,6 +6,10 @@ export const ANALYTICS_DASHBOARDS = {
 
 export type AnalyticsDashboard = keyof typeof ANALYTICS_DASHBOARDS;
 
+export const VICTIM_COUNT_LABELS: Record<string, string> = {
+  UNKNOWN: 'Неизвестно',
+};
+
 export const ASSIGNED_TERM_LABELS: Record<string, string> = {
   UP_TO_30: 'До 30 суток', FROM_31_TO_90: '31–90 суток', OVER_90: 'Более 90 суток',
 };

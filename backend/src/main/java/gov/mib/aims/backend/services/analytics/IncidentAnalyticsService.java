@@ -156,6 +156,34 @@ public class IncidentAnalyticsService {
     }
 
     /**
+     * Распределение инцидентов по принятому уровню угрозы.
+     */
+    public GroupedAnalyticsResponse byThreatLevel(OffsetDateTime from, OffsetDateTime to,
+            IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
+        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
+        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
+        String json = repository.byThreatLevel(period.from(), period.to(),
+                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
+        var response = mapper.readValue(json, GroupedAnalyticsResponse.class);
+
+        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+    }
+
+    /**
+     * Распределение инцидентов по количеству пострадавших.
+     */
+    public GroupedAnalyticsResponse byVictimCount(OffsetDateTime from, OffsetDateTime to,
+            IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
+        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
+        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
+        String json = repository.byVictimCount(period.from(), period.to(),
+                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
+        var response = mapper.readValue(json, GroupedAnalyticsResponse.class);
+
+        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+    }
+
+    /**
      * Распределение исторического среза по видам.
      */
     public GroupedAnalyticsResponse byAlien(OffsetDateTime from, OffsetDateTime to,

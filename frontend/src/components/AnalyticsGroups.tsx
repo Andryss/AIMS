@@ -10,7 +10,7 @@ export function AnalyticsGroups({ groups, labels = {}, canReadAliens = false }: 
   const max = Math.max(1, ...groups.map((group) => group.count));
   if (!groups.length) { return <EmptyState title="Нет данных" />; }
   return <ul className="analytics-groups">{groups.map((group) => {
-    const label = group.key === 'UNKNOWN' ? 'Не определён' : group.key === 'OTHER' ? 'Остальные'
+    const label = group.key === 'UNKNOWN' ? labels.UNKNOWN ?? 'Не определён' : group.key === 'OTHER' ? 'Остальные'
       : group.name ?? labels[group.key] ?? group.key.replace(/^LOCATION:/, '');
     const alienId = /^\d+$/.test(group.key) ? Number(group.key) : null;
     return <li key={group.key}>

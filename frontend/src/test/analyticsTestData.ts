@@ -39,6 +39,8 @@ export function mockAnalyticsRequests() {
   [
     api.getIncidentByStatus,
     api.getIncidentByEventType,
+    api.getIncidentByThreatLevel,
+    api.getIncidentByVictimCount,
     api.getIncidentByAlien,
     api.getIncidentByLocation,
     api.getDetentionByStatus,

@@ -458,6 +458,110 @@ pathItems:
           $ref: ../common.yaml#/components/responses/Unauthorized
         403:
           $ref: ../common.yaml#/components/responses/Forbidden
+  IncidentsStatisticsByThreatLevel:
+    get:
+      description: "Accepted incident threat levels: keys 1 through 10, then UNKNOWN; includes zero counts"
+      operationId: "getIncidentByThreatLevel"
+      tags:
+        - "incident-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "eventType"
+          in: "query"
+          schema:
+            $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/GroupedAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+  IncidentsStatisticsByVictimCount:
+    get:
+      description: "Incident counts by victims: keys 0 through 8, then 9+ (9 or more), UNKNOWN; includes zero counts"
+      operationId: "getIncidentByVictimCount"
+      tags:
+        - "incident-statistics"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "from"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "to"
+          in: "query"
+          required: true
+          description: "ISO 8601 with UTC offset; maximum precision is microseconds"
+          schema:
+            type: "string"
+            format: "date-time"
+        - name: "eventType"
+          in: "query"
+          schema:
+            $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
+        - name: "alienId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+        - name: "responsibleUserId"
+          in: "query"
+          schema:
+            type: "integer"
+            format: "int64"
+            minimum: 1
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "./analytics.yaml#/components/schemas/GroupedAnalyticsResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
   IncidentsStatisticsByAlien:
     get:
       operationId: "getIncidentByAlien"

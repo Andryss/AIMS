@@ -224,6 +224,14 @@ export function getIncidentByEventType(token: string, query: IncidentAnalyticsQu
   return requestJson<GroupedAnalyticsResponse>(`/incidents/statistics/by-event-type?${queryString(query)}`, { method: 'GET' }, token);
 }
 
+export function getIncidentByThreatLevel(token: string, query: IncidentAnalyticsQuery): Promise<GroupedAnalyticsResponse> {
+  return requestJson<GroupedAnalyticsResponse>(`/incidents/statistics/by-threat-level?${queryString(query)}`, { method: 'GET' }, token);
+}
+
+export function getIncidentByVictimCount(token: string, query: IncidentAnalyticsQuery): Promise<GroupedAnalyticsResponse> {
+  return requestJson<GroupedAnalyticsResponse>(`/incidents/statistics/by-victim-count?${queryString(query)}`, { method: 'GET' }, token);
+}
+
 export function getIncidentByAlien(token: string, query: IncidentAnalyticsQuery): Promise<GroupedAnalyticsResponse> {
   return requestJson<GroupedAnalyticsResponse>(`/incidents/statistics/by-alien?${queryString(query)}`, { method: 'GET' }, token);
 }

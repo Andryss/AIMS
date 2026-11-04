@@ -87,6 +87,10 @@ paths:
     $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsByStatus
   /api/v1/incidents/statistics/by-event-type:
     $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsByEventType
+  /api/v1/incidents/statistics/by-threat-level:
+    $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsByThreatLevel
+  /api/v1/incidents/statistics/by-victim-count:
+    $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsByVictimCount
   /api/v1/incidents/statistics/by-alien:
     $ref: ./domains/incident-statistics.yaml#/pathItems/IncidentsStatisticsByAlien
   /api/v1/incidents/statistics/by-location:
