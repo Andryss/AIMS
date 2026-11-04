@@ -4,6 +4,7 @@ import gov.mib.aims.backend.generated.api.IncidentsApi;
 import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentCommentRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
+import gov.mib.aims.backend.generated.model.UpdateIncidentRequest;
 import gov.mib.aims.backend.generated.model.IncidentCommentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentCommentResponse;
 import gov.mib.aims.backend.generated.model.IncidentHistoryListResponse;
@@ -61,6 +62,14 @@ public class IncidentsApiImpl implements IncidentsApi {
     public IncidentResponse createIncident(@Valid CreateIncidentRequest createIncidentRequest) {
         log.info("POST /api/v1/incidents");
         return incidentService.create(createIncidentRequest);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('INCIDENT_EDIT')")
+    public IncidentResponse updateIncident(Long id, @Valid UpdateIncidentRequest request) {
+        log.info("PUT /api/v1/incidents/{}", id);
+
+        return incidentService.update(id, request);
     }
 
     @Override

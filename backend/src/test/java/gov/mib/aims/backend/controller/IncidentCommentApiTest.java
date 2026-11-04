@@ -39,6 +39,19 @@ class IncidentCommentApiTest extends BaseApiTest {
     private AppUserRepository appUserRepository;
 
     @Test
+    void allowsCommentsAfterIncidentCompletion() throws Exception {
+        String token = fixtures.signInAndGetToken("operator", "operator");
+        long id = createDraftIncident(token);
+        jdbcTemplate.update("update incident set status='EXECUTION_COMPLETED' where id=?", id);
+
+        mockMvc.perform(post(INCIDENTS_URL + "/" + id + "/comments")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token).contentType(APPLICATION_JSON)
+                .content("{\"text\":\"Комментарий после завершения\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.text").value("Комментарий после завершения"));
+    }
+
+    @Test
     void analystCreatesAndListsCommentsOldestFirst() throws Exception {
         String operatorToken = fixtures.signInAndGetToken("operator", "operator");
         String analystToken = fixtures.signInAndGetToken("analyst", "analyst");

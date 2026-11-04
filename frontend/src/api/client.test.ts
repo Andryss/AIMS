@@ -46,6 +46,20 @@ describe('incident threat API', () => {
   });
 });
 
+describe('incident detail updates', () => {
+  it('sends only editable details and additional attachment ids', async () => {
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, { id: 8, description: 'Уточнение' }));
+    const body = { eventType: 'ATTACK_ON_PEOPLE' as const, location: 'Место', detectedAt: '2025-06-01T12:00:00Z',
+      description: 'Уточнение', victimCount: null, additionalAttachmentFileIds: [10] };
+    expect(await api.updateIncident('tok', 8, body)).toEqual({ id: 8, description: 'Уточнение' });
+    expect(mockFetch.mock.calls[0][0]).toBe('/api/v1/incidents/8');
+    expect(mockFetch.mock.calls[0][1].method).toBe('PUT');
+    expect(JSON.parse(mockFetch.mock.calls[0][1].body)).toEqual(body);
+    expect(new Headers(mockFetch.mock.calls[0][1].headers).get('Authorization')).toBe('Bearer tok');
+  });
+});
+
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 

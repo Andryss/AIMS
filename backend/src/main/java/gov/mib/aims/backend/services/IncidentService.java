@@ -2,6 +2,7 @@ package gov.mib.aims.backend.services;
 
 import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
+import gov.mib.aims.backend.generated.model.UpdateIncidentRequest;
 import gov.mib.aims.backend.generated.model.IncidentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
 import gov.mib.aims.backend.generated.model.LinkIncidentAlienRequest;
@@ -20,6 +21,15 @@ public interface IncidentService {
      * @return созданный инцидент
      */
     IncidentResponse create(CreateIncidentRequest request);
+
+    /**
+     * Уточняет основные сведения и добавляет вложения до передачи аналитику.
+     *
+     * @param id идентификатор инцидента
+     * @param request основные поля и дополнительные вложения
+     * @return обновлённый инцидент
+     */
+    IncidentResponse update(Long id, UpdateIncidentRequest request);
 
     /**
      * Меняет статус инцидента.

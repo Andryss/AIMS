@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import * as api from '../api/client';
@@ -33,6 +33,7 @@ function renderAt(
     canLinkAlien?: boolean;
     canClassifyAlien?: boolean;
     canCalculateThreat?: boolean;
+    canEdit?: boolean;
     canComment?: boolean;
     canAssign?: boolean;
     canReadCleanupReport?: boolean;
@@ -46,6 +47,7 @@ function renderAt(
     canLinkAlien = true,
     canClassifyAlien = false,
     canCalculateThreat = false,
+    canEdit = false,
     canComment = true,
     canAssign = false,
     canReadCleanupReport = false,
@@ -67,6 +69,7 @@ function renderAt(
               canLinkAlien={canLinkAlien}
               canClassifyAlien={canClassifyAlien}
               canCalculateThreat={canCalculateThreat}
+              canEdit={canEdit}
               canComment={canComment}
               canAssign={canAssign}
               canReadCleanupReport={canReadCleanupReport}
@@ -664,5 +667,80 @@ describe('threat history refresh', () => {
     const threat = screen.getByText('Уровень угрозы').closest('.data-list__row') as HTMLElement;
     await within(threat).findByText('6');
     expect(screen.queryByRole('button', { name: 'Рассчитать угрозу' })).not.toBeInTheDocument();
+  });
+});
+
+
+describe('incident clarification', () => {
+  const incident = mockIncident({ id: 8, status: 'DRAFT', description: 'Исходное описание',
+    location: 'Исходное место', victimCount: null, attachmentFileIds: [1] });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    getIncident.mockResolvedValue(incident);
+    listIncidentComments.mockResolvedValue({ items: [], page: 0, size: 50, totalElements: 0, totalPages: 0 });
+    listIncidentHistory.mockResolvedValue({ items: [], page: 0, size: 50, totalElements: 0, totalPages: 0 });
+    batchUsers.mockResolvedValue({ items: [] });
+    (api.batchFiles as jest.Mock).mockResolvedValue({ items: [] });
+    (api.updateIncident as jest.Mock).mockResolvedValue({ ...incident, description: 'Уточнённое описание',
+      updatedAt: '2025-06-02T12:00:00Z' });
+  });
+
+  it.each(['DRAFT', 'CLARIFICATION_REQUIRED'] as const)('opens the editor in %s and updates the card', async (status) => {
+    getIncident.mockResolvedValue({ ...incident, status });
+    (api.updateIncident as jest.Mock).mockResolvedValue({ ...incident, status, description: 'Уточнённое описание' });
+    renderAt('/incidents/8', { canEdit: true });
+    await userEvent.click(await screen.findByRole('button', { name: 'Редактировать инцидент' }));
+    const editor = screen.getByRole('dialog', { name: 'Редактировать инцидент' });
+    expect(within(editor).getByLabelText(/Описание/)).toHaveValue('Исходное описание');
+    fireEvent.change(within(editor).getByLabelText(/Описание/), { target: { value: 'Уточнённое описание' } });
+    await userEvent.click(within(editor).getByRole('button', { name: 'Сохранить' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByText('Уточнённое описание')).toBeInTheDocument();
+  });
+
+  it.each([
+    { status: 'DRAFT', canEdit: false }, { status: 'READY_FOR_ANALYSIS', canEdit: true },
+    { status: 'READY_FOR_EXECUTION', canEdit: true }, { status: 'REANALYSIS_REQUIRED', canEdit: true },
+    { status: 'PREPARATION_FOR_EXECUTION', canEdit: true }, { status: 'PREPARED_FOR_EXECUTION', canEdit: true },
+    { status: 'EXECUTING', canEdit: true }, { status: 'EXECUTION_COMPLETED', canEdit: true },
+  ] as const)('hides the editor outside its permission or statuses: %j', async ({ status, canEdit }) => {
+    getIncident.mockResolvedValue({ ...incident, status });
+    renderAt('/incidents/8', { canEdit });
+    await screen.findByText('Исходное описание');
+    expect(screen.queryByRole('button', { name: 'Редактировать инцидент' })).not.toBeInTheDocument();
+  });
+
+  it('reloads the opened history after saving and discards the threat proposal', async () => {
+    (api.calculateIncidentThreat as jest.Mock).mockResolvedValue({ calculatedThreatLevel: 7, contributions: [] });
+    renderAt('/incidents/8', { canEdit: true, canCalculateThreat: true });
+    await userEvent.click(await screen.findByRole('button', { name: 'Рассчитать угрозу' }));
+    await screen.findByRole('button', { name: 'Принять' });
+    await userEvent.click(screen.getByRole('tab', { name: 'История' }));
+    await waitFor(() => expect(listIncidentHistory).toHaveBeenCalledTimes(1));
+    await userEvent.click(screen.getByRole('button', { name: 'Редактировать инцидент' }));
+    fireEvent.change(screen.getByLabelText(/Описание/), { target: { value: 'Уточнённое описание' } });
+    await userEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
+    await screen.findByText('Уточнённое описание');
+    await waitFor(() => expect(listIncidentHistory).toHaveBeenCalledTimes(2));
+    expect(screen.queryByRole('button', { name: 'Принять' })).not.toBeInTheDocument();
+  });
+
+  it('closes the editor and refreshes the card after a status conflict', async () => {
+    (api.updateIncident as jest.Mock).mockRejectedValueOnce(new api.ApiError(409, { humanMessage: 'Передан аналитику' }));
+    getIncident.mockResolvedValueOnce(incident).mockResolvedValueOnce({ ...incident, status: 'READY_FOR_ANALYSIS' });
+    renderAt('/incidents/8', { canEdit: true });
+    await userEvent.click(await screen.findByRole('button', { name: 'Редактировать инцидент' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.queryByRole('button', { name: 'Редактировать инцидент' })).not.toBeInTheDocument();
+    expect(getIncident).toHaveBeenCalledTimes(2);
+  });
+
+  it('still offers comments after completion', async () => {
+    getIncident.mockResolvedValue({ ...incident, status: 'EXECUTION_COMPLETED' });
+    renderAt('/incidents/8', { canEdit: true, canComment: true });
+    expect(await screen.findByRole('button', { name: 'Отправить' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Добавить комментарий')).toBeInTheDocument();
   });
 });

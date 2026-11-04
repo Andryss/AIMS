@@ -4,7 +4,7 @@ import * as api from '../api/client';
 import { EVENT_TYPE_LABELS } from '../incidentLabels';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { IncidentResponse } from '../types';
-import { CreateIncidentModal } from './CreateIncidentModal';
+import { IncidentEditorModal } from './IncidentEditorModal';
 import { IncidentStatusSelect } from './IncidentStatusSelect';
 import { Button } from './ui/Button';
 import { EmptyState } from './ui/EmptyState';
@@ -191,11 +191,11 @@ export function IncidentsTab({ token, roles, canCreate, canChangeStatus }: Incid
         </div>
       )}
 
-      <CreateIncidentModal
+      <IncidentEditorModal
         token={token}
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
-        onCreated={handleCreated}
+        onSaved={handleCreated}
       />
     </section>
   );

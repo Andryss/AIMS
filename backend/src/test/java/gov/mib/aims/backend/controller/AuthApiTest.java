@@ -86,10 +86,10 @@ class AuthApiTest extends BaseApiTest {
                 .andExpect(jsonPath("$.login").value("operator"))
                 .andExpect(jsonPath("$.roles", hasSize(1)))
                 .andExpect(jsonPath("$.roles[0]").value("OPERATOR"))
-                .andExpect(jsonPath("$.permissions", hasSize(13)))
+                .andExpect(jsonPath("$.permissions", hasSize(14)))
                 .andExpect(jsonPath("$.permissions", containsInAnyOrder(
                         "EQUIPMENT_READ", "EQUIPMENT_MOVEMENT_READ", "EQUIPMENT_MOVEMENT_CREATE",
-                        "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT",
+                        "INCIDENT_READ", "INCIDENT_CREATE", "INCIDENT_EDIT", "INCIDENT_STATUS_CHANGE", "INCIDENT_COMMENT",
                         "USER_READ", "CLEANUP_REPORT_READ",
                         "FILE_UPLOAD", "FILE_READ", "NOTIFICATION_READ", "MONITORING_ALERT_READ")));
     }

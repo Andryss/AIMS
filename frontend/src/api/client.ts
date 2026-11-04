@@ -29,6 +29,7 @@ import {
   CreateCleanupReportRequest,
   CreateIncidentCommentRequest,
   CreateIncidentRequest,
+  UpdateIncidentRequest,
   ErrorObject,
   EquipmentResponse,
   EquipmentListResponse,
@@ -268,6 +269,10 @@ export function createIncident(
     },
     token,
   );
+}
+
+export function updateIncident(token: string, id: number, payload: UpdateIncidentRequest): Promise<IncidentResponse> {
+  return requestJson<IncidentResponse>(`/incidents/${id}`, { method: 'PUT', body: JSON.stringify(payload) }, token);
 }
 
 export function listMonitoringAlerts(

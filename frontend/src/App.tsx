@@ -56,6 +56,7 @@ function App() {
     && (profile?.roles.some((role) => role === 'STOREKEEPER' || role === 'ADMIN') ?? false);
 
   const canCreateIncident = profile?.permissions.includes('INCIDENT_CREATE') ?? false;
+  const canEditIncident = profile?.permissions.includes('INCIDENT_EDIT') ?? false;
   const canReadMonitoringAlerts = useMemo(
     () =>
       (profile?.permissions.includes('MONITORING_ALERT_READ') ?? false) &&
@@ -294,6 +295,7 @@ function App() {
                     canLinkAlien={canLinkAlien}
                     canClassifyAlien={canClassifyAlien}
                     canCalculateThreat={canCalculateThreat}
+                    canEdit={canEditIncident}
                     canComment={canComment}
                     canAssign={canAssign}
                     canReadCleanupReport={canReadCleanupReport}

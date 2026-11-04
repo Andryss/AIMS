@@ -4,6 +4,7 @@
 insert into permission (code, description) values
     ('INCIDENT_READ', 'Просмотр карточек и списка инцидентов'),
     ('INCIDENT_CREATE', 'Создание инцидентов'),
+    ('INCIDENT_EDIT', 'Редактирование основных сведений инцидента'),
     ('INCIDENT_STATUS_CHANGE', 'Смена статуса инцидента'),
     ('INCIDENT_COMMENT', 'Добавление комментариев к инциденту'),
     ('INCIDENT_THREAT_CALCULATE', 'Расчёт и принятие уровня угрозы инцидента'),
@@ -52,7 +53,7 @@ insert into role_permission (role_id, permission_id)
 select r.id, p.id
 from role r, permission p
 where r.name = 'OPERATOR' and p.code in (
-    'INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE',
+    'INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_EDIT', 'INCIDENT_STATUS_CHANGE',
     'INCIDENT_COMMENT', 'USER_READ', 'EQUIPMENT_READ',
     'EQUIPMENT_MOVEMENT_READ', 'EQUIPMENT_MOVEMENT_CREATE', 'CLEANUP_REPORT_READ',
     'FILE_UPLOAD', 'FILE_READ', 'NOTIFICATION_READ',
@@ -74,7 +75,7 @@ insert into role_permission (role_id, permission_id)
 select r.id, p.id
 from role r, permission p
 where r.name = 'ADMIN' and p.code in (
-    'INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE',
+    'INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_EDIT', 'INCIDENT_STATUS_CHANGE',
     'INCIDENT_COMMENT', 'INCIDENT_THREAT_CALCULATE', 'INCIDENT_ALIEN_CLASSIFY', 'INCIDENT_ALIEN_LINK', 'ALIEN_READ',
     'ALIEN_WRITE', 'USER_READ', 'INCIDENT_ASSIGN',
     'EQUIPMENT_READ', 'EQUIPMENT_WRITE', 'EQUIPMENT_MOVEMENT_READ',

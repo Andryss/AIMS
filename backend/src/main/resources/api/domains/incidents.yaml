@@ -159,6 +159,46 @@ pathItems:
         500:
           $ref: ../common.yaml#/components/responses/InternalServerError
 
+    put:
+      summary: Update incident details before analysis
+      operationId: updateIncident
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateIncidentRequest"
+      responses:
+        200:
+          description: Updated incident
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+        404:
+          $ref: ../common.yaml#/components/responses/NotFound
+        409:
+          $ref: ../common.yaml#/components/responses/Conflict
+        500:
+          $ref: ../common.yaml#/components/responses/InternalServerError
+
   IncidentsByIdAlienClassification:
     post:
       summary: Suggest alien species from an incident image without saving
@@ -702,6 +742,40 @@ components:
           type: integer
           format: int64
           description: Optional link to inbound monitoring alert
+
+    UpdateIncidentRequest:
+      type: object
+      required:
+        - eventType
+        - location
+        - detectedAt
+        - description
+      properties:
+        victimCount:
+          type: integer
+          format: int32
+          minimum: 0
+          nullable: true
+        eventType:
+          $ref: "#/components/schemas/IncidentEventTypeApi"
+        location:
+          type: string
+          minLength: 1
+        detectedAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+          minLength: 1
+        additionalAttachmentFileIds:
+          type: array
+          nullable: true
+          default: []
+          minItems: 0
+          maxItems: 10
+          items:
+            type: integer
+            format: int64
 
     IncidentThreatContribution:
       type: object

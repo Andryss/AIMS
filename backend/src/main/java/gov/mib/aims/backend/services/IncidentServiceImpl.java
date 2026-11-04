@@ -5,6 +5,7 @@ import gov.mib.aims.backend.entity.MonitoringAlertEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
+import gov.mib.aims.backend.generated.model.UpdateIncidentRequest;
 import gov.mib.aims.backend.generated.model.IncidentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
 import gov.mib.aims.backend.generated.model.LinkIncidentAlienRequest;
@@ -32,8 +33,11 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Реализация {@link IncidentService}.
@@ -41,6 +45,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class IncidentServiceImpl implements IncidentService {
+
+    private static final int MAX_ATTACHMENT_COUNT = 10;
 
     private final IncidentRepository incidentRepository;
     private final MonitoringAlertRepository monitoringAlertRepository;
@@ -82,6 +88,55 @@ public class IncidentServiceImpl implements IncidentService {
             monitoringAlertRepository.save(linkedAlert);
         }
 
+        entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
+
+        return incidentMapper.toResponse(entity);
+    }
+
+    @Override
+    @Retryable(interceptor = "retryInterceptor")
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public IncidentResponse update(Long id, UpdateIncidentRequest request) {
+        IncidentEntity entity = incidentRepository.findById(id).orElseThrow(Errors::incidentNotFound);
+        if (entity.getStatus() != IncidentStatus.DRAFT && entity.getStatus() != IncidentStatus.CLARIFICATION_REQUIRED) {
+            throw Errors.incidentConflict("Изменение доступно только в черновике или при уточнении инцидента");
+        }
+
+        var additionalFiles = request.getAdditionalAttachmentFileIds() == null
+                ? List.<Long>of() : request.getAdditionalAttachmentFileIds();
+        if (additionalFiles.stream().anyMatch(Objects::isNull)) {
+            throw Errors.validationError("Укажите идентификатор каждого добавляемого файла");
+        }
+        attachmentValidator.assertAllExist(additionalFiles);
+        var attachments = new LinkedHashSet<>(entity.getAttachmentFileIds());
+        boolean attachmentsChanged = attachments.addAll(additionalFiles);
+        if (attachments.size() > MAX_ATTACHMENT_COUNT) {
+            throw Errors.validationError("Можно прикрепить не более " + MAX_ATTACHMENT_COUNT + " файлов");
+        }
+
+        var eventType = incidentMapper.toModelEventType(request.getEventType());
+        String location = request.getLocation().trim();
+        String description = request.getDescription().trim();
+        if (location.isBlank() || description.isBlank()) {
+            throw Errors.validationError("Укажите место и описание инцидента");
+        }
+        var detectedAt = chronoService.truncate(
+                chronoService.toLocalDateTime(request.getDetectedAt()), ChronoUnit.MICROS);
+        if (entity.getEventType() == eventType && entity.getLocation().equals(location)
+                && entity.getDescription().equals(description) && entity.getDetectedAt().equals(detectedAt)
+                && Objects.equals(entity.getVictimCount(), request.getVictimCount())
+                && !attachmentsChanged) {
+            return incidentMapper.toResponse(entity);
+        }
+
+        entity.setEventType(eventType);
+        entity.setLocation(location);
+        entity.setDescription(description);
+        entity.setDetectedAt(detectedAt);
+        entity.setVictimCount(request.getVictimCount());
+        entity.setAttachmentFileIds(new ArrayList<>(attachments));
+        entity.setUpdatedAt(chronoService.localDateTimeNow());
+        entity = incidentRepository.save(entity);
         entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
 
         return incidentMapper.toResponse(entity);

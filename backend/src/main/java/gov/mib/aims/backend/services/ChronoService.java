@@ -102,6 +102,13 @@ public class ChronoService {
     }
 
     /**
+     * Обрезает локальное время UTC до выбранной точности хранения.
+     */
+    public LocalDateTime truncate(LocalDateTime dateTime, TemporalUnit unit) {
+        return dateTime.truncatedTo(unit);
+    }
+
+    /**
      * Проверяет включительную верхнюю границу длительности между моментами.
      */
     public boolean isDurationAtMost(Instant from, Instant to, long amount, TemporalUnit unit) {

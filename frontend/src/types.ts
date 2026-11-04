@@ -51,6 +51,15 @@ export interface CreateIncidentRequest {
   monitoringAlertId?: number;
 }
 
+export interface UpdateIncidentRequest {
+  eventType: IncidentEventType;
+  location: string;
+  detectedAt: string;
+  description: string;
+  victimCount: number | null;
+  additionalAttachmentFileIds: number[];
+}
+
 export type MonitoringAlertStatus = 'NEW' | 'INCIDENT_CREATED';
 
 export interface MonitoringAlert {

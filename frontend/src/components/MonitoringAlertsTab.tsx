@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import * as api from '../api/client';
 import { CreateIncidentInitialValues, IncidentResponse, MonitoringAlert } from '../types';
-import { CreateIncidentModal } from './CreateIncidentModal';
+import { IncidentEditorModal } from './IncidentEditorModal';
 import { MonitoringAlertCard } from './MonitoringAlertCard';
 import { EmptyState } from './ui/EmptyState';
 import { LoadingBlock } from './ui/LoadingBlock';
@@ -136,14 +136,14 @@ export function MonitoringAlertsTab({ token, canCreate }: MonitoringAlertsTabPro
         </div>
       )}
 
-      <CreateIncidentModal
+      <IncidentEditorModal
         token={token}
         open={createModalOpen}
         onClose={() => {
           setCreateModalOpen(false);
           setCreateInitialValues(null);
         }}
-        onCreated={handleCreated}
+        onSaved={handleCreated}
         initialValues={createInitialValues}
       />
     </section>

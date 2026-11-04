@@ -12,6 +12,7 @@ import {
 import { AlienSummary } from './AlienSummary';
 import { IncidentAlienClassification } from './IncidentAlienClassification';
 import { IncidentThreatAssessment } from './IncidentThreatAssessment';
+import { IncidentEditorModal } from './IncidentEditorModal';
 import { AlienPickerDrawer } from './AlienPickerDrawer';
 import { AttachmentDownloadList } from './AttachmentDownloadList';
 import { CleanupReportDrawer } from './CleanupReportDrawer';
@@ -59,6 +60,7 @@ interface IncidentDetailPageProps {
   canLinkAlien: boolean;
   canClassifyAlien?: boolean;
   canCalculateThreat?: boolean;
+  canEdit?: boolean;
   canComment: boolean;
   canAssign: boolean;
   canReadCleanupReport: boolean;
@@ -79,6 +81,7 @@ export function IncidentDetailPage({
   canLinkAlien,
   canClassifyAlien = false,
   canCalculateThreat = false,
+  canEdit = false,
   canComment,
   canAssign,
   canReadCleanupReport,
@@ -94,6 +97,10 @@ export function IncidentDetailPage({
   const incidentId = idParam ? Number(idParam) : NaN;
 
   const [incident, setIncident] = useState<IncidentResponse | null>(null);
+  const [editorScope, setEditorScope] = useState<string | null>(null);
+  const [editorRevision, setEditorRevision] = useState(0);
+  const editScope = JSON.stringify([token, incidentId]);
+  const editable = canEdit && (incident?.status === 'DRAFT' || incident?.status === 'CLARIFICATION_REQUIRED');
   const [linkedAlien, setLinkedAlien] = useState<Alien | null>(null);
   const [cleanupReport, setCleanupReport] = useState<CleanupReportResponse | null>(null);
   const [cleanupDrawerOpen, setCleanupDrawerOpen] = useState(false);
@@ -641,10 +648,35 @@ export function IncidentDetailPage({
     <section className="card incident-detail-page">
       <div className="card__header">
         <h2>{incident ? `Инцидент #${incident.id}` : 'Инцидент'}</h2>
-        <Link to="/incidents" className="btn btn--outline">
-          ← К списку
-        </Link>
+        <div className="tender-actions">
+          {!loading && editable && <Button variant="ghost" className="icon-button"
+            aria-label="Редактировать инцидент" title="Редактировать инцидент" onClick={() => setEditorScope(editScope)}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
+              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="m16 3 5 5M3 21l5-1L21 7a2.1 2.1 0 0 0-5-5L3 15z" />
+            </svg>
+          </Button>}
+          <Link to="/incidents" className="btn btn--outline">← К списку</Link>
+        </div>
       </div>
+
+      {incident && !loading && editable && editorScope === editScope && <IncidentEditorModal
+        key={editScope} token={token} open incident={incident} onClose={() => setEditorScope(null)}
+        onConflict={(updated) => {
+          historyRequest.current += 1;
+          setHistoryLoading(false);
+          setIncident(updated);
+          setHistoryLoaded(false);
+          setEditorRevision((previous) => previous + 1);
+        }}
+        onSaved={(updated) => {
+          historyRequest.current += 1;
+          setHistoryLoading(false);
+          setIncident(updated);
+          setHistoryLoaded(false);
+          setEditorRevision((previous) => previous + 1);
+          setError(null);
+        }} />}
 
       {error && (
         <div className="alert alert--error" role="alert" aria-live="polite">
@@ -715,7 +747,7 @@ export function IncidentDetailPage({
                       </Button>
                     )}
                     {canClassifyAlien && incident.status === 'READY_FOR_ANALYSIS' && (
-                      <IncidentAlienClassification key={incidentId} token={token} incident={incident}
+                      <IncidentAlienClassification key={`${incidentId}:${editorRevision}`} token={token} incident={incident}
                         canAccept={canLinkAlien} disabled={linkLoading} onSavingChange={setLinkLoading}
                         onAccepted={(updated, alien) => {
                           setIncident(updated);
@@ -730,7 +762,7 @@ export function IncidentDetailPage({
               <div className="data-list__row">
                 <dt>Уровень угрозы</dt>
                 <dd>
-                  <IncidentThreatAssessment key={incidentId} token={token} incident={incident}
+                  <IncidentThreatAssessment key={`${incidentId}:${editorRevision}`} token={token} incident={incident}
                     canCalculate={canCalculateThreat} alienThreatLevel={linkedAlien?.threatLevel} disabled={linkLoading}
                     onUpdated={(updated) => {
                       historyRequest.current += 1;
