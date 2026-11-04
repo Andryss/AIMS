@@ -7,7 +7,7 @@ import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.TenderParticipantStatus;
 import gov.mib.aims.backend.repository.EquipmentRepository;
 import gov.mib.aims.backend.repository.TenderParticipantRepository;
-import gov.mib.aims.backend.services.EntityHistoryService;
+import gov.mib.aims.backend.services.history.EntityHistoryService;
 import gov.mib.aims.backend.services.mapping.TenderMapper;
 import gov.mib.aims.backend.services.mapping.TenderParticipantMapper;
 import gov.mib.aims.backend.services.validation.TextNormalizer;

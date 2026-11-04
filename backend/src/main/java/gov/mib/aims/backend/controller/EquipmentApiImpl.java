@@ -7,7 +7,7 @@ import gov.mib.aims.backend.generated.model.EquipmentResponse;
 import gov.mib.aims.backend.generated.model.EquipmentStatusApi;
 import gov.mib.aims.backend.generated.model.EquipmentTypeApi;
 import gov.mib.aims.backend.generated.model.SaveEquipmentRequest;
-import gov.mib.aims.backend.services.EquipmentService;
+import gov.mib.aims.backend.services.equipment.EquipmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;

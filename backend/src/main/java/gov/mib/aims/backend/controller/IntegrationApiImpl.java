@@ -3,7 +3,7 @@ package gov.mib.aims.backend.controller;
 import gov.mib.aims.backend.generated.api.IntegrationApi;
 import gov.mib.aims.backend.generated.model.IngestMonitoringEventRequest;
 import gov.mib.aims.backend.generated.model.MonitoringAlertResponse;
-import gov.mib.aims.backend.services.MonitoringAlertService;
+import gov.mib.aims.backend.services.monitoring.MonitoringAlertService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

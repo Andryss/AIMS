@@ -4,7 +4,7 @@ import gov.mib.aims.backend.generated.api.MonitoringApi;
 import gov.mib.aims.backend.generated.model.MonitoringAlertListResponse;
 import gov.mib.aims.backend.generated.model.MonitoringAlertResponse;
 import gov.mib.aims.backend.generated.model.MonitoringAlertStatusApi;
-import gov.mib.aims.backend.services.MonitoringAlertService;
+import gov.mib.aims.backend.services.monitoring.MonitoringAlertService;
 import gov.mib.aims.backend.services.query.PageParameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -5,7 +5,6 @@ import gov.mib.aims.backend.model.EntityRef;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.Role;
 import gov.mib.aims.backend.repository.AppUserRepository;
-import gov.mib.aims.backend.services.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

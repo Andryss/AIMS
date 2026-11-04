@@ -11,7 +11,6 @@ import gov.mib.aims.backend.config.AlienClassifierProperties;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.exception.BaseException;
 import gov.mib.aims.backend.model.AlienPrediction;
-import gov.mib.aims.backend.services.AlienClassifier;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;

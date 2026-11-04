@@ -7,7 +7,7 @@ import gov.mib.aims.backend.generated.model.DetentionRequestResponse;
 import gov.mib.aims.backend.generated.model.DetentionRequestStatusApi;
 import gov.mib.aims.backend.generated.model.SaveDetentionRequest;
 import gov.mib.aims.backend.generated.model.ChangeDetentionRequestStatusRequest;
-import gov.mib.aims.backend.services.DetentionRequestService;
+import gov.mib.aims.backend.services.detention.DetentionRequestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;

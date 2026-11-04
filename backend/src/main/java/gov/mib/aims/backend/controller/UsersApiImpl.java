@@ -4,7 +4,7 @@ import gov.mib.aims.backend.generated.api.UsersApi;
 import gov.mib.aims.backend.generated.model.BatchUsersRequest;
 import gov.mib.aims.backend.generated.model.BatchUsersResponse;
 import gov.mib.aims.backend.generated.model.UserSearchResponse;
-import gov.mib.aims.backend.services.UserService;
+import gov.mib.aims.backend.services.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

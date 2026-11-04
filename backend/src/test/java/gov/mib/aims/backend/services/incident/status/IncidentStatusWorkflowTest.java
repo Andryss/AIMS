@@ -5,7 +5,7 @@ import gov.mib.aims.backend.exception.BaseException;
 import gov.mib.aims.backend.model.IncidentStatus;
 import gov.mib.aims.backend.model.Role;
 import gov.mib.aims.backend.services.ChronoService;
-import gov.mib.aims.backend.services.CurrentUserService;
+import gov.mib.aims.backend.services.auth.CurrentUserService;
 import gov.mib.aims.backend.services.dbqueue.DbQueueProcessor;
 import gov.mib.aims.backend.services.dbqueue.DbQueueService;
 import gov.mib.aims.backend.services.dbqueue.QueuePayload;

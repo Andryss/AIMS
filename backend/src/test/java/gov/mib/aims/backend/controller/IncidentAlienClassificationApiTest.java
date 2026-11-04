@@ -3,7 +3,7 @@ package gov.mib.aims.backend.controller;
 import gov.mib.aims.backend.model.AlienPrediction;
 import gov.mib.aims.backend.exception.Errors;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import gov.mib.aims.backend.services.AlienClassifier;
+import gov.mib.aims.backend.services.classification.AlienClassifier;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

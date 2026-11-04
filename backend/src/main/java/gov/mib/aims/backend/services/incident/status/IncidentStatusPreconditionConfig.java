@@ -1,7 +1,7 @@
 package gov.mib.aims.backend.services.incident.status;
 
 import gov.mib.aims.backend.model.Role;
-import gov.mib.aims.backend.services.CurrentUserService;
+import gov.mib.aims.backend.services.auth.CurrentUserService;
 import gov.mib.aims.backend.services.incident.status.precondition.RolePrecondition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

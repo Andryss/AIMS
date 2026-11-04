@@ -2,7 +2,7 @@ package gov.mib.aims.backend.services.incident;
 
 import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.model.EntityType;
-import gov.mib.aims.backend.services.EntityHistoryService;
+import gov.mib.aims.backend.services.history.EntityHistoryService;
 import gov.mib.aims.backend.services.mapping.IncidentSnapshotMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

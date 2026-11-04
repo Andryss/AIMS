@@ -6,7 +6,7 @@ import gov.mib.aims.backend.generated.model.AlienSearchResponse;
 import gov.mib.aims.backend.generated.model.AlienListResponse;
 import gov.mib.aims.backend.generated.model.SaveAlienRequest;
 import jakarta.validation.Valid;
-import gov.mib.aims.backend.services.AlienService;
+import gov.mib.aims.backend.services.alien.AlienService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;

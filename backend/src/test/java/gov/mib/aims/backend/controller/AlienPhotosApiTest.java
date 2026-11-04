@@ -1,6 +1,6 @@
 package gov.mib.aims.backend.controller;
 
-import gov.mib.aims.backend.services.FileStorage;
+import gov.mib.aims.backend.services.file.FileStorage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

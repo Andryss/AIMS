@@ -5,7 +5,7 @@ import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.model.DetentionRequestStatus;
 import gov.mib.aims.backend.model.Permission;
 import gov.mib.aims.backend.services.ChronoService;
-import gov.mib.aims.backend.services.CurrentUserService;
+import gov.mib.aims.backend.services.auth.CurrentUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

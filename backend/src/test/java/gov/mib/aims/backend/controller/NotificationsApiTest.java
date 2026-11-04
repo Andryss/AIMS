@@ -5,7 +5,7 @@ import gov.mib.aims.backend.entity.AppUserEntity;
 import gov.mib.aims.backend.generated.model.SignInRequest;
 import gov.mib.aims.backend.model.EntityRef;
 import gov.mib.aims.backend.model.EntityType;
-import gov.mib.aims.backend.services.NotificationService;
+import gov.mib.aims.backend.services.notification.NotificationService;
 import gov.mib.aims.backend.repository.AppUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

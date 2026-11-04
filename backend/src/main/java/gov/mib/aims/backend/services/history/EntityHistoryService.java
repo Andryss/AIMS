@@ -1,0 +1,28 @@
+package gov.mib.aims.backend.services.history;
+
+import gov.mib.aims.backend.model.EntityType;
+
+/**
+ * Сервис записи истории изменений сущностей.
+ */
+public interface EntityHistoryService {
+
+    /**
+     * Фиксирует новое состояние сущности (текущий пользователь из SecurityContext).
+     *
+     * @param entityType тип сущности
+     * @param entityId идентификатор сущности
+     * @param newState объект нового состояния для JSON-снимка
+     */
+    void recordChange(EntityType entityType, Long entityId, Object newState);
+
+    /**
+     * Фиксирует новое состояние сущности.
+     *
+     * @param entityType тип сущности
+     * @param entityId идентификатор сущности
+     * @param newState объект нового состояния для JSON-снимка
+     * @param changedByUserId идентификатор пользователя, выполнившего изменение
+     */
+    void recordChange(EntityType entityType, Long entityId, Object newState, Long changedByUserId);
+}

@@ -5,7 +5,7 @@ import gov.mib.aims.backend.generated.model.FileUploadResponse;
 import gov.mib.aims.backend.generated.model.BatchFilesRequest;
 import gov.mib.aims.backend.generated.model.BatchFilesResponse;
 import gov.mib.aims.backend.model.FileDownload;
-import gov.mib.aims.backend.services.FileService;
+import gov.mib.aims.backend.services.file.FileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

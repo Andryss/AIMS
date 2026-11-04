@@ -2,7 +2,7 @@ package gov.mib.aims.backend.services.incident.status.precondition;
 
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.model.Role;
-import gov.mib.aims.backend.services.CurrentUserService;
+import gov.mib.aims.backend.services.auth.CurrentUserService;
 import gov.mib.aims.backend.services.incident.IncidentTransitionContext;
 import gov.mib.aims.backend.services.status.StatusTransitionPrecondition;
 

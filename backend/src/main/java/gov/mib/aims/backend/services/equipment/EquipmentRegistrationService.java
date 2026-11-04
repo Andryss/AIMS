@@ -9,7 +9,7 @@ import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.EquipmentStatus;
 import gov.mib.aims.backend.model.EquipmentType;
 import gov.mib.aims.backend.repository.EquipmentRepository;
-import gov.mib.aims.backend.services.EntityHistoryService;
+import gov.mib.aims.backend.services.history.EntityHistoryService;
 import gov.mib.aims.backend.services.mapping.EquipmentMapper;
 import gov.mib.aims.backend.services.validation.TextNormalizer;
 import lombok.RequiredArgsConstructor;
