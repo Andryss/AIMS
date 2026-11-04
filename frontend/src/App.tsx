@@ -70,6 +70,7 @@ function App() {
   const canWriteAliens = profile?.permissions.includes('ALIEN_WRITE') ?? false;
   const showKnowledgeBaseTab = canReadAliens && (profile?.roles.some((role) =>
     KNOWLEDGE_BASE_TAB_ROLES.includes(role as (typeof KNOWLEDGE_BASE_TAB_ROLES)[number])) ?? false);
+  const canClassifyAlien = profile?.permissions.includes('INCIDENT_ALIEN_CLASSIFY') ?? false;
   const canLinkAlien = profile?.permissions.includes('INCIDENT_ALIEN_LINK') ?? false;
   const canComment = profile?.permissions.includes('INCIDENT_COMMENT') ?? false;
   const canAssign = profile?.permissions.includes('INCIDENT_ASSIGN') ?? false;
@@ -290,6 +291,7 @@ function App() {
                     canChangeStatus={canChangeIncidentStatus}
                     canReadAliens={canReadAliens}
                     canLinkAlien={canLinkAlien}
+                    canClassifyAlien={canClassifyAlien}
                     canComment={canComment}
                     canAssign={canAssign}
                     canReadCleanupReport={canReadCleanupReport}

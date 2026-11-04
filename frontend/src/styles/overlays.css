@@ -494,3 +494,74 @@
   object-fit: contain;
   border-radius: var(--radius-sm);
 }
+
+.image-preview-trigger {
+  display: block;
+  padding: 0;
+  border: 0;
+  cursor: zoom-in;
+  overflow: hidden;
+}
+
+.image-preview-trigger img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.image-viewer {
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 1rem;
+  border: 0;
+  color: #fff;
+  background: rgba(10, 15, 24, 0.96);
+}
+
+.image-viewer[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.image-viewer::backdrop {
+  background: rgba(10, 15, 24, 0.8);
+}
+
+.image-viewer__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.image-viewer__toolbar span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.image-viewer__toolbar button {
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-md);
+  color: inherit;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 1.75rem;
+  cursor: pointer;
+}
+
+.image-viewer__image {
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  object-fit: contain;
+}

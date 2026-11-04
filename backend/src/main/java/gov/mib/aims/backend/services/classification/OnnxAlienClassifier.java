@@ -9,6 +9,7 @@ import ai.onnxruntime.TensorInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.mib.aims.backend.config.AlienClassifierProperties;
 import gov.mib.aims.backend.exception.Errors;
+import gov.mib.aims.backend.exception.BaseException;
 import gov.mib.aims.backend.model.AlienPrediction;
 import gov.mib.aims.backend.services.AlienClassifier;
 import jakarta.annotation.PostConstruct;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.FloatBuffer;
 import java.util.Map;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.function.Supplier;
 
@@ -74,7 +76,7 @@ public class OnnxAlienClassifier implements AlienClassifier, AutoCloseable {
     }
 
     @Override
-    public AlienPrediction predict(Supplier<byte[]> image) {
+    public AlienPrediction predict(List<Supplier<byte[]>> images) {
         if (!requests.tryAcquire()) {
             throw Errors.classifierUnavailable();
         }
@@ -83,44 +85,43 @@ public class OnnxAlienClassifier implements AlienClassifier, AutoCloseable {
             if (current == null) {
                 throw Errors.classifierUnavailable();
             }
-            float[] pixels = preprocessor.prepare(image.get());
-            try (var input = OnnxTensor.createTensor(OrtEnvironment.getEnvironment(), FloatBuffer.wrap(pixels),
-                    new long[]{BATCH_SIZE, AlienImagePreprocessor.CHANNEL_COUNT,
-                            AlienImagePreprocessor.CROP_SIZE, AlienImagePreprocessor.CROP_SIZE});
-                    var result = current.session().run(Map.of(current.model().input(), input))) {
-                var logits = (float[][]) result.get(current.model().output()).orElseThrow().getValue();
-                if (logits.length != BATCH_SIZE) {
-                    throw new IllegalStateException("Invalid classifier output batch");
+            var scores = new AlienClassificationScores(current.model().keys().size());
+            for (var image : images) {
+                float[] pixels;
+                try {
+                    pixels = preprocessor.prepare(image.get());
+                } catch (BaseException e) {
+                    if (e.getCode() != 400 && e.getCode() != 404) {
+                        log.warn("Alien classifier image read failed", e);
+                        throw Errors.classifierUnavailable();
+                    }
+                    log.info("Skipping unavailable or unsupported incident image: {}", e.getMessage());
+                    continue;
+                } catch (RuntimeException e) {
+                    log.warn("Alien classifier image read failed", e);
+                    throw Errors.classifierUnavailable();
                 }
-                return prediction(logits[0], current.model());
-            } catch (OrtException | ClassCastException | IllegalStateException e) {
-                log.warn("Alien classifier execution failed", e);
-                throw Errors.classifierUnavailable();
+                try (var input = OnnxTensor.createTensor(OrtEnvironment.getEnvironment(), FloatBuffer.wrap(pixels),
+                        new long[]{BATCH_SIZE, AlienImagePreprocessor.CHANNEL_COUNT,
+                                AlienImagePreprocessor.CROP_SIZE, AlienImagePreprocessor.CROP_SIZE});
+                        var result = current.session().run(Map.of(current.model().input(), input))) {
+                    var logits = (float[][]) result.get(current.model().output()).orElseThrow().getValue();
+                    if (logits.length != BATCH_SIZE) {
+                        throw new IllegalStateException("Invalid classifier output batch");
+                    }
+                    scores.add(logits[0]);
+                } catch (OrtException | ClassCastException | IllegalStateException e) {
+                    log.warn("Alien classifier execution failed", e);
+                    throw Errors.classifierUnavailable();
+                }
             }
+            if (scores.isEmpty()) {
+                throw Errors.validationError("В инциденте нет доступных изображений PNG или JPEG");
+            }
+            return scores.prediction(current.model().keys(), current.model().threshold());
         } finally {
             requests.release();
         }
-    }
-
-    private AlienPrediction prediction(float[] logits, AlienClassifierModel model) {
-        if (logits.length != model.keys().size()) {
-            throw new IllegalStateException("Invalid classifier output size");
-        }
-        int best = 0;
-        for (int index = 0; index < logits.length; index++) {
-            if (!Float.isFinite(logits[index])) {
-                throw new IllegalStateException("Nonfinite classifier output");
-            }
-            if (logits[index] > logits[best]) {
-                best = index;
-            }
-        }
-        double sum = 0;
-        for (float logit : logits) {
-            sum += Math.exp((double) logit - logits[best]);
-        }
-        double score = 1 / sum;
-        return new AlienPrediction(model.keys().get(best), score, score >= model.threshold());
     }
 
     private void validateShapes(OrtSession session, AlienClassifierModel model) throws OrtException {

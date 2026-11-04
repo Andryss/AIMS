@@ -512,3 +512,19 @@ it('does not let a late upload from a previous session revoke current previews',
   expect(await api.getFilePreviewUrl('new-session', 1)).toBe('blob:current');
   expect(mockFetch).toHaveBeenCalledTimes(2);
 });
+
+it('requests an alien classification without linking the returned species', async () => {
+  mockFetch.mockReset();
+  const api = await import('./client');
+  (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify({
+    status: 'MATCH', confidence: 95.6, alien: { id: 6, name: 'Ашта', threatLevel: 9, description: '' },
+  }) });
+  const result = await api.classifyIncidentAlien('tok', 8);
+  expect(global.fetch).toHaveBeenCalledTimes(1);
+  expect(global.fetch).toHaveBeenCalledWith('/api/v1/incidents/8/alien-classification', expect.objectContaining({
+    method: 'POST',
+  }));
+  expect(new Headers(mockFetch.mock.calls[0][1].headers).get('Authorization')).toBe('Bearer tok');
+  expect(mockFetch.mock.calls[0][1].body).toBeUndefined();
+  expect(result.confidence).toBe(95.6);
+});

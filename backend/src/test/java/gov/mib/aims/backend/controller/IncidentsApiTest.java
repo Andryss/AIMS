@@ -12,6 +12,7 @@ import gov.mib.aims.backend.services.dbqueue.processor.NotifyAnalystsIncidentRea
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -41,6 +42,18 @@ class IncidentsApiTest extends BaseApiTest {
     private static final String FILES_URL = "/api/v1/files";
     private static final String INCIDENTS_URL = "/api/v1/incidents";
     private static final String UNREAD_COUNT_URL = "/api/v1/notifications/unread-count";
+
+    @ParameterizedTest
+    @CsvSource({"10,200", "11,400"})
+    void limitsAttachmentsWhenCreatingIncident(int count, int expectedStatus) throws Exception {
+        String token = fixtures.signInAndGetToken("operator", "operator");
+        long fileId = fixtures.uploadFile(token);
+        var request = fixtures.minimalCreateRequest(fileId)
+                .attachmentFileIds(java.util.Collections.nCopies(count, fileId));
+        mockMvc.perform(post(INCIDENTS_URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().is(expectedStatus));
+    }
 
     @Autowired
     private NotifyAnalystsIncidentReadyProcessor notifyAnalystsProcessor;

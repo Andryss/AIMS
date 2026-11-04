@@ -192,6 +192,7 @@ export function CreateIncidentModal({
           <FileUploadField
             label="Вложения"
             files={attachmentFiles}
+            maxFiles={10}
             onChange={setAttachmentFiles}
             disabled={loading}
           />

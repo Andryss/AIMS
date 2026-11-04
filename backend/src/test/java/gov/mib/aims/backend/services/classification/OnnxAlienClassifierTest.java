@@ -133,6 +133,35 @@ class OnnxAlienClassifierTest {
     }
 
     @Test
+    void processesAllImagesAndSkipsUnreadableOnes() throws Exception {
+        try (var classifier = new OnnxAlienClassifier(bundle(), mapper)) {
+            classifier.start();
+            var reads = new java.util.concurrent.atomic.AtomicInteger();
+            java.util.List<java.util.function.Supplier<byte[]>> images = java.util.stream.IntStream.range(0, 3)
+                    .mapToObj(index -> (java.util.function.Supplier<byte[]>) () -> {
+                        reads.incrementAndGet();
+                        if (index == 0) {
+                            throw gov.mib.aims.backend.exception.Errors.fileNotFound();
+                        }
+                        return index == 1 ? new byte[0] : image();
+                    }).toList();
+            assertThat(classifier.predict(images).matched()).isTrue();
+            assertThat(reads.get()).isEqualTo(3);
+        }
+    }
+
+    @Test
+    void reportsStorageReadFailureAsUnavailableAndReleasesPermit() throws Exception {
+        try (var classifier = new OnnxAlienClassifier(bundle(), mapper)) {
+            classifier.start();
+            assertThatThrownBy(() -> classifier.predict(() -> {
+                throw new IllegalStateException("Storage read failed");
+            })).isInstanceOf(BaseException.class).extracting("code").isEqualTo(503);
+            assertThat(classifier.predict(this::image).matched()).isTrue();
+        }
+    }
+
+    @Test
     void reportsInvalidOutputBatchAsUnavailable() throws Exception {
         var properties = bundle();
         try (var model = getClass().getResourceAsStream("/alien-classifier/empty-batch.onnx")) {

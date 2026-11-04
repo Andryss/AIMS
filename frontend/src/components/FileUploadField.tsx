@@ -1,4 +1,5 @@
 import React, { DragEvent, useEffect, useId, useRef, useState } from 'react';
+import { ImagePreview } from './ImagePreview';
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) {
@@ -20,6 +21,7 @@ interface FileUploadFieldProps {
   onChange: (files: File[]) => void;
   disabled?: boolean;
   accept?: string;
+  maxFiles?: number;
 }
 
 export function FileUploadField({
@@ -28,7 +30,9 @@ export function FileUploadField({
   onChange,
   disabled = false,
   accept,
+  maxFiles,
 }: FileUploadFieldProps) {
+  const [error, setError] = useState<string | null>(null);
   const [previews, setPreviews] = useState<Map<File, string>>(new Map());
   useEffect(() => {
     const urls = new Map<File, string>();
@@ -55,10 +59,16 @@ export function FileUploadField({
       }
     });
 
+    if (maxFiles != null && next.length > maxFiles) {
+      setError(`Можно прикрепить не более ${maxFiles} файлов`);
+      return;
+    }
+    setError(null);
     onChange(next);
   };
 
   const removeFile = (index: number) => {
+    setError(null);
     onChange(files.filter((_, i) => i !== index));
   };
 
@@ -93,11 +103,14 @@ export function FileUploadField({
   return (
     <div className="file-upload">
       <span className="file-upload__label">{label}</span>
+      {error && <span id={`${inputId}-error`} className="field__error" role="alert">{error}</span>}
       <input
         ref={inputRef}
         id={inputId}
         type="file"
         accept={accept}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${inputId}-error` : undefined}
         multiple
         className="file-upload__input"
         disabled={disabled}
@@ -140,7 +153,7 @@ export function FileUploadField({
         <ul className="file-upload__list">
           {files.map((file, index) => (
             <li key={fileKey(file)} className="file-upload__item">
-              {previews.get(file) && <img className="file-upload__preview" src={previews.get(file)} alt={file.name} />}
+              {previews.get(file) && <ImagePreview className="file-upload__preview" src={previews.get(file)!} alt={file.name} />}
               <div className="file-upload__item-info">
                 <span className="file-upload__item-name" title={file.name}>
                   {file.name}

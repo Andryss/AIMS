@@ -14,6 +14,7 @@ import {
   TrendAnalyticsResponse,
   UpcomingReleasesAnalyticsResponse,
   Alien,
+  IncidentAlienClassificationResponse,
   AlienListResponse,
   SaveAlienRequest,
   AlienSearchResponse,
@@ -791,4 +792,8 @@ export function changeCleanupStatus(
     },
     token,
   );
+}
+
+export function classifyIncidentAlien(token: string, id: number): Promise<IncidentAlienClassificationResponse> {
+  return requestJson(`/incidents/${id}/alien-classification`, { method: 'POST' }, token);
 }

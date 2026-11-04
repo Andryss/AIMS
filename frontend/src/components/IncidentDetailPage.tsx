@@ -9,6 +9,8 @@ import {
   collectIncidentUserIds,
   loadUsersMap,
 } from '../utils/incidentUsers';
+import { AlienSummary } from './AlienSummary';
+import { IncidentAlienClassification } from './IncidentAlienClassification';
 import { AlienPickerDrawer } from './AlienPickerDrawer';
 import { AttachmentDownloadList } from './AttachmentDownloadList';
 import { CleanupReportDrawer } from './CleanupReportDrawer';
@@ -54,6 +56,7 @@ interface IncidentDetailPageProps {
   canChangeStatus: boolean;
   canReadAliens: boolean;
   canLinkAlien: boolean;
+  canClassifyAlien?: boolean;
   canComment: boolean;
   canAssign: boolean;
   canReadCleanupReport: boolean;
@@ -72,6 +75,7 @@ export function IncidentDetailPage({
   canChangeStatus,
   canReadAliens,
   canLinkAlien,
+  canClassifyAlien = false,
   canComment,
   canAssign,
   canReadCleanupReport,
@@ -124,6 +128,7 @@ export function IncidentDetailPage({
   const executorEditRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setLinkLoading(false);
     setResponsibleEditing(false);
     setResponsiblePickerOpen(false);
     setResponsibleDraftId(null);
@@ -671,41 +676,25 @@ export function IncidentDetailPage({
                 <dd className="text-pre-wrap">{incident.description}</dd>
               </div>
 
-              {(canReadAliens && (canLinkAlien || linkedAlien)) && (
+              {(canReadAliens && (canLinkAlien || canClassifyAlien || linkedAlien)) && (
                 <div className="data-list__row">
                   <dt>Тип инопланетянина</dt>
-                  <dd>
-                    {linkedAlien ? (
-                      <div className="alien-linked">
-                        <div className="alien-linked__heading">
-                          <strong>{linkedAlien.name}</strong>
-                          <Link to={`/aliens/${linkedAlien.id}`} state={{ incidentId: incident.id }}
-                            className="btn btn--outline icon-button" title="Открыть карточку вида"
-                            aria-label="Открыть карточку вида">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
-                              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                              <path d="M14 3h7v7M21 3 10 14M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5" />
-                            </svg>
-                          </Link>
-                          <span className="text-muted">(угроза {linkedAlien.threatLevel})</span>
-                        </div>
-                        <p className="text-pre-wrap">{linkedAlien.description}</p>
-                        {canLinkAlien && incident.status === 'READY_FOR_ANALYSIS' && (
-                          <Button variant="outline" onClick={() => setAlienDrawerOpen(true)}>
-                            Изменить вид
-                          </Button>
-                        )}
-                      </div>
-                    ) : canLinkAlien && incident.status === 'READY_FOR_ANALYSIS' ? (
-                      <button
-                        type="button"
-                        className="btn btn--outline"
-                        onClick={() => setAlienDrawerOpen(true)}
-                      >
-                        Выбрать
-                      </button>
-                    ) : (
-                      '—'
+                  <dd className="incident-alien-field">
+                    {linkedAlien ? <AlienSummary token={token} alien={linkedAlien} incidentId={incident.id} />
+                      : !(canLinkAlien && incident.status === 'READY_FOR_ANALYSIS') && <span>—</span>}
+                    {canLinkAlien && incident.status === 'READY_FOR_ANALYSIS' && (
+                      <Button size="sm" variant="outline" disabled={linkLoading} onClick={() => setAlienDrawerOpen(true)}>
+                        {linkedAlien ? 'Изменить вид' : 'Выбрать'}
+                      </Button>
+                    )}
+                    {canClassifyAlien && incident.status === 'READY_FOR_ANALYSIS' && (
+                      <IncidentAlienClassification key={incidentId} token={token} incident={incident}
+                        canAccept={canLinkAlien} disabled={linkLoading} onSavingChange={setLinkLoading}
+                        onAccepted={(updated, alien) => {
+                          setIncident(updated);
+                          setLinkedAlien(alien);
+                          setHistoryLoaded(false);
+                        }} />
                     )}
                   </dd>
                 </div>

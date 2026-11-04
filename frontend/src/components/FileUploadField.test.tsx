@@ -126,3 +126,17 @@ it('shows an image preview from the selected original and releases its URL', asy
   unmount();
   expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:original');
 });
+
+
+it('rejects a selection exceeding the configured attachment count', async () => {
+  const onChange = jest.fn();
+  const files = ['one.png', 'two.png', 'three.png'].map((name) => new File(['photo'], name, { type: 'image/png' }));
+  render(<FileUploadField label="Вложения" files={[]} onChange={onChange} maxFiles={2} />);
+  const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+  await userEvent.upload(input, files);
+  expect(onChange).not.toHaveBeenCalled();
+  expect(screen.getByRole('alert')).toHaveTextContent('Можно прикрепить не более 2 файлов');
+  await userEvent.upload(input, files.slice(0, 2));
+  expect(onChange).toHaveBeenCalledWith(files.slice(0, 2));
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+});

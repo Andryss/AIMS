@@ -2,10 +2,31 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import * as api from '../api/client';
 import { AttachmentDownloadList } from './AttachmentDownloadList';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('../api/client');
 const mockApi = api as jest.Mocked<typeof api>;
 beforeEach(() => jest.clearAllMocks());
+
+it.each(['button', 'Escape'])('opens the cached original and closes the viewer with %s', async (closeWith) => {
+  Object.defineProperties(HTMLDialogElement.prototype, {
+    showModal: { configurable: true, value() { this.setAttribute('open', ''); } },
+    close: { configurable: true, value() { this.removeAttribute('open'); } },
+  });
+  mockApi.batchFiles.mockResolvedValue({ items: [
+    { id: 1, fileName: 'photo.jpg', contentType: 'image/jpeg', fileSize: 10, createdAt: '' },
+  ] });
+  mockApi.getFilePreviewUrl.mockResolvedValue('blob:original');
+  render(<AttachmentDownloadList token="token" fileIds={[1]} downloadingId={null} onDownload={jest.fn()} />);
+  await screen.findByAltText('photo.jpg');
+  await userEvent.click(screen.getByRole('button', { name: 'Увеличить photo.jpg' }));
+  const viewer = screen.getByRole('dialog', { name: 'Просмотр photo.jpg' });
+  expect(viewer.querySelector('img')).toHaveAttribute('src', 'blob:original');
+  expect(mockApi.getFilePreviewUrl).toHaveBeenCalledTimes(1);
+  if (closeWith === 'Escape') { fireEvent.keyDown(viewer, { key: 'Escape' }); }
+  else { await userEvent.click(screen.getByRole('button', { name: 'Закрыть изображение' })); }
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
 
 it('batch loads metadata and downloads only images for previews', async () => {
   mockApi.batchFiles.mockResolvedValue({ items: [

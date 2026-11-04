@@ -706,3 +706,9 @@ export interface UpcomingReleasesAnalyticsResponse {
   totalCount: number;
   items: UpcomingReleaseAnalyticsRow[];
 }
+
+export interface IncidentAlienClassificationResponse {
+  status: 'MATCH' | 'NO_MATCH';
+  confidence: number;
+  alien: Alien | null;
+}

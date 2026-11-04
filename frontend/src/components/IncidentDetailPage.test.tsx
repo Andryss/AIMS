@@ -28,6 +28,7 @@ function renderAt(
   options: {
     canReadAliens?: boolean;
     canLinkAlien?: boolean;
+    canClassifyAlien?: boolean;
     canComment?: boolean;
     canAssign?: boolean;
     canReadCleanupReport?: boolean;
@@ -39,6 +40,7 @@ function renderAt(
   const {
     canReadAliens = true,
     canLinkAlien = true,
+    canClassifyAlien = false,
     canComment = true,
     canAssign = false,
     canReadCleanupReport = false,
@@ -58,6 +60,7 @@ function renderAt(
               canChangeStatus
               canReadAliens={canReadAliens}
               canLinkAlien={canLinkAlien}
+              canClassifyAlien={canClassifyAlien}
               canComment={canComment}
               canAssign={canAssign}
               canReadCleanupReport={canReadCleanupReport}
@@ -496,4 +499,41 @@ describe('IncidentDetailPage', () => {
     expect(screen.queryByText('Статус очистки')).not.toBeInTheDocument();
     expect(screen.queryByText('Отчёт об очистке')).not.toBeInTheDocument();
   });
+});
+
+
+it('keeps the linked type compact and accepts the inline classified type with history refresh', async () => {
+  jest.clearAllMocks();
+  getIncident.mockResolvedValue(mockIncident({ id: 8, status: 'READY_FOR_ANALYSIS', alienId: 1 }));
+  getAlien.mockResolvedValue(mockAlien({ id: 1, name: 'Слизень', description: 'Очень большое описание исходного вида' }));
+  const candidate = mockAlien({ id: 6, name: 'Ашта', threatLevel: 9, description: 'Подробное описание ашта' });
+  (api.classifyIncidentAlien as jest.Mock).mockResolvedValue({ status: 'MATCH', confidence: 95.6, alien: candidate });
+  putIncidentAlien.mockResolvedValue(mockIncident({ id: 8, status: 'READY_FOR_ANALYSIS', alienId: 6 }));
+  listIncidentComments.mockResolvedValue({ items: [], page: 0, size: 50, totalElements: 0, totalPages: 0 });
+  listIncidentHistory.mockResolvedValue({ items: [], page: 0, size: 50, totalElements: 0, totalPages: 0 });
+  batchUsers.mockResolvedValue({ items: [] });
+  renderAt('/incidents/8', { canClassifyAlien: true });
+  await screen.findByText('Слизень');
+  expect(screen.queryByText('Очень большое описание исходного вида')).not.toBeInTheDocument();
+  await userEvent.click(screen.getByRole('tab', { name: 'История' }));
+  await waitFor(() => expect(listIncidentHistory).toHaveBeenCalledTimes(1));
+  await userEvent.click(screen.getByRole('button', { name: 'Распознать вид' }));
+  await screen.findByText('95,6%');
+  expect(screen.getByText('Слизень')).toBeInTheDocument();
+  expect(putIncidentAlien).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button', { name: 'Принять' }));
+  await waitFor(() => expect(screen.queryByText('Слизень')).not.toBeInTheDocument());
+  expect(screen.getByText('Ашта')).toBeInTheDocument();
+  await waitFor(() => expect(listIncidentHistory).toHaveBeenCalledTimes(2));
+});
+
+it.each([
+  ['READY_FOR_ANALYSIS', false], ['EXECUTING', true],
+] as const)('hides classification for status=%s permission=%s', async (status, permission) => {
+  jest.clearAllMocks();
+  getIncident.mockResolvedValue(mockIncident({ status, alienId: 1 }));
+  getAlien.mockResolvedValue(mockAlien());
+  renderAt('/incidents/1', { canClassifyAlien: permission });
+  await screen.findByRole('heading', { name: 'Инцидент #1' });
+  expect(screen.queryByRole('button', { name: 'Распознать вид' })).not.toBeInTheDocument();
 });

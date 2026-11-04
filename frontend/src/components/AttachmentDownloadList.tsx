@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import * as api from '../api/client';
 import { FileUploadResponse } from '../types';
+import { ImagePreview } from './ImagePreview';
 
 interface AttachmentDownloadListProps {
   token?: string;
@@ -67,7 +68,7 @@ export function AttachmentDownloadList({
         const preview = previews.get(fileId);
         return (
           <li key={fileId} className="attachment-card">
-            {preview ? <img className="attachment-card__preview" src={preview} alt={name}
+            {preview ? <ImagePreview className="attachment-card__preview" src={preview} alt={name}
               onError={() => setPreviews((previous) => {
                 const next = new Map(previous); next.delete(fileId); return next;
               })} /> : <span className="attachment-card__placeholder" aria-label="Превью недоступно">▧</span>}

@@ -788,3 +788,110 @@
   color: var(--color-text-muted);
   font-size: 1.5rem;
 }
+
+/* Compact incident species and its on-demand knowledge card. */
+.incident-alien-field,
+.alien-summary,
+.alien-summary__trigger,
+.incident-classification,
+.incident-classification__result {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.alien-summary,
+.incident-classification,
+.incident-classification__result {
+  display: inline-flex;
+  max-width: 100%;
+}
+
+.alien-summary__trigger {
+  border: 0;
+  padding: 0;
+  color: inherit;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: help;
+}
+
+.alien-summary__trigger:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.btn.alien-summary__link,
+.btn.incident-classification__trigger {
+  box-sizing: border-box;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0.2rem;
+  border-radius: var(--radius-sm);
+}
+
+.incident-classification__trigger {
+  color: var(--color-primary);
+  align-self: flex-start;
+}
+
+.incident-classification__result {
+  flex: 1 1 15rem;
+  min-width: 0;
+}
+
+.incident-classification__confidence {
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.incident-classification__error {
+  color: var(--color-danger);
+  flex-basis: 100%;
+}
+
+.alien-hover-card {
+  position: fixed;
+  z-index: 150;
+  overflow: auto;
+  box-sizing: border-box;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.alien-hover-card__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.alien-hover-card__heading h3,
+.alien-hover-card__description {
+  margin: 0;
+}
+
+.alien-hover-card__details {
+  margin: 0 0 var(--space-3);
+}
+
+.alien-hover-card__details > div {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.alien-hover-card__details dt { color: var(--color-text-muted); }
+.alien-hover-card__details dd { margin: 0; }
+.alien-hover-card .attachment-list { margin-bottom: var(--space-3); }

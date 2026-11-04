@@ -19,7 +19,6 @@ import gov.mib.aims.backend.services.CleanupService;
 import gov.mib.aims.backend.services.EntityHistoryQueryService;
 import gov.mib.aims.backend.services.IncidentCommentService;
 import gov.mib.aims.backend.services.IncidentService;
-import gov.mib.aims.backend.generated.model.ClassifyIncidentAlienRequest;
 import gov.mib.aims.backend.generated.model.IncidentAlienClassificationResponse;
 import gov.mib.aims.backend.services.IncidentAlienClassificationService;
 import jakarta.validation.Valid;
@@ -79,11 +78,9 @@ public class IncidentsApiImpl implements IncidentsApi {
 
     @Override
     @PreAuthorize("hasAuthority('INCIDENT_ALIEN_CLASSIFY')")
-    public IncidentAlienClassificationResponse classifyIncidentAlien(
-            Long id, @Valid ClassifyIncidentAlienRequest request
-    ) {
-        log.info("POST /api/v1/incidents/{}/alien-classification fileId={}", id, request.getFileId());
-        return classificationService.classify(id, request.getFileId());
+    public IncidentAlienClassificationResponse classifyIncidentAlien(Long id) {
+        log.info("POST /api/v1/incidents/{}/alien-classification", id);
+        return classificationService.classify(id);
     }
 
     @Override

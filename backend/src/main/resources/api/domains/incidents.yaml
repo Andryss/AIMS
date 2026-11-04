@@ -98,12 +98,6 @@ pathItems:
           schema:
             type: integer
             format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ClassifyIncidentAlienRequest"
       responses:
         200:
           description: Suggested species or no match
@@ -512,16 +506,6 @@ pathItems:
 
 components:
   schemas:
-    ClassifyIncidentAlienRequest:
-      type: object
-      required:
-        - fileId
-      properties:
-        fileId:
-          type: integer
-          format: int64
-          minimum: 1
-
     IncidentAlienClassificationResponse:
       type: object
       required:
@@ -625,6 +609,7 @@ components:
         attachmentFileIds:
           type: array
           minItems: 1
+          maxItems: 10
           items:
             type: integer
             format: int64
