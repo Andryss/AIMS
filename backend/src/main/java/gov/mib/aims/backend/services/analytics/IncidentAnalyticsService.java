@@ -7,8 +7,7 @@ import gov.mib.aims.backend.generated.model.IncidentEventTypeApi;
 import gov.mib.aims.backend.generated.model.StaleIncidentAnalyticsResponse;
 import gov.mib.aims.backend.generated.model.TrendAnalyticsResponse;
 import gov.mib.aims.backend.repository.analytics.IncidentAnalyticsRepository;
-import gov.mib.aims.backend.services.ChronoService;
-import gov.mib.aims.backend.services.ObjectMapperWrapper;
+import gov.mib.aims.backend.services.mapping.AnalyticsResponseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -25,21 +24,19 @@ import java.time.OffsetDateTime;
 public class IncidentAnalyticsService {
 
     private final IncidentAnalyticsRepository repository;
-    private final ObjectMapperWrapper mapper;
-    private final ChronoService chronoService;
+    private final AnalyticsReportExecutor reports;
+    private final AnalyticsResponseMapper responseMapper;
 
     /**
      * Количество созданных записей за период.
      */
     public CountAnalyticsResponse createdCount(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.createdCount(period.from(), period.to(),
-                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new IncidentAnalyticsFilter(eventType, alienId, responsibleUserId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.createdCount(query.from(), query.to(),
+                        filters.eventTypeName(), filters.alienId(), filters.responsibleUserId())));
     }
 
     /**
@@ -47,13 +44,11 @@ public class IncidentAnalyticsService {
      */
     public CountAnalyticsResponse completedCount(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.completedCount(period.from(), period.to(),
-                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new IncidentAnalyticsFilter(eventType, alienId, responsibleUserId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.completedCount(query.from(), query.to(),
+                        filters.eventTypeName(), filters.alienId(), filters.responsibleUserId())));
     }
 
     /**
@@ -61,13 +56,11 @@ public class IncidentAnalyticsService {
      */
     public CountAnalyticsResponse totalAtTo(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.totalAtTo(period.from(), period.to(),
-                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new IncidentAnalyticsFilter(eventType, alienId, responsibleUserId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.totalAtTo(query.from(), query.to(),
+                        filters.eventTypeName(), filters.alienId(), filters.responsibleUserId())));
     }
 
     /**
@@ -75,13 +68,11 @@ public class IncidentAnalyticsService {
      */
     public CountAnalyticsResponse completedAtTo(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.completedAtTo(period.from(), period.to(),
-                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new IncidentAnalyticsFilter(eventType, alienId, responsibleUserId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.completedAtTo(query.from(), query.to(),
+                        filters.eventTypeName(), filters.alienId(), filters.responsibleUserId())));
     }
 
     /**
@@ -89,13 +80,11 @@ public class IncidentAnalyticsService {
      */
     public CountAnalyticsResponse openAtTo(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.openAtTo(period.from(), period.to(),
-                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new IncidentAnalyticsFilter(eventType, alienId, responsibleUserId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.openAtTo(query.from(), query.to(),
+                        filters.eventTypeName(), filters.alienId(), filters.responsibleUserId())));
     }
 
     /**
@@ -103,13 +92,11 @@ public class IncidentAnalyticsService {
      */
     public DurationAnalyticsResponse completionDuration(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.completionDuration(period.from(), period.to(),
-                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
-        var response = mapper.readValue(json, DurationAnalyticsResponse.class);
+        var filters = new IncidentAnalyticsFilter(eventType, alienId, responsibleUserId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toDuration(reports.execute(from, to,
+                query -> repository.completionDuration(query.from(), query.to(),
+                        filters.eventTypeName(), filters.alienId(), filters.responsibleUserId())));
     }
 
     /**
@@ -117,14 +104,12 @@ public class IncidentAnalyticsService {
      */
     public TrendAnalyticsResponse trend(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.trend(period.from(), period.to(),
-                buckets.start(), buckets.months(), buckets.seconds(),
-                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
-        var response = mapper.readValue(json, TrendAnalyticsResponse.class);
+        var filters = new IncidentAnalyticsFilter(eventType, alienId, responsibleUserId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toTrend(reports.execute(from, to,
+                query -> repository.trend(query.from(), query.to(),
+                        query.buckets().start(), query.buckets().months(), query.buckets().seconds(),
+                        filters.eventTypeName(), filters.alienId(), filters.responsibleUserId())));
     }
 
     /**
@@ -132,13 +117,11 @@ public class IncidentAnalyticsService {
      */
     public GroupedAnalyticsResponse byStatus(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.byStatus(period.from(), period.to(),
-                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
-        var response = mapper.readValue(json, GroupedAnalyticsResponse.class);
+        var filters = new IncidentAnalyticsFilter(eventType, alienId, responsibleUserId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toGrouped(reports.execute(from, to,
+                query -> repository.byStatus(query.from(), query.to(),
+                        filters.eventTypeName(), filters.alienId(), filters.responsibleUserId())));
     }
 
     /**
@@ -146,13 +129,11 @@ public class IncidentAnalyticsService {
      */
     public GroupedAnalyticsResponse byEventType(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.byEventType(period.from(), period.to(),
-                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
-        var response = mapper.readValue(json, GroupedAnalyticsResponse.class);
+        var filters = new IncidentAnalyticsFilter(eventType, alienId, responsibleUserId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toGrouped(reports.execute(from, to,
+                query -> repository.byEventType(query.from(), query.to(),
+                        filters.eventTypeName(), filters.alienId(), filters.responsibleUserId())));
     }
 
     /**
@@ -160,13 +141,11 @@ public class IncidentAnalyticsService {
      */
     public GroupedAnalyticsResponse byThreatLevel(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.byThreatLevel(period.from(), period.to(),
-                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
-        var response = mapper.readValue(json, GroupedAnalyticsResponse.class);
+        var filters = new IncidentAnalyticsFilter(eventType, alienId, responsibleUserId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toGrouped(reports.execute(from, to,
+                query -> repository.byThreatLevel(query.from(), query.to(),
+                        filters.eventTypeName(), filters.alienId(), filters.responsibleUserId())));
     }
 
     /**
@@ -174,13 +153,11 @@ public class IncidentAnalyticsService {
      */
     public GroupedAnalyticsResponse byVictimCount(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.byVictimCount(period.from(), period.to(),
-                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
-        var response = mapper.readValue(json, GroupedAnalyticsResponse.class);
+        var filters = new IncidentAnalyticsFilter(eventType, alienId, responsibleUserId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toGrouped(reports.execute(from, to,
+                query -> repository.byVictimCount(query.from(), query.to(),
+                        filters.eventTypeName(), filters.alienId(), filters.responsibleUserId())));
     }
 
     /**
@@ -188,13 +165,11 @@ public class IncidentAnalyticsService {
      */
     public GroupedAnalyticsResponse byAlien(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.byAlien(period.from(), period.to(),
-                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
-        var response = mapper.readValue(json, GroupedAnalyticsResponse.class);
+        var filters = new IncidentAnalyticsFilter(eventType, alienId, responsibleUserId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toGrouped(reports.execute(from, to,
+                query -> repository.byAlien(query.from(), query.to(),
+                        filters.eventTypeName(), filters.alienId(), filters.responsibleUserId())));
     }
 
     /**
@@ -202,13 +177,11 @@ public class IncidentAnalyticsService {
      */
     public GroupedAnalyticsResponse byLocation(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.byLocation(period.from(), period.to(),
-                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
-        var response = mapper.readValue(json, GroupedAnalyticsResponse.class);
+        var filters = new IncidentAnalyticsFilter(eventType, alienId, responsibleUserId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toGrouped(reports.execute(from, to,
+                query -> repository.byLocation(query.from(), query.to(),
+                        filters.eventTypeName(), filters.alienId(), filters.responsibleUserId())));
     }
 
     /**
@@ -216,12 +189,10 @@ public class IncidentAnalyticsService {
      */
     public StaleIncidentAnalyticsResponse stale(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.stale(period.from(), period.to(),
-                eventType == null ? null : eventType.name(), alienId, responsibleUserId);
-        var response = mapper.readValue(json, StaleIncidentAnalyticsResponse.class);
+        var filters = new IncidentAnalyticsFilter(eventType, alienId, responsibleUserId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toStaleIncident(reports.execute(from, to,
+                query -> repository.stale(query.from(), query.to(),
+                        filters.eventTypeName(), filters.alienId(), filters.responsibleUserId())));
     }
 }

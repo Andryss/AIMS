@@ -1,30 +1,31 @@
 package gov.mib.aims.backend.controller;
 
 import gov.mib.aims.backend.generated.api.IncidentsApi;
+import gov.mib.aims.backend.generated.model.ChangeCleanupStatusRequest;
 import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
+import gov.mib.aims.backend.generated.model.CleanupReportResponse;
+import gov.mib.aims.backend.generated.model.CreateCleanupReportRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentCommentRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
-import gov.mib.aims.backend.generated.model.UpdateIncidentRequest;
+import gov.mib.aims.backend.generated.model.IncidentAlienClassificationResponse;
 import gov.mib.aims.backend.generated.model.IncidentCommentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentCommentResponse;
 import gov.mib.aims.backend.generated.model.IncidentHistoryListResponse;
 import gov.mib.aims.backend.generated.model.IncidentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
+import gov.mib.aims.backend.generated.model.IncidentThreatCalculationResponse;
 import gov.mib.aims.backend.generated.model.LinkIncidentAlienRequest;
-import gov.mib.aims.backend.generated.model.ChangeCleanupStatusRequest;
-import gov.mib.aims.backend.generated.model.CreateCleanupReportRequest;
-import gov.mib.aims.backend.generated.model.CleanupReportResponse;
 import gov.mib.aims.backend.generated.model.SetIncidentExecutorsRequest;
 import gov.mib.aims.backend.generated.model.SetIncidentResponsibleRequest;
+import gov.mib.aims.backend.generated.model.SetIncidentThreatLevelRequest;
+import gov.mib.aims.backend.generated.model.UpdateIncidentRequest;
 import gov.mib.aims.backend.services.CleanupService;
 import gov.mib.aims.backend.services.EntityHistoryQueryService;
+import gov.mib.aims.backend.services.IncidentAlienClassificationService;
 import gov.mib.aims.backend.services.IncidentCommentService;
 import gov.mib.aims.backend.services.IncidentService;
 import gov.mib.aims.backend.services.IncidentThreatService;
-import gov.mib.aims.backend.generated.model.IncidentThreatCalculationResponse;
-import gov.mib.aims.backend.generated.model.SetIncidentThreatLevelRequest;
-import gov.mib.aims.backend.generated.model.IncidentAlienClassificationResponse;
-import gov.mib.aims.backend.services.IncidentAlienClassificationService;
+import gov.mib.aims.backend.services.query.PageParameters;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,10 +52,9 @@ public class IncidentsApiImpl implements IncidentsApi {
     @Override
     @PreAuthorize("hasAuthority('INCIDENT_READ')")
     public IncidentListResponse listIncidents(Integer page, Integer size) {
-        int pageNumber = page != null ? page : 0;
-        int pageSize = size != null ? size : 20;
-        log.info("GET /api/v1/incidents page={} size={}", pageNumber, pageSize);
-        return incidentService.list(pageNumber, pageSize);
+        var pagination = PageParameters.of(page, size, 20);
+        log.info("GET /api/v1/incidents page={} size={}", pagination.page(), pagination.size());
+        return incidentService.list(pagination.page(), pagination.size());
     }
 
     @Override
@@ -106,10 +106,9 @@ public class IncidentsApiImpl implements IncidentsApi {
     @Override
     @PreAuthorize("hasAuthority('INCIDENT_READ')")
     public IncidentCommentListResponse listIncidentComments(Long id, Integer page, Integer size) {
-        int pageNumber = page != null ? page : 0;
-        int pageSize = size != null ? size : 50;
-        log.info("GET /api/v1/incidents/{}/comments page={} size={}", id, pageNumber, pageSize);
-        return incidentCommentService.list(id, pageNumber, pageSize);
+        var pagination = PageParameters.of(page, size, 50);
+        log.info("GET /api/v1/incidents/{}/comments page={} size={}", id, pagination.page(), pagination.size());
+        return incidentCommentService.list(id, pagination.page(), pagination.size());
     }
 
     @Override
@@ -125,10 +124,9 @@ public class IncidentsApiImpl implements IncidentsApi {
     @Override
     @PreAuthorize("hasAuthority('INCIDENT_READ')")
     public IncidentHistoryListResponse listIncidentHistory(Long id, Integer page, Integer size) {
-        int pageNumber = page != null ? page : 0;
-        int pageSize = size != null ? size : 50;
-        log.info("GET /api/v1/incidents/{}/history page={} size={}", id, pageNumber, pageSize);
-        return entityHistoryQueryService.listIncidentHistory(id, pageNumber, pageSize);
+        var pagination = PageParameters.of(page, size, 50);
+        log.info("GET /api/v1/incidents/{}/history page={} size={}", id, pagination.page(), pagination.size());
+        return entityHistoryQueryService.listIncidentHistory(id, pagination.page(), pagination.size());
     }
 
     @Override

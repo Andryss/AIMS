@@ -5,9 +5,10 @@ import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.model.EntityRef;
 import gov.mib.aims.backend.model.NotificationRecord;
 import gov.mib.aims.backend.repository.NotificationRepository;
+import gov.mib.aims.backend.services.mapping.NotificationMapper;
+import gov.mib.aims.backend.services.query.PageParameters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final ChronoService chronoService;
 
     private final NotificationRepository notificationRepository;
+    private final NotificationMapper notificationMapper;
     private final CurrentUserService currentUserService;
 
     @Override
@@ -40,16 +42,16 @@ public class NotificationServiceImpl implements NotificationService {
                 .createdAt(chronoService.now())
                 .build();
         entity = notificationRepository.save(entity);
-        return toRecord(entity);
+        return notificationMapper.toRecord(entity);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<NotificationRecord> listForCurrentUser(int page, int size) {
         Long userId = currentUserService.getCurrentUserId();
-        Pageable pageable = PageRequest.of(page, normalizePageSize(size));
+        Pageable pageable = PageParameters.of(page, size).toPageable();
         return notificationRepository.findByRecipientUserIdOrderByCreatedAtDesc(userId, pageable)
-                .map(this::toRecord);
+                .map(notificationMapper::toRecord);
     }
 
     @Override
@@ -95,21 +97,4 @@ public class NotificationServiceImpl implements NotificationService {
         return List.copyOf(relatedEntities);
     }
 
-    private int normalizePageSize(int size) {
-        if (size <= 0) {
-            return 20;
-        }
-        return Math.min(size, MAX_PAGE_SIZE);
-    }
-
-    private NotificationRecord toRecord(NotificationEntity entity) {
-        return new NotificationRecord(
-                entity.getId(),
-                entity.getMessage(),
-                List.copyOf(entity.getRelatedEntities()),
-                entity.getReadAt() != null,
-                entity.getReadAt(),
-                entity.getCreatedAt()
-        );
-    }
 }

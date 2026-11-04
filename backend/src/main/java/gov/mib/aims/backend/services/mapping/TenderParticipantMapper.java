@@ -1,10 +1,12 @@
 package gov.mib.aims.backend.services.mapping;
 
 import gov.mib.aims.backend.entity.TenderParticipantEntity;
+import gov.mib.aims.backend.generated.model.TenderParticipantListResponse;
 import gov.mib.aims.backend.generated.model.TenderParticipantResponse;
 import gov.mib.aims.backend.generated.model.TenderParticipantStatusApi;
 import gov.mib.aims.backend.services.ChronoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,5 +28,14 @@ public class TenderParticipantMapper {
                 .createdByUserId(entity.getCreatedByUserId())
                 .createdAt(chronoService.toOffsetDateTime(entity.getCreatedAt()))
                 .updatedAt(chronoService.toOffsetDateTime(entity.getUpdatedAt()));
+    }
+
+    /**
+     * Собирает элементы и метаданные страницы для API.
+     */
+    public TenderParticipantListResponse toListResponse(Page<TenderParticipantEntity> page) {
+        return new TenderParticipantListResponse().items(page.map(this::toResponse).getContent())
+                .page(page.getNumber()).size(page.getSize())
+                .totalElements(page.getTotalElements()).totalPages(page.getTotalPages());
     }
 }

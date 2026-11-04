@@ -1,10 +1,9 @@
 package gov.mib.aims.backend.services.incident.status.precondition;
 
-import gov.mib.aims.backend.services.status.StatusTransitionPrecondition;
-
-import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.services.CurrentUserService;
+import gov.mib.aims.backend.services.incident.IncidentTransitionContext;
+import gov.mib.aims.backend.services.status.StatusTransitionPrecondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,13 +12,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class ResponsibleAgentPrecondition implements StatusTransitionPrecondition<IncidentEntity> {
+public class ResponsibleAgentPrecondition implements StatusTransitionPrecondition<IncidentTransitionContext> {
 
     private final CurrentUserService currentUserService;
 
     @Override
-    public void check(IncidentEntity context) {
-        Long responsibleUserId = context.getResponsibleUserId();
+    public void check(IncidentTransitionContext context) {
+        Long responsibleUserId = context.incident().getResponsibleUserId();
         if (responsibleUserId == null) {
             throw Errors.validationError("Responsible agent must be assigned");
         }

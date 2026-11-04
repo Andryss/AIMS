@@ -1,22 +1,17 @@
 package gov.mib.aims.backend.services.dbqueue.processor;
 
-import gov.mib.aims.backend.entity.AppUserEntity;
 import gov.mib.aims.backend.entity.MonitoringAlertEntity;
-import gov.mib.aims.backend.model.EntityRef;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.Role;
-import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.MonitoringAlertRepository;
-import gov.mib.aims.backend.services.NotificationService;
 import gov.mib.aims.backend.services.ChronoService;
 import gov.mib.aims.backend.services.dbqueue.DbQueueProcessor;
 import gov.mib.aims.backend.services.dbqueue.DbQueueSettings;
+import gov.mib.aims.backend.services.notification.NotificationDispatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yoomoney.tech.dbqueue.api.TaskExecutionResult;
-
-import java.util.List;
 
 /**
  * Отправляет in-app уведомления операторам о новом алерте внешнего мониторинга.
@@ -30,8 +25,7 @@ public class NotifyOperatorsMonitoringAlertProcessor
 
     private final ChronoService chronoService;
     private final MonitoringAlertRepository monitoringAlertRepository;
-    private final AppUserRepository appUserRepository;
-    private final NotificationService notificationService;
+    private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public TaskExecutionResult execute(NotifyOperatorsMonitoringAlertPayload payload) {
@@ -43,11 +37,7 @@ public class NotifyOperatorsMonitoringAlertProcessor
         }
         String detectedAt = chronoService.formatUtc(alert.getDetectedAt(), "yyyy-MM-dd HH:mm");
         String message = "Новая активность: " + alert.getLocation() + ", " + detectedAt;
-        String relatedRef = EntityRef.format(EntityType.MONITORING_ALERT, alertId);
-        List<AppUserEntity> operators = appUserRepository.findAllByRoleName(Role.OPERATOR.getCode());
-        for (AppUserEntity operator : operators) {
-            notificationService.send(operator.getId(), message, List.of(relatedRef));
-        }
+        notificationDispatcher.sendToRole(Role.OPERATOR, message, EntityType.MONITORING_ALERT, alertId);
         return TaskExecutionResult.finish();
     }
 }

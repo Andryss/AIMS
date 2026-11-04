@@ -1,11 +1,10 @@
 package gov.mib.aims.backend.services.incident.status.postaction;
 
-import gov.mib.aims.backend.services.status.StatusTransitionPostAction;
-
-import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.services.dbqueue.DbQueueService;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyAnalystsIncidentReadyPayload;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyAnalystsIncidentReadyProcessor;
+import gov.mib.aims.backend.services.incident.IncidentTransitionContext;
+import gov.mib.aims.backend.services.status.StatusTransitionPostAction;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,15 +13,15 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class EnqueueNotifyAnalystsPostAction implements StatusTransitionPostAction<IncidentEntity> {
+public class EnqueueNotifyAnalystsPostAction implements StatusTransitionPostAction<IncidentTransitionContext> {
 
     private final DbQueueService dbQueueService;
 
     @Override
-    public void execute(IncidentEntity context) {
+    public void execute(IncidentTransitionContext context) {
         dbQueueService.produceTask(
                 NotifyAnalystsIncidentReadyProcessor.class,
-                new NotifyAnalystsIncidentReadyPayload(context.getId())
+                new NotifyAnalystsIncidentReadyPayload(context.incident().getId())
         );
     }
 }

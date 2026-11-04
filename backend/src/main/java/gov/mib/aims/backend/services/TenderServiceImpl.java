@@ -6,7 +6,6 @@ import gov.mib.aims.backend.generated.model.ChangeTenderStatusRequest;
 import gov.mib.aims.backend.generated.model.EquipmentTypeApi;
 import gov.mib.aims.backend.generated.model.SaveTenderRequest;
 import gov.mib.aims.backend.generated.model.SelectTenderWinnerRequest;
-import gov.mib.aims.backend.generated.model.TenderHistoryEntry;
 import gov.mib.aims.backend.generated.model.TenderHistoryListResponse;
 import gov.mib.aims.backend.generated.model.TenderHistorySnapshot;
 import gov.mib.aims.backend.generated.model.TenderListResponse;
@@ -17,17 +16,17 @@ import gov.mib.aims.backend.model.EquipmentType;
 import gov.mib.aims.backend.model.Permission;
 import gov.mib.aims.backend.model.TenderParticipantStatus;
 import gov.mib.aims.backend.model.TenderStatus;
-import gov.mib.aims.backend.repository.EntityHistoryRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
 import gov.mib.aims.backend.repository.TenderParticipantRepository;
 import gov.mib.aims.backend.repository.TenderRepository;
+import gov.mib.aims.backend.services.history.HistoryReader;
 import gov.mib.aims.backend.services.mapping.TenderMapper;
+import gov.mib.aims.backend.services.query.PageParameters;
 import gov.mib.aims.backend.services.tender.TenderHistoryService;
 import gov.mib.aims.backend.services.tender.TenderWorkflow;
+import gov.mib.aims.backend.services.transaction.RetryableSerializable;
+import gov.mib.aims.backend.services.validation.TextNormalizer;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,18 +45,16 @@ public class TenderServiceImpl implements TenderService {
 
     private final TenderRepository repository;
     private final IncidentRepository incidentRepository;
-    private final EntityHistoryRepository historyRepository;
+    private final HistoryReader historyReader;
     private final TenderHistoryService historyService;
     private final TenderParticipantRepository participantRepository;
     private final CurrentUserService currentUserService;
-    private final ObjectMapperWrapper objectMapper;
     private final TenderMapper mapper;
     private final TenderWorkflow workflow;
     private final ChronoService chronoService;
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public TenderResponse create(SaveTenderRequest request) {
         if (request.getIncidentId() != null && !incidentRepository.existsById(request.getIncidentId())) {
             throw Errors.incidentNotFound();
@@ -83,8 +80,7 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public TenderResponse update(Long id, SaveTenderRequest request) {
         TenderEntity entity = find(id);
         if (entity.getStatus() != TenderStatus.NEED && entity.getStatus() != TenderStatus.COLLECTING_OFFERS) {
@@ -119,22 +115,17 @@ public class TenderServiceImpl implements TenderService {
                                    Long incidentId, int page, int size) {
         String query = q == null ? "" : q.trim().toLowerCase(Locale.ROOT);
         var result = repository.search(query, status == null ? null : status.name(),
-                type == null ? null : type.name(), incidentId, PageRequest.of(page, size));
+                type == null ? null : type.name(), incidentId, PageParameters.of(page, size).toPageable());
 
         var ids = result.getContent().stream().map(TenderEntity::getId).toList();
         var winners = participantRepository.findByTenderIdInAndStatus(ids, TenderParticipantStatus.WINNER).stream()
                 .collect(Collectors.toMap(item -> item.getTenderId(), item -> item.getId()));
 
-        var items = result.map(entity -> mapper.toResponse(entity, winners.get(entity.getId()))).getContent();
-
-        return new TenderListResponse().items(items)
-                .page(result.getNumber()).size(result.getSize())
-                .totalElements(result.getTotalElements()).totalPages(result.getTotalPages());
+        return mapper.toListResponse(result, winners);
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public TenderResponse changeStatus(Long id, ChangeTenderStatusRequest request) {
         TenderEntity entity = find(id);
         workflow.changeStatus(entity, TenderStatus.valueOf(request.getStatus().name()), request.getComment());
@@ -143,8 +134,7 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public TenderResponse selectWinner(Long id, SelectTenderWinnerRequest request) {
         TenderEntity entity = find(id);
         var participant = participantRepository.findByIdAndTenderId(request.getParticipantId(), id)
@@ -162,15 +152,11 @@ public class TenderServiceImpl implements TenderService {
     @Transactional(readOnly = true)
     public TenderHistoryListResponse listHistory(Long id, int page, int size) {
         find(id);
-        var result = historyRepository.findByEntityTypeAndEntityIdOrderByChangedAtAsc(EntityType.TENDER, id,
-                PageRequest.of(page, size, Sort.by("id")));
 
-        return new TenderHistoryListResponse().items(result.map(entry -> new TenderHistoryEntry()
-                        .id(entry.getId()).changedAt(chronoService.toOffsetDateTime(entry.getChangedAt()))
-                        .changedByUserId(entry.getChangedByUserId())
-                        .snapshot(objectMapper.readValue(entry.getSnapshot(), TenderHistorySnapshot.class)))
-                .getContent()).page(result.getNumber()).size(result.getSize())
-                .totalElements(result.getTotalElements()).totalPages(result.getTotalPages());
+        var result = historyReader.read(EntityType.TENDER, id, page, size,
+                TenderHistorySnapshot.class);
+
+        return mapper.toHistoryListResponse(result);
     }
 
     private TenderEntity find(Long id) {
@@ -180,7 +166,7 @@ public class TenderServiceImpl implements TenderService {
     private void applyRequest(TenderEntity entity, SaveTenderRequest request) {
         entity.setEquipmentType(EquipmentType.valueOf(request.getEquipmentType().name()));
         entity.setQuantity(request.getQuantity());
-        entity.setConditions(request.getConditions() == null ? null : request.getConditions().trim());
+        entity.setConditions(TextNormalizer.optional(request.getConditions()));
         entity.setUpdatedAt(chronoService.now());
     }
 

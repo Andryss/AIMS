@@ -6,15 +6,15 @@ import gov.mib.aims.backend.generated.model.IncidentResponse;
 import gov.mib.aims.backend.generated.model.IncidentThreatCalculationResponse;
 import gov.mib.aims.backend.generated.model.IncidentThreatContribution;
 import gov.mib.aims.backend.generated.model.SetIncidentThreatLevelRequest;
-import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.IncidentStatus;
 import gov.mib.aims.backend.model.IncidentThreatAssessment;
 import gov.mib.aims.backend.repository.AlienRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
+import gov.mib.aims.backend.services.incident.IncidentHistoryService;
 import gov.mib.aims.backend.services.incident.IncidentThreatCalculator;
 import gov.mib.aims.backend.services.mapping.IncidentMapper;
+import gov.mib.aims.backend.services.transaction.RetryableSerializable;
 import lombok.RequiredArgsConstructor;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +32,7 @@ public class IncidentThreatService {
     private final AlienRepository alienRepository;
     private final IncidentThreatCalculator calculator;
     private final IncidentMapper incidentMapper;
-    private final EntityHistoryService entityHistoryService;
+    private final IncidentHistoryService incidentHistoryService;
     private final ChronoService chronoService;
 
     /**
@@ -54,8 +54,7 @@ public class IncidentThreatService {
     /**
      * Сохраняет выбранный уровень угрозы с историей изменений.
      */
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public IncidentResponse setThreatLevel(Long id, SetIncidentThreatLevelRequest request) {
         var incident = findOpenIncident(id);
         int level = request.getThreatLevel();
@@ -66,7 +65,7 @@ public class IncidentThreatService {
         incident.setThreatLevel(level);
         incident.setUpdatedAt(chronoService.localDateTimeNow());
         incident = incidentRepository.save(incident);
-        entityHistoryService.recordChange(EntityType.INCIDENT, incident.getId(), incident);
+        incidentHistoryService.record(incident);
 
         return incidentMapper.toResponse(incident);
     }

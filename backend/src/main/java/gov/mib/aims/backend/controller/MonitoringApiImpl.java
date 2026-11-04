@@ -5,6 +5,7 @@ import gov.mib.aims.backend.generated.model.MonitoringAlertListResponse;
 import gov.mib.aims.backend.generated.model.MonitoringAlertResponse;
 import gov.mib.aims.backend.generated.model.MonitoringAlertStatusApi;
 import gov.mib.aims.backend.services.MonitoringAlertService;
+import gov.mib.aims.backend.services.query.PageParameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,10 +30,10 @@ public class MonitoringApiImpl implements MonitoringApi {
             Integer page,
             Integer size
     ) {
-        int pageNumber = page != null ? page : 0;
-        int pageSize = size != null ? size : 20;
-        log.info("GET /api/v1/monitoring/alerts status={} page={} size={}", status, pageNumber, pageSize);
-        return monitoringAlertService.list(status, pageNumber, pageSize);
+        var pagination = PageParameters.of(page, size, 20);
+        log.info("GET /api/v1/monitoring/alerts status={} page={} size={}",
+                status, pagination.page(), pagination.size());
+        return monitoringAlertService.list(status, pagination.page(), pagination.size());
     }
 
     @Override

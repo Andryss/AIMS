@@ -6,22 +6,18 @@ import gov.mib.aims.backend.model.DetentionRequestStatus;
 import gov.mib.aims.backend.model.Permission;
 import gov.mib.aims.backend.services.ChronoService;
 import gov.mib.aims.backend.services.CurrentUserService;
-import gov.mib.aims.backend.services.status.AbstractStatusWorkflow;
-import gov.mib.aims.backend.services.status.StatusTransition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 /**
  * Рассмотрение заявок и переходы фактического заключения.
  */
 @Component
 @RequiredArgsConstructor
-public class DetentionRequestWorkflow
-        extends AbstractStatusWorkflow<DetentionRequestEntity, DetentionRequestStatus> {
+public class DetentionRequestWorkflow {
 
     private final CurrentUserService currentUserService;
     private final ChronoService chronoService;
@@ -41,12 +37,9 @@ public class DetentionRequestWorkflow
             throw Errors.validationError("Недопустимый переход статуса заявки на заключение");
         }
 
-        var transition = StatusTransition.<DetentionRequestEntity, DetentionRequestStatus>builder()
-                .from(from).to(target)
-                .preconditions(List.of(request -> assertActor(request, target),
-                        request -> assertComment(request, target, comment))).postActions(List.of()).build();
-
-        return applyTransition(entity, transition);
+        assertActor(entity, target);
+        assertComment(entity, target, comment);
+        return applyStatus(entity, target);
     }
 
     private void assertActor(DetentionRequestEntity entity, DetentionRequestStatus target) {
@@ -69,8 +62,7 @@ public class DetentionRequestWorkflow
         }
     }
 
-    @Override
-    protected DetentionRequestEntity applyStatus(DetentionRequestEntity entity, DetentionRequestStatus target) {
+    private DetentionRequestEntity applyStatus(DetentionRequestEntity entity, DetentionRequestStatus target) {
         Instant now = chronoService.now();
         if (target == DetentionRequestStatus.ACCEPTED || target == DetentionRequestStatus.REJECTED) {
             entity.setReviewedByUserId(currentUserService.getCurrentUserId());

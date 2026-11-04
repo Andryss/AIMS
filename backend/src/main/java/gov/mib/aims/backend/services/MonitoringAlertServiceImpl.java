@@ -13,6 +13,8 @@ import gov.mib.aims.backend.services.dbqueue.processor.NotifyOperatorsMonitoring
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyOperatorsMonitoringAlertProcessor;
 import gov.mib.aims.backend.services.mapping.IncidentMapper;
 import gov.mib.aims.backend.services.mapping.MonitoringAlertMapper;
+import gov.mib.aims.backend.services.query.PageParameters;
+import gov.mib.aims.backend.services.validation.TextNormalizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,7 +45,8 @@ public class MonitoringAlertServiceImpl implements MonitoringAlertService {
     @Override
     @Transactional
     public MonitoringAlertResponse ingest(IngestMonitoringEventRequest request) {
-        String externalEventId = request.getExternalEventId().trim();
+        String externalEventId = TextNormalizer.required(request.getExternalEventId(),
+                "Укажите внешний идентификатор события");
         if (monitoringAlertRepository.existsByExternalEventId(externalEventId)) {
             throw Errors.duplicateMonitoringEvent();
         }
@@ -61,9 +64,9 @@ public class MonitoringAlertServiceImpl implements MonitoringAlertService {
                 .sourceSystem(resolveSourceSystem(request.getSourceSystem()))
                 .status(MonitoringAlertStatus.NEW)
                 .eventType(incidentMapper.toModelEventType(request.getEventType()))
-                .location(request.getLocation().trim())
+                .location(TextNormalizer.required(request.getLocation(), "Укажите место события"))
                 .detectedAt(chronoService.toLocalDateTime(request.getDetectedAt()))
-                .description(request.getDescription().trim())
+                .description(TextNormalizer.required(request.getDescription(), "Укажите описание"))
                 .mediaUrls(mediaUrls)
                 .rawPayload(rawPayload)
                 .receivedAt(now)
@@ -82,7 +85,7 @@ public class MonitoringAlertServiceImpl implements MonitoringAlertService {
     @Override
     @Transactional(readOnly = true)
     public MonitoringAlertListResponse list(MonitoringAlertStatusApi status, int page, int size) {
-        PageRequest pageable = PageRequest.of(page, size);
+        PageRequest pageable = PageParameters.of(page, size).toPageable();
         Page<MonitoringAlertEntity> result;
         MonitoringAlertStatus modelStatus = monitoringAlertMapper.toModelStatus(status);
         if (modelStatus != null) {
@@ -90,12 +93,7 @@ public class MonitoringAlertServiceImpl implements MonitoringAlertService {
         } else {
             result = monitoringAlertRepository.findAllByOrderByReceivedAtDesc(pageable);
         }
-        return new MonitoringAlertListResponse()
-                .items(result.getContent().stream().map(monitoringAlertMapper::toResponse).toList())
-                .page(result.getNumber())
-                .size(result.getSize())
-                .totalElements(result.getTotalElements())
-                .totalPages(result.getTotalPages());
+        return monitoringAlertMapper.toListResponse(result);
     }
 
     @Override

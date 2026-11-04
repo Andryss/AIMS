@@ -3,6 +3,7 @@ package gov.mib.aims.backend.services.mapping;
 import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.generated.model.CleanupStatusApi;
 import gov.mib.aims.backend.generated.model.IncidentEventTypeApi;
+import gov.mib.aims.backend.generated.model.IncidentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
 import gov.mib.aims.backend.generated.model.IncidentStatusApi;
 import gov.mib.aims.backend.model.CleanupStatus;
@@ -10,6 +11,7 @@ import gov.mib.aims.backend.model.IncidentEventType;
 import gov.mib.aims.backend.model.IncidentStatus;
 import gov.mib.aims.backend.services.ChronoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -136,5 +138,14 @@ public class IncidentMapper {
             case EXECUTION -> CleanupStatusApi.EXECUTION;
             case COMPLETED -> CleanupStatusApi.COMPLETED;
         };
+    }
+
+    /**
+     * Собирает элементы и метаданные страницы для API.
+     */
+    public IncidentListResponse toListResponse(Page<IncidentEntity> page) {
+        return new IncidentListResponse().items(page.map(this::toResponse).getContent())
+                .page(page.getNumber()).size(page.getSize())
+                .totalElements(page.getTotalElements()).totalPages(page.getTotalPages());
     }
 }

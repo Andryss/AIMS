@@ -5,11 +5,12 @@ import gov.mib.aims.backend.generated.model.TenderHistorySnapshot;
 import gov.mib.aims.backend.generated.model.TenderResponse;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.TenderParticipantStatus;
-import gov.mib.aims.backend.repository.TenderParticipantRepository;
 import gov.mib.aims.backend.repository.EquipmentRepository;
+import gov.mib.aims.backend.repository.TenderParticipantRepository;
 import gov.mib.aims.backend.services.EntityHistoryService;
 import gov.mib.aims.backend.services.mapping.TenderMapper;
 import gov.mib.aims.backend.services.mapping.TenderParticipantMapper;
+import gov.mib.aims.backend.services.validation.TextNormalizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +38,7 @@ public class TenderHistoryService {
         var snapshot = new TenderHistorySnapshot().tender(response)
                 .participants(participants.stream().map(participantMapper::toResponse).toList())
                 .receivedEquipmentIds(equipmentRepository.findIdsBySourceTenderId(tender.getId()))
-                .transitionComment(comment == null ? null : comment.trim());
+                .transitionComment(TextNormalizer.optional(comment));
         historyService.recordChange(EntityType.TENDER, tender.getId(), snapshot);
 
         return response;

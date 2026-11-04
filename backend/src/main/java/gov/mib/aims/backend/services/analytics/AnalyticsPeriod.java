@@ -1,7 +1,6 @@
 package gov.mib.aims.backend.services.analytics;
 
 import gov.mib.aims.backend.exception.Errors;
-import gov.mib.aims.backend.generated.model.AnalyticsMeta;
 import gov.mib.aims.backend.services.ChronoService;
 
 import java.time.Instant;
@@ -28,14 +27,5 @@ public record AnalyticsPeriod(Instant from, Instant to) {
         }
 
         return new AnalyticsPeriod(chronoService.toInstant(from), chronoService.toInstant(to));
-    }
-
-    /**
-     * Заполняет общую информацию отчёта, сохраняя показатель полноты истории.
-     */
-    public AnalyticsMeta meta(AnalyticsBuckets buckets, Long missing, ChronoService chronoService) {
-        return new AnalyticsMeta().from(chronoService.toOffsetDateTime(from)).to(chronoService.toOffsetDateTime(to))
-                .generatedAt(chronoService.offsetDateTimeNow())
-                .bucketUnit(buckets.unit()).bucketStep(buckets.step()).recordsWithoutSnapshot(missing);
     }
 }

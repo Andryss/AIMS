@@ -1,6 +1,5 @@
 package gov.mib.aims.backend.services.analytics;
 
-import gov.mib.aims.backend.generated.model.AnalyticsBucketUnitApi;
 import gov.mib.aims.backend.services.ChronoService;
 
 import java.time.Instant;
@@ -9,20 +8,32 @@ import java.time.temporal.ChronoUnit;
 /**
  * Автоматический масштаб графика с ограниченным числом точек.
  */
-public record AnalyticsBuckets(AnalyticsBucketUnitApi unit, int step, Instant start, int months, int seconds) {
+public record AnalyticsBuckets(Unit unit, int step, Instant start, int months, int seconds) {
 
     private static final int MAX_BUCKETS = 120;
+
+    /**
+     * Внутренние единицы масштаба отчёта; представление API выбирает mapper.
+     */
+    public enum Unit {
+        /** Часовые интервалы UTC. */
+        HOUR,
+        /** Дневные интервалы UTC. */
+        DAY,
+        /** Календарные месяцы UTC. */
+        MONTH
+    }
 
     /**
      * Выбирает часовые, дневные или календарные месячные границы по UTC.
      */
     public static AnalyticsBuckets forPeriod(AnalyticsPeriod period, ChronoService chronoService) {
         if (chronoService.isDurationAtMost(period.from(), period.to(), 48, ChronoUnit.HOURS)) {
-            return new AnalyticsBuckets(AnalyticsBucketUnitApi.HOUR, 1,
+            return new AnalyticsBuckets(Unit.HOUR, 1,
                     chronoService.truncate(period.from(), ChronoUnit.HOURS), 0, 3600);
         }
         if (chronoService.isDurationAtMost(period.from(), period.to(), 90, ChronoUnit.DAYS)) {
-            return new AnalyticsBuckets(AnalyticsBucketUnitApi.DAY, 1,
+            return new AnalyticsBuckets(Unit.DAY, 1,
                     chronoService.truncate(period.from(), ChronoUnit.DAYS), 0, 86400);
         }
 
@@ -31,7 +42,7 @@ public record AnalyticsBuckets(AnalyticsBucketUnitApi unit, int step, Instant st
         long count = chronoService.monthsBetween(first, last) + 1;
         int step = Math.toIntExact((count + MAX_BUCKETS - 1) / MAX_BUCKETS);
 
-        return new AnalyticsBuckets(AnalyticsBucketUnitApi.MONTH, step,
+        return new AnalyticsBuckets(Unit.MONTH, step,
                 first, step, 0);
     }
 }

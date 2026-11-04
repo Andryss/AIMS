@@ -150,6 +150,41 @@ Generated code is under `target/generated-sources/openapi/`.
 - `config/` — security, db-queue, validation
 - `src/test/java/gov/mib/aims/backend/support/ApiTestFixtures.java` — shared MockMvc helpers for API tests
 
+## Backend conventions
+
+- Paginated services use `PageParameters` (page >= 0, size 1..100). Controllers retain endpoint defaults of 20 or 50.
+  Invalid values return a validation error instead of being silently clamped.
+
+- API DTOs are assembled in domain mappers under `services/mapping`. Each mapper explicitly fills its list and history
+  response fields; generated models have no project-specific response interfaces. Edit OpenAPI schemas and regenerate
+  models instead of editing generated Java.
+
+- `HistoryReader` returns internal `HistoryRecord` values and orders changes by `changedAt, id`. Mappers convert
+  timestamps to UTC and construct API entries. Incident history keeps the explicit `IncidentSnapshot` storage model,
+  compatible with existing flat JSON and analytical SQL.
+
+- `AnalyticsReportExecutor` validates periods and returns SQL JSON with its query context. `AnalyticsResponseMapper`
+  decodes the ten report DTO types and fills public metadata, preserving the SQL missing-history counter.
+
+- `AbstractGraphStatusWorkflow` executes registered preconditions and actions for incident and cleanup graphs.
+  Workflows validate and mutate state. The command service saves, records history, then invokes `afterSave` to enqueue
+  notifications in the same transaction. `IncidentTransitionContext` carries comments explicitly.
+
+- Commands requiring retries and serializable isolation use `@RetryableSerializable`. Retried commands keep database
+  writes and queue tasks in that transaction.
+
+- Components that load related records, such as `EquipmentMovementResponseAssembler`, load the complete page in
+  batches and delegate DTO construction to mappers.
+
+- `IncidentInputMapper` prepares create/update fields consistently. `TextNormalizer` handles required and optional
+  text; `AttachmentValidator` validates file references in one query and applies domain-specific list limits.
+
+- `NotificationDispatcher` sends to roles or explicit recipients and removes repeated recipient ids. Queue processors
+  retain event text and recipient-selection rules.
+
+Use JDK 17 for `./mvnw verify`, including JaCoCo coverage. Integration tests start an embedded PostgreSQL process and
+need permission to open local sockets.
+
 ## External monitoring integration (UC1)
 
 Push endpoint for external systems and local testing:

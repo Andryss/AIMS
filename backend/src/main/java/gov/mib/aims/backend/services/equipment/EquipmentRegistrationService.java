@@ -11,6 +11,7 @@ import gov.mib.aims.backend.model.EquipmentType;
 import gov.mib.aims.backend.repository.EquipmentRepository;
 import gov.mib.aims.backend.services.EntityHistoryService;
 import gov.mib.aims.backend.services.mapping.EquipmentMapper;
+import gov.mib.aims.backend.services.validation.TextNormalizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -50,11 +51,8 @@ public class EquipmentRegistrationService {
 
     private EquipmentResponse save(EquipmentEntity entity, EquipmentType type, String model, String serialNumber,
                                     EquipmentHistoryEventApi event) {
-        String normalizedModel = model.trim();
-        String normalizedSerial = serialNumber.trim();
-        if (normalizedModel.isBlank() || normalizedSerial.isBlank()) {
-            throw Errors.validationError("Укажите модель и серийный номер оборудования");
-        }
+        String normalizedModel = TextNormalizer.required(model, "Укажите модель и серийный номер оборудования");
+        String normalizedSerial = TextNormalizer.required(serialNumber, "Укажите модель и серийный номер оборудования");
 
         entity.setType(type);
         entity.setModel(normalizedModel);

@@ -5,14 +5,12 @@ import gov.mib.aims.backend.entity.EquipmentMovementEntity;
 import gov.mib.aims.backend.entity.EquipmentMovementItemEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.generated.model.ChangeEquipmentMovementStatusRequest;
-import gov.mib.aims.backend.generated.model.EquipmentMovementHistoryEntry;
 import gov.mib.aims.backend.generated.model.EquipmentMovementHistoryListResponse;
 import gov.mib.aims.backend.generated.model.EquipmentMovementHistorySnapshot;
 import gov.mib.aims.backend.generated.model.EquipmentMovementListResponse;
 import gov.mib.aims.backend.generated.model.EquipmentMovementOperationApi;
 import gov.mib.aims.backend.generated.model.EquipmentMovementResponse;
 import gov.mib.aims.backend.generated.model.EquipmentMovementStatusApi;
-import gov.mib.aims.backend.generated.model.EquipmentResponse;
 import gov.mib.aims.backend.generated.model.SaveEquipmentMovementRequest;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.EquipmentMovementOperation;
@@ -21,28 +19,24 @@ import gov.mib.aims.backend.model.EquipmentStatus;
 import gov.mib.aims.backend.model.IncidentStatus;
 import gov.mib.aims.backend.model.Role;
 import gov.mib.aims.backend.repository.AppUserRepository;
-import gov.mib.aims.backend.repository.EntityHistoryRepository;
 import gov.mib.aims.backend.repository.EquipmentMovementItemRepository;
 import gov.mib.aims.backend.repository.EquipmentMovementRepository;
 import gov.mib.aims.backend.repository.EquipmentRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
+import gov.mib.aims.backend.services.equipment.EquipmentMovementResponseAssembler;
 import gov.mib.aims.backend.services.equipment.EquipmentMovementWorkflow;
-import gov.mib.aims.backend.services.mapping.EquipmentMapper;
+import gov.mib.aims.backend.services.history.HistoryReader;
 import gov.mib.aims.backend.services.mapping.EquipmentMovementMapper;
+import gov.mib.aims.backend.services.query.PageParameters;
+import gov.mib.aims.backend.services.transaction.RetryableSerializable;
+import gov.mib.aims.backend.services.validation.TextNormalizer;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Учет заявок и независимых снимков их состояния.
@@ -51,18 +45,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EquipmentMovementServiceImpl implements EquipmentMovementService {
 
-    private final ChronoService chronoService;
-
     private final EquipmentMovementRepository movementRepository;
     private final EquipmentMovementItemRepository itemRepository;
     private final EquipmentRepository equipmentRepository;
     private final IncidentRepository incidentRepository;
     private final AppUserRepository userRepository;
     private final CurrentUserService currentUserService;
-    private final EntityHistoryRepository historyRepository;
+    private final HistoryReader historyReader;
     private final EntityHistoryService historyService;
-    private final ObjectMapperWrapper objectMapper;
-    private final EquipmentMapper equipmentMapper;
+    private final EquipmentMovementResponseAssembler responseAssembler;
     private final EquipmentMovementMapper mapper;
     private final EquipmentMovementWorkflow workflow;
 
@@ -72,16 +63,14 @@ public class EquipmentMovementServiceImpl implements EquipmentMovementService {
                                              EquipmentMovementStatusApi status, EquipmentMovementOperationApi operation,
                                              Long equipmentId, int page, int size) {
         var result = movementRepository.search(incidentId, responsibleUserId, status == null ? null : status.name(),
-                operation == null ? null : operation.name(), equipmentId, PageRequest.of(page, size));
+                operation == null ? null : operation.name(), equipmentId,
+                PageParameters.of(page, size).toPageable());
 
-        return new EquipmentMovementListResponse().items(toResponses(result.getContent()))
-                .page(result.getNumber()).size(result.getSize()).totalElements(result.getTotalElements())
-                .totalPages(result.getTotalPages());
+        return mapper.toListResponse(result, responseAssembler.toResponses(result.getContent()));
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public EquipmentMovementResponse create(SaveEquipmentMovementRequest request) {
         assertIncidentOpen(request.getIncidentId());
         validate(request);
@@ -101,8 +90,7 @@ public class EquipmentMovementServiceImpl implements EquipmentMovementService {
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public EquipmentMovementResponse update(Long id, SaveEquipmentMovementRequest request) {
         EquipmentMovementEntity entity = getMutableMovement(id);
         assertAuthorOrStorekeeper(entity);
@@ -128,15 +116,14 @@ public class EquipmentMovementServiceImpl implements EquipmentMovementService {
 
     private void applyChanges(EquipmentMovementEntity entity, SaveEquipmentMovementRequest request) {
         entity.setResponsibleUserId(request.getResponsibleUserId());
-        entity.setComment(request.getComment() == null ? null : request.getComment().trim());
+        entity.setComment(TextNormalizer.optional(request.getComment()));
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public EquipmentMovementResponse changeStatus(Long id, ChangeEquipmentMovementStatusRequest request) {
         EquipmentMovementEntity entity = getMutableMovement(id);
-        String comment = request.getComment() == null ? null : request.getComment().trim();
+        String comment = TextNormalizer.optional(request.getComment());
         workflow.changeStatus(entity, EquipmentMovementStatus.valueOf(request.getStatus().name()), comment);
 
         return recordChange(entity, comment);
@@ -224,7 +211,7 @@ public class EquipmentMovementServiceImpl implements EquipmentMovementService {
     }
 
     private EquipmentMovementResponse recordChange(EquipmentMovementEntity entity, String comment) {
-        EquipmentMovementResponse response = toResponses(List.of(entity)).get(0);
+        EquipmentMovementResponse response = responseAssembler.toResponse(entity);
 
         historyService.recordChange(EntityType.EQUIPMENT_MOVEMENT, entity.getId(),
                 new EquipmentMovementHistorySnapshot().movement(response).transitionComment(comment));
@@ -232,31 +219,11 @@ public class EquipmentMovementServiceImpl implements EquipmentMovementService {
         return response;
     }
 
-    private List<EquipmentMovementResponse> toResponses(List<EquipmentMovementEntity> movements) {
-        if (movements.isEmpty()) {
-            return List.of();
-        }
-
-        var items = itemRepository.findAllByMovementIdInOrderByIdAsc(
-                movements.stream().map(EquipmentMovementEntity::getId).toList());
-        Map<Long, EquipmentResponse> equipment = equipmentRepository.findAllById(
-                        items.stream().map(EquipmentMovementItemEntity::getEquipmentItemId).distinct().toList())
-                .stream().map(equipmentMapper::toResponse)
-                .collect(Collectors.toMap(EquipmentResponse::getId, Function.identity()));
-
-        Map<Long, List<EquipmentMovementItemEntity>> byMovement = items.stream()
-                .collect(Collectors.groupingBy(EquipmentMovementItemEntity::getMovementId));
-
-        return movements.stream().map(movement -> mapper.toResponse(movement,
-                byMovement.getOrDefault(movement.getId(), List.of()).stream()
-                        .map(item -> equipment.get(item.getEquipmentItemId())).toList())).toList();
-    }
-
     @Override
     @Transactional(readOnly = true)
     public EquipmentMovementResponse getById(Long id) {
-        return toResponses(List.of(movementRepository.findById(id)
-                .orElseThrow(Errors::equipmentMovementNotFound))).get(0);
+        return responseAssembler.toResponse(movementRepository.findById(id)
+                .orElseThrow(Errors::equipmentMovementNotFound));
     }
 
     @Override
@@ -266,15 +233,9 @@ public class EquipmentMovementServiceImpl implements EquipmentMovementService {
             throw Errors.equipmentMovementNotFound();
         }
 
-        var result = historyRepository.findByEntityTypeAndEntityIdOrderByChangedAtAsc(
-                EntityType.EQUIPMENT_MOVEMENT, id, PageRequest.of(page, size, Sort.by("id")));
+        var result = historyReader.read(EntityType.EQUIPMENT_MOVEMENT, id, page, size,
+                EquipmentMovementHistorySnapshot.class);
 
-        return new EquipmentMovementHistoryListResponse().items(result.map(entry ->
-                        new EquipmentMovementHistoryEntry().id(entry.getId())
-                                .changedAt(chronoService.toOffsetDateTime(entry.getChangedAt()))
-                                .changedByUserId(entry.getChangedByUserId()).snapshot(objectMapper.readValue(
-                                        entry.getSnapshot(), EquipmentMovementHistorySnapshot.class))).getContent())
-                .page(result.getNumber()).size(result.getSize()).totalElements(result.getTotalElements())
-                .totalPages(result.getTotalPages());
+        return mapper.toHistoryListResponse(result);
     }
 }

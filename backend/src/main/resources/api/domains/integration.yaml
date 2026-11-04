@@ -45,6 +45,7 @@ components:
         externalEventId:
           type: string
           minLength: 1
+          pattern: '(?s).*\S.*'
           maxLength: 200
         sourceSystem:
           type: string
@@ -57,11 +58,13 @@ components:
         location:
           type: string
           minLength: 1
+          pattern: '(?s).*\S.*'
         eventType:
           $ref: "./incidents.yaml#/components/schemas/IncidentEventTypeApi"
         description:
           type: string
           minLength: 1
+          pattern: '(?s).*\S.*'
         mediaUrls:
           type: array
           items:

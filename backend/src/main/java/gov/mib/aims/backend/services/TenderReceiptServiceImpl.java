@@ -10,11 +10,9 @@ import gov.mib.aims.backend.repository.TenderRepository;
 import gov.mib.aims.backend.services.equipment.EquipmentRegistrationService;
 import gov.mib.aims.backend.services.tender.TenderHistoryService;
 import gov.mib.aims.backend.services.tender.TenderWorkflow;
+import gov.mib.aims.backend.services.transaction.RetryableSerializable;
 import lombok.RequiredArgsConstructor;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -32,8 +30,7 @@ public class TenderReceiptServiceImpl implements TenderReceiptService {
     private final TenderWorkflow workflow;
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public TenderReceiptResponse receive(Long id, ReceiveTenderRequest request) {
         var tender = repository.findById(id).orElseThrow(Errors::tenderNotFound);
         workflow.receive(tender);

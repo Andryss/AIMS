@@ -1,12 +1,11 @@
 package gov.mib.aims.backend.services.dbqueue.processor;
 
 import gov.mib.aims.backend.entity.IncidentEntity;
-import gov.mib.aims.backend.model.EntityRef;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.repository.IncidentRepository;
-import gov.mib.aims.backend.services.NotificationService;
 import gov.mib.aims.backend.services.dbqueue.DbQueueProcessor;
 import gov.mib.aims.backend.services.dbqueue.DbQueueSettings;
+import gov.mib.aims.backend.services.notification.NotificationDispatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -25,7 +24,7 @@ import java.util.Optional;
 public class NotifyCleanupCompletedProcessor implements DbQueueProcessor<NotifyCleanupCompletedPayload> {
 
     private final IncidentRepository incidentRepository;
-    private final NotificationService notificationService;
+    private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public TaskExecutionResult execute(NotifyCleanupCompletedPayload payload) {
@@ -42,8 +41,8 @@ public class NotifyCleanupCompletedProcessor implements DbQueueProcessor<NotifyC
             return TaskExecutionResult.finish();
         }
         String message = "По инциденту №" + incidentId + " завершена очистка";
-        String relatedRef = EntityRef.format(EntityType.INCIDENT, incidentId);
-        notificationService.send(responsibleUserId, message, List.of(relatedRef));
+        notificationDispatcher.sendToUsers(
+                List.of(responsibleUserId), message, EntityType.INCIDENT, incidentId);
         return TaskExecutionResult.finish();
     }
 }

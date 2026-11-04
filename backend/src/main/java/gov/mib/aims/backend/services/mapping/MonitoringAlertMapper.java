@@ -1,11 +1,13 @@
 package gov.mib.aims.backend.services.mapping;
 
 import gov.mib.aims.backend.entity.MonitoringAlertEntity;
+import gov.mib.aims.backend.generated.model.MonitoringAlertListResponse;
 import gov.mib.aims.backend.generated.model.MonitoringAlertResponse;
 import gov.mib.aims.backend.generated.model.MonitoringAlertStatusApi;
 import gov.mib.aims.backend.model.MonitoringAlertStatus;
 import gov.mib.aims.backend.services.ChronoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -63,5 +65,14 @@ public class MonitoringAlertMapper {
             case NEW -> MonitoringAlertStatusApi.NEW;
             case INCIDENT_CREATED -> MonitoringAlertStatusApi.INCIDENT_CREATED;
         };
+    }
+
+    /**
+     * Собирает элементы и метаданные страницы для API.
+     */
+    public MonitoringAlertListResponse toListResponse(Page<MonitoringAlertEntity> page) {
+        return new MonitoringAlertListResponse().items(page.map(this::toResponse).getContent())
+                .page(page.getNumber()).size(page.getSize())
+                .totalElements(page.getTotalElements()).totalPages(page.getTotalPages());
     }
 }

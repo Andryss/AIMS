@@ -23,12 +23,12 @@ import java.time.OffsetDateTime;
 @Validated
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("hasAuthority('ANALYTICS_READ')")
 public class DetentionStatisticsApiImpl implements DetentionStatisticsApi {
 
     private final DetentionAnalyticsService detentionService;
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getDetentionCreatedCount(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
         log.info("GET /api/v1/detention-requests/statistics/created-count from={} to={}",
@@ -38,7 +38,6 @@ public class DetentionStatisticsApiImpl implements DetentionStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getDetentionAdmittedCount(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
         log.info("GET /api/v1/detention-requests/statistics/admitted-count from={} to={}",
@@ -48,7 +47,6 @@ public class DetentionStatisticsApiImpl implements DetentionStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getDetentionReleasedCount(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
         log.info("GET /api/v1/detention-requests/statistics/released-count from={} to={}",
@@ -58,7 +56,6 @@ public class DetentionStatisticsApiImpl implements DetentionStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getDetentionAwaitingAtTo(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
         log.info("GET /api/v1/detention-requests/statistics/awaiting-at-to from={} to={}",
@@ -68,7 +65,6 @@ public class DetentionStatisticsApiImpl implements DetentionStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getDetentionInCustodyAtTo(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
         log.info("GET /api/v1/detention-requests/statistics/in-custody-at-to from={} to={}",
@@ -78,7 +74,6 @@ public class DetentionStatisticsApiImpl implements DetentionStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getDetentionOverdueAtTo(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
         log.info("GET /api/v1/detention-requests/statistics/overdue-at-to from={} to={}",
@@ -88,7 +83,6 @@ public class DetentionStatisticsApiImpl implements DetentionStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public DurationAnalyticsResponse getDetentionCustodyDuration(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
         log.info("GET /api/v1/detention-requests/statistics/custody-duration from={} to={}",
@@ -98,7 +92,6 @@ public class DetentionStatisticsApiImpl implements DetentionStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public TrendAnalyticsResponse getDetentionTrend(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
         log.info("GET /api/v1/detention-requests/statistics/trend from={} to={}",
@@ -108,7 +101,6 @@ public class DetentionStatisticsApiImpl implements DetentionStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public GroupedAnalyticsResponse getDetentionByStatus(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
         log.info("GET /api/v1/detention-requests/statistics/by-status from={} to={}",
@@ -118,7 +110,6 @@ public class DetentionStatisticsApiImpl implements DetentionStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public GroupedAnalyticsResponse getDetentionByAlien(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
         log.info("GET /api/v1/detention-requests/statistics/by-alien from={} to={}",
@@ -128,7 +119,6 @@ public class DetentionStatisticsApiImpl implements DetentionStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public GroupedAnalyticsResponse getDetentionByAssignedTerm(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
         log.info("GET /api/v1/detention-requests/statistics/by-assigned-term from={} to={}",
@@ -138,7 +128,6 @@ public class DetentionStatisticsApiImpl implements DetentionStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public GroupedAnalyticsResponse getDetentionByRemainingTime(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
         log.info("GET /api/v1/detention-requests/statistics/by-remaining-time from={} to={}",
@@ -148,7 +137,6 @@ public class DetentionStatisticsApiImpl implements DetentionStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public UpcomingReleasesAnalyticsResponse getDetentionUpcomingReleases(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
         log.info("GET /api/v1/detention-requests/statistics/upcoming-releases from={} to={}",

@@ -19,7 +19,7 @@ public interface EntityHistoryRepository extends JpaRepository<EntityHistoryEnti
      * @param pageable пагинация
      * @return страница записей истории
      */
-    Page<EntityHistoryEntity> findByEntityTypeAndEntityIdOrderByChangedAtAsc(
+    Page<EntityHistoryEntity> findByEntityTypeAndEntityIdOrderByChangedAtAscIdAsc(
             EntityType entityType,
             Long entityId,
             Pageable pageable

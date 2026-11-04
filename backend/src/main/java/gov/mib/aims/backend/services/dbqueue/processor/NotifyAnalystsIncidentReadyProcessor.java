@@ -1,20 +1,15 @@
 package gov.mib.aims.backend.services.dbqueue.processor;
 
-import gov.mib.aims.backend.entity.AppUserEntity;
-import gov.mib.aims.backend.model.EntityRef;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.Role;
-import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
-import gov.mib.aims.backend.services.NotificationService;
 import gov.mib.aims.backend.services.dbqueue.DbQueueProcessor;
 import gov.mib.aims.backend.services.dbqueue.DbQueueSettings;
+import gov.mib.aims.backend.services.notification.NotificationDispatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yoomoney.tech.dbqueue.api.TaskExecutionResult;
-
-import java.util.List;
 
 /**
  * Отправляет in-app уведомления аналитикам о готовности инцидента к анализу.
@@ -26,8 +21,7 @@ import java.util.List;
 public class NotifyAnalystsIncidentReadyProcessor implements DbQueueProcessor<NotifyAnalystsIncidentReadyPayload> {
 
     private final IncidentRepository incidentRepository;
-    private final AppUserRepository appUserRepository;
-    private final NotificationService notificationService;
+    private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public TaskExecutionResult execute(NotifyAnalystsIncidentReadyPayload payload) {
@@ -37,11 +31,7 @@ public class NotifyAnalystsIncidentReadyProcessor implements DbQueueProcessor<No
             return TaskExecutionResult.finish();
         }
         String message = "Новый инцидент №" + incidentId + " готов к анализу";
-        String relatedRef = EntityRef.format(EntityType.INCIDENT, incidentId);
-        List<AppUserEntity> analysts = appUserRepository.findAllByRoleName(Role.ANALYST.getCode());
-        for (AppUserEntity analyst : analysts) {
-            notificationService.send(analyst.getId(), message, List.of(relatedRef));
-        }
+        notificationDispatcher.sendToRole(Role.ANALYST, message, EntityType.INCIDENT, incidentId);
         return TaskExecutionResult.finish();
     }
 }

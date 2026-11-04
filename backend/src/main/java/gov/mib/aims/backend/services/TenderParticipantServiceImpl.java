@@ -11,12 +11,12 @@ import gov.mib.aims.backend.model.TenderStatus;
 import gov.mib.aims.backend.repository.TenderParticipantRepository;
 import gov.mib.aims.backend.repository.TenderRepository;
 import gov.mib.aims.backend.services.mapping.TenderParticipantMapper;
+import gov.mib.aims.backend.services.query.PageParameters;
 import gov.mib.aims.backend.services.tender.TenderHistoryService;
+import gov.mib.aims.backend.services.transaction.RetryableSerializable;
+import gov.mib.aims.backend.services.validation.TextNormalizer;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -40,16 +40,14 @@ public class TenderParticipantServiceImpl implements TenderParticipantService {
             throw Errors.tenderNotFound();
         }
 
-        var result = participantRepository.findByTenderIdOrderByCreatedAtAscIdAsc(tenderId, PageRequest.of(page, size));
+        var result = participantRepository.findByTenderIdOrderByCreatedAtAscIdAsc(tenderId,
+                PageParameters.of(page, size).toPageable());
 
-        return new TenderParticipantListResponse().items(result.map(mapper::toResponse).getContent())
-                .page(result.getNumber()).size(result.getSize())
-                .totalElements(result.getTotalElements()).totalPages(result.getTotalPages());
+        return mapper.toListResponse(result);
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public TenderParticipantResponse create(Long tenderId, SaveTenderParticipantRequest request) {
         TenderEntity tender = findTender(tenderId);
         assertCollecting(tender);
@@ -62,8 +60,7 @@ public class TenderParticipantServiceImpl implements TenderParticipantService {
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public TenderParticipantResponse update(Long tenderId, Long participantId, SaveTenderParticipantRequest request) {
         TenderEntity tender = findTender(tenderId);
         TenderParticipantEntity participant = participantRepository.findByIdAndTenderId(participantId, tenderId)
@@ -85,11 +82,9 @@ public class TenderParticipantServiceImpl implements TenderParticipantService {
 
     private TenderParticipantResponse save(TenderEntity tender, TenderParticipantEntity participant,
                                            SaveTenderParticipantRequest request) {
-        String name = request.getName().trim();
-        String proposal = request.getProposal().trim();
-        if (name.isBlank() || proposal.isBlank()) {
-            throw Errors.validationError("Укажите название участника и текст предложения");
-        }
+        String name = TextNormalizer.required(request.getName(), "Укажите название участника и текст предложения");
+        String proposal = TextNormalizer.required(request.getProposal(),
+                "Укажите название участника и текст предложения");
 
         var updatedAt = chronoService.now();
         participant.setName(name);

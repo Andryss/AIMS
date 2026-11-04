@@ -2,7 +2,6 @@ package gov.mib.aims.backend.services;
 
 import gov.mib.aims.backend.entity.EquipmentEntity;
 import gov.mib.aims.backend.exception.Errors;
-import gov.mib.aims.backend.generated.model.EquipmentHistoryEntry;
 import gov.mib.aims.backend.generated.model.EquipmentHistoryEventApi;
 import gov.mib.aims.backend.generated.model.EquipmentHistoryListResponse;
 import gov.mib.aims.backend.generated.model.EquipmentHistorySnapshot;
@@ -13,17 +12,15 @@ import gov.mib.aims.backend.generated.model.EquipmentTypeApi;
 import gov.mib.aims.backend.generated.model.SaveEquipmentRequest;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.EquipmentType;
-import gov.mib.aims.backend.repository.EntityHistoryRepository;
 import gov.mib.aims.backend.repository.EquipmentRepository;
 import gov.mib.aims.backend.services.equipment.EquipmentRegistrationService;
+import gov.mib.aims.backend.services.history.HistoryReader;
 import gov.mib.aims.backend.services.mapping.EquipmentMapper;
+import gov.mib.aims.backend.services.query.PageParameters;
+import gov.mib.aims.backend.services.transaction.RetryableSerializable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
@@ -35,12 +32,9 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class EquipmentServiceImpl implements EquipmentService {
 
-    private final ChronoService chronoService;
-
     private final EquipmentRepository equipmentRepository;
-    private final EntityHistoryRepository historyRepository;
+    private final HistoryReader historyReader;
     private final EquipmentRegistrationService registrationService;
-    private final ObjectMapperWrapper objectMapper;
     private final EquipmentMapper mapper;
 
     @Override
@@ -50,11 +44,9 @@ public class EquipmentServiceImpl implements EquipmentService {
         String query = q == null ? "" : q.trim().toLowerCase(Locale.ROOT);
         Page<EquipmentEntity> result = equipmentRepository.search(query,
                 type == null ? null : type.name(), status == null ? null : status.name(), holderUserId,
-                PageRequest.of(page, size));
+                PageParameters.of(page, size).toPageable());
 
-        return new EquipmentListResponse().items(result.map(mapper::toResponse).getContent())
-                .page(result.getNumber()).size(result.getSize())
-                .totalElements(result.getTotalElements()).totalPages(result.getTotalPages());
+        return mapper.toListResponse(result);
     }
 
     @Override
@@ -65,8 +57,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public EquipmentResponse update(Long id, SaveEquipmentRequest request) {
         EquipmentEntity entity = equipmentRepository.findById(id).orElseThrow(Errors::equipmentNotFound);
 
@@ -87,14 +78,9 @@ public class EquipmentServiceImpl implements EquipmentService {
             throw Errors.equipmentNotFound();
         }
 
-        var result = historyRepository.findByEntityTypeAndEntityIdOrderByChangedAtAsc(EntityType.EQUIPMENT, id,
-                PageRequest.of(page, size, Sort.by("id")));
+        var result = historyReader.read(EntityType.EQUIPMENT, id, page, size,
+                EquipmentHistorySnapshot.class);
 
-        return new EquipmentHistoryListResponse().items(result.map(entry -> new EquipmentHistoryEntry()
-                        .id(entry.getId()).changedAt(chronoService.toOffsetDateTime(entry.getChangedAt()))
-                        .changedByUserId(entry.getChangedByUserId())
-                        .snapshot(objectMapper.readValue(entry.getSnapshot(), EquipmentHistorySnapshot.class)))
-                .getContent()).page(result.getNumber()).size(result.getSize())
-                .totalElements(result.getTotalElements()).totalPages(result.getTotalPages());
+        return mapper.toHistoryListResponse(result);
     }
 }

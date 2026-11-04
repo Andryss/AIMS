@@ -1,7 +1,7 @@
 # AIMS Frontend
 
-React single-page application for the MIB Alien Incident Management System (AIMS). The production build is copied into the
-Spring Boot backend and served under `/public` (see `npm run build:backend`).
+React single-page application for the MIB Alien Incident Management System (AIMS). The production build is copied into
+the Spring Boot backend and served under `/public` (see `npm run build:backend`).
 
 See also: [project README](../README.md) · [backend README](../backend/README.md)
 
@@ -15,15 +15,19 @@ forwards to it).
 
 ## Source organization
 
-- `api/`: shared HTTP transport and explicit API functions grouped by domain. `api/client.ts` is the public compatibility barrel.
-- `types/`: domain contracts plus shared `Page<T>`, `PageQuery`, and `HistoryEntry<TSnapshot>`. `types.ts` preserves existing imports.
+- `api/`: shared HTTP transport and explicit API functions grouped by domain. `api/client.ts` is the public
+  compatibility barrel.
+- `types/`: domain contracts plus shared `Page<T>`, `PageQuery`, and `HistoryEntry<TSnapshot>`. `types.ts` preserves
+  existing imports.
 - `auth/`: session context, access checks and navigation; entity ownership/status rules live in `domain/`.
 - `hooks/`: shared URL filters, debounced search, scoped requests/mutations and history loading.
 - `components/incident/`: independent detail sections; `IncidentDetailPage` composes them.
 - `components/ui/`: shared cards, dialogs, status controls, history rendering, pagination and form primitives.
 - `utils/`: neutral date/URL/user helpers and domain-specific history field definitions.
 
-Keep API paths and editable fields explicit in their domain. Reuse the shared request lifecycle and UI primitives when adding another list or editor. Include the account and entity/filter identity in request scope keys so delayed responses cannot update a different screen.
+Keep API paths and editable fields explicit in their domain. Reuse the shared request lifecycle and UI primitives when
+adding another list or editor. Include the account and entity/filter identity in request scope keys so delayed responses
+cannot update a different screen.
 
 ## Scripts
 
@@ -58,13 +62,13 @@ Router). All **direct** production npm dependencies use permissive open-source l
 | [Create React App](https://create-react-app.dev/) / [react-scripts](https://www.npmjs.com/package/react-scripts) | 5.0.1 | Dev server, webpack/babel toolchain, Jest runner |
 | [Testing Library](https://testing-library.com/) | see `package-lock.json` | Component tests (`@testing-library/react` 16.3.2, etc.) |
 
-CRA pulls a large transitive tree (Babel, webpack, ESLint, etc.) used only at build and test time. Those packages are **not**
-included in the static files deployed with the backend JAR.
+CRA pulls a large transitive tree (Babel, webpack, ESLint, etc.) used only at build and test time. Those packages are
+**not** included in the static files deployed with the backend JAR.
 
 ## Licenses and commercial use
 
-This section describes **project policy** for dependency licensing. It is not legal advice; confirm requirements with your
-organization if needed.
+This section describes **project policy** for dependency licensing. It is not legal advice; confirm requirements with
+your organization if needed.
 
 ### Allowed in production / runtime artifacts
 

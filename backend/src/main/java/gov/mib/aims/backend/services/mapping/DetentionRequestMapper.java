@@ -1,10 +1,16 @@
 package gov.mib.aims.backend.services.mapping;
 
 import gov.mib.aims.backend.entity.DetentionRequestEntity;
+import gov.mib.aims.backend.generated.model.DetentionRequestHistoryEntry;
+import gov.mib.aims.backend.generated.model.DetentionRequestHistoryListResponse;
+import gov.mib.aims.backend.generated.model.DetentionRequestHistorySnapshot;
+import gov.mib.aims.backend.generated.model.DetentionRequestListResponse;
 import gov.mib.aims.backend.generated.model.DetentionRequestResponse;
 import gov.mib.aims.backend.generated.model.DetentionRequestStatusApi;
+import gov.mib.aims.backend.model.HistoryRecord;
 import gov.mib.aims.backend.services.ChronoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.time.temporal.ChronoUnit;
@@ -34,5 +40,30 @@ public class DetentionRequestMapper {
                 .admittedAt(chronoService.toOffsetDateTime(entity.getAdmittedAt()))
                 .releasedAt(chronoService.toOffsetDateTime(entity.getReleasedAt()))
                 .plannedReleaseAt(chronoService.toOffsetDateTime(plannedReleaseAt));
+    }
+
+    /**
+     * Собирает элементы и метаданные страницы для API.
+     */
+    public DetentionRequestListResponse toListResponse(Page<DetentionRequestEntity> page) {
+        return new DetentionRequestListResponse().items(page.map(this::toResponse).getContent())
+                .page(page.getNumber()).size(page.getSize())
+                .totalElements(page.getTotalElements()).totalPages(page.getTotalPages());
+    }
+
+    /**
+     * Собирает элементы и метаданные страницы для API.
+     */
+    public DetentionRequestHistoryListResponse toHistoryListResponse(
+            Page<HistoryRecord<DetentionRequestHistorySnapshot>> page) {
+        return new DetentionRequestHistoryListResponse().items(page.map(this::toHistoryEntry).getContent())
+                .page(page.getNumber()).size(page.getSize())
+                .totalElements(page.getTotalElements()).totalPages(page.getTotalPages());
+    }
+
+    private DetentionRequestHistoryEntry toHistoryEntry(HistoryRecord<DetentionRequestHistorySnapshot> entry) {
+        return new DetentionRequestHistoryEntry().id(entry.id())
+                .changedAt(chronoService.toOffsetDateTime(entry.changedAt()))
+                .changedByUserId(entry.changedByUserId()).snapshot(entry.snapshot());
     }
 }

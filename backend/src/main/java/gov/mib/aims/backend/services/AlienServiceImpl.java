@@ -7,16 +7,17 @@ import gov.mib.aims.backend.generated.model.AlienResponse;
 import gov.mib.aims.backend.generated.model.AlienSearchResponse;
 import gov.mib.aims.backend.generated.model.SaveAlienRequest;
 import gov.mib.aims.backend.repository.AlienRepository;
+import gov.mib.aims.backend.services.mapping.AlienMapper;
+import gov.mib.aims.backend.services.query.PageParameters;
 import gov.mib.aims.backend.services.validation.AttachmentValidator;
+import gov.mib.aims.backend.services.validation.TextNormalizer;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Locale;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Реализация {@link AlienService}.
@@ -24,6 +25,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AlienServiceImpl implements AlienService {
+
+    private final AlienMapper alienMapper;
 
     private static final int SEARCH_LIMIT = 20;
     private static final int MAX_PHOTOS = 20;
@@ -35,10 +38,7 @@ public class AlienServiceImpl implements AlienService {
     @Transactional(readOnly = true)
     public AlienListResponse list(String q, int page, int size) {
         Page<AlienEntity> result = findAliens(q, page, size);
-        return new AlienListResponse()
-                .items(result.getContent().stream().map(this::toResponse).toList())
-                .page(result.getNumber()).size(result.getSize())
-                .totalElements(result.getTotalElements()).totalPages(result.getTotalPages());
+        return alienMapper.toListResponse(result);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class AlienServiceImpl implements AlienService {
     public AlienResponse create(SaveAlienRequest request) {
         AlienEntity entity = new AlienEntity();
         applyChanges(entity, request);
-        return toResponse(alienRepository.save(entity));
+        return alienMapper.toResponse(alienRepository.save(entity));
     }
 
     @Override
@@ -54,12 +54,12 @@ public class AlienServiceImpl implements AlienService {
     public AlienResponse update(Long id, SaveAlienRequest request) {
         AlienEntity entity = alienRepository.findById(id).orElseThrow(Errors::alienNotFound);
         applyChanges(entity, request);
-        return toResponse(alienRepository.save(entity));
+        return alienMapper.toResponse(alienRepository.save(entity));
     }
 
     private void applyChanges(AlienEntity entity, SaveAlienRequest request) {
-        entity.setName(request.getName().trim());
-        entity.setDescription(request.getDescription().trim());
+        entity.setName(TextNormalizer.required(request.getName(), "Укажите имя инопланетянина"));
+        entity.setDescription(TextNormalizer.required(request.getDescription(), "Укажите описание инопланетянина"));
         entity.setThreatLevel(request.getThreatLevel().shortValue());
 
         if (request.getPhotoFileIds() != null) {
@@ -69,12 +69,7 @@ public class AlienServiceImpl implements AlienService {
     }
 
     private void validatePhotos(List<Long> fileIds) {
-        if (fileIds.size() > MAX_PHOTOS || fileIds.stream().anyMatch(id -> id == null || id <= 0)
-                || new HashSet<>(fileIds).size() != fileIds.size()) {
-            throw Errors.validationError("Укажите до 20 разных фотографий");
-        }
-
-        attachmentValidator.assertAllExist(fileIds);
+        attachmentValidator.assertDistinctWithinLimit(fileIds, MAX_PHOTOS, "Укажите до 20 разных фотографий");
     }
 
     @Override
@@ -86,13 +81,13 @@ public class AlienServiceImpl implements AlienService {
         }
         return new AlienSearchResponse()
                 .items(findAliens(trimmed, 0, SEARCH_LIMIT).stream()
-                        .map(this::toResponse)
+                        .map(alienMapper::toResponse)
                         .toList());
     }
 
     private Page<AlienEntity> findAliens(String q, int page, int size) {
         String query = q == null ? "" : q.trim().toLowerCase(Locale.ROOT);
-        return alienRepository.search(query, PageRequest.of(page, size));
+        return alienRepository.search(query, PageParameters.of(page, size).toPageable());
     }
 
     @Override
@@ -100,15 +95,7 @@ public class AlienServiceImpl implements AlienService {
     public AlienResponse getById(Long id) {
         AlienEntity entity = alienRepository.findById(id)
                 .orElseThrow(Errors::alienNotFound);
-        return toResponse(entity);
+        return alienMapper.toResponse(entity);
     }
 
-    private AlienResponse toResponse(AlienEntity entity) {
-        return new AlienResponse()
-                .id(entity.getId())
-                .name(entity.getName())
-                .description(entity.getDescription())
-                .threatLevel(entity.getThreatLevel().intValue())
-                .photoFileIds(entity.getPhotoFileIds());
-    }
 }

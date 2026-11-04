@@ -2,12 +2,13 @@ package gov.mib.aims.backend.services;
 
 import gov.mib.aims.backend.entity.StoredFileEntity;
 import gov.mib.aims.backend.exception.Errors;
-import gov.mib.aims.backend.generated.model.FileUploadResponse;
 import gov.mib.aims.backend.generated.model.BatchFilesRequest;
 import gov.mib.aims.backend.generated.model.BatchFilesResponse;
+import gov.mib.aims.backend.generated.model.FileUploadResponse;
 import gov.mib.aims.backend.model.FileDescriptor;
 import gov.mib.aims.backend.model.FileDownload;
 import gov.mib.aims.backend.repository.StoredFileRepository;
+import gov.mib.aims.backend.services.mapping.FileMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,9 +32,9 @@ import java.util.Objects;
 @Slf4j
 public class FileService {
 
-    private static final int BATCH_MAX = 100;
+    private final FileMapper fileMapper;
 
-    private final ChronoService chronoService;
+    private static final int BATCH_MAX = 100;
 
     private final FileStorage fileStorage;
     private final StoredFileRepository storedFileRepository;
@@ -82,16 +83,7 @@ public class FileService {
                 .createdByUserId(userId)
                 .build();
         entity = storedFileRepository.save(entity);
-        return toResponse(entity);
-    }
-
-    private FileUploadResponse toResponse(StoredFileEntity entity) {
-        return new FileUploadResponse()
-                .id(entity.getId())
-                .fileName(entity.getFileName())
-                .contentType(entity.getContentType())
-                .fileSize(entity.getFileSize())
-                .createdAt(chronoService.toOffsetDateTime(entity.getCreatedAt()));
+        return fileMapper.toResponse(entity);
     }
 
     /**
@@ -125,7 +117,7 @@ public class FileService {
         storedFileRepository.findAllById(ids).forEach(file -> byId.put(file.getId(), file));
 
         return new BatchFilesResponse().items(ids.stream().map(byId::get).filter(Objects::nonNull)
-                .map(this::toResponse).toList());
+                .map(fileMapper::toResponse).toList());
     }
 
     private void validateUpload(MultipartFile file) {

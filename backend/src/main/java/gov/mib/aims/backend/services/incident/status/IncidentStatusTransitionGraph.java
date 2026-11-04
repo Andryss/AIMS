@@ -1,7 +1,7 @@
 package gov.mib.aims.backend.services.incident.status;
 
-import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.model.IncidentStatus;
+import gov.mib.aims.backend.services.incident.IncidentTransitionContext;
 import gov.mib.aims.backend.services.incident.status.postaction.EnqueueNotifyAgentsPostAction;
 import gov.mib.aims.backend.services.incident.status.postaction.EnqueueNotifyAnalystsPostAction;
 import gov.mib.aims.backend.services.incident.status.postaction.EnqueueNotifyAnalystsReanalysisPostAction;
@@ -10,11 +10,11 @@ import gov.mib.aims.backend.services.incident.status.postaction.EnqueueNotifyOpe
 import gov.mib.aims.backend.services.incident.status.precondition.AlienLinkedPrecondition;
 import gov.mib.aims.backend.services.incident.status.precondition.AssignmentCompletePrecondition;
 import gov.mib.aims.backend.services.incident.status.precondition.AttachmentsExistPrecondition;
-import gov.mib.aims.backend.services.incident.status.precondition.RolePrecondition;
-import gov.mib.aims.backend.services.incident.status.precondition.ResponsibleAgentPrecondition;
 import gov.mib.aims.backend.services.incident.status.precondition.EquipmentReturnedPrecondition;
-import org.springframework.stereotype.Component;
+import gov.mib.aims.backend.services.incident.status.precondition.ResponsibleAgentPrecondition;
+import gov.mib.aims.backend.services.incident.status.precondition.RolePrecondition;
 import gov.mib.aims.backend.services.status.StatusTransition;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Component
 public class IncidentStatusTransitionGraph {
 
-    private final Map<StatusTransitionKey, StatusTransition<IncidentEntity, IncidentStatus>> transitions;
+    private final Map<StatusTransitionKey, StatusTransition<IncidentTransitionContext, IncidentStatus>> transitions;
 
     /**
      * Регистрирует переходы UC1/UC2 и строит индекс по паре from/to.
@@ -47,80 +47,80 @@ public class IncidentStatusTransitionGraph {
             ResponsibleAgentPrecondition responsibleAgentPrecondition,
             EquipmentReturnedPrecondition equipmentReturnedPrecondition
     ) {
-        List<StatusTransition<IncidentEntity, IncidentStatus>> transitionList = List.of(
-                StatusTransition.<IncidentEntity, IncidentStatus>builder()
+        List<StatusTransition<IncidentTransitionContext, IncidentStatus>> transitionList = List.of(
+                StatusTransition.<IncidentTransitionContext, IncidentStatus>builder()
                         .from(IncidentStatus.DRAFT)
                         .to(IncidentStatus.READY_FOR_ANALYSIS)
                         .preconditions(List.of(attachmentsExistPrecondition, operatorRolePrecondition))
                         .postActions(List.of(enqueueNotifyAnalystsPostAction))
                         .build(),
-                StatusTransition.<IncidentEntity, IncidentStatus>builder()
+                StatusTransition.<IncidentTransitionContext, IncidentStatus>builder()
                         .from(IncidentStatus.READY_FOR_ANALYSIS)
                         .to(IncidentStatus.READY_FOR_EXECUTION)
                         .preconditions(List.of(analystRolePrecondition, alienLinkedPrecondition))
                         .postActions(List.of(enqueueNotifyAgentsPostAction))
                         .build(),
-                StatusTransition.<IncidentEntity, IncidentStatus>builder()
+                StatusTransition.<IncidentTransitionContext, IncidentStatus>builder()
                         .from(IncidentStatus.READY_FOR_ANALYSIS)
                         .to(IncidentStatus.CLARIFICATION_REQUIRED)
                         .preconditions(List.of(analystRolePrecondition))
                         .postActions(List.of(enqueueNotifyOperatorClarificationPostAction))
                         .build(),
-                StatusTransition.<IncidentEntity, IncidentStatus>builder()
+                StatusTransition.<IncidentTransitionContext, IncidentStatus>builder()
                         .from(IncidentStatus.CLARIFICATION_REQUIRED)
                         .to(IncidentStatus.READY_FOR_ANALYSIS)
                         .preconditions(List.of(attachmentsExistPrecondition, operatorRolePrecondition))
                         .postActions(List.of(enqueueNotifyAnalystsPostAction))
                         .build(),
-                StatusTransition.<IncidentEntity, IncidentStatus>builder()
+                StatusTransition.<IncidentTransitionContext, IncidentStatus>builder()
                         .from(IncidentStatus.READY_FOR_EXECUTION)
                         .to(IncidentStatus.PREPARATION_FOR_EXECUTION)
                         .preconditions(List.of(agentRolePrecondition))
                         .postActions(List.of())
                         .build(),
-                StatusTransition.<IncidentEntity, IncidentStatus>builder()
+                StatusTransition.<IncidentTransitionContext, IncidentStatus>builder()
                         .from(IncidentStatus.PREPARATION_FOR_EXECUTION)
                         .to(IncidentStatus.PREPARED_FOR_EXECUTION)
                         .preconditions(List.of(agentRolePrecondition, assignmentCompletePrecondition))
                         .postActions(List.of(enqueueNotifyIncidentPreparedPostAction))
                         .build(),
-                StatusTransition.<IncidentEntity, IncidentStatus>builder()
+                StatusTransition.<IncidentTransitionContext, IncidentStatus>builder()
                         .from(IncidentStatus.READY_FOR_EXECUTION)
                         .to(IncidentStatus.CLARIFICATION_REQUIRED)
                         .preconditions(List.of(agentRolePrecondition))
                         .postActions(List.of(enqueueNotifyOperatorClarificationPostAction))
                         .build(),
-                StatusTransition.<IncidentEntity, IncidentStatus>builder()
+                StatusTransition.<IncidentTransitionContext, IncidentStatus>builder()
                         .from(IncidentStatus.READY_FOR_EXECUTION)
                         .to(IncidentStatus.REANALYSIS_REQUIRED)
                         .preconditions(List.of(agentRolePrecondition))
                         .postActions(List.of(enqueueNotifyAnalystsReanalysisPostAction))
                         .build(),
-                StatusTransition.<IncidentEntity, IncidentStatus>builder()
+                StatusTransition.<IncidentTransitionContext, IncidentStatus>builder()
                         .from(IncidentStatus.PREPARATION_FOR_EXECUTION)
                         .to(IncidentStatus.CLARIFICATION_REQUIRED)
                         .preconditions(List.of(agentRolePrecondition))
                         .postActions(List.of(enqueueNotifyOperatorClarificationPostAction))
                         .build(),
-                StatusTransition.<IncidentEntity, IncidentStatus>builder()
+                StatusTransition.<IncidentTransitionContext, IncidentStatus>builder()
                         .from(IncidentStatus.PREPARATION_FOR_EXECUTION)
                         .to(IncidentStatus.REANALYSIS_REQUIRED)
                         .preconditions(List.of(agentRolePrecondition))
                         .postActions(List.of(enqueueNotifyAnalystsReanalysisPostAction))
                         .build(),
-                StatusTransition.<IncidentEntity, IncidentStatus>builder()
+                StatusTransition.<IncidentTransitionContext, IncidentStatus>builder()
                         .from(IncidentStatus.REANALYSIS_REQUIRED)
                         .to(IncidentStatus.READY_FOR_ANALYSIS)
                         .preconditions(List.of(analystRolePrecondition))
                         .postActions(List.of(enqueueNotifyAnalystsPostAction))
                         .build(),
-                StatusTransition.<IncidentEntity, IncidentStatus>builder()
+                StatusTransition.<IncidentTransitionContext, IncidentStatus>builder()
                         .from(IncidentStatus.PREPARED_FOR_EXECUTION)
                         .to(IncidentStatus.EXECUTING)
                         .preconditions(List.of(responsibleAgentPrecondition))
                         .postActions(List.of())
                         .build(),
-                StatusTransition.<IncidentEntity, IncidentStatus>builder()
+                StatusTransition.<IncidentTransitionContext, IncidentStatus>builder()
                         .from(IncidentStatus.EXECUTING)
                         .to(IncidentStatus.EXECUTION_COMPLETED)
                         .preconditions(List.of(responsibleAgentPrecondition, equipmentReturnedPrecondition))
@@ -130,8 +130,7 @@ public class IncidentStatusTransitionGraph {
         this.transitions = transitionList.stream()
                 .collect(Collectors.toMap(
                         t -> StatusTransitionKey.of(t.getFrom(), t.getTo()),
-                        Function.identity(),
-                        (a, b) -> a
+                        Function.identity()
                 ));
     }
 
@@ -153,7 +152,8 @@ public class IncidentStatusTransitionGraph {
      * @param to целевой статус
      * @return переход или null, если не зарегистрирован
      */
-    public StatusTransition<IncidentEntity, IncidentStatus> getTransition(IncidentStatus from, IncidentStatus to) {
+    public StatusTransition<IncidentTransitionContext, IncidentStatus> getTransition(IncidentStatus from,
+                                                                                     IncidentStatus to) {
         return transitions.get(StatusTransitionKey.of(from, to));
     }
 }

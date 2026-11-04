@@ -24,12 +24,12 @@ import java.time.OffsetDateTime;
 @Validated
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("hasAuthority('ANALYTICS_READ')")
 public class EquipmentStatisticsApiImpl implements EquipmentStatisticsApi {
 
     private final EquipmentAnalyticsService equipmentService;
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getEquipmentReceivedCount(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
         log.info("GET /api/v1/equipment/statistics/received-count from={} to={}",
@@ -40,7 +40,6 @@ public class EquipmentStatisticsApiImpl implements EquipmentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getEquipmentIssuedCount(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
         log.info("GET /api/v1/equipment/statistics/issued-count from={} to={}",
@@ -51,7 +50,6 @@ public class EquipmentStatisticsApiImpl implements EquipmentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getEquipmentReturnedCount(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
         log.info("GET /api/v1/equipment/statistics/returned-count from={} to={}",
@@ -62,7 +60,6 @@ public class EquipmentStatisticsApiImpl implements EquipmentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getEquipmentTotalAtTo(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
         log.info("GET /api/v1/equipment/statistics/total-at-to from={} to={}",
@@ -73,7 +70,6 @@ public class EquipmentStatisticsApiImpl implements EquipmentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getEquipmentAvailableAtTo(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
         log.info("GET /api/v1/equipment/statistics/available-at-to from={} to={}",
@@ -84,7 +80,6 @@ public class EquipmentStatisticsApiImpl implements EquipmentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getEquipmentIssuedAtTo(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
         log.info("GET /api/v1/equipment/statistics/issued-at-to from={} to={}",
@@ -95,7 +90,6 @@ public class EquipmentStatisticsApiImpl implements EquipmentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public TrendAnalyticsResponse getEquipmentTrend(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
         log.info("GET /api/v1/equipment/statistics/trend from={} to={}",
@@ -106,7 +100,6 @@ public class EquipmentStatisticsApiImpl implements EquipmentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public EquipmentInventoryAnalyticsResponse getEquipmentInventoryByType(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
         log.info("GET /api/v1/equipment/statistics/inventory-by-type from={} to={}",
@@ -117,7 +110,6 @@ public class EquipmentStatisticsApiImpl implements EquipmentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public OpenEquipmentRequestsAnalyticsResponse getEquipmentOpenRequests(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
         log.info("GET /api/v1/equipment/statistics/open-requests from={} to={}",
@@ -128,7 +120,6 @@ public class EquipmentStatisticsApiImpl implements EquipmentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public ExpectedDeliveriesAnalyticsResponse getEquipmentExpectedDeliveriesByType(OffsetDateTime from,
             OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
@@ -140,7 +131,6 @@ public class EquipmentStatisticsApiImpl implements EquipmentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public OutstandingEquipmentAnalyticsResponse getEquipmentOutstandingByIncident(OffsetDateTime from,
             OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {

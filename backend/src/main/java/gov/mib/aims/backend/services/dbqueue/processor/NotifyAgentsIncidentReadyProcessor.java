@@ -1,20 +1,15 @@
 package gov.mib.aims.backend.services.dbqueue.processor;
 
-import gov.mib.aims.backend.entity.AppUserEntity;
-import gov.mib.aims.backend.model.EntityRef;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.Role;
-import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
-import gov.mib.aims.backend.services.NotificationService;
 import gov.mib.aims.backend.services.dbqueue.DbQueueProcessor;
 import gov.mib.aims.backend.services.dbqueue.DbQueueSettings;
+import gov.mib.aims.backend.services.notification.NotificationDispatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yoomoney.tech.dbqueue.api.TaskExecutionResult;
-
-import java.util.List;
 
 /**
  * Уведомляет оперативных агентов о готовности инцидента к выполнению.
@@ -26,8 +21,7 @@ import java.util.List;
 public class NotifyAgentsIncidentReadyProcessor implements DbQueueProcessor<NotifyAgentsIncidentReadyPayload> {
 
     private final IncidentRepository incidentRepository;
-    private final AppUserRepository appUserRepository;
-    private final NotificationService notificationService;
+    private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public TaskExecutionResult execute(NotifyAgentsIncidentReadyPayload payload) {
@@ -37,11 +31,7 @@ public class NotifyAgentsIncidentReadyProcessor implements DbQueueProcessor<Noti
             return TaskExecutionResult.finish();
         }
         String message = "Инцидент №" + incidentId + " готов к выполнению";
-        String relatedRef = EntityRef.format(EntityType.INCIDENT, incidentId);
-        List<AppUserEntity> agents = appUserRepository.findAllByRoleName(Role.AGENT.getCode());
-        for (AppUserEntity agent : agents) {
-            notificationService.send(agent.getId(), message, List.of(relatedRef));
-        }
+        notificationDispatcher.sendToRole(Role.AGENT, message, EntityType.INCIDENT, incidentId);
         return TaskExecutionResult.finish();
     }
 }

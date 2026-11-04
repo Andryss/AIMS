@@ -1,21 +1,19 @@
 package gov.mib.aims.backend.services.dbqueue.processor;
 
 import gov.mib.aims.backend.entity.IncidentEntity;
-import gov.mib.aims.backend.model.EntityRef;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.repository.IncidentRepository;
-import gov.mib.aims.backend.services.NotificationService;
 import gov.mib.aims.backend.services.dbqueue.DbQueueProcessor;
 import gov.mib.aims.backend.services.dbqueue.DbQueueSettings;
+import gov.mib.aims.backend.services.notification.NotificationDispatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yoomoney.tech.dbqueue.api.TaskExecutionResult;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Уведомляет ответственного и исполнителей о подготовке инцидента к выполнению.
@@ -27,7 +25,7 @@ import java.util.Set;
 public class NotifyIncidentPreparedProcessor implements DbQueueProcessor<NotifyIncidentPreparedPayload> {
 
     private final IncidentRepository incidentRepository;
-    private final NotificationService notificationService;
+    private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public TaskExecutionResult execute(NotifyIncidentPreparedPayload payload) {
@@ -39,17 +37,14 @@ public class NotifyIncidentPreparedProcessor implements DbQueueProcessor<NotifyI
         }
         IncidentEntity incident = incidentOpt.get();
         String message = "Инцидент №" + incidentId + " подготовлен к выполнению";
-        String relatedRef = EntityRef.format(EntityType.INCIDENT, incidentId);
-        Set<Long> recipientIds = new LinkedHashSet<>();
+        List<Long> recipientIds = new ArrayList<>();
         if (incident.getResponsibleUserId() != null) {
             recipientIds.add(incident.getResponsibleUserId());
         }
         if (incident.getExecutorUserIds() != null) {
             recipientIds.addAll(incident.getExecutorUserIds());
         }
-        for (Long userId : recipientIds) {
-            notificationService.send(userId, message, List.of(relatedRef));
-        }
+        notificationDispatcher.sendToUsers(recipientIds, message, EntityType.INCIDENT, incidentId);
         return TaskExecutionResult.finish();
     }
 }

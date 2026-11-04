@@ -8,18 +8,18 @@ import gov.mib.aims.backend.generated.model.CleanupReportResponse;
 import gov.mib.aims.backend.generated.model.CreateCleanupReportRequest;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
 import gov.mib.aims.backend.model.CleanupStatus;
-import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.model.IncidentStatus;
 import gov.mib.aims.backend.repository.CleanupReportRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
 import gov.mib.aims.backend.services.cleanup.status.CleanupStatusWorkflow;
+import gov.mib.aims.backend.services.incident.IncidentHistoryService;
 import gov.mib.aims.backend.services.mapping.CleanupMapper;
 import gov.mib.aims.backend.services.mapping.IncidentMapper;
+import gov.mib.aims.backend.services.transaction.RetryableSerializable;
 import gov.mib.aims.backend.services.validation.AttachmentValidator;
+import gov.mib.aims.backend.services.validation.TextNormalizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.retry.annotation.Retryable;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -35,7 +35,7 @@ public class CleanupServiceImpl implements CleanupService {
     private final IncidentRepository incidentRepository;
     private final CleanupReportRepository cleanupReportRepository;
     private final CurrentUserService currentUserService;
-    private final EntityHistoryService entityHistoryService;
+    private final IncidentHistoryService incidentHistoryService;
     private final CleanupStatusWorkflow cleanupStatusWorkflow;
     private final CleanupMapper cleanupMapper;
     private final IncidentMapper incidentMapper;
@@ -43,8 +43,7 @@ public class CleanupServiceImpl implements CleanupService {
     private final ChronoService chronoService;
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public CleanupReportResponse createReport(Long incidentId, CreateCleanupReportRequest request) {
         IncidentEntity incident = incidentRepository.findById(incidentId)
                 .orElseThrow(Errors::incidentNotFound);
@@ -57,7 +56,7 @@ public class CleanupServiceImpl implements CleanupService {
         LocalDateTime now = chronoService.localDateTimeNow();
         CleanupReportEntity report = CleanupReportEntity.builder()
                 .incidentId(incidentId)
-                .description(request.getDescription().trim())
+                .description(TextNormalizer.required(request.getDescription(), "Укажите описание"))
                 .attachmentFileIds(new ArrayList<>(request.getAttachmentFileIds()))
                 .createdByUserId(currentUserService.getCurrentUserId())
                 .createdAt(now)
@@ -67,7 +66,7 @@ public class CleanupServiceImpl implements CleanupService {
         incident.setCleanupReportId(report.getId());
         incident.setUpdatedAt(now);
         incident = incidentRepository.save(incident);
-        entityHistoryService.recordChange(EntityType.INCIDENT, incident.getId(), incident);
+        incidentHistoryService.record(incident);
         return cleanupMapper.toReportResponse(report);
     }
 
@@ -83,14 +82,16 @@ public class CleanupServiceImpl implements CleanupService {
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public IncidentResponse changeCleanupStatus(Long incidentId, ChangeCleanupStatusRequest request) {
         IncidentEntity incident = incidentRepository.findById(incidentId)
                 .orElseThrow(Errors::incidentNotFound);
         CleanupStatus target = cleanupMapper.toModelCleanupStatus(request.getStatus());
+        CleanupStatus previous = incident.getCleanupStatus();
         incident = cleanupStatusWorkflow.changeStatus(incident, target);
-        entityHistoryService.recordChange(EntityType.INCIDENT, incident.getId(), incident);
+        incident = incidentRepository.save(incident);
+        incidentHistoryService.record(incident);
+        cleanupStatusWorkflow.afterSave(incident, previous);
         return incidentMapper.toResponse(incident);
     }
 

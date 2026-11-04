@@ -5,13 +5,12 @@ import gov.mib.aims.backend.entity.MonitoringAlertEntity;
 import gov.mib.aims.backend.exception.Errors;
 import gov.mib.aims.backend.generated.model.ChangeIncidentStatusRequest;
 import gov.mib.aims.backend.generated.model.CreateIncidentRequest;
-import gov.mib.aims.backend.generated.model.UpdateIncidentRequest;
 import gov.mib.aims.backend.generated.model.IncidentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentResponse;
 import gov.mib.aims.backend.generated.model.LinkIncidentAlienRequest;
 import gov.mib.aims.backend.generated.model.SetIncidentExecutorsRequest;
 import gov.mib.aims.backend.generated.model.SetIncidentResponsibleRequest;
-import gov.mib.aims.backend.model.EntityType;
+import gov.mib.aims.backend.generated.model.UpdateIncidentRequest;
 import gov.mib.aims.backend.model.IncidentStatus;
 import gov.mib.aims.backend.model.MonitoringAlertStatus;
 import gov.mib.aims.backend.model.Role;
@@ -20,24 +19,21 @@ import gov.mib.aims.backend.repository.AppUserRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
 import gov.mib.aims.backend.repository.MonitoringAlertRepository;
 import gov.mib.aims.backend.services.incident.ExecutorAssignmentNotifier;
-import gov.mib.aims.backend.services.incident.StatusChangeCommentHolder;
+import gov.mib.aims.backend.services.incident.IncidentHistoryService;
 import gov.mib.aims.backend.services.incident.status.IncidentStatusWorkflow;
+import gov.mib.aims.backend.services.mapping.IncidentInputMapper;
 import gov.mib.aims.backend.services.mapping.IncidentMapper;
+import gov.mib.aims.backend.services.query.PageParameters;
+import gov.mib.aims.backend.services.transaction.RetryableSerializable;
 import gov.mib.aims.backend.services.validation.AttachmentValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Реализация {@link IncidentService}.
@@ -53,7 +49,8 @@ public class IncidentServiceImpl implements IncidentService {
     private final AlienRepository alienRepository;
     private final AppUserRepository appUserRepository;
     private final CurrentUserService currentUserService;
-    private final EntityHistoryService entityHistoryService;
+    private final IncidentHistoryService incidentHistoryService;
+    private final IncidentInputMapper incidentInputMapper;
     private final IncidentStatusWorkflow incidentStatusWorkflow;
     private final IncidentCommentService incidentCommentService;
     private final ExecutorAssignmentNotifier executorAssignmentNotifier;
@@ -64,23 +61,20 @@ public class IncidentServiceImpl implements IncidentService {
     @Override
     @Transactional
     public IncidentResponse create(CreateIncidentRequest request) {
+        var details = incidentInputMapper.from(request);
         attachmentValidator.assertAllExist(request.getAttachmentFileIds());
         MonitoringAlertEntity linkedAlert = resolveMonitoringAlertForCreate(request.getMonitoringAlertId());
         LocalDateTime now = chronoService.localDateTimeNow();
         IncidentEntity entity = IncidentEntity.builder()
                 .status(IncidentStatus.DRAFT)
-                .eventType(incidentMapper.toModelEventType(request.getEventType()))
-                .location(request.getLocation().trim())
-                .detectedAt(chronoService.toLocalDateTime(request.getDetectedAt()))
-                .description(request.getDescription().trim())
-                .victimCount(request.getVictimCount())
-                .attachmentFileIds(request.getAttachmentFileIds())
+                .attachmentFileIds(new ArrayList<>(request.getAttachmentFileIds()))
                 .executorUserIds(new ArrayList<>())
                 .createdByUserId(currentUserService.getCurrentUserId())
                 .monitoringAlertId(linkedAlert != null ? linkedAlert.getId() : null)
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
+        details.applyTo(entity);
         entity = incidentRepository.save(entity);
         if (linkedAlert != null) {
             linkedAlert.setStatus(MonitoringAlertStatus.INCIDENT_CREATED);
@@ -88,56 +82,32 @@ public class IncidentServiceImpl implements IncidentService {
             monitoringAlertRepository.save(linkedAlert);
         }
 
-        entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
+        incidentHistoryService.record(entity);
 
         return incidentMapper.toResponse(entity);
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public IncidentResponse update(Long id, UpdateIncidentRequest request) {
         IncidentEntity entity = incidentRepository.findById(id).orElseThrow(Errors::incidentNotFound);
         if (entity.getStatus() != IncidentStatus.DRAFT && entity.getStatus() != IncidentStatus.CLARIFICATION_REQUIRED) {
             throw Errors.incidentConflict("Изменение доступно только в черновике или при уточнении инцидента");
         }
 
-        var additionalFiles = request.getAdditionalAttachmentFileIds() == null
-                ? List.<Long>of() : request.getAdditionalAttachmentFileIds();
-        if (additionalFiles.stream().anyMatch(Objects::isNull)) {
-            throw Errors.validationError("Укажите идентификатор каждого добавляемого файла");
-        }
-        attachmentValidator.assertAllExist(additionalFiles);
-        var attachments = new LinkedHashSet<>(entity.getAttachmentFileIds());
-        boolean attachmentsChanged = attachments.addAll(additionalFiles);
-        if (attachments.size() > MAX_ATTACHMENT_COUNT) {
-            throw Errors.validationError("Можно прикрепить не более " + MAX_ATTACHMENT_COUNT + " файлов");
-        }
-
-        var eventType = incidentMapper.toModelEventType(request.getEventType());
-        String location = request.getLocation().trim();
-        String description = request.getDescription().trim();
-        if (location.isBlank() || description.isBlank()) {
-            throw Errors.validationError("Укажите место и описание инцидента");
-        }
-        var detectedAt = chronoService.truncate(
-                chronoService.toLocalDateTime(request.getDetectedAt()), ChronoUnit.MICROS);
-        if (entity.getEventType() == eventType && entity.getLocation().equals(location)
-                && entity.getDescription().equals(description) && entity.getDetectedAt().equals(detectedAt)
-                && Objects.equals(entity.getVictimCount(), request.getVictimCount())
-                && !attachmentsChanged) {
+        var attachments = attachmentValidator.merge(entity.getAttachmentFileIds(),
+                request.getAdditionalAttachmentFileIds(), MAX_ATTACHMENT_COUNT);
+        var details = incidentInputMapper.from(request);
+        boolean attachmentsAdded = !entity.getAttachmentFileIds().containsAll(attachments);
+        if (details.matches(entity) && !attachmentsAdded) {
             return incidentMapper.toResponse(entity);
         }
 
-        entity.setEventType(eventType);
-        entity.setLocation(location);
-        entity.setDescription(description);
-        entity.setDetectedAt(detectedAt);
-        entity.setVictimCount(request.getVictimCount());
-        entity.setAttachmentFileIds(new ArrayList<>(attachments));
+        details.applyTo(entity);
+        entity.setAttachmentFileIds(attachments);
         entity.setUpdatedAt(chronoService.localDateTimeNow());
         entity = incidentRepository.save(entity);
-        entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
+        incidentHistoryService.record(entity);
 
         return incidentMapper.toResponse(entity);
     }
@@ -157,27 +127,21 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public IncidentResponse changeStatus(Long id, ChangeIncidentStatusRequest request) {
-        IncidentEntity entity = incidentRepository.findById(id)
-                .orElseThrow(Errors::incidentNotFound);
+        IncidentEntity entity = incidentRepository.findById(id).orElseThrow(Errors::incidentNotFound);
+        IncidentStatus previous = entity.getStatus();
         IncidentStatus target = incidentMapper.toModelStatus(request.getStatus());
         String comment = request.getComment();
-
-        try {
-            StatusChangeCommentHolder.set(comment);
-            entity = incidentStatusWorkflow.changeStatus(entity, target);
-            if (comment != null && !comment.isBlank()) {
-                incidentCommentService.createFromStatusChange(id, comment);
-            }
-
-            entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
-
-            return incidentMapper.toResponse(entity);
-        } finally {
-            StatusChangeCommentHolder.clear();
+        entity = incidentStatusWorkflow.changeStatus(entity, target, comment);
+        entity = incidentRepository.save(entity);
+        if (comment != null && !comment.isBlank()) {
+            incidentCommentService.createFromStatusChange(id, comment);
         }
+        incidentHistoryService.record(entity);
+        incidentStatusWorkflow.afterSave(entity, previous, comment);
+
+        return incidentMapper.toResponse(entity);
     }
 
     @Override
@@ -190,8 +154,7 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public IncidentResponse linkAlien(Long id, LinkIncidentAlienRequest request) {
         IncidentEntity entity = incidentRepository.findById(id)
                 .orElseThrow(Errors::incidentNotFound);
@@ -208,7 +171,7 @@ public class IncidentServiceImpl implements IncidentService {
         entity.setUpdatedAt(chronoService.localDateTimeNow());
         entity = incidentRepository.save(entity);
 
-        entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
+        incidentHistoryService.record(entity);
 
         return incidentMapper.toResponse(entity);
     }
@@ -217,20 +180,14 @@ public class IncidentServiceImpl implements IncidentService {
     @Transactional(readOnly = true)
     public IncidentListResponse list(int page, int size) {
         Page<IncidentEntity> result = incidentRepository.findAllByOrderByCreatedAtDesc(
-                PageRequest.of(page, size)
+                PageParameters.of(page, size).toPageable()
         );
 
-        return new IncidentListResponse()
-                .items(result.getContent().stream().map(incidentMapper::toResponse).toList())
-                .page(result.getNumber())
-                .size(result.getSize())
-                .totalElements(result.getTotalElements())
-                .totalPages(result.getTotalPages());
+        return incidentMapper.toListResponse(result);
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public IncidentResponse setResponsible(Long id, SetIncidentResponsibleRequest request) {
         IncidentEntity entity = incidentRepository.findById(id)
                 .orElseThrow(Errors::incidentNotFound);
@@ -244,14 +201,13 @@ public class IncidentServiceImpl implements IncidentService {
         entity.setUpdatedAt(chronoService.localDateTimeNow());
         entity = incidentRepository.save(entity);
 
-        entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
+        incidentHistoryService.record(entity);
 
         return incidentMapper.toResponse(entity);
     }
 
     @Override
-    @Retryable(interceptor = "retryInterceptor")
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @RetryableSerializable
     public IncidentResponse setExecutors(Long id, SetIncidentExecutorsRequest request) {
         IncidentEntity entity = incidentRepository.findById(id)
                 .orElseThrow(Errors::incidentNotFound);
@@ -269,7 +225,7 @@ public class IncidentServiceImpl implements IncidentService {
         entity.setUpdatedAt(chronoService.localDateTimeNow());
         entity = incidentRepository.save(entity);
 
-        entityHistoryService.recordChange(EntityType.INCIDENT, entity.getId(), entity);
+        incidentHistoryService.record(entity);
         List<Long> newExecutors = userIds.stream()
                 .filter(userId -> !previous.contains(userId))
                 .toList();

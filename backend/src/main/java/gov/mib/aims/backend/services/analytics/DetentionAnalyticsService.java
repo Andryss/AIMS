@@ -7,8 +7,7 @@ import gov.mib.aims.backend.generated.model.GroupedAnalyticsResponse;
 import gov.mib.aims.backend.generated.model.TrendAnalyticsResponse;
 import gov.mib.aims.backend.generated.model.UpcomingReleasesAnalyticsResponse;
 import gov.mib.aims.backend.repository.analytics.DetentionAnalyticsRepository;
-import gov.mib.aims.backend.services.ChronoService;
-import gov.mib.aims.backend.services.ObjectMapperWrapper;
+import gov.mib.aims.backend.services.mapping.AnalyticsResponseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -25,21 +24,19 @@ import java.time.OffsetDateTime;
 public class DetentionAnalyticsService {
 
     private final DetentionAnalyticsRepository repository;
-    private final ObjectMapperWrapper mapper;
-    private final ChronoService chronoService;
+    private final AnalyticsReportExecutor reports;
+    private final AnalyticsResponseMapper responseMapper;
 
     /**
      * Количество созданных записей за период.
      */
     public CountAnalyticsResponse createdCount(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.createdCount(period.from(), period.to(),
-                alienId, status == null ? null : status.name(), incidentId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new DetentionAnalyticsFilter(alienId, status, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.createdCount(query.from(), query.to(),
+                        filters.alienId(), filters.statusName(), filters.incidentId())));
     }
 
     /**
@@ -47,13 +44,11 @@ public class DetentionAnalyticsService {
      */
     public CountAnalyticsResponse admittedCount(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.admittedCount(period.from(), period.to(),
-                alienId, status == null ? null : status.name(), incidentId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new DetentionAnalyticsFilter(alienId, status, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.admittedCount(query.from(), query.to(),
+                        filters.alienId(), filters.statusName(), filters.incidentId())));
     }
 
     /**
@@ -61,13 +56,11 @@ public class DetentionAnalyticsService {
      */
     public CountAnalyticsResponse releasedCount(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.releasedCount(period.from(), period.to(),
-                alienId, status == null ? null : status.name(), incidentId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new DetentionAnalyticsFilter(alienId, status, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.releasedCount(query.from(), query.to(),
+                        filters.alienId(), filters.statusName(), filters.incidentId())));
     }
 
     /**
@@ -75,13 +68,11 @@ public class DetentionAnalyticsService {
      */
     public CountAnalyticsResponse awaitingAtTo(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.awaitingAtTo(period.from(), period.to(),
-                alienId, status == null ? null : status.name(), incidentId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new DetentionAnalyticsFilter(alienId, status, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.awaitingAtTo(query.from(), query.to(),
+                        filters.alienId(), filters.statusName(), filters.incidentId())));
     }
 
     /**
@@ -89,13 +80,11 @@ public class DetentionAnalyticsService {
      */
     public CountAnalyticsResponse inCustodyAtTo(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.inCustodyAtTo(period.from(), period.to(),
-                alienId, status == null ? null : status.name(), incidentId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new DetentionAnalyticsFilter(alienId, status, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.inCustodyAtTo(query.from(), query.to(),
+                        filters.alienId(), filters.statusName(), filters.incidentId())));
     }
 
     /**
@@ -103,13 +92,11 @@ public class DetentionAnalyticsService {
      */
     public CountAnalyticsResponse overdueAtTo(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.overdueAtTo(period.from(), period.to(),
-                alienId, status == null ? null : status.name(), incidentId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new DetentionAnalyticsFilter(alienId, status, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.overdueAtTo(query.from(), query.to(),
+                        filters.alienId(), filters.statusName(), filters.incidentId())));
     }
 
     /**
@@ -117,13 +104,11 @@ public class DetentionAnalyticsService {
      */
     public DurationAnalyticsResponse custodyDuration(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.custodyDuration(period.from(), period.to(),
-                alienId, status == null ? null : status.name(), incidentId);
-        var response = mapper.readValue(json, DurationAnalyticsResponse.class);
+        var filters = new DetentionAnalyticsFilter(alienId, status, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toDuration(reports.execute(from, to,
+                query -> repository.custodyDuration(query.from(), query.to(),
+                        filters.alienId(), filters.statusName(), filters.incidentId())));
     }
 
     /**
@@ -131,14 +116,12 @@ public class DetentionAnalyticsService {
      */
     public TrendAnalyticsResponse trend(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.trend(period.from(), period.to(),
-                buckets.start(), buckets.months(), buckets.seconds(),
-                alienId, status == null ? null : status.name(), incidentId);
-        var response = mapper.readValue(json, TrendAnalyticsResponse.class);
+        var filters = new DetentionAnalyticsFilter(alienId, status, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toTrend(reports.execute(from, to,
+                query -> repository.trend(query.from(), query.to(),
+                        query.buckets().start(), query.buckets().months(), query.buckets().seconds(),
+                        filters.alienId(), filters.statusName(), filters.incidentId())));
     }
 
     /**
@@ -146,13 +129,11 @@ public class DetentionAnalyticsService {
      */
     public GroupedAnalyticsResponse byStatus(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.byStatus(period.from(), period.to(),
-                alienId, status == null ? null : status.name(), incidentId);
-        var response = mapper.readValue(json, GroupedAnalyticsResponse.class);
+        var filters = new DetentionAnalyticsFilter(alienId, status, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toGrouped(reports.execute(from, to,
+                query -> repository.byStatus(query.from(), query.to(),
+                        filters.alienId(), filters.statusName(), filters.incidentId())));
     }
 
     /**
@@ -160,13 +141,11 @@ public class DetentionAnalyticsService {
      */
     public GroupedAnalyticsResponse byAlien(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.byAlien(period.from(), period.to(),
-                alienId, status == null ? null : status.name(), incidentId);
-        var response = mapper.readValue(json, GroupedAnalyticsResponse.class);
+        var filters = new DetentionAnalyticsFilter(alienId, status, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toGrouped(reports.execute(from, to,
+                query -> repository.byAlien(query.from(), query.to(),
+                        filters.alienId(), filters.statusName(), filters.incidentId())));
     }
 
     /**
@@ -174,13 +153,11 @@ public class DetentionAnalyticsService {
      */
     public GroupedAnalyticsResponse byAssignedTerm(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.byAssignedTerm(period.from(), period.to(),
-                alienId, status == null ? null : status.name(), incidentId);
-        var response = mapper.readValue(json, GroupedAnalyticsResponse.class);
+        var filters = new DetentionAnalyticsFilter(alienId, status, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toGrouped(reports.execute(from, to,
+                query -> repository.byAssignedTerm(query.from(), query.to(),
+                        filters.alienId(), filters.statusName(), filters.incidentId())));
     }
 
     /**
@@ -188,13 +165,11 @@ public class DetentionAnalyticsService {
      */
     public GroupedAnalyticsResponse byRemainingTime(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.byRemainingTime(period.from(), period.to(),
-                alienId, status == null ? null : status.name(), incidentId);
-        var response = mapper.readValue(json, GroupedAnalyticsResponse.class);
+        var filters = new DetentionAnalyticsFilter(alienId, status, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toGrouped(reports.execute(from, to,
+                query -> repository.byRemainingTime(query.from(), query.to(),
+                        filters.alienId(), filters.statusName(), filters.incidentId())));
     }
 
     /**
@@ -202,12 +177,10 @@ public class DetentionAnalyticsService {
      */
     public UpcomingReleasesAnalyticsResponse upcomingReleases(OffsetDateTime from, OffsetDateTime to,
             Long alienId, DetentionRequestStatusApi status, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.upcomingReleases(period.from(), period.to(),
-                alienId, status == null ? null : status.name(), incidentId);
-        var response = mapper.readValue(json, UpcomingReleasesAnalyticsResponse.class);
+        var filters = new DetentionAnalyticsFilter(alienId, status, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toUpcomingReleases(reports.execute(from, to,
+                query -> repository.upcomingReleases(query.from(), query.to(),
+                        filters.alienId(), filters.statusName(), filters.incidentId())));
     }
 }

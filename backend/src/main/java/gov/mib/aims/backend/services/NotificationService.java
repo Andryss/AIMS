@@ -10,8 +10,6 @@ import java.util.List;
  */
 public interface NotificationService {
 
-    int MAX_PAGE_SIZE = 100;
-
     /**
      * Создаёт уведомление для получателя.
      *

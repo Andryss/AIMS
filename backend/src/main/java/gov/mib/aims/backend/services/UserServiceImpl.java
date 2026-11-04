@@ -7,6 +7,7 @@ import gov.mib.aims.backend.generated.model.BatchUsersResponse;
 import gov.mib.aims.backend.generated.model.UserSearchResponse;
 import gov.mib.aims.backend.generated.model.UserSummary;
 import gov.mib.aims.backend.repository.AppUserRepository;
+import gov.mib.aims.backend.services.mapping.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,8 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
+    private final UserMapper userMapper;
 
     private static final int SEARCH_LIMIT = 20;
     private static final int BATCH_MAX = 100;
@@ -39,7 +42,7 @@ public class UserServiceImpl implements UserService {
                 ? appUserRepository.searchByLogin(trimmed, SEARCH_LIMIT)
                 : appUserRepository.searchByLoginAndRoleName(trimmed, roleName.trim(), SEARCH_LIMIT);
         return new UserSearchResponse()
-                .items(users.stream().map(this::toSummary).toList());
+                .items(users.stream().map(userMapper::toSummary).toList());
     }
 
     @Override
@@ -60,15 +63,10 @@ public class UserServiceImpl implements UserService {
         for (Long id : ids) {
             AppUserEntity user = byId.get(id);
             if (user != null) {
-                items.add(toSummary(user));
+                items.add(userMapper.toSummary(user));
             }
         }
         return new BatchUsersResponse().items(items);
     }
 
-    private UserSummary toSummary(AppUserEntity user) {
-        return new UserSummary()
-                .id(user.getId())
-                .login(user.getLogin());
-    }
 }

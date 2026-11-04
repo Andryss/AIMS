@@ -1,12 +1,10 @@
 package gov.mib.aims.backend.services.incident.status.postaction;
 
-import gov.mib.aims.backend.services.status.StatusTransitionPostAction;
-
-import gov.mib.aims.backend.entity.IncidentEntity;
 import gov.mib.aims.backend.services.dbqueue.DbQueueService;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyOperatorClarificationRequiredPayload;
 import gov.mib.aims.backend.services.dbqueue.processor.NotifyOperatorClarificationRequiredProcessor;
-import gov.mib.aims.backend.services.incident.StatusChangeCommentHolder;
+import gov.mib.aims.backend.services.incident.IncidentTransitionContext;
+import gov.mib.aims.backend.services.status.StatusTransitionPostAction;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,17 +13,18 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class EnqueueNotifyOperatorClarificationPostAction implements StatusTransitionPostAction<IncidentEntity> {
+public class EnqueueNotifyOperatorClarificationPostAction
+        implements StatusTransitionPostAction<IncidentTransitionContext> {
 
     private final DbQueueService dbQueueService;
 
     @Override
-    public void execute(IncidentEntity context) {
+    public void execute(IncidentTransitionContext context) {
         dbQueueService.produceTask(
                 NotifyOperatorClarificationRequiredProcessor.class,
                 new NotifyOperatorClarificationRequiredPayload(
-                        context.getId(),
-                        StatusChangeCommentHolder.getCommentExcerpt()
+                        context.incident().getId(),
+                        context.commentExcerpt()
                 )
         );
     }

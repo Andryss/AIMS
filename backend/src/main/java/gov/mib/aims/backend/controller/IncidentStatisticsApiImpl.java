@@ -23,12 +23,12 @@ import java.time.OffsetDateTime;
 @Validated
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("hasAuthority('ANALYTICS_READ')")
 public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
 
     private final IncidentAnalyticsService incidentService;
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getIncidentCreatedCount(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/created-count from={} to={}",
@@ -38,7 +38,6 @@ public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getIncidentCompletedCount(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/completed-count from={} to={}",
@@ -48,7 +47,6 @@ public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getIncidentTotalAtTo(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/total-at-to from={} to={}",
@@ -58,7 +56,6 @@ public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getIncidentCompletedAtTo(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/completed-at-to from={} to={}",
@@ -68,7 +65,6 @@ public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public CountAnalyticsResponse getIncidentOpenAtTo(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/open-at-to from={} to={}",
@@ -78,7 +74,6 @@ public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public DurationAnalyticsResponse getIncidentCompletionDuration(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/completion-duration from={} to={}",
@@ -88,7 +83,6 @@ public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public TrendAnalyticsResponse getIncidentTrend(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/trend from={} to={}",
@@ -98,7 +92,6 @@ public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public GroupedAnalyticsResponse getIncidentByStatus(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/by-status from={} to={}",
@@ -108,7 +101,6 @@ public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public GroupedAnalyticsResponse getIncidentByEventType(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/by-event-type from={} to={}",
@@ -118,7 +110,6 @@ public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public GroupedAnalyticsResponse getIncidentByThreatLevel(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/by-threat-level from={} to={}",
@@ -128,7 +119,6 @@ public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public GroupedAnalyticsResponse getIncidentByVictimCount(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/by-victim-count from={} to={}",
@@ -138,7 +128,6 @@ public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public GroupedAnalyticsResponse getIncidentByAlien(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/by-alien from={} to={}",
@@ -148,7 +137,6 @@ public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public GroupedAnalyticsResponse getIncidentByLocation(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/by-location from={} to={}",
@@ -158,7 +146,6 @@ public class IncidentStatisticsApiImpl implements IncidentStatisticsApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ANALYTICS_READ')")
     public StaleIncidentAnalyticsResponse getIncidentStale(OffsetDateTime from, OffsetDateTime to,
             IncidentEventTypeApi eventType, Long alienId, Long responsibleUserId) {
         log.info("GET /api/v1/incidents/statistics/stale from={} to={}",

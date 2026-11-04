@@ -5,8 +5,8 @@ import gov.mib.aims.backend.model.CleanupStatus;
 import gov.mib.aims.backend.services.cleanup.status.postaction.EnqueueNotifyCleanupCompletedPostAction;
 import gov.mib.aims.backend.services.cleanup.status.precondition.CleanupReportExistsPrecondition;
 import gov.mib.aims.backend.services.cleanup.status.precondition.IncidentExecutingPrecondition;
-import org.springframework.stereotype.Component;
 import gov.mib.aims.backend.services.status.StatusTransition;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
@@ -52,8 +52,7 @@ public class CleanupStatusTransitionGraph {
         this.transitions = transitionList.stream()
                 .collect(Collectors.toMap(
                         t -> CleanupStatusTransitionKey.of(t.getFrom(), t.getTo()),
-                        Function.identity(),
-                        (a, b) -> a
+                        Function.identity()
                 ));
     }
 

@@ -7,9 +7,11 @@ import gov.mib.aims.backend.generated.model.IncidentCommentListResponse;
 import gov.mib.aims.backend.generated.model.IncidentCommentResponse;
 import gov.mib.aims.backend.repository.IncidentCommentRepository;
 import gov.mib.aims.backend.repository.IncidentRepository;
+import gov.mib.aims.backend.services.mapping.IncidentCommentMapper;
+import gov.mib.aims.backend.services.query.PageParameters;
+import gov.mib.aims.backend.services.validation.TextNormalizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class IncidentCommentServiceImpl implements IncidentCommentService {
 
-    private static final int MAX_PAGE_SIZE = 100;
+    private final IncidentCommentMapper commentMapper;
 
     private final IncidentCommentRepository incidentCommentRepository;
     private final IncidentRepository incidentRepository;
@@ -31,7 +33,8 @@ public class IncidentCommentServiceImpl implements IncidentCommentService {
     @Transactional
     public IncidentCommentResponse create(Long incidentId, CreateIncidentCommentRequest request) {
         assertIncidentExists(incidentId);
-        return toResponse(saveComment(incidentId, request.getText().trim(), currentUserService.getCurrentUserId()));
+        String text = TextNormalizer.required(request.getText(), "Укажите текст комментария");
+        return commentMapper.toResponse(saveComment(incidentId, text, currentUserService.getCurrentUserId()));
     }
 
     @Override
@@ -48,19 +51,11 @@ public class IncidentCommentServiceImpl implements IncidentCommentService {
     @Transactional(readOnly = true)
     public IncidentCommentListResponse list(Long incidentId, int page, int size) {
         assertIncidentExists(incidentId);
-        int pageSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
         Page<IncidentCommentEntity> result = incidentCommentRepository.findByIncidentIdOrderByCreatedAtAscIdAsc(
                 incidentId,
-                PageRequest.of(page, pageSize)
+                PageParameters.of(page, size).toPageable()
         );
-        return new IncidentCommentListResponse()
-                .items(result.getContent().stream()
-                        .map(this::toResponse)
-                        .toList())
-                .page(result.getNumber())
-                .size(result.getSize())
-                .totalElements(result.getTotalElements())
-                .totalPages(result.getTotalPages());
+        return commentMapper.toListResponse(result);
     }
 
     private IncidentCommentEntity saveComment(Long incidentId, String text, Long authorUserId) {
@@ -79,12 +74,4 @@ public class IncidentCommentServiceImpl implements IncidentCommentService {
         }
     }
 
-    private IncidentCommentResponse toResponse(IncidentCommentEntity entity) {
-        return new IncidentCommentResponse()
-                .id(entity.getId())
-                .incidentId(entity.getIncidentId())
-                .authorUserId(entity.getAuthorUserId())
-                .text(entity.getText())
-                .createdAt(chronoService.toOffsetDateTime(entity.getCreatedAt()));
-    }
 }

@@ -725,12 +725,14 @@ components:
         location:
           type: string
           minLength: 1
+          pattern: '(?s).*\S.*'
         detectedAt:
           type: string
           format: date-time
         description:
           type: string
           minLength: 1
+          pattern: '(?s).*\S.*'
         attachmentFileIds:
           type: array
           minItems: 1
@@ -761,12 +763,14 @@ components:
         location:
           type: string
           minLength: 1
+          pattern: '(?s).*\S.*'
         detectedAt:
           type: string
           format: date-time
         description:
           type: string
           minLength: 1
+          pattern: '(?s).*\S.*'
         additionalAttachmentFileIds:
           type: array
           nullable: true
@@ -851,6 +855,7 @@ components:
         description:
           type: string
           minLength: 1
+          pattern: '(?s).*\S.*'
         attachmentFileIds:
           type: array
           minItems: 1
@@ -896,6 +901,7 @@ components:
         text:
           type: string
           minLength: 1
+          pattern: '(?s).*\S.*'
           maxLength: 4000
 
     IncidentCommentResponse:

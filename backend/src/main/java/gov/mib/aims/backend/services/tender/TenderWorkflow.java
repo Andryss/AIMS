@@ -6,19 +6,15 @@ import gov.mib.aims.backend.model.Permission;
 import gov.mib.aims.backend.model.TenderStatus;
 import gov.mib.aims.backend.services.ChronoService;
 import gov.mib.aims.backend.services.CurrentUserService;
-import gov.mib.aims.backend.services.status.AbstractStatusWorkflow;
-import gov.mib.aims.backend.services.status.StatusTransition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * Переходы тендера и выбор победителя в транзакции сервиса.
  */
 @Component
 @RequiredArgsConstructor
-public class TenderWorkflow extends AbstractStatusWorkflow<TenderEntity, TenderStatus> {
+public class TenderWorkflow {
 
     private final CurrentUserService currentUserService;
     private final ChronoService chronoService;
@@ -36,14 +32,11 @@ public class TenderWorkflow extends AbstractStatusWorkflow<TenderEntity, TenderS
             throw Errors.validationError("Недопустимый переход статуса тендера");
         }
 
-        var transition = StatusTransition.<TenderEntity, TenderStatus>builder().from(from).to(target)
-                .preconditions(List.of(tender -> assertActor(tender, cancellation), tender -> {
-                    if (cancellation && (comment == null || comment.trim().isBlank())) {
-                        throw Errors.validationError("Укажите причину отмены тендера");
-                    }
-                })).postActions(List.of()).build();
-
-        return applyTransition(entity, transition);
+        assertActor(entity, cancellation);
+        if (cancellation && (comment == null || comment.trim().isBlank())) {
+            throw Errors.validationError("Укажите причину отмены тендера");
+        }
+        return applyStatus(entity, target);
     }
 
     /**
@@ -54,11 +47,8 @@ public class TenderWorkflow extends AbstractStatusWorkflow<TenderEntity, TenderS
             throw Errors.tenderConflict("Выбрать победителя можно только во время сбора предложений");
         }
 
-        var transition = StatusTransition.<TenderEntity, TenderStatus>builder()
-                .from(entity.getStatus()).to(TenderStatus.AWAITING_DELIVERY)
-                .preconditions(List.of(tender -> assertActor(tender, false))).postActions(List.of()).build();
-
-        return applyTransition(entity, transition);
+        assertActor(entity, false);
+        return applyStatus(entity, TenderStatus.AWAITING_DELIVERY);
     }
 
     /**
@@ -69,15 +59,10 @@ public class TenderWorkflow extends AbstractStatusWorkflow<TenderEntity, TenderS
             throw Errors.tenderConflict("Приёмка доступна только в ожидании поставки");
         }
 
-        var transition = StatusTransition.<TenderEntity, TenderStatus>builder()
-                .from(entity.getStatus()).to(TenderStatus.COMPLETED)
-                .preconditions(List.of(tender -> {
-                    if (!currentUserService.hasPermission(Permission.TENDER_RECEIVE)) {
-                        throw Errors.accessDenied();
-                    }
-                })).postActions(List.of()).build();
-
-        return applyTransition(entity, transition);
+        if (!currentUserService.hasPermission(Permission.TENDER_RECEIVE)) {
+            throw Errors.accessDenied();
+        }
+        return applyStatus(entity, TenderStatus.COMPLETED);
     }
 
     private void assertActor(TenderEntity entity, boolean cancellation) {
@@ -89,8 +74,7 @@ public class TenderWorkflow extends AbstractStatusWorkflow<TenderEntity, TenderS
         }
     }
 
-    @Override
-    protected TenderEntity applyStatus(TenderEntity entity, TenderStatus target) {
+    private TenderEntity applyStatus(TenderEntity entity, TenderStatus target) {
         entity.setStatus(target);
         entity.setUpdatedAt(chronoService.now());
         if (target == TenderStatus.COMPLETED) {

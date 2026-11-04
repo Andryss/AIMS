@@ -8,8 +8,7 @@ import gov.mib.aims.backend.generated.model.OpenEquipmentRequestsAnalyticsRespon
 import gov.mib.aims.backend.generated.model.OutstandingEquipmentAnalyticsResponse;
 import gov.mib.aims.backend.generated.model.TrendAnalyticsResponse;
 import gov.mib.aims.backend.repository.analytics.EquipmentAnalyticsRepository;
-import gov.mib.aims.backend.services.ChronoService;
-import gov.mib.aims.backend.services.ObjectMapperWrapper;
+import gov.mib.aims.backend.services.mapping.AnalyticsResponseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -26,21 +25,19 @@ import java.time.OffsetDateTime;
 public class EquipmentAnalyticsService {
 
     private final EquipmentAnalyticsRepository repository;
-    private final ObjectMapperWrapper mapper;
-    private final ChronoService chronoService;
+    private final AnalyticsReportExecutor reports;
+    private final AnalyticsResponseMapper responseMapper;
 
     /**
      * Количество поступивших экземпляров за период.
      */
     public CountAnalyticsResponse receivedCount(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.receivedCount(period.from(), period.to(),
-                equipmentType == null ? null : equipmentType.name(), responsibleUserId, incidentId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new EquipmentAnalyticsFilter(equipmentType, responsibleUserId, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.receivedCount(query.from(), query.to(),
+                        filters.equipmentTypeName(), filters.responsibleUserId(), filters.incidentId())));
     }
 
     /**
@@ -48,13 +45,11 @@ public class EquipmentAnalyticsService {
      */
     public CountAnalyticsResponse issuedCount(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.issuedCount(period.from(), period.to(),
-                equipmentType == null ? null : equipmentType.name(), responsibleUserId, incidentId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new EquipmentAnalyticsFilter(equipmentType, responsibleUserId, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.issuedCount(query.from(), query.to(),
+                        filters.equipmentTypeName(), filters.responsibleUserId(), filters.incidentId())));
     }
 
     /**
@@ -62,13 +57,11 @@ public class EquipmentAnalyticsService {
      */
     public CountAnalyticsResponse returnedCount(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.returnedCount(period.from(), period.to(),
-                equipmentType == null ? null : equipmentType.name(), responsibleUserId, incidentId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new EquipmentAnalyticsFilter(equipmentType, responsibleUserId, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.returnedCount(query.from(), query.to(),
+                        filters.equipmentTypeName(), filters.responsibleUserId(), filters.incidentId())));
     }
 
     /**
@@ -76,13 +69,11 @@ public class EquipmentAnalyticsService {
      */
     public CountAnalyticsResponse totalAtTo(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.totalAtTo(period.from(), period.to(),
-                equipmentType == null ? null : equipmentType.name(), responsibleUserId, incidentId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new EquipmentAnalyticsFilter(equipmentType, responsibleUserId, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.totalAtTo(query.from(), query.to(),
+                        filters.equipmentTypeName(), filters.responsibleUserId(), filters.incidentId())));
     }
 
     /**
@@ -90,13 +81,11 @@ public class EquipmentAnalyticsService {
      */
     public CountAnalyticsResponse availableAtTo(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.availableAtTo(period.from(), period.to(),
-                equipmentType == null ? null : equipmentType.name(), responsibleUserId, incidentId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new EquipmentAnalyticsFilter(equipmentType, responsibleUserId, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.availableAtTo(query.from(), query.to(),
+                        filters.equipmentTypeName(), filters.responsibleUserId(), filters.incidentId())));
     }
 
     /**
@@ -104,13 +93,11 @@ public class EquipmentAnalyticsService {
      */
     public CountAnalyticsResponse issuedAtTo(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.issuedAtTo(period.from(), period.to(),
-                equipmentType == null ? null : equipmentType.name(), responsibleUserId, incidentId);
-        var response = mapper.readValue(json, CountAnalyticsResponse.class);
+        var filters = new EquipmentAnalyticsFilter(equipmentType, responsibleUserId, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toCount(reports.execute(from, to,
+                query -> repository.issuedAtTo(query.from(), query.to(),
+                        filters.equipmentTypeName(), filters.responsibleUserId(), filters.incidentId())));
     }
 
     /**
@@ -118,14 +105,12 @@ public class EquipmentAnalyticsService {
      */
     public TrendAnalyticsResponse trend(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.trend(period.from(), period.to(),
-                buckets.start(), buckets.months(), buckets.seconds(),
-                equipmentType == null ? null : equipmentType.name(), responsibleUserId, incidentId);
-        var response = mapper.readValue(json, TrendAnalyticsResponse.class);
+        var filters = new EquipmentAnalyticsFilter(equipmentType, responsibleUserId, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toTrend(reports.execute(from, to,
+                query -> repository.trend(query.from(), query.to(),
+                        query.buckets().start(), query.buckets().months(), query.buckets().seconds(),
+                        filters.equipmentTypeName(), filters.responsibleUserId(), filters.incidentId())));
     }
 
     /**
@@ -133,13 +118,11 @@ public class EquipmentAnalyticsService {
      */
     public EquipmentInventoryAnalyticsResponse inventoryByType(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.inventoryByType(period.from(), period.to(),
-                equipmentType == null ? null : equipmentType.name(), responsibleUserId, incidentId);
-        var response = mapper.readValue(json, EquipmentInventoryAnalyticsResponse.class);
+        var filters = new EquipmentAnalyticsFilter(equipmentType, responsibleUserId, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toEquipmentInventory(reports.execute(from, to,
+                query -> repository.inventoryByType(query.from(), query.to(),
+                        filters.equipmentTypeName(), filters.responsibleUserId(), filters.incidentId())));
     }
 
     /**
@@ -147,13 +130,11 @@ public class EquipmentAnalyticsService {
      */
     public OpenEquipmentRequestsAnalyticsResponse openRequests(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.openRequests(period.from(), period.to(),
-                equipmentType == null ? null : equipmentType.name(), responsibleUserId, incidentId);
-        var response = mapper.readValue(json, OpenEquipmentRequestsAnalyticsResponse.class);
+        var filters = new EquipmentAnalyticsFilter(equipmentType, responsibleUserId, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toOpenEquipmentRequests(reports.execute(from, to,
+                query -> repository.openRequests(query.from(), query.to(),
+                        filters.equipmentTypeName(), filters.responsibleUserId(), filters.incidentId())));
     }
 
     /**
@@ -161,13 +142,11 @@ public class EquipmentAnalyticsService {
      */
     public ExpectedDeliveriesAnalyticsResponse expectedDeliveriesByType(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.expectedDeliveriesByType(period.from(), period.to(),
-                equipmentType == null ? null : equipmentType.name(), responsibleUserId, incidentId);
-        var response = mapper.readValue(json, ExpectedDeliveriesAnalyticsResponse.class);
+        var filters = new EquipmentAnalyticsFilter(equipmentType, responsibleUserId, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toExpectedDeliveries(reports.execute(from, to,
+                query -> repository.expectedDeliveriesByType(query.from(), query.to(),
+                        filters.equipmentTypeName(), filters.responsibleUserId(), filters.incidentId())));
     }
 
     /**
@@ -175,12 +154,10 @@ public class EquipmentAnalyticsService {
      */
     public OutstandingEquipmentAnalyticsResponse outstandingByIncident(OffsetDateTime from, OffsetDateTime to,
             EquipmentTypeApi equipmentType, Long responsibleUserId, Long incidentId) {
-        AnalyticsPeriod period = AnalyticsPeriod.of(from, to, chronoService);
-        AnalyticsBuckets buckets = AnalyticsBuckets.forPeriod(period, chronoService);
-        String json = repository.outstandingByIncident(period.from(), period.to(),
-                equipmentType == null ? null : equipmentType.name(), responsibleUserId, incidentId);
-        var response = mapper.readValue(json, OutstandingEquipmentAnalyticsResponse.class);
+        var filters = new EquipmentAnalyticsFilter(equipmentType, responsibleUserId, incidentId);
 
-        return response.meta(period.meta(buckets, response.getMeta().getRecordsWithoutSnapshot(), chronoService));
+        return responseMapper.toOutstandingEquipment(reports.execute(from, to,
+                query -> repository.outstandingByIncident(query.from(), query.to(),
+                        filters.equipmentTypeName(), filters.responsibleUserId(), filters.incidentId())));
     }
 }

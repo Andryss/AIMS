@@ -1,17 +1,14 @@
 package gov.mib.aims.backend.services.dbqueue.processor;
 
-import gov.mib.aims.backend.model.EntityRef;
 import gov.mib.aims.backend.model.EntityType;
 import gov.mib.aims.backend.repository.IncidentRepository;
-import gov.mib.aims.backend.services.NotificationService;
 import gov.mib.aims.backend.services.dbqueue.DbQueueProcessor;
 import gov.mib.aims.backend.services.dbqueue.DbQueueSettings;
+import gov.mib.aims.backend.services.notification.NotificationDispatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yoomoney.tech.dbqueue.api.TaskExecutionResult;
-
-import java.util.List;
 
 /**
  * Уведомляет исполнителей о назначении на инцидент.
@@ -23,7 +20,7 @@ import java.util.List;
 public class NotifyExecutorsAssignedProcessor implements DbQueueProcessor<NotifyExecutorsAssignedPayload> {
 
     private final IncidentRepository incidentRepository;
-    private final NotificationService notificationService;
+    private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public TaskExecutionResult execute(NotifyExecutorsAssignedPayload payload) {
@@ -33,10 +30,8 @@ public class NotifyExecutorsAssignedProcessor implements DbQueueProcessor<Notify
             return TaskExecutionResult.finish();
         }
         String message = "Вы назначены исполнителем по инциденту №" + incidentId;
-        String relatedRef = EntityRef.format(EntityType.INCIDENT, incidentId);
-        for (Long userId : payload.getExecutorUserIds()) {
-            notificationService.send(userId, message, List.of(relatedRef));
-        }
+        notificationDispatcher.sendToUsers(
+                payload.getExecutorUserIds(), message, EntityType.INCIDENT, incidentId);
         return TaskExecutionResult.finish();
     }
 }

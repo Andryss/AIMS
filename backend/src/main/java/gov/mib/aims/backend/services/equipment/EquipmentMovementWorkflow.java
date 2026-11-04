@@ -17,8 +17,6 @@ import gov.mib.aims.backend.services.ChronoService;
 import gov.mib.aims.backend.services.CurrentUserService;
 import gov.mib.aims.backend.services.EntityHistoryService;
 import gov.mib.aims.backend.services.mapping.EquipmentMapper;
-import gov.mib.aims.backend.services.status.AbstractStatusWorkflow;
-import gov.mib.aims.backend.services.status.StatusTransition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -30,8 +28,7 @@ import java.util.Objects;
  */
 @Component
 @RequiredArgsConstructor
-public class EquipmentMovementWorkflow
-        extends AbstractStatusWorkflow<EquipmentMovementEntity, EquipmentMovementStatus> {
+public class EquipmentMovementWorkflow {
 
     private final CurrentUserService currentUserService;
     private final EquipmentMovementItemRepository itemRepository;
@@ -45,16 +42,6 @@ public class EquipmentMovementWorkflow
      */
     public EquipmentMovementEntity changeStatus(EquipmentMovementEntity movement, EquipmentMovementStatus target,
                                                 String comment) {
-        var transition = getTransition(movement, target, comment);
-        if (transition == null) {
-            throw Errors.validationError("Недопустимый переход статуса заявки на движение оборудования");
-        }
-
-        return applyTransition(movement, transition);
-    }
-
-    private StatusTransition<EquipmentMovementEntity, EquipmentMovementStatus> getTransition(
-            EquipmentMovementEntity movement, EquipmentMovementStatus target, String comment) {
         EquipmentMovementStatus from = movement.getStatus();
         boolean termination = target == EquipmentMovementStatus.CANCELLED || target == EquipmentMovementStatus.REJECTED;
         boolean allowed = (from == EquipmentMovementStatus.PENDING
@@ -62,13 +49,12 @@ public class EquipmentMovementWorkflow
                 || (from == EquipmentMovementStatus.PROCESSING
                 && (target == EquipmentMovementStatus.COMPLETED || termination));
         if (!allowed) {
-            return null;
+            throw Errors.validationError("Недопустимый переход статуса заявки на движение оборудования");
         }
 
-        return StatusTransition.<EquipmentMovementEntity, EquipmentMovementStatus>builder()
-                .from(from).to(target)
-                .preconditions(List.of(entity -> assertActor(entity, target), entity -> assertComment(target, comment)))
-                .postActions(List.of()).build();
+        assertActor(movement, target);
+        assertComment(target, comment);
+        return applyStatus(movement, target);
     }
 
     private void assertActor(EquipmentMovementEntity movement, EquipmentMovementStatus target) {
@@ -86,8 +72,7 @@ public class EquipmentMovementWorkflow
         }
     }
 
-    @Override
-    protected EquipmentMovementEntity applyStatus(EquipmentMovementEntity movement, EquipmentMovementStatus target) {
+    private EquipmentMovementEntity applyStatus(EquipmentMovementEntity movement, EquipmentMovementStatus target) {
         if (target == EquipmentMovementStatus.COMPLETED) {
             complete(movement);
         } else {
