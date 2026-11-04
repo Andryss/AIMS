@@ -11,6 +11,7 @@ import {
 } from '../utils/incidentUsers';
 import { AlienSummary } from './AlienSummary';
 import { IncidentAlienClassification } from './IncidentAlienClassification';
+import { IncidentThreatAssessment } from './IncidentThreatAssessment';
 import { AlienPickerDrawer } from './AlienPickerDrawer';
 import { AttachmentDownloadList } from './AttachmentDownloadList';
 import { CleanupReportDrawer } from './CleanupReportDrawer';
@@ -57,6 +58,7 @@ interface IncidentDetailPageProps {
   canReadAliens: boolean;
   canLinkAlien: boolean;
   canClassifyAlien?: boolean;
+  canCalculateThreat?: boolean;
   canComment: boolean;
   canAssign: boolean;
   canReadCleanupReport: boolean;
@@ -76,6 +78,7 @@ export function IncidentDetailPage({
   canReadAliens,
   canLinkAlien,
   canClassifyAlien = false,
+  canCalculateThreat = false,
   canComment,
   canAssign,
   canReadCleanupReport,
@@ -111,6 +114,11 @@ export function IncidentDetailPage({
   const [historyEntries, setHistoryEntries] = useState<IncidentHistoryEntry[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyLoaded, setHistoryLoaded] = useState(false);
+  const historyRequest = useRef(0);
+  const historyScope = useRef('');
+  historyScope.current = JSON.stringify([incidentId, token]);
+
+  useEffect(() => () => { historyRequest.current += 1; }, []);
   const [alienNames, setAlienNames] = useState<Record<number, string>>({});
   const [usersMap, setUsersMap] = useState<Map<number, string>>(new Map());
   const [usersLoading, setUsersLoading] = useState(false);
@@ -179,20 +187,34 @@ export function IncidentDetailPage({
     if (!Number.isFinite(incidentId)) {
       return;
     }
+    const request = ++historyRequest.current;
+    const scope = JSON.stringify([incidentId, token]);
+    const isCurrent = () => historyRequest.current === request && historyScope.current === scope;
     setHistoryLoading(true);
     try {
       const response = await api.listIncidentHistory(token, incidentId);
-      setHistoryEntries(response.items);
+      if (!isCurrent()) { return; }
+      const entries = [...response.items];
+      for (let page = 1; page < response.totalPages; page += 1) {
+        const next = await api.listIncidentHistory(token, incidentId, page, response.size);
+        if (!isCurrent()) { return; }
+        entries.push(...next.items);
+      }
+      setHistoryEntries(entries);
       setHistoryLoaded(true);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Не удалось загрузить историю';
-      setError(message);
+      if (isCurrent()) {
+        const message = err instanceof Error ? err.message : 'Не удалось загрузить историю';
+        setError(message);
+      }
     } finally {
-      setHistoryLoading(false);
+      if (isCurrent()) { setHistoryLoading(false); }
     }
   }, [incidentId, token]);
 
   useEffect(() => {
+    historyRequest.current += 1;
+    setHistoryLoading(false);
     if (!Number.isFinite(incidentId)) {
       setError('Некорректный идентификатор инцидента');
       setIncident(null);
@@ -676,6 +698,11 @@ export function IncidentDetailPage({
                 <dd className="text-pre-wrap">{incident.description}</dd>
               </div>
 
+              <div className="data-list__row">
+                <dt>Количество пострадавших</dt>
+                <dd>{incident.victimCount ?? 'Неизвестно'}</dd>
+              </div>
+
               {(canReadAliens && (canLinkAlien || canClassifyAlien || linkedAlien)) && (
                 <div className="data-list__row">
                   <dt>Тип инопланетянина</dt>
@@ -699,6 +726,20 @@ export function IncidentDetailPage({
                   </dd>
                 </div>
               )}
+
+              <div className="data-list__row">
+                <dt>Уровень угрозы</dt>
+                <dd>
+                  <IncidentThreatAssessment key={incidentId} token={token} incident={incident}
+                    canCalculate={canCalculateThreat} alienThreatLevel={linkedAlien?.threatLevel} disabled={linkLoading}
+                    onUpdated={(updated) => {
+                      historyRequest.current += 1;
+                      setHistoryLoading(false);
+                      setIncident(updated);
+                      setHistoryLoaded(false);
+                    }} />
+                </dd>
+              </div>
 
               {showCleanupStatusRow && (
                 <div className="data-list__row">

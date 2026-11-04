@@ -15,6 +15,7 @@ import {
   UpcomingReleasesAnalyticsResponse,
   Alien,
   IncidentAlienClassificationResponse,
+  IncidentThreatCalculationResponse,
   AlienListResponse,
   SaveAlienRequest,
   AlienSearchResponse,
@@ -796,4 +797,13 @@ export function changeCleanupStatus(
 
 export function classifyIncidentAlien(token: string, id: number): Promise<IncidentAlienClassificationResponse> {
   return requestJson(`/incidents/${id}/alien-classification`, { method: 'POST' }, token);
+}
+
+export function calculateIncidentThreat(token: string, id: number): Promise<IncidentThreatCalculationResponse> {
+  return requestJson<IncidentThreatCalculationResponse>(`/incidents/${id}/threat-calculation`, { method: 'POST' }, token);
+}
+
+export function setIncidentThreatLevel(token: string, id: number, threatLevel: number): Promise<IncidentResponse> {
+  return requestJson<IncidentResponse>(`/incidents/${id}/threat-level`,
+    { method: 'PUT', body: JSON.stringify({ threatLevel }) }, token);
 }

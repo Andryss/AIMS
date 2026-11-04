@@ -71,6 +71,39 @@ describe('CreateIncidentModal', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
+  it.each([['', null], ['0', 0], ['3', 3]] as const)(
+    'creates an incident with victim count %s', async (value, expected) => {
+      render(<CreateIncidentModal token="tok" open onClose={onClose} onCreated={onCreated} />);
+      fireEvent.change(screen.getByLabelText('Количество пострадавших'), { target: { value } });
+      fireEvent.change(screen.getByLabelText(/Место/i), { target: { value: 'Место' } });
+      fireEvent.change(screen.getByLabelText(/Описание/i), { target: { value: 'Описание' } });
+      fireEvent.change(screen.getByLabelText(/Время обнаружения/i), { target: { value: '2025-06-01T12:00' } });
+      await userEvent.upload(document.querySelector('input[type="file"]') as HTMLInputElement,
+        new File(['image'], 'photo.jpg', { type: 'image/jpeg' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Создать' }));
+      await waitFor(() => expect(createIncident).toHaveBeenCalledWith('tok', expect.objectContaining({ victimCount: expected })));
+    });
+
+  it.each(['-1', '1.5', '2147483648'])('rejects invalid victim count %s before uploading', (value) => {
+    const { container } = render(<CreateIncidentModal token="tok" open onClose={onClose} onCreated={onCreated} />);
+    fireEvent.change(screen.getByLabelText('Количество пострадавших'), { target: { value } });
+    fireEvent.submit(container.querySelector('form')!);
+    expect(screen.getByRole('alert')).toHaveTextContent('Укажите целое неотрицательное количество пострадавших');
+    expect(uploadFiles).not.toHaveBeenCalled();
+    expect(createIncident).not.toHaveBeenCalled();
+  });
+
+  it('resets victim count when reopened and offers all ten event types', () => {
+    const props = { token: 'tok', onClose, onCreated };
+    const { rerender } = render(<CreateIncidentModal {...props} open />);
+    fireEvent.change(screen.getByLabelText('Количество пострадавших'), { target: { value: '3' } });
+    expect(screen.getAllByRole('option')).toHaveLength(10);
+    expect(screen.getByRole('option', { name: 'Нападение на людей' })).toBeInTheDocument();
+    rerender(<CreateIncidentModal {...props} open={false} />);
+    rerender(<CreateIncidentModal {...props} open />);
+    expect(screen.getByLabelText('Количество пострадавших')).toHaveValue(null);
+  });
+
   it('shows API error on create failure', async () => {
     createIncident.mockRejectedValueOnce(new Error('Server error'));
     render(<CreateIncidentModal token="tok" open onClose={onClose} onCreated={onCreated} />);

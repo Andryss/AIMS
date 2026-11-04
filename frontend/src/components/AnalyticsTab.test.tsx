@@ -42,6 +42,17 @@ it('preserves the period and separate filters while switching dashboards', async
   await waitFor(() => expect(screen.queryAllByText(/^Загрузка:/)).toHaveLength(0));
 });
 
+it.each(['ATTACK_ON_PEOPLE', 'PROPERTY_DAMAGE', 'BIOLOGICAL_CONTAMINATION',
+  'CRITICAL_INFRASTRUCTURE_DISRUPTION'])('requests analytics for the new event type %s', async (eventType) => {
+  mount();
+  await within(screen.getByRole('region', { name: 'Всего инцидентов' })).findByText('3');
+  fireEvent.change(screen.getByLabelText('Тип события'), { target: { value: eventType } });
+  expect(screen.getByLabelText('Тип события')).toHaveValue(eventType);
+  await waitFor(() => expect(api.getIncidentCreatedCount).toHaveBeenLastCalledWith('tok', {
+    ...analyticsPeriod, eventType,
+  }));
+});
+
 it('debounces a valid period and does not request invalid or future dates', async () => {
   mount();
   await within(screen.getByRole('region', { name: 'Всего инцидентов' })).findByText('3');

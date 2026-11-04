@@ -13,6 +13,8 @@ import { MonitoringAlertMediaLinks } from './MonitoringAlertMediaLinks';
 import { Button } from './ui/Button';
 import { FormField } from './ui/FormField';
 
+const MAX_VICTIM_COUNT = 2_147_483_647;
+
 const EVENT_TYPES = Object.entries(EVENT_TYPE_LABELS).map(([value, label]) => ({
   value: value as IncidentEventType,
   label,
@@ -47,6 +49,7 @@ export function CreateIncidentModal({
   const [location, setLocation] = useState('');
   const [detectedAt, setDetectedAt] = useState('');
   const [description, setDescription] = useState('');
+  const [victimCount, setVictimCount] = useState('');
   const [monitoringAlertId, setMonitoringAlertId] = useState<number | undefined>();
   const [referenceMediaUrls, setReferenceMediaUrls] = useState<string[]>([]);
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
@@ -75,6 +78,7 @@ export function CreateIncidentModal({
       setMonitoringAlertId(undefined);
       setReferenceMediaUrls([]);
     }
+    setVictimCount('');
     setAttachmentFiles([]);
     setError(null);
   }, [open, initialValues]);
@@ -85,6 +89,11 @@ export function CreateIncidentModal({
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    const count = victimCount.trim() === '' ? null : Number(victimCount);
+    if (count != null && (!Number.isInteger(count) || count < 0 || count > MAX_VICTIM_COUNT)) {
+      setError('Укажите целое неотрицательное количество пострадавших');
+      return;
+    }
     if (attachmentFiles.length === 0) {
       setError('Загрузите хотя бы одно вложение перед созданием инцидента');
       return;
@@ -100,6 +109,7 @@ export function CreateIncidentModal({
         location: location.trim(),
         detectedAt: toUtcIsoString(detectedAt),
         description: description.trim(),
+        victimCount: count,
         attachmentFileIds: uploaded.map((item) => item.id),
       };
       if (monitoringAlertId != null) {
@@ -166,6 +176,10 @@ export function CreateIncidentModal({
               onChange={(e) => setDetectedAt(e.target.value)}
               required
             />
+          </FormField>
+          <FormField label="Количество пострадавших">
+            <input type="number" min={0} max={MAX_VICTIM_COUNT} step={1} inputMode="numeric"
+              placeholder="Неизвестно" value={victimCount} onChange={(event) => setVictimCount(event.target.value)} />
           </FormField>
           <FormField label="Описание" required>
             <textarea

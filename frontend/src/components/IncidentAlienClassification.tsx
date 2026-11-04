@@ -3,6 +3,7 @@ import * as api from '../api/client';
 import { Alien, IncidentAlienClassificationResponse, IncidentResponse } from '../types';
 import { AlienSummary } from './AlienSummary';
 import { Button } from './ui/Button';
+import { SparkleIcon } from './ui/SparkleIcon';
 
 interface Props {
   token: string;
@@ -79,9 +80,7 @@ export function IncidentAlienClassification({ token, incident, canAccept, disabl
       disabled={recognizing || accepting || disabled || noAttachments} aria-busy={recognizing || undefined}
       onClick={recognize}>
       {recognizing ? <span className="spinner spinner--sm" aria-hidden="true" />
-        : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
-          <path d="M12 2C13.4 8 16 10.6 22 12C16 13.4 13.4 16 12 22C10.6 16 8 13.4 2 12C8 10.6 10.6 8 12 2Z" />
-        </svg>}
+        : <SparkleIcon />}
     </button>
     {recognizing && <span className="text-muted" role="status">Распознаём…</span>}
     {noAttachments && <span className="text-muted">Нет изображений для распознавания</span>}

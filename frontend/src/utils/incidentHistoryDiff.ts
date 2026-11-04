@@ -111,6 +111,16 @@ const SNAPSHOT_FIELDS: SnapshotField[] = [
     compare: (prev, curr) => (prev.alienId ?? null) !== (curr.alienId ?? null),
   },
   {
+    label: 'Количество пострадавших',
+    format: (s) => s.victimCount == null ? 'Неизвестно' : String(s.victimCount),
+    compare: (prev, curr) => (prev.victimCount ?? null) !== (curr.victimCount ?? null),
+  },
+  {
+    label: 'Уровень угрозы',
+    format: (s) => s.threatLevel == null ? '—' : String(s.threatLevel),
+    compare: (prev, curr) => (prev.threatLevel ?? null) !== (curr.threatLevel ?? null),
+  },
+  {
     label: 'Ответственный',
     format: (s, usersMap) => formatUserId(s.responsibleUserId, usersMap),
     compare: (prev, curr) => (prev.responsibleUserId ?? null) !== (curr.responsibleUserId ?? null),

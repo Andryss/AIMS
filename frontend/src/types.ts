@@ -4,7 +4,11 @@ export type IncidentEventType =
   | 'ILLEGAL_UFO_LANDING'
   | 'MEMORY_ANOMALY'
   | 'ALIEN_ARTIFACT'
-  | 'ALIEN_CAPTURE';
+  | 'ALIEN_CAPTURE'
+  | 'ATTACK_ON_PEOPLE'
+  | 'PROPERTY_DAMAGE'
+  | 'BIOLOGICAL_CONTAMINATION'
+  | 'CRITICAL_INFRASTRUCTURE_DISRUPTION';
 
 export type IncidentStatus =
   | 'DRAFT'
@@ -42,6 +46,7 @@ export interface CreateIncidentRequest {
   location: string;
   detectedAt: string;
   description: string;
+  victimCount?: number | null;
   attachmentFileIds: number[];
   monitoringAlertId?: number;
 }
@@ -87,6 +92,8 @@ export interface IncidentResponse {
   location: string;
   detectedAt: string;
   description: string;
+  victimCount?: number | null;
+  threatLevel?: number | null;
   attachmentFileIds: number[];
   alienId?: number;
   responsibleUserId?: number | null;
@@ -147,6 +154,8 @@ export interface IncidentHistorySnapshot {
   location: string;
   detectedAt: string;
   description: string;
+  victimCount?: number | null;
+  threatLevel?: number | null;
   attachmentFileIds: number[];
   alienId?: number | null;
   responsibleUserId?: number | null;
@@ -711,4 +720,12 @@ export interface IncidentAlienClassificationResponse {
   status: 'MATCH' | 'NO_MATCH';
   confidence: number;
   alien: Alien | null;
+}
+
+export interface IncidentThreatCalculationResponse {
+  calculatedThreatLevel: number;
+  contributions: {
+    criterion: 'ALIEN_THREAT' | 'DEFAULT_THREAT' | 'EVENT_TYPE' | 'VICTIMS';
+    adjustment: number;
+  }[];
 }

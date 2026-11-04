@@ -40,7 +40,7 @@ describe('buildIncidentHistoryDiffs', () => {
 
     expect(blocks).toHaveLength(1);
     expect(blocks[0].isCreation).toBe(true);
-    expect(blocks[0].rows).toHaveLength(11);
+    expect(blocks[0].rows).toHaveLength(13);
     expect(blocks[0].rows.find((r) => r.label === 'Статус')?.newValue).toBe('Черновик');
     expect(blocks[0].title).toContain('operator');
   });
@@ -73,6 +73,32 @@ describe('buildIncidentHistoryDiffs', () => {
     ], usersMap);
 
     expect(blocks[1].rows).toHaveLength(0);
+  });
+
+  it('distinguishes unknown victims from zero and shows saved threat changes', () => {
+    const blocks = buildIncidentHistoryDiffs([
+      entry(1, '2025-06-01T10:00:00Z', 1, baseSnapshot),
+      entry(2, '2025-06-01T11:00:00Z', 1, { ...baseSnapshot, victimCount: 0, threatLevel: 7 }),
+      entry(3, '2025-06-01T12:00:00Z', 1, { ...baseSnapshot, victimCount: 2, threatLevel: 6 }),
+    ]);
+    expect(blocks[1].rows).toEqual([
+      { label: 'Количество пострадавших', oldValue: 'Неизвестно', newValue: '0' },
+      { label: 'Уровень угрозы', oldValue: '—', newValue: '7' },
+    ]);
+    expect(blocks[2].rows).toEqual([
+      { label: 'Количество пострадавших', oldValue: '0', newValue: '2' },
+      { label: 'Уровень угрозы', oldValue: '7', newValue: '6' },
+    ]);
+  });
+
+  it('treats missing and null legacy fields as the same unknown values', () => {
+    const blocks = buildIncidentHistoryDiffs([
+      entry(1, '2025-06-01T10:00:00Z', 1, baseSnapshot),
+      entry(2, '2025-06-01T11:00:00Z', 1, { ...baseSnapshot, victimCount: null, threatLevel: null }),
+    ]);
+    expect(blocks[1].rows).toEqual([]);
+    expect(blocks[0].rows.find((row) => row.label === 'Количество пострадавших')?.newValue).toBe('Неизвестно');
+    expect(blocks[0].rows.find((row) => row.label === 'Уровень угрозы')?.newValue).toBe('—');
   });
 
   it('diffs cleanup and executor fields', () => {

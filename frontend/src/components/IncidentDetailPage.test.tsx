@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import * as api from '../api/client';
@@ -7,7 +7,10 @@ import { mockAlien, mockIncident, mockEquipmentMovement } from '../test/testData
 import { IncidentDetailPage } from './IncidentDetailPage';
 import { AlienDetailPage } from './AlienDetailPage';
 
-jest.mock('../api/client');
+jest.mock('../api/client', () => ({
+  ...jest.createMockFromModule<object>('../api/client'),
+  ApiError: jest.requireActual('../api/client').ApiError,
+}));
 
 const getIncident = api.getIncident as jest.MockedFunction<typeof api.getIncident>;
 const getAlien = api.getAlien as jest.MockedFunction<typeof api.getAlien>;
@@ -29,6 +32,7 @@ function renderAt(
     canReadAliens?: boolean;
     canLinkAlien?: boolean;
     canClassifyAlien?: boolean;
+    canCalculateThreat?: boolean;
     canComment?: boolean;
     canAssign?: boolean;
     canReadCleanupReport?: boolean;
@@ -41,6 +45,7 @@ function renderAt(
     canReadAliens = true,
     canLinkAlien = true,
     canClassifyAlien = false,
+    canCalculateThreat = false,
     canComment = true,
     canAssign = false,
     canReadCleanupReport = false,
@@ -61,6 +66,7 @@ function renderAt(
               canReadAliens={canReadAliens}
               canLinkAlien={canLinkAlien}
               canClassifyAlien={canClassifyAlien}
+              canCalculateThreat={canCalculateThreat}
               canComment={canComment}
               canAssign={canAssign}
               canReadCleanupReport={canReadCleanupReport}
@@ -536,4 +542,127 @@ it.each([
   renderAt('/incidents/1', { canClassifyAlien: permission });
   await screen.findByRole('heading', { name: 'Инцидент #1' });
   expect(screen.queryByRole('button', { name: 'Распознать вид' })).not.toBeInTheDocument();
+});
+
+describe('incident threat assessment', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    listIncidentComments.mockResolvedValue({ items: [], page: 0, size: 50, totalElements: 0, totalPages: 0 });
+    listIncidentHistory.mockResolvedValue({ items: [], page: 0, size: 50, totalElements: 0, totalPages: 0 });
+    batchUsers.mockResolvedValue({ items: [] });
+  });
+
+  it.each([[null, 'Неизвестно'], [0, '0'], [2, '2']] as const)(
+    'displays victim count %s without an edit action', async (victimCount, expected) => {
+      getIncident.mockResolvedValue(mockIncident({ victimCount, threatLevel: 6 }));
+      renderAt('/incidents/1');
+      const label = await screen.findByText('Количество пострадавших');
+      expect(within(label.closest('.data-list__row') as HTMLElement).getByText(expected)).toBeInTheDocument();
+      const threat = screen.getByText('Уровень угрозы').closest('.data-list__row') as HTMLElement;
+      expect(within(threat).getByText('6')).toBeInTheDocument();
+      expect(within(threat).queryByRole('button')).not.toBeInTheDocument();
+    });
+
+  it('refreshes the saved value and history only after accepting the proposal', async () => {
+    const incident = mockIncident({ id: 8, status: 'READY_FOR_ANALYSIS', eventType: 'ATTACK_ON_PEOPLE',
+      victimCount: 2, threatLevel: 3, alienId: 6 });
+    getIncident.mockResolvedValue(incident);
+    getAlien.mockResolvedValue(mockAlien({ id: 6, threatLevel: 4 }));
+    (api.calculateIncidentThreat as jest.Mock).mockResolvedValue({ calculatedThreatLevel: 7, contributions: [
+      { criterion: 'ALIEN_THREAT', adjustment: 4 }, { criterion: 'EVENT_TYPE', adjustment: 2 },
+      { criterion: 'VICTIMS', adjustment: 1 },
+    ] });
+    (api.setIncidentThreatLevel as jest.Mock).mockResolvedValue({ ...incident, threatLevel: 8 });
+    renderAt('/incidents/8', { canCalculateThreat: true });
+    await screen.findByRole('button', { name: 'Рассчитать угрозу' });
+    await userEvent.click(screen.getByRole('tab', { name: 'История' }));
+    await waitFor(() => expect(listIncidentHistory).toHaveBeenCalledTimes(1));
+    await userEvent.click(screen.getByRole('button', { name: 'Рассчитать угрозу' }));
+    await screen.findByLabelText('Уровень угрозы');
+    await userEvent.click(screen.getByRole('button', { name: 'Увеличить угрозу' }));
+    expect(api.setIncidentThreatLevel).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Принять' }));
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Принять' })).not.toBeInTheDocument());
+    const threat = screen.getByText('Уровень угрозы').closest('.data-list__row') as HTMLElement;
+    expect(within(threat).getByText('8')).toBeInTheDocument();
+    expect(api.setIncidentThreatLevel).toHaveBeenCalledWith('tok', 8, 8);
+    await waitFor(() => expect(listIncidentHistory).toHaveBeenCalledTimes(2));
+  });
+
+  it('does not offer calculation for a completed incident', async () => {
+    getIncident.mockResolvedValue(mockIncident({ status: 'EXECUTION_COMPLETED', threatLevel: 6 }));
+    renderAt('/incidents/1', { canCalculateThreat: true });
+    await screen.findByRole('heading', { name: 'Инцидент #1' });
+    expect(screen.queryByRole('button', { name: 'Рассчитать угрозу' })).not.toBeInTheDocument();
+  });
+});
+
+describe('threat history refresh', () => {
+  const snapshot = { status: 'READY_FOR_ANALYSIS' as const, eventType: 'CONTACT_SUSPECT' as const,
+    location: 'Полигон', detectedAt: '2025-06-01T12:00:00Z', description: 'До расчёта',
+    attachmentFileIds: [], executorUserIds: [], victimCount: 0, threatLevel: 3 };
+  const record = (id: number, description = snapshot.description, threatLevel = 3) => ({
+    id, changedByUserId: 1, changedAt: `2025-06-01T12:00:${String(id % 60).padStart(2, '0')}Z`,
+    snapshot: { ...snapshot, description, threatLevel },
+  });
+  const page = (items: ReturnType<typeof record>[], totalPages = 1, index = 0) => ({
+    items, page: index, size: 50, totalElements: totalPages === 2 ? 51 : items.length, totalPages,
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    getIncident.mockResolvedValue(mockIncident({ ...snapshot, id: 8 }));
+    listIncidentComments.mockResolvedValue({ items: [], page: 0, size: 50, totalElements: 0, totalPages: 0 });
+    batchUsers.mockResolvedValue({ items: [] });
+    (api.calculateIncidentThreat as jest.Mock).mockResolvedValue({ calculatedThreatLevel: 7, contributions: [] });
+    (api.setIncidentThreatLevel as jest.Mock).mockResolvedValue(mockIncident({ ...snapshot, id: 8, threatLevel: 7 }));
+  });
+
+  async function calculateAndAccept() {
+    await userEvent.click(screen.getByRole('button', { name: 'Рассчитать угрозу' }));
+    await screen.findByLabelText('Уровень угрозы');
+    await userEvent.click(screen.getByRole('button', { name: 'Принять' }));
+  }
+
+  it('does not let a delayed history request replace the post-accept history', async () => {
+    let release!: (value: ReturnType<typeof page>) => void;
+    const fresh = page([record(1), record(2, 'Свежая история после оценки', 7)]);
+    listIncidentHistory.mockReturnValueOnce(new Promise((resolve) => { release = resolve; }))
+      .mockResolvedValue(fresh);
+    renderAt('/incidents/8', { canCalculateThreat: true });
+    await screen.findByRole('button', { name: 'Рассчитать угрозу' });
+    await userEvent.click(screen.getByRole('tab', { name: 'История' }));
+    await waitFor(() => expect(listIncidentHistory).toHaveBeenCalledTimes(1));
+    await calculateAndAccept();
+    await screen.findByText('Свежая история после оценки', { exact: false });
+    await act(async () => { release(page([record(1)])); });
+    expect(screen.getByText('Свежая история после оценки', { exact: false })).toBeInTheDocument();
+  });
+
+  it('loads the accepted entry beyond the first history page', async () => {
+    const first = Array.from({ length: 50 }, (_,index) => record(index + 1));
+    listIncidentHistory.mockResolvedValueOnce(page(first))
+      .mockResolvedValueOnce(page(first, 2))
+      .mockResolvedValueOnce(page([record(51, 'Оценка на второй странице', 7)], 2, 1));
+    renderAt('/incidents/8', { canCalculateThreat: true });
+    await screen.findByRole('button', { name: 'Рассчитать угрозу' });
+    await userEvent.click(screen.getByRole('tab', { name: 'История' }));
+    await waitFor(() => expect(listIncidentHistory).toHaveBeenCalledTimes(1));
+    await calculateAndAccept();
+    await screen.findByText('Оценка на второй странице', { exact: false });
+    expect(listIncidentHistory).toHaveBeenLastCalledWith('tok', 8, 1, 50);
+  });
+
+  it('refreshes the card and removes calculation actions after a completion conflict', async () => {
+    listIncidentHistory.mockResolvedValue(page([]));
+    (api.setIncidentThreatLevel as jest.Mock).mockRejectedValueOnce(new api.ApiError(409, { humanMessage: 'Инцидент завершён' }));
+    getIncident.mockResolvedValueOnce(mockIncident({ ...snapshot, id: 8 }))
+      .mockResolvedValueOnce(mockIncident({ ...snapshot, id: 8, status: 'EXECUTION_COMPLETED', threatLevel: 6 }));
+    renderAt('/incidents/8', { canCalculateThreat: true });
+    await screen.findByRole('button', { name: 'Рассчитать угрозу' });
+    await calculateAndAccept();
+    const threat = screen.getByText('Уровень угрозы').closest('.data-list__row') as HTMLElement;
+    await within(threat).findByText('6');
+    expect(screen.queryByRole('button', { name: 'Рассчитать угрозу' })).not.toBeInTheDocument();
+  });
 });

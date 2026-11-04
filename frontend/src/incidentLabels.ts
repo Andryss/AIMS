@@ -7,6 +7,10 @@ export const EVENT_TYPE_LABELS: Record<IncidentEventType, string> = {
   MEMORY_ANOMALY: 'Аномалия памяти',
   ALIEN_ARTIFACT: 'Инопланетный артефакт',
   ALIEN_CAPTURE: 'Захват инопланетянина',
+  ATTACK_ON_PEOPLE: 'Нападение на людей',
+  PROPERTY_DAMAGE: 'Повреждение имущества',
+  BIOLOGICAL_CONTAMINATION: 'Биологическое заражение',
+  CRITICAL_INFRASTRUCTURE_DISRUPTION: 'Нарушение работы критической инфраструктуры',
 };
 
 export const STATUS_LABELS: Record<IncidentStatus, string> = {

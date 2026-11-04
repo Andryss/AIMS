@@ -24,6 +24,28 @@ import { clearFileCache } from '../utils/fileCache';
 
 beforeEach(clearFileCache);
 
+describe('incident threat API', () => {
+  beforeEach(() => mockFetch.mockReset());
+
+  it('calculates by incident id without a request body', async () => {
+    const result = { calculatedThreatLevel: 7, contributions: [{ criterion: 'ALIEN_THREAT', adjustment: 4 }] };
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, result));
+    expect(await api.calculateIncidentThreat('tok', 8)).toEqual(result);
+    expect(mockFetch.mock.calls[0][0]).toBe('/api/v1/incidents/8/threat-calculation');
+    expect(mockFetch.mock.calls[0][1].method).toBe('POST');
+    expect(mockFetch.mock.calls[0][1].body).toBeUndefined();
+    expect(new Headers(mockFetch.mock.calls[0][1].headers).get('Authorization')).toBe('Bearer tok');
+  });
+
+  it('saves only the selected threat level', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(true, { id: 8, threatLevel: 6 }));
+    expect(await api.setIncidentThreatLevel('tok', 8, 6)).toEqual({ id: 8, threatLevel: 6 });
+    expect(mockFetch.mock.calls[0][0]).toBe('/api/v1/incidents/8/threat-level');
+    expect(mockFetch.mock.calls[0][1].method).toBe('PUT');
+    expect(JSON.parse(mockFetch.mock.calls[0][1].body)).toEqual({ threatLevel: 6 });
+  });
+});
+
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
