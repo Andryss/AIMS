@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import * as api from '../api/client';
 import { AttachmentDownloadList } from './AttachmentDownloadList';
 import userEvent from '@testing-library/user-event';
@@ -21,7 +21,7 @@ it.each(['button', 'Escape'])('opens the cached original and closes the viewer w
   await screen.findByAltText('photo.jpg');
   await userEvent.click(screen.getByRole('button', { name: 'Увеличить photo.jpg' }));
   const viewer = screen.getByRole('dialog', { name: 'Просмотр photo.jpg' });
-  expect(viewer.querySelector('img')).toHaveAttribute('src', 'blob:original');
+  expect(within(viewer).getByRole('img', { name: 'photo.jpg' })).toHaveAttribute('src', 'blob:original');
   expect(mockApi.getFilePreviewUrl).toHaveBeenCalledTimes(1);
   if (closeWith === 'Escape') { fireEvent.keyDown(viewer, { key: 'Escape' }); }
   else { await userEvent.click(screen.getByRole('button', { name: 'Закрыть изображение' })); }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import * as api from '../api/client';
@@ -70,7 +70,7 @@ it('supports focus, moving into the card and explicit close on touch', async () 
   fireEvent.click(screen.getByRole('button', { name: 'Закрыть сведения о виде' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   fireEvent.click(trigger);
-  await waitFor(() => expect(screen.getByRole('dialog', { name: 'Вид: Ашта' })).toBeInTheDocument());
+  expect(await screen.findByRole('dialog', { name: 'Вид: Ашта' })).toBeInTheDocument();
   await screen.findByAltText('ashta.png');
 });
 

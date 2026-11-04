@@ -40,10 +40,14 @@ it('debounces search, ignores unsupported status and stale results', async () =>
   expect(screen.queryByRole('link', { name: 'Заявка #7' })).not.toBeInTheDocument();
   await waitFor(() => expect(api.listDetentionRequests).toHaveBeenLastCalledWith('tok', expect.objectContaining({ q: 'новое', page: 0, status: undefined })));
 });
-it.each([false, true])('shows empty state or loading error, failed=%s', async (failed) => {
-  if (failed) { (api.listDetentionRequests as jest.Mock).mockRejectedValue(new Error('Нет соединения')); }
-  else { (api.listDetentionRequests as jest.Mock).mockResolvedValue({ ...page, items: [] }); }
+it('shows the empty state without a table', async () => {
+  (api.listDetentionRequests as jest.Mock).mockResolvedValue({ ...page, items: [] });
   open();
-  if (failed) { expect(await screen.findByRole('alert')).toHaveTextContent('Нет соединения'); }
-  else { await screen.findByText('Заявки не найдены'); expect(screen.queryByRole('table')).not.toBeInTheDocument(); }
+  await screen.findByText('Заявки не найдены');
+  expect(screen.queryByRole('table')).not.toBeInTheDocument();
+});
+it('shows the loading error', async () => {
+  (api.listDetentionRequests as jest.Mock).mockRejectedValue(new Error('Нет соединения'));
+  open();
+  expect(await screen.findByRole('alert')).toHaveTextContent('Нет соединения');
 });

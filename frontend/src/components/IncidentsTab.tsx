@@ -1,6 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { Card, CardHeader } from './ui/Card';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as api from '../api/client';
+import { usePaginatedResource } from '../hooks/usePaginatedResource';
+import { formatDateTime } from '../utils/dateTime';
 import { EVENT_TYPE_LABELS } from '../incidentLabels';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { IncidentResponse } from '../types';
@@ -9,6 +12,7 @@ import { IncidentStatusSelect } from './IncidentStatusSelect';
 import { Button } from './ui/Button';
 import { EmptyState } from './ui/EmptyState';
 import { LoadingBlock } from './ui/LoadingBlock';
+import { Pagination } from './ui/Pagination';
 
 const PAGE_SIZE = 10;
 
@@ -22,64 +26,40 @@ interface IncidentsTabProps {
 export function IncidentsTab({ token, roles, canCreate, canChangeStatus }: IncidentsTabProps) {
   const navigate = useNavigate();
   const isMobile = useMediaQuery('(max-width: 640px)');
-  const [page, setPage] = useState(0);
-  const [items, setItems] = useState<IncidentResponse[]>([]);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalElements, setTotalElements] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [paging, setPaging] = useState({ token, page: 0 });
+  const page = paging.token === token ? paging.page : 0;
+  const setPage = (nextPage: number) => setPaging({ token, page: nextPage });
+  useEffect(() => setPaging({ token, page: 0 }), [token]);
+  const { result, loading, error, reload, setResult } = usePaginatedResource({
+    scopeKey: token, page,
+    load: (requestedPage) => api.listIncidents(token, requestedPage, PAGE_SIZE),
+    errorMessage: 'Не удалось загрузить инциденты', onPageCorrection: setPage,
+  });
+  const items = result?.items ?? [];
+  const totalPages = result?.totalPages ?? 0;
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
-  const loadPage = useCallback(
-    async (pageNumber: number) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await api.listIncidents(token, pageNumber, PAGE_SIZE);
-        setItems(response.items);
-        setPage(response.page);
-        setTotalPages(response.totalPages);
-        setTotalElements(response.totalElements);
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Не удалось загрузить инциденты';
-        setError(message);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [token],
-  );
-
-  useEffect(() => {
-    loadPage(0);
-  }, [loadPage]);
-
   const handleCreated = () => {
-    loadPage(0);
+    setPage(0);
+    reload();
   };
 
   const handleStatusChanged = (updated: IncidentResponse) => {
-    setItems((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
-  };
-
-  const formatDate = (iso: string) => {
-    try {
-      return new Date(iso).toLocaleString('ru-RU');
-    } catch {
-      return iso;
-    }
+    setResult((previous) => previous && { ...previous,
+      items: previous.items.map((item) => item.id === updated.id ? updated : item),
+    });
   };
 
   return (
-    <section className="card" aria-busy={loading}>
-      <div className="card__header">
+    <Card  aria-busy={loading}>
+      <CardHeader>
         <h2>Инциденты</h2>
         {canCreate && (
           <Button type="button" variant="primary" onClick={() => setCreateModalOpen(true)}>
             Создать инцидент
           </Button>
         )}
-      </div>
+      </CardHeader>
 
       {error && (
         <div className="alert alert--error" role="alert" aria-live="polite">
@@ -98,8 +78,8 @@ export function IncidentsTab({ token, roles, canCreate, canChangeStatus }: Incid
       {!loading && items.length > 0 && (
         <>
           {!isMobile && (
-            <div className="incidents-table-wrapper">
-              <table className="incidents-table">
+            <div className="data-table-wrapper">
+              <table className="data-table">
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -113,7 +93,7 @@ export function IncidentsTab({ token, roles, canCreate, canChangeStatus }: Incid
                   {items.map((incident) => (
                     <tr
                       key={incident.id}
-                      className="incidents-table__row"
+                      className="data-table__row"
                       onClick={() => navigate(`/incidents/${incident.id}`)}
                     >
                       <td>#{incident.id}</td>
@@ -128,7 +108,7 @@ export function IncidentsTab({ token, roles, canCreate, canChangeStatus }: Incid
                       </td>
                       <td>{EVENT_TYPE_LABELS[incident.eventType] ?? incident.eventType}</td>
                       <td>{incident.location}</td>
-                      <td>{formatDate(incident.detectedAt)}</td>
+                      <td>{formatDateTime(incident.detectedAt)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -157,7 +137,7 @@ export function IncidentsTab({ token, roles, canCreate, canChangeStatus }: Incid
                   </div>
                   <p className="incidents-card__meta">
                     {EVENT_TYPE_LABELS[incident.eventType] ?? incident.eventType} ·{' '}
-                    {formatDate(incident.detectedAt)}
+                    {formatDateTime(incident.detectedAt)}
                   </p>
                   <p className="incidents-card__location">{incident.location}</p>
                 </button>
@@ -167,29 +147,8 @@ export function IncidentsTab({ token, roles, canCreate, canChangeStatus }: Incid
         </>
       )}
 
-      {totalPages > 0 && (
-        <div className="pagination">
-          <button
-            type="button"
-            className="btn btn--secondary"
-            disabled={page <= 0 || loading}
-            onClick={() => loadPage(page - 1)}
-          >
-            ← Предыдущая
-          </button>
-          <span className="pagination__info">
-            Страница {page + 1} из {totalPages} ({totalElements} всего)
-          </span>
-          <button
-            type="button"
-            className="btn btn--secondary"
-            disabled={page >= totalPages - 1 || loading}
-            onClick={() => loadPage(page + 1)}
-          >
-            Следующая →
-          </button>
-        </div>
-      )}
+      {totalPages > 0 && result && <Pagination page={result.page} totalPages={totalPages}
+        totalElements={result.totalElements} loading={loading} onChange={setPage} />}
 
       <IncidentEditorModal
         token={token}
@@ -197,6 +156,6 @@ export function IncidentsTab({ token, roles, canCreate, canChangeStatus }: Incid
         onClose={() => setCreateModalOpen(false)}
         onSaved={handleCreated}
       />
-    </section>
+    </Card>
   );
 }

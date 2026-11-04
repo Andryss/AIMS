@@ -1,3 +1,4 @@
+import { CardHeader } from './ui/Card';
 import React, { useEffect, useState } from 'react';
 import * as api from '../api/client';
 import { EQUIPMENT_PAGE_SIZE } from '../equipmentLabels';
@@ -47,11 +48,11 @@ export function IncidentEquipmentSection({ token, incidentId, incidentStatus, ca
 
   return (
     <section className="section" aria-label="Оборудование инцидента" aria-busy={loading}>
-      {canCreate && incidentStatus !== 'EXECUTION_COMPLETED' && <div className="card__header">
+      {canCreate && incidentStatus !== 'EXECUTION_COMPLETED' && <CardHeader>
         <Button onClick={() => setOpen(true)}>
           Заявка на выдачу
         </Button>
-      </div>}
+      </CardHeader>}
       {loading && <LoadingBlock label="Загрузка оборудования инцидента…" inline />}
       {error && <div className="alert alert--error" role="alert">{error}</div>}
       {!loading && !error && result && <>

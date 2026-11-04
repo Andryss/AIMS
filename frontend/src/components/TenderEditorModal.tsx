@@ -1,10 +1,12 @@
-import React, { FormEvent, useEffect, useId, useRef, useState } from 'react';
+import { positiveId } from '../utils/params';
+import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import * as api from '../api/client';
-import { EQUIPMENT_TYPE_LABELS, positiveId } from '../equipmentLabels';
-import { useFocusTrap } from '../hooks/useFocusTrap';
+import { EQUIPMENT_TYPE_LABELS } from '../equipmentLabels';
+import { useMutation } from '../hooks/useMutation';
 import { EquipmentType, TenderResponse } from '../types';
 import { Button } from './ui/Button';
 import { FormField } from './ui/FormField';
+import { Modal } from './ui/Modal';
 
 interface TenderEditorModalProps {
   token: string; open: boolean; tender: TenderResponse | null; hasOffers?: boolean; incidentId?: number;
@@ -12,10 +14,6 @@ interface TenderEditorModalProps {
 }
 
 export function TenderEditorModal({ token, open, tender, hasOffers, incidentId, onClose, onSaved }: TenderEditorModalProps) {
-  const titleId = useId();
-  const trapRef = useFocusTrap(open);
-  const scope = useRef(0);
-  const busy = useRef(false);
   const initialTender = useRef(tender);
   initialTender.current = tender;
   const tenderId = tender?.id;
@@ -23,13 +21,10 @@ export function TenderEditorModal({ token, open, tender, hasOffers, incidentId, 
   const [quantity, setQuantity] = useState('1');
   const [conditions, setConditions] = useState('');
   const [incident, setIncident] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const mutation = useMutation(JSON.stringify([token, open, tender?.id, incidentId]));
+  const { busy: saving, error, setError } = mutation;
 
   useEffect(() => {
-    scope.current += 1;
-    busy.current = false;
-    setSaving(false);
     if (open) {
       const value = initialTender.current;
       setType(value?.equipmentType ?? '');
@@ -38,52 +33,39 @@ export function TenderEditorModal({ token, open, tender, hasOffers, incidentId, 
       setIncident(String(value?.incidentId ?? incidentId ?? ''));
       setError(null);
     }
-    return () => { scope.current += 1; };
-  }, [open, token, tenderId, incidentId]);
-
-  useEffect(() => {
-    if (!open) { return; }
-    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape' && !busy.current) { onClose(); } };
-    document.addEventListener('keydown', escape);
-    return () => document.removeEventListener('keydown', escape);
-  }, [open, onClose]);
+  }, [open, token, tenderId, incidentId, setError]);
 
   if (!open) { return null; }
-  const close = () => { if (!busy.current) { onClose(); } };
+  const close = () => { if (!mutation.isBusy()) { onClose(); } };
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    if (busy.current) { return; }
+    if (mutation.isBusy()) { return; }
     const count = Number(quantity);
     const origin = tender ? tender.incidentId : positiveId(incident);
     if (!type || !Number.isInteger(count) || count < 1 || count > 2147483647 || (!tender && incident && !origin)) {
       setError('Укажите тип, целое положительное количество и корректный номер инцидента');
       return;
     }
-    const version = scope.current;
-    busy.current = true;
-    setSaving(true);
-    setError(null);
+    const session = mutation.start();
+    if (!session) { return; }
     const payload = { equipmentType: type, quantity: count, conditions: conditions.trim(),
       ...(origin != null ? { incidentId: origin } : {}) };
     try {
       const saved = tender ? await api.updateTender(token, tender.id, payload) : await api.createTender(token, payload);
-      if (scope.current !== version) { return; }
+      if (!session.isCurrent()) { return; }
       onClose();
       onSaved(saved);
     } catch (err: unknown) {
-      if (scope.current === version) { setError(err instanceof Error ? err.message : 'Не удалось сохранить тендер'); }
+      session.fail(err, 'Не удалось сохранить тендер');
     } finally {
-      if (scope.current === version) { busy.current = false; setSaving(false); }
+      session.finish();
     }
   };
 
-  return <div className="modal-overlay" role="presentation" onClick={close}>
-    <div className="modal" ref={trapRef} role="dialog" aria-modal="true" aria-labelledby={titleId}
-      onClick={(event) => event.stopPropagation()}>
-      <div className="modal__header"><h2 id={titleId}>{tender ? 'Редактировать тендер' : 'Создать тендер'}</h2>
-        <Button variant="ghost" aria-label="Закрыть" disabled={saving} onClick={close}>×</Button></div>
+  return (
+    <Modal open={open} title={tender ? 'Редактировать тендер' : 'Создать тендер'} onClose={close} busy={saving}>
       {error && <div className="alert alert--error" role="alert">{error}</div>}
-      <form className="form" onSubmit={submit}>
+      <form className="form" aria-label={tender ? 'Редактировать тендер' : 'Создать тендер'} onSubmit={submit}>
         <FormField label="Тип оборудования" required>
           <select required value={type} disabled={saving || Boolean(tender && hasOffers)}
             onChange={(event) => setType(event.target.value as EquipmentType | '')}>
@@ -105,6 +87,6 @@ export function TenderEditorModal({ token, open, tender, hasOffers, incidentId, 
         <div className="modal-actions"><Button variant="secondary" onClick={close} disabled={saving}>Отмена</Button>
           <Button type="submit" loading={saving}>Сохранить</Button></div>
       </form>
-    </div>
-  </div>;
+    </Modal>
+  );
 }

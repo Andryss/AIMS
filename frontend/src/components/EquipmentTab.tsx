@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { formatUserLabel } from '../utils/users';
+import { Card, CardHeader } from './ui/Card';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import * as api from '../api/client';
-import { EQUIPMENT_PAGE_SIZE, EQUIPMENT_STATUS_LABELS, EQUIPMENT_TYPE_LABELS, positiveId } from '../equipmentLabels';
+import { parseEnumValue, positiveId } from '../utils/params';
+import { useListSearchParams } from '../hooks/useListSearchParams';
+import { usePaginatedResource } from '../hooks/usePaginatedResource';
+import { useDebouncedQuery } from '../hooks/useDebouncedSearch';
+import { EQUIPMENT_PAGE_SIZE, EQUIPMENT_STATUS_LABELS, EQUIPMENT_TYPE_LABELS } from '../equipmentLabels';
 import { useUsersMap } from '../hooks/useUsersMap';
-import { EquipmentListResponse, EquipmentStatus, EquipmentType } from '../types';
-import { formatUserLabel } from '../utils/incidentUsers';
+
 import { EmployeeSearch } from './EmployeeSearch';
 import { EquipmentEditorModal } from './EquipmentEditorModal';
 import { Button } from './ui/Button';
@@ -19,84 +24,31 @@ interface EquipmentTabProps { token: string; canWrite: boolean; canCreateTenders
 
 export function EquipmentTab({ token, canWrite, canCreateTenders = false }: EquipmentTabProps) {
   const navigate = useNavigate();
-  const [params, setParams] = useSearchParams();
+  const { params, page, setFilter: changeFilter, setPage } = useListSearchParams();
   const q = params.get('q') ?? '';
-  const requestedPage = Number(params.get('page') ?? 0);
-  const page = Number.isSafeInteger(requestedPage) && requestedPage >= 0 ? requestedPage : 0;
-  const rawType = params.get('type') ?? '';
-  const rawStatus = params.get('status') ?? '';
-  const type = Object.keys(EQUIPMENT_TYPE_LABELS).includes(rawType) ? rawType as EquipmentType : undefined;
-  const status = Object.keys(EQUIPMENT_STATUS_LABELS).includes(rawStatus) ? rawStatus as EquipmentStatus : undefined;
+  const type = parseEnumValue(EQUIPMENT_TYPE_LABELS, params.get('type'));
+  const status = parseEnumValue(EQUIPMENT_STATUS_LABELS, params.get('status'));
   const holderUserId = positiveId(params.get('holderUserId'));
-  const [input, setInput] = useState(q);
-  const [result, setResult] = useState<EquipmentListResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
-  const [revision, setRevision] = useState(0);
+  const { result, loading, error, reload } = usePaginatedResource({
+    scopeKey: JSON.stringify([token, q, type, status, holderUserId]), page,
+    load: (requestedPage) => api.listEquipment(token, { q, type, status, holderUserId, page: requestedPage, size: EQUIPMENT_PAGE_SIZE }),
+    errorMessage: 'Не удалось загрузить склад', onPageCorrection: (nextPage) => setPage(nextPage, { replace: true }),
+  });
+  const { input, setInput } = useDebouncedQuery(q, (query) => changeFilter('q', query));
   const users = useUsersMap(token, [holderUserId, ...(result?.items.map((item) => item.holderUserId) ?? [])]);
 
-  const changeFilter = (key: string, value: string) => {
-    setParams((previous) => {
-      const next = new URLSearchParams(previous);
-      if (value) { next.set(key, value); } else { next.delete(key); }
-      next.delete('page');
-      return next;
-    });
-  };
-
-  useEffect(() => setInput(q), [q]);
-
-  useEffect(() => {
-    if (input.trim() === q) { return; }
-    const timer = window.setTimeout(() => {
-      setParams((previous) => {
-        const next = new URLSearchParams(previous);
-        if (input.trim()) { next.set('q', input.trim()); } else { next.delete('q'); }
-        next.delete('page');
-        return next;
-      });
-    }, 300);
-    return () => window.clearTimeout(timer);
-  }, [input, q, setParams]);
-
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-
-    api.listEquipment(token, { q, type, status, holderUserId, page, size: EQUIPMENT_PAGE_SIZE })
-      .then((response) => {
-        if (cancelled) { return; }
-        if (page >= Math.max(response.totalPages, 1) && page > 0) {
-          setParams((previous) => {
-            const next = new URLSearchParams(previous);
-            next.set('page', String(Math.max(response.totalPages - 1, 0)));
-            return next;
-          }, { replace: true });
-        } else {
-          setResult(response);
-        }
-      })
-      .catch((err: unknown) => {
-        if (!cancelled) { setError(err instanceof Error ? err.message : 'Не удалось загрузить склад'); }
-      })
-      .finally(() => { if (!cancelled) { setLoading(false); } });
-
-    return () => { cancelled = true; };
-  }, [token, q, type, status, holderUserId, page, revision, setParams]);
-
   return (
-    <section className="card" aria-busy={loading}>
-      <div className="card__header">
+    <Card  aria-busy={loading}>
+      <CardHeader>
         <h2>Склад</h2>
-        <div className="tender-actions">
+        <div className="page-actions">
           {canCreateTenders && <Button variant="outline" to="/tenders?create=1">Создать тендер</Button>}
           {canWrite && <Button onClick={() => setEditorOpen(true)}>Добавить оборудование</Button>}
         </div>
-      </div>
-      <div className="equipment-filters">
-        <div className="field equipment-search-field">
+      </CardHeader>
+      <div className="filter-bar">
+        <div className="field filter-search-field">
           <input type="search" className="field__control" aria-label="Поиск оборудования" value={input}
             placeholder="Модель или серийный номер" onChange={(event) => setInput(event.target.value)} />
         </div>
@@ -120,14 +72,14 @@ export function EquipmentTab({ token, canWrite, canCreateTenders = false }: Equi
       {loading && <LoadingBlock label="Загрузка склада…" skeleton rows={4} />}
       {!loading && !error && result?.items.length === 0 && <EmptyState title="Оборудование не найдено" />}
       {!loading && !error && result != null && result.items.length > 0 && (
-        <div className="incidents-table-wrapper">
-          <table className="incidents-table">
+        <div className="data-table-wrapper">
+          <table className="data-table">
             <thead><tr><th>Тип</th><th>Модель</th><th>Серийный номер</th><th>Состояние</th><th>Держатель</th></tr></thead>
             <tbody>{result.items.map((item) => {
               const path = `/equipment/${item.id}?${params.toString()}`;
-              return <tr key={item.id} className="incidents-table__row" onClick={() => navigate(path)}>
+              return <tr key={item.id} className="data-table__row" onClick={() => navigate(path)}>
                 <td>{EQUIPMENT_TYPE_LABELS[item.type]}</td>
-                <td><Link to={path} className="knowledge-base__name"
+                <td><Link to={path} className="entity-link"
                   onClick={(event) => event.stopPropagation()}>{item.model}</Link></td>
                 <td>{item.serialNumber}</td>
                 <td><StatusChip status={item.status.toLowerCase()} label={EQUIPMENT_STATUS_LABELS[item.status]} /></td>
@@ -139,13 +91,9 @@ export function EquipmentTab({ token, canWrite, canCreateTenders = false }: Equi
         </div>
       )}
       {!error && result && <Pagination page={page} totalPages={result.totalPages} totalElements={result.totalElements}
-        loading={loading} onChange={(nextPage) => setParams((previous) => {
-          const next = new URLSearchParams(previous);
-          next.set('page', String(nextPage));
-          return next;
-        })} />}
+        loading={loading} onChange={setPage} />}
       <EquipmentEditorModal token={token} open={editorOpen && canWrite} equipment={null}
-        onClose={() => setEditorOpen(false)} onSaved={() => setRevision((value) => value + 1)} />
-    </section>
+        onClose={() => setEditorOpen(false)} onSaved={reload} />
+    </Card>
   );
 }

@@ -22,9 +22,9 @@ describe('MonitoringAlertMediaLinks', () => {
   });
 
   it('applies compact layout class', () => {
-    const { container } = render(
+    render(
       <MonitoringAlertMediaLinks urls={['https://example.com/a.png']} compact />,
     );
-    expect(container.querySelector('.monitoring-alert-media--compact')).toBeInTheDocument();
+    expect(screen.getByTestId('monitoring-alert-media')).toHaveClass('monitoring-alert-media--compact');
   });
 });

@@ -20,11 +20,8 @@ it.each([
 ] as const)('allows actions for status=%s process=%s user=%s', (status, canProcess, currentUserId, labels) => {
   render(<EquipmentMovementStatusSelect token="tok" movement={mockEquipmentMovement({ status })}
     canCreate canProcess={canProcess} currentUserId={currentUserId} onChanged={jest.fn()} />);
-  if (labels.length === 0) {
-    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
-  } else {
-    expect(screen.getAllByRole('option').slice(1).map((option) => option.textContent)).toEqual(labels);
-  }
+  expect(screen.queryAllByRole('combobox')).toHaveLength(labels.length > 0 ? 1 : 0);
+  expect(screen.queryAllByRole('option').slice(1).map((option) => option.textContent)).toEqual(labels);
 });
 
 it.each(['CANCELLED', 'REJECTED'] as EquipmentMovementStatus[])('requires a reason for %s', async (target) => {
@@ -33,8 +30,10 @@ it.each(['CANCELLED', 'REJECTED'] as EquipmentMovementStatus[])('requires a reas
   render(<EquipmentMovementStatusSelect token="tok" movement={mockEquipmentMovement()}
     canCreate canProcess currentUserId={1} onChanged={onChanged} />);
   fireEvent.change(screen.getByRole('combobox'), { target: { value: target } });
-  fireEvent.submit(screen.getByRole('button', { name: 'Подтвердить' }).closest('form')!);
+  fireEvent.change(screen.getByLabelText(/Причина/), { target: { value: '   ' } });
+  await userEvent.click(screen.getByRole('button', { name: 'Подтвердить' }));
   expect(api.changeEquipmentMovementStatus).not.toHaveBeenCalled();
+  expect(screen.getByRole('alert')).toHaveTextContent('Укажите причину');
   fireEvent.change(screen.getByLabelText(/Причина/), { target: { value: '  Не требуется  ' } });
   await userEvent.click(screen.getByRole('button', { name: 'Подтвердить' }));
   await waitFor(() => expect(api.changeEquipmentMovementStatus).toHaveBeenCalledWith('tok', 7,

@@ -15,7 +15,7 @@ export function AnalyticsGroups({ groups, labels = {}, canReadAliens = false }: 
     const alienId = /^\d+$/.test(group.key) ? Number(group.key) : null;
     return <li key={group.key}>
       <div className="analytics-groups__label">{canReadAliens && alienId
-        ? <Link to={`/aliens/${alienId}`} className="knowledge-base__name">{label}</Link> : label}
+        ? <Link to={`/aliens/${alienId}`} className="entity-link">{label}</Link> : label}
         <strong>{formatAnalyticsNumber(group.count)}</strong></div>
       <div className="analytics-groups__track" aria-hidden="true"><span style={{ width: `${group.count / max * 100}%` }} /></div>
     </li>;

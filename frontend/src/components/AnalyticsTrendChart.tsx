@@ -1,6 +1,7 @@
+import { formatDateTime } from '../utils/dateTime';
 import React, { useEffect, useId, useState } from 'react';
 import { AnalyticsBucketUnit, AnalyticsTrendBucket } from '../types';
-import { formatAnalyticsDate, formatAnalyticsNumber } from '../utils/analyticsFormatting';
+import { formatAnalyticsNumber } from '../utils/analyticsFormatting';
 
 export interface AnalyticsSeries { key: string; label: string; }
 
@@ -70,16 +71,16 @@ export function AnalyticsTrendChart({ buckets, series, label, bucketUnit }: {
     </svg>
     {active && <div id={tooltipId} role="tooltip" aria-live="polite"
       className={`analytics-chart__tooltip${activeIndex != null && activeIndex >= (buckets.length - 1) / 2 ? ' analytics-chart__tooltip--left' : ''}`}>
-      <div className="analytics-chart__interval"><span>От</span><time dateTime={active.from}>{formatAnalyticsDate(active.from)}</time></div>
-      <div className="analytics-chart__interval"><span>До</span><time dateTime={active.to}>{formatAnalyticsDate(active.to)}</time></div>
+      <div className="analytics-chart__interval"><span>От</span><time dateTime={active.from}>{formatDateTime(active.from)}</time></div>
+      <div className="analytics-chart__interval"><span>До</span><time dateTime={active.to}>{formatDateTime(active.to)}</time></div>
       <dl>{series.map((item, index) => <div key={item.key} className={`analytics-series--${index + 1}`}>
         <dt><span aria-hidden="true" />{item.label}</dt><dd>{formatAnalyticsNumber(active.values[item.key] ?? 0)}</dd>
       </div>)}</dl>
     </div>}
-    <details><summary>Значения графика</summary><div className="incidents-table-wrapper"><table className="incidents-table">
+    <details><summary>Значения графика</summary><div className="data-table-wrapper"><table className="data-table">
       <caption className="visually-hidden">{label}</caption>
       <thead><tr><th>От</th><th>До</th>{series.map((item) => <th key={item.key}>{item.label}</th>)}</tr></thead>
-      <tbody>{buckets.map((bucket) => <tr key={bucket.from}><td>{formatAnalyticsDate(bucket.from)}</td><td>{formatAnalyticsDate(bucket.to)}</td>
+      <tbody>{buckets.map((bucket) => <tr key={bucket.from}><td>{formatDateTime(bucket.from)}</td><td>{formatDateTime(bucket.to)}</td>
         {series.map((item) => <td key={item.key}>{formatAnalyticsNumber(bucket.values[item.key] ?? 0)}</td>)}</tr>)}</tbody>
     </table></div></details>
   </figure>;

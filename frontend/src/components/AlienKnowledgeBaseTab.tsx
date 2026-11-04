@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Card, CardHeader } from './ui/Card';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import * as api from '../api/client';
-import { AlienListResponse } from '../types';
+import { useListSearchParams } from '../hooks/useListSearchParams';
+import { usePaginatedResource } from '../hooks/usePaginatedResource';
+import { useDebouncedQuery } from '../hooks/useDebouncedSearch';
 import { AlienEditorModal } from './AlienEditorModal';
 import { Button } from './ui/Button';
 import { EmptyState } from './ui/EmptyState';
 import { LoadingBlock } from './ui/LoadingBlock';
+import { Pagination } from './ui/Pagination';
 
 const PAGE_SIZE = 10;
 
@@ -16,80 +20,22 @@ interface AlienKnowledgeBaseTabProps {
 
 export function AlienKnowledgeBaseTab({ token, canWrite }: AlienKnowledgeBaseTabProps) {
   const navigate = useNavigate();
-  const [params, setParams] = useSearchParams();
+  const { params, page, setFilter, setPage } = useListSearchParams();
   const q = params.get('q') ?? '';
-  const requestedPage = Number(params.get('page') ?? 0);
-  const page = Number.isSafeInteger(requestedPage) && requestedPage >= 0 ? requestedPage : 0;
-  const [searchInput, setSearchInput] = useState(q);
-  const [result, setResult] = useState<AlienListResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
-  const [revision, setRevision] = useState(0);
 
-  useEffect(() => setSearchInput(q), [q]);
-
-  useEffect(() => {
-    if (searchInput.trim() === q) {
-      return;
-    }
-    const timer = window.setTimeout(() => {
-      setParams((previous) => {
-        const next = new URLSearchParams(previous);
-        const query = searchInput.trim();
-        if (query) {
-          next.set('q', query);
-        } else {
-          next.delete('q');
-        }
-        next.delete('page');
-        return next;
-      });
-    }, 300);
-    return () => window.clearTimeout(timer);
-  }, [searchInput, q, setParams]);
-
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-    api.listAliens(token, { q, page, size: PAGE_SIZE })
-      .then((response) => {
-        if (!cancelled) {
-          if (page >= Math.max(response.totalPages, 1) && page > 0) {
-            setParams((previous) => {
-              const next = new URLSearchParams(previous);
-              next.set('page', String(Math.max(response.totalPages - 1, 0)));
-              return next;
-            }, { replace: true });
-          } else {
-            setResult(response);
-          }
-        }
-      })
-      .catch((err: unknown) => {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : 'Не удалось загрузить базу знаний');
-        }
-      })
-      .finally(() => { if (!cancelled) { setLoading(false); } });
-    return () => { cancelled = true; };
-  }, [token, q, page, revision, setParams]);
-
-  const changePage = (nextPage: number) => {
-    setParams((previous) => {
-      const next = new URLSearchParams(previous);
-      next.set('page', String(nextPage));
-      return next;
-    });
-  };
-
+  const { result, loading, error, reload } = usePaginatedResource({
+    scopeKey: JSON.stringify([token, q]), page,
+    load: (requestedPage) => api.listAliens(token, { q, page: requestedPage, size: PAGE_SIZE }),
+    errorMessage: 'Не удалось загрузить базу знаний', onPageCorrection: (nextPage) => setPage(nextPage, { replace: true }),
+  });
+  const { input: searchInput, setInput: setSearchInput } = useDebouncedQuery(q, (query) => setFilter('q', query));
   return (
-    <section className="card" aria-busy={loading}>
-      <div className="card__header">
+    <Card  aria-busy={loading}>
+      <CardHeader>
         <h2>База знаний</h2>
         {canWrite && <Button onClick={() => setEditorOpen(true)}>Добавить вид</Button>}
-      </div>
+      </CardHeader>
       <div className="field knowledge-base__search">
         <input type="search" className="field__control" aria-label="Поиск по базе знаний"
           value={searchInput} onChange={(event) => setSearchInput(event.target.value)}
@@ -103,16 +49,16 @@ export function AlienKnowledgeBaseTab({ token, canWrite }: AlienKnowledgeBaseTab
           : undefined} />
       )}
       {!loading && !error && result != null && result.items.length > 0 && (
-        <div className="incidents-table-wrapper">
-          <table className="incidents-table">
+        <div className="data-table-wrapper">
+          <table className="data-table">
             <thead><tr><th>ID</th><th>Название</th><th>Описание</th><th>Угроза</th></tr></thead>
             <tbody>
               {result.items.map((alien) => {
                 const path = `/aliens/${alien.id}?${params.toString()}`;
                 return (
-                  <tr key={alien.id} className="incidents-table__row" onClick={() => navigate(path)}>
+                  <tr key={alien.id} className="data-table__row" onClick={() => navigate(path)}>
                     <td>#{alien.id}</td>
-                    <td><Link to={path} className="knowledge-base__name"
+                    <td><Link to={path} className="entity-link"
                       onClick={(event) => event.stopPropagation()}>{alien.name}</Link></td>
                     <td><span className="knowledge-base__description" title={alien.description}>
                       {alien.description}
@@ -125,18 +71,10 @@ export function AlienKnowledgeBaseTab({ token, canWrite }: AlienKnowledgeBaseTab
           </table>
         </div>
       )}
-      {!error && result != null && result.totalPages > 0 && (
-        <div className="pagination">
-          <Button variant="secondary" disabled={loading || page === 0} onClick={() => changePage(page - 1)}>
-            ← Предыдущая
-          </Button>
-          <span className="pagination__info">Страница {page + 1} из {result.totalPages} ({result.totalElements} всего)</span>
-          <Button variant="secondary" disabled={loading || page >= result.totalPages - 1}
-            onClick={() => changePage(page + 1)}>Следующая →</Button>
-        </div>
-      )}
+      {!error && result != null && <Pagination page={page} totalPages={result.totalPages}
+        totalElements={result.totalElements} loading={loading} onChange={setPage} />}
       <AlienEditorModal token={token} open={editorOpen && canWrite} alien={null}
-        onClose={() => setEditorOpen(false)} onSaved={() => setRevision((value) => value + 1)} />
-    </section>
+        onClose={() => setEditorOpen(false)} onSaved={reload} />
+    </Card>
   );
 }

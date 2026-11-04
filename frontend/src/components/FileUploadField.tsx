@@ -102,7 +102,7 @@ export function FileUploadField({
 
   return (
     <div className="file-upload">
-      <span className="file-upload__label">{label}</span>
+      <label className="file-upload__label" htmlFor={inputId}>{label}</label>
       {error && <span id={`${inputId}-error`} className="field__error" role="alert">{error}</span>}
       <input
         ref={inputRef}

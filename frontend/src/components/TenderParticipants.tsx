@@ -1,11 +1,15 @@
-import React, { useEffect, useId, useRef, useState } from 'react';
+import { formatDateTime } from '../utils/dateTime';
+import { formatUserLabel } from '../utils/users';
+import { CardHeader } from './ui/Card';
+import React, { useEffect, useState } from 'react';
 import * as api from '../api/client';
-import { EQUIPMENT_PAGE_SIZE, formatEquipmentDate } from '../equipmentLabels';
-import { useFocusTrap } from '../hooks/useFocusTrap';
+import { EQUIPMENT_PAGE_SIZE } from '../equipmentLabels';
+import { useMutation } from '../hooks/useMutation';
+import { Modal } from './ui/Modal';
 import { useUsersMap } from '../hooks/useUsersMap';
 import { TENDER_PARTICIPANT_STATUS_LABELS } from '../tenderLabels';
 import { TenderParticipantListResponse, TenderParticipantResponse, TenderResponse } from '../types';
-import { formatUserLabel } from '../utils/incidentUsers';
+
 import { TenderParticipantEditorModal } from './TenderParticipantEditorModal';
 import { UserChip } from './UserChip';
 import { Button } from './ui/Button';
@@ -28,20 +32,14 @@ export function TenderParticipants({ token, tender, canManage, onChanged, onCoun
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState<TenderParticipantResponse | null>(null);
   const [selected, setSelected] = useState<TenderParticipantResponse | null>(null);
-  const [saving, setSaving] = useState(false);
-  const scope = useRef(0);
-  const busy = useRef(false);
-  const titleId = useId();
-  const trapRef = useFocusTrap(selected != null);
+  const scopeKey = JSON.stringify([token, tender.id, tender.status]);
+  const mutation = useMutation(scopeKey);
+  const { busy: saving } = mutation;
+  const visibleError = error ?? mutation.error;
   const writable = canManage && tender.status === 'COLLECTING_OFFERS';
   const users = useUsersMap(token, result?.items.map((item) => item.createdByUserId) ?? []);
 
-  useEffect(() => {
-    scope.current += 1;
-    return () => { scope.current += 1; };
-  }, [token, tender.id]);
-
-  useEffect(() => { setSelected(null); setEditorOpen(false); }, [tender.status]);
+  useEffect(() => { setSelected(null); setEditorOpen(false); }, [scopeKey]);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,50 +58,42 @@ export function TenderParticipants({ token, tender, canManage, onChanged, onCoun
     return () => { cancelled = true; };
   }, [token, tender.id, tender.status, page, revision, onCountChange]);
 
-  useEffect(() => {
-    if (!selected) { return; }
-    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape' && !busy.current) { setSelected(null); } };
-    document.addEventListener('keydown', escape);
-    return () => document.removeEventListener('keydown', escape);
-  }, [selected]);
-
   const choose = async () => {
-    if (!selected || !writable || busy.current) { return; }
-    const version = scope.current;
-    busy.current = true;
-    setSaving(true);
+    if (!selected || !writable) { return; }
+    const session = mutation.start();
+    if (!session) { return; }
     setError(null);
     try {
       const saved = await api.selectTenderWinner(token, tender.id, { participantId: selected.id });
-      if (scope.current !== version) { return; }
+      if (!session.isCurrent()) { return; }
       setSelected(null);
       setRevision((value) => value + 1);
       onChanged(saved);
     } catch (err: unknown) {
-      if (scope.current === version) { setError(err instanceof Error ? err.message : 'Не удалось выбрать победителя'); }
+      session.fail(err, 'Не удалось выбрать победителя');
     } finally {
-      if (scope.current === version) { busy.current = false; setSaving(false); }
+      session.finish();
     }
   };
 
   return <section className="section" id="participants" aria-label="Участники тендера" aria-busy={loading}>
-    <div className="card__header"><h3>Участники и предложения</h3>
+    <CardHeader><h3>Участники и предложения</h3>
       {writable && <Button variant="outline" onClick={() => { setEditing(null); setEditorOpen(true); }}>Добавить участника</Button>}
-    </div>
-    {error && !selected && <div className="alert alert--error" role="alert">{error}</div>}
+    </CardHeader>
+    {visibleError && !selected && <div className="alert alert--error" role="alert">{visibleError}</div>}
     {loading && <LoadingBlock label="Загрузка участников…" inline />}
     {!loading && !error && result?.items.length === 0 && <EmptyState title="Предложений пока нет" />}
     {!loading && result && result.items.length > 0 && <>
-      <div className="incidents-table-wrapper"><table className="incidents-table">
+      <div className="data-table-wrapper"><table className="data-table">
         <thead><tr><th>Организация</th><th>Предложение</th><th>Статус</th><th>Добавил</th><th>Дата</th>{writable && <th>Действия</th>}</tr></thead>
         <tbody>{result.items.map((item) => <tr key={item.id}>
           <td>{item.name}</td><td className="text-pre-wrap">{item.proposal}</td>
           <td><StatusChip status={item.status === 'WINNER' ? 'available' : 'pending'} label={TENDER_PARTICIPANT_STATUS_LABELS[item.status]} /></td>
           <td><UserChip login={formatUserLabel(item.createdByUserId, users)} size={24} /></td>
-          <td>{formatEquipmentDate(item.createdAt)}</td>
-          {writable && <td><div className="tender-actions">
+          <td>{formatDateTime(item.createdAt)}</td>
+          {writable && <td><div className="page-actions">
             <Button variant="ghost" onClick={() => { setEditing(item); setEditorOpen(true); }}>Редактировать предложение</Button>
-            <Button variant="outline" disabled={saving} onClick={() => { setSelected(item); setError(null); }}>Выбрать победителя</Button>
+            <Button variant="outline" disabled={saving} onClick={() => { setSelected(item); setError(null); mutation.setError(null); }}>Выбрать победителя</Button>
           </div></td>}
         </tr>)}</tbody>
       </table></div>
@@ -115,15 +105,12 @@ export function TenderParticipants({ token, tender, canManage, onChanged, onCoun
         setRevision((value) => value + 1);
         onChanged();
       }} />
-    {selected && <div className="modal-overlay" role="presentation" onClick={() => { if (!busy.current) { setSelected(null); } }}>
-      <div className="modal modal--narrow" ref={trapRef} role="dialog" aria-modal="true" aria-labelledby={titleId}
-        onClick={(event) => event.stopPropagation()}>
-        <div className="modal__header"><h2 id={titleId}>Выбрать победителя</h2></div>
-        <p>Победитель: {selected.name}. Тендер перейдёт в ожидание поставки, предложения будут зафиксированы.</p>
-        {error && <div className="alert alert--error" role="alert">{error}</div>}
-        <div className="modal-actions"><Button variant="secondary" disabled={saving} onClick={() => setSelected(null)}>Отмена</Button>
+    <Modal open={selected != null} title="Выбрать победителя" busy={saving} className="modal--narrow"
+      onClose={() => { if (!mutation.isBusy()) { setSelected(null); } }}>
+        <p>Победитель: {selected?.name}. Тендер перейдёт в ожидание поставки, предложения будут зафиксированы.</p>
+        {visibleError && <div className="alert alert--error" role="alert">{visibleError}</div>}
+        <div className="modal-actions"><Button variant="secondary" disabled={saving} onClick={() => { if (!mutation.isBusy()) { setSelected(null); } }}>Отмена</Button>
           <Button loading={saving} onClick={() => { void choose(); }}>Подтвердить</Button></div>
-      </div>
-    </div>}
+    </Modal>
   </section>;
 }

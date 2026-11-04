@@ -1,5 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
+import { getNavigationItems } from '../auth/navigation';
 import { MIB_LOGO_PATH } from '../constants';
 import { NotificationsPanel } from './NotificationsPanel';
 import { UserAvatar } from './UserAvatar';
@@ -23,18 +25,8 @@ function BellIcon() {
 }
 
 interface AppHeaderProps {
-  token: string;
-  login: string;
   unreadCount: number;
   notificationsOpen: boolean;
-  showIncidentsTab: boolean;
-  showMonitoringAlertsTab: boolean;
-  showKnowledgeBaseTab: boolean;
-  showTendersTab?: boolean;
-  showDetentionsTab?: boolean;
-  showAnalyticsTab?: boolean;
-  showEquipmentTab?: boolean;
-  showEquipmentMovementsTab?: boolean;
   onToggleNotifications: () => void;
   onCloseNotifications: () => void;
   onUnreadChange: (count: number) => void;
@@ -42,75 +34,28 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({
-  token,
-  login,
   unreadCount,
   notificationsOpen,
-  showIncidentsTab,
-  showMonitoringAlertsTab,
-  showKnowledgeBaseTab,
-  showTendersTab,
-  showDetentionsTab,
-  showAnalyticsTab,
-  showEquipmentTab,
-  showEquipmentMovementsTab,
   onToggleNotifications,
   onCloseNotifications,
   onUnreadChange,
   onNavigateToIncident,
 }: AppHeaderProps) {
+  const { token, profile, access } = useAuth();
+  const login = profile.login;
+  const navigation = getNavigationItems(access);
   return (
     <header className="app-header">
       <div className="app-header__brand">
         <img src={MIB_LOGO_PATH} alt="MIB" className="app-header__logo" />
       </div>
 
-      {(showIncidentsTab || showMonitoringAlertsTab || showKnowledgeBaseTab || showEquipmentTab || showEquipmentMovementsTab || showTendersTab || showDetentionsTab || showAnalyticsTab) && (
+      {navigation.length > 0 && (
         <nav className="app-header__nav" aria-label="Разделы">
-          {showIncidentsTab && (
-            <NavLink
-              to="/incidents"
-              className={({ isActive }) =>
-                isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'
-              }
-            >
-              Инциденты
-            </NavLink>
-          )}
-          {showMonitoringAlertsTab && (
-            <NavLink
-              to="/monitoring/alerts"
-              className={({ isActive }) =>
-                isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'
-              }
-            >
-              Входящие алерты
-            </NavLink>
-          )}
-          {showEquipmentTab && (
-            <NavLink to="/equipment" className={({ isActive }) =>
-              isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'}>
-              Склад
-            </NavLink>
-          )}
-          {showEquipmentMovementsTab && (
-            <NavLink to="/equipment-movements" className={({ isActive }) =>
-              isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'}>
-              Движение оборудования
-            </NavLink>
-          )}
-          {showTendersTab && <NavLink to="/tenders" className={({ isActive }) =>
-            isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'}>Тендеры</NavLink>}
-          {showDetentionsTab && <NavLink to="/detention-requests" className={({ isActive }) =>
-            isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'}>Заключение</NavLink>}
-          {showAnalyticsTab && <NavLink to="/analytics" className={({ isActive }) =>
-            isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'}>Аналитика</NavLink>}
-          {showKnowledgeBaseTab && (
-            <NavLink to="/aliens" className={({ isActive }) =>
-              isActive ? 'app-header__tab app-header__tab--active' : 'app-header__tab'}>
-              База знаний
-            </NavLink>
-          )}
+          {navigation.map(({ to, label }) => <NavLink key={to} to={to}
+            className={({ isActive }) => `app-header__tab${isActive ? ' app-header__tab--active' : ''}`}>
+            {label}
+          </NavLink>)}
         </nav>
       )}
 

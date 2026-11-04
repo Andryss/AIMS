@@ -311,14 +311,11 @@ describe('App', () => {
       totalElements: 0, totalPages: 0 });
     render(<MemoryRouter initialEntries={['/aliens']}><App /></MemoryRouter>);
     await screen.findByRole('link', { name: /analyst|operator/ });
-    if (visible) {
-      expect(screen.getByRole('link', { name: 'База знаний' })).toBeInTheDocument();
-      expect(await screen.findByRole('heading', { name: 'База знаний' })).toBeInTheDocument();
-      expect(Boolean(screen.queryByRole('button', { name: 'Добавить вид' }))).toBe(writable);
-    } else {
-      expect(screen.queryByRole('link', { name: 'База знаний' })).not.toBeInTheDocument();
-      expect(api.listAliens).not.toHaveBeenCalled();
-    }
+    await screen.findByRole('heading', { name: visible ? 'База знаний' : 'Инциденты' });
+    expect(Boolean(screen.queryByRole('link', { name: 'База знаний' }))).toBe(visible);
+    expect(Boolean(screen.queryByRole('heading', { name: 'База знаний' }))).toBe(visible);
+    expect(Boolean(screen.queryByRole('button', { name: 'Добавить вид' }))).toBe(writable);
+    expect(api.listAliens).toHaveBeenCalledTimes(visible ? 1 : 0);
   });
 
   it.each(['AGENT', 'CLEANER'])('allows %s to read a species card without the knowledge-base tab', async (role) => {

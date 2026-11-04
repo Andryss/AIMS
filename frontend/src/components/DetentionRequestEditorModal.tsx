@@ -1,10 +1,12 @@
-import React, { FormEvent, useEffect, useId, useRef, useState } from 'react';
+import { CardHeader } from './ui/Card';
+import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import * as api from '../api/client';
 import { DETENTION_DEFAULT_DURATION } from '../detentionLabels';
-import { useFocusTrap } from '../hooks/useFocusTrap';
+import { useMutation } from '../hooks/useMutation';
 import { Alien, DetentionRequestResponse } from '../types';
 import { Button } from './ui/Button';
 import { FormField } from './ui/FormField';
+import { Modal } from './ui/Modal';
 
 interface DetentionRequestEditorModalProps {
   token: string; open: boolean; incidentId: number; initialAlienId?: number | null;
@@ -14,10 +16,6 @@ interface DetentionRequestEditorModalProps {
 
 export function DetentionRequestEditorModal({ token, open, incidentId, initialAlienId, request,
   canReadAliens = true, onClose, onSaved }: DetentionRequestEditorModalProps) {
-  const titleId = useId();
-  const trapRef = useFocusTrap(open);
-  const scope = useRef(0);
-  const busy = useRef(false);
   const initial = useRef({ request, initialAlienId });
   initial.current = { request, initialAlienId };
   const requestId = request?.id;
@@ -31,11 +29,10 @@ export function DetentionRequestEditorModal({ token, open, incidentId, initialAl
   const [aliens, setAliens] = useState<Alien[]>([]);
   const [searching, setSearching] = useState(false);
   const [speciesError, setSpeciesError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const mutation = useMutation(JSON.stringify([token, open, incidentId, request?.id]));
+  const { busy: saving, error, setError } = mutation;
 
   useEffect(() => {
-    scope.current += 1; busy.current = false; setSaving(false);
     if (open) {
       const value = initial.current.request;
       setName(value?.subjectName ?? ''); setDescription(value?.subjectDescription ?? '');
@@ -43,8 +40,7 @@ export function DetentionRequestEditorModal({ token, open, incidentId, initialAl
       setAlienId(value ? value.alienId ?? undefined : initial.current.initialAlienId ?? undefined);
       setAlienName(''); setQuery(''); setAliens([]); setError(null); setSpeciesError(null);
     }
-    return () => { scope.current += 1; };
-  }, [open, token, requestId, incidentId]);
+  }, [open, token, requestId, incidentId, setError]);
 
   useEffect(() => {
     if (!open || alienId == null || !canReadAliens) { return; }
@@ -67,47 +63,37 @@ export function DetentionRequestEditorModal({ token, open, incidentId, initialAl
     return () => { cancelled = true; window.clearTimeout(timer); };
   }, [open, canReadAliens, query, token]);
 
-  useEffect(() => {
-    if (!open) { return; }
-    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape' && !busy.current) { onClose(); } };
-    document.addEventListener('keydown', escape);
-    return () => document.removeEventListener('keydown', escape);
-  }, [open, onClose]);
-
   if (!open) { return null; }
   const changedDuration = request != null && Number(days) !== request.durationDays;
-  const close = () => { if (!busy.current) { onClose(); } };
+  const close = () => { if (!mutation.isBusy()) { onClose(); } };
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    if (busy.current) { return; }
+    if (mutation.isBusy()) { return; }
     const durationDays = Number(days);
     if (!name.trim() || !description.trim() || !Number.isInteger(durationDays) || durationDays < 1
       || durationDays > 2147483647 || !Number.isSafeInteger(incidentId) || incidentId < 1) {
       setError('Заполните данные субъекта и укажите целый положительный срок'); return;
     }
     if (changedDuration && !comment.trim()) { setError('Укажите причину изменения срока'); return; }
-    const version = scope.current;
-    busy.current = true; setSaving(true); setError(null);
+    const session = mutation.start();
+    if (!session) { return; }
     const payload = { incidentId, subjectName: name.trim(), subjectDescription: description.trim(), durationDays,
       ...(alienId != null ? { alienId } : {}),
       ...(changedDuration ? { comment: comment.trim() } : {}) };
     try {
       const saved = request ? await api.updateDetentionRequest(token, request.id, payload)
         : await api.createDetentionRequest(token, payload);
-      if (scope.current !== version) { return; }
+      if (!session.isCurrent()) { return; }
       onClose(); onSaved(saved);
     } catch (err: unknown) {
-      if (scope.current === version) { setError(err instanceof Error ? err.message : 'Не удалось сохранить заявку'); }
+      session.fail(err, 'Не удалось сохранить заявку');
     } finally {
-      if (scope.current === version) { busy.current = false; setSaving(false); }
+      session.finish();
     }
   };
 
-  return <div className="modal-overlay" role="presentation" onClick={close}>
-    <div className="modal" ref={trapRef} role="dialog" aria-modal="true" aria-labelledby={titleId}
-      onClick={(event) => event.stopPropagation()}>
-      <div className="modal__header"><h2 id={titleId}>{request ? 'Редактировать заявку на заключение' : 'Создать заявку на заключение'}</h2>
-        <Button variant="ghost" aria-label="Закрыть" disabled={saving} onClick={close}>×</Button></div>
+  return (
+    <Modal open={open} title={request ? 'Редактировать заявку на заключение' : 'Создать заявку на заключение'} onClose={close} busy={saving}>
       {error && <div className="alert alert--error" role="alert">{error}</div>}
       <form className="form" onSubmit={submit}>
         <FormField label="Инцидент-основание"><input value={`Инцидент #${incidentId}`} disabled /></FormField>
@@ -116,9 +102,9 @@ export function DetentionRequestEditorModal({ token, open, incidentId, initialAl
         <FormField label="Описание субъекта" required><textarea required rows={4} maxLength={4000} value={description}
           disabled={saving} onChange={(event) => setDescription(event.target.value)} /></FormField>
         <div className="field"><span className="field__label">Вид</span>
-          {alienId != null && <div className="card__header"><span>{alienName || `Вид #${alienId}`}</span>
+          {alienId != null && <CardHeader><span>{alienName || `Вид #${alienId}`}</span>
             {canReadAliens && <Button variant="ghost" disabled={saving} aria-label="Убрать вид"
-              onClick={() => { setAlienId(undefined); setAlienName(''); }}>×</Button>}</div>}
+              onClick={() => { setAlienId(undefined); setAlienName(''); }}>×</Button>}</CardHeader>}
           {canReadAliens && <input type="search" className="field__control" aria-label="Поиск вида" placeholder="Найти вид в базе знаний"
             value={query} disabled={saving} onChange={(event) => setQuery(event.target.value)} />}
           {speciesError && <div className="alert alert--error" role="alert">{speciesError}</div>}
@@ -134,6 +120,6 @@ export function DetentionRequestEditorModal({ token, open, incidentId, initialAl
         <div className="modal-actions"><Button variant="secondary" disabled={saving} onClick={close}>Отмена</Button>
           <Button type="submit" loading={saving}>Сохранить</Button></div>
       </form>
-    </div>
-  </div>;
+    </Modal>
+  );
 }

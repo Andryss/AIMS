@@ -1,9 +1,11 @@
+import { formatDateTime } from './dateTime';
 import { DETENTION_STATUS_LABELS } from '../detentionLabels';
-import { formatEquipmentDate } from '../equipmentLabels';
+
 import { DetentionRequestHistorySnapshot } from '../types';
+import { compareHistoryFields, HistoryDiffRow } from './historyDiff';
 
 export type DetentionHistoryValue = string | { kind: 'user' | 'incident' | 'alien'; id: number | null };
-export interface DetentionHistoryDiffRow { label: string; oldValue?: DetentionHistoryValue; newValue: DetentionHistoryValue; }
+export type DetentionHistoryDiffRow = HistoryDiffRow<DetentionHistoryValue>;
 
 function fields({ request }: DetentionRequestHistorySnapshot): Record<string, DetentionHistoryValue> {
   return {
@@ -15,14 +17,12 @@ function fields({ request }: DetentionRequestHistorySnapshot): Record<string, De
     'Статус': DETENTION_STATUS_LABELS[request.status],
     'Автор': { kind: 'user', id: request.createdByUserId },
     'Рассмотрел': { kind: 'user', id: request.reviewedByUserId ?? null },
-    'Дата прибытия': request.admittedAt ? formatEquipmentDate(request.admittedAt) : '—',
-    'Плановое освобождение': request.plannedReleaseAt ? formatEquipmentDate(request.plannedReleaseAt) : '—',
-    'Фактическое освобождение': request.releasedAt ? formatEquipmentDate(request.releasedAt) : '—',
+    'Дата прибытия': request.admittedAt ? formatDateTime(request.admittedAt) : '—',
+    'Плановое освобождение': request.plannedReleaseAt ? formatDateTime(request.plannedReleaseAt) : '—',
+    'Фактическое освобождение': request.releasedAt ? formatDateTime(request.releasedAt) : '—',
   };
 }
 
 export function buildDetentionHistoryDiff(current: DetentionRequestHistorySnapshot, previous?: DetentionRequestHistorySnapshot): DetentionHistoryDiffRow[] {
-  const before = previous ? fields(previous) : undefined;
-  return Object.entries(fields(current)).filter(([label, value]) => !before || JSON.stringify(before[label]) !== JSON.stringify(value))
-    .map(([label, value]) => ({ label, oldValue: before?.[label], newValue: value }));
+  return compareHistoryFields(fields(current), previous ? fields(previous) : undefined);
 }

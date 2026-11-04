@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import * as api from '../api/client';
@@ -43,6 +43,40 @@ describe('IncidentsTab', () => {
     await waitFor(() => {
       expect(screen.getByText('Network error')).toBeInTheDocument();
     });
+  });
+
+  it('ignores an old account response after the token changes', async () => {
+    let resolveOld!: (value: ReturnType<typeof mockIncidentList>) => void;
+    listIncidents.mockImplementationOnce(() => new Promise((resolve) => { resolveOld = resolve; }))
+      .mockResolvedValue(mockIncidentList({ items: [mockIncident({ location: 'Current account' })] }));
+    const { rerender } = render(<MemoryRouter>
+      <IncidentsTab token="old" roles={[]} canCreate={false} canChangeStatus={false} />
+    </MemoryRouter>);
+    rerender(<MemoryRouter>
+      <IncidentsTab token="new" roles={[]} canCreate={false} canChangeStatus={false} />
+    </MemoryRouter>);
+    await screen.findByText('Current account');
+    await act(async () => resolveOld(mockIncidentList({ items: [mockIncident({ location: 'Old account' })] })));
+    expect(screen.getByText('Current account')).toBeInTheDocument();
+    expect(screen.queryByText('Old account')).not.toBeInTheDocument();
+  });
+
+  it('starts on the first page whenever the account changes, including a previous account', async () => {
+    listIncidents.mockImplementation(async (_token, page) => mockIncidentList({
+      page, totalPages: 2, totalElements: 15,
+      items: [mockIncident({ location: `${_token} page ${page}` })],
+    }));
+    const view = (token: string) => <MemoryRouter>
+      <IncidentsTab token={token} roles={[]} canCreate={false} canChangeStatus={false} />
+    </MemoryRouter>;
+    const { rerender } = render(view('first'));
+    await screen.findByText('first page 0');
+    await userEvent.click(screen.getByRole('button', { name: 'Следующая →' }));
+    await screen.findByText('first page 1');
+    rerender(view('second'));
+    await screen.findByText('second page 0');
+    rerender(view('first'));
+    await screen.findByText('first page 0');
   });
 
   it('navigates to incident detail on row click', async () => {

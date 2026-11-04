@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import * as api from '../api/client';
 import { Alien } from '../types';
+import { useAnchoredOverlay } from '../hooks/useAnchoredOverlay';
 import { AttachmentDownloadList } from './AttachmentDownloadList';
 
 const OPEN_DELAY_MS = 500;
@@ -16,7 +17,6 @@ interface AlienSummaryProps { token: string; alien: Alien; incidentId?: number; 
 
 export function AlienSummary({ token, alien, incidentId }: AlienSummaryProps) {
   const [open, setOpen] = useState(false);
-  const [position, setPosition] = useState<React.CSSProperties>({});
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const anchor = useRef<HTMLSpanElement>(null);
@@ -24,15 +24,13 @@ export function AlienSummary({ token, alien, incidentId }: AlienSummaryProps) {
   const trigger = useRef<HTMLButtonElement>(null);
   const focusOnOpen = useRef(false);
   const suppressFocusOpen = useRef(false);
-  const openTimer = useRef<number | undefined>(undefined);
-  const closeTimer = useRef<number | undefined>(undefined);
   const generation = useRef(0);
   const dialogId = useId();
 
-  const cancelTimers = useCallback(() => {
-    window.clearTimeout(openTimer.current);
-    window.clearTimeout(closeTimer.current);
-  }, []);
+  const { position, cancelTimers, scheduleOpen: delayOpen, scheduleClose: delayClose } = useAnchoredOverlay({
+    open, anchor, panel, width: CARD_WIDTH, maxHeight: CARD_MAX_HEIGHT,
+    margin: VIEWPORT_MARGIN, gap: ANCHOR_GAP, openDelay: OPEN_DELAY_MS, closeDelay: CLOSE_DELAY_MS,
+  });
 
   const close = useCallback(() => {
     cancelTimers();
@@ -53,49 +51,29 @@ export function AlienSummary({ token, alien, incidentId }: AlienSummaryProps) {
 
   useLayoutEffect(() => {
     if (!open) { return; }
-    const place = () => {
-      const rect = anchor.current?.getBoundingClientRect();
-      if (!rect) { return; }
-      const width = Math.min(CARD_WIDTH, window.innerWidth - VIEWPORT_MARGIN * 2);
-      const below = window.innerHeight - rect.bottom - ANCHOR_GAP - VIEWPORT_MARGIN;
-      const above = rect.top - ANCHOR_GAP - VIEWPORT_MARGIN;
-      const useAbove = below < CARD_MAX_HEIGHT && above > below;
-      setPosition({ width, left: Math.max(VIEWPORT_MARGIN,
-        Math.min(rect.left, window.innerWidth - width - VIEWPORT_MARGIN)),
-      ...(useAbove ? { bottom: window.innerHeight - rect.top + ANCHOR_GAP }
-        : { top: rect.bottom + ANCHOR_GAP }),
-      maxHeight: Math.max(0, Math.min(CARD_MAX_HEIGHT, useAbove ? above : below)) });
-    };
     const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') { close(); } };
     const onOutside = (event: MouseEvent) => {
       if (!anchor.current?.contains(event.target as Node) && !panel.current?.contains(event.target as Node)) { close(); }
     };
-    place();
     if (focusOnOpen.current) {
       focusOnOpen.current = false;
       panel.current?.querySelector<HTMLButtonElement>('button')?.focus({ preventScroll: true });
     }
     document.addEventListener('keydown', onKey);
     document.addEventListener('mousedown', onOutside);
-    window.addEventListener('resize', place);
-    window.addEventListener('scroll', place, true);
     return () => {
       document.removeEventListener('keydown', onKey);
       document.removeEventListener('mousedown', onOutside);
-      window.removeEventListener('resize', place);
-      window.removeEventListener('scroll', place, true);
     };
   }, [open, close]);
 
   const scheduleOpen = () => {
     if (suppressFocusOpen.current) { suppressFocusOpen.current = false; return; }
-    cancelTimers();
-    openTimer.current = window.setTimeout(() => setOpen(true), OPEN_DELAY_MS);
+    delayOpen(() => setOpen(true));
   };
   const scheduleClose = () => {
     if (anchor.current?.contains(document.activeElement) || panel.current?.contains(document.activeElement)) { return; }
-    cancelTimers();
-    closeTimer.current = window.setTimeout(close, CLOSE_DELAY_MS);
+    delayClose(close);
   };
   const keepOpen = () => { cancelTimers(); };
   const onBlur = (event: React.FocusEvent) => {

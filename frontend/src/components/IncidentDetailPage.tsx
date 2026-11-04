@@ -1,53 +1,31 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Card, CardHeader } from './ui/Card';
+import { EditIcon } from './ui/EditIcon';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import * as api from '../api/client';
 import { EVENT_TYPE_LABELS } from '../incidentLabels';
-import { Alien, CleanupReportResponse, IncidentComment, IncidentHistoryEntry, IncidentHistorySnapshot,
-  IncidentResponse, UserSummary } from '../types';
-import { buildIncidentHistoryDiffs } from '../utils/incidentHistoryDiff';
-import {
-  collectIncidentUserIds,
-  loadUsersMap,
-} from '../utils/incidentUsers';
+import { IncidentResponse } from '../types';
+import { collectIncidentUserIds } from '../utils/incidentUsers';
+import { formatDateTime as formatDate } from '../utils/dateTime';
+import { useIncidentDetails } from '../hooks/useIncidentDetails';
+import { useIncidentComments } from '../hooks/useIncidentComments';
+import { useIncidentHistory } from '../hooks/useIncidentHistory';
+import { useUsersMapState } from '../hooks/useUsersMap';
+import { IncidentAssignments } from './incident/IncidentAssignments';
+import { IncidentComments } from './incident/IncidentComments';
+import { IncidentHistory } from './incident/IncidentHistory';
+import { IncidentCleanupSection } from './incident/IncidentCleanupSection';
 import { AlienSummary } from './AlienSummary';
 import { IncidentAlienClassification } from './IncidentAlienClassification';
 import { IncidentThreatAssessment } from './IncidentThreatAssessment';
 import { IncidentEditorModal } from './IncidentEditorModal';
 import { AlienPickerDrawer } from './AlienPickerDrawer';
 import { AttachmentDownloadList } from './AttachmentDownloadList';
-import { CleanupReportDrawer } from './CleanupReportDrawer';
-import { CleanupStatusSelect } from './CleanupStatusSelect';
 import { IncidentStatusSelect } from './IncidentStatusSelect';
 import { IncidentDetentionSection } from './IncidentDetentionSection';
 import { IncidentEquipmentSection } from './IncidentEquipmentSection';
-import { UserChip } from './UserChip';
-import { UserPickerDrawer } from './UserPickerDrawer';
-import { EmptyState } from './ui/EmptyState';
-import { FormField } from './ui/FormField';
 import { LoadingBlock } from './ui/LoadingBlock';
-import { Spinner } from './ui/Spinner';
 import { Button } from './ui/Button';
-
-function userLoginFromMap(userId: number, usersMap: Map<number, string>): string {
-  return usersMap.get(userId) ?? `#${userId}`;
-}
-
-function sameUserIdSets(a: number[], b: number[]): boolean {
-  if (a.length !== b.length) {
-    return false;
-  }
-  const sortedA = [...a].sort((x, y) => x - y);
-  const sortedB = [...b].sort((x, y) => x - y);
-  return sortedA.every((id, index) => id === sortedB[index]);
-}
-
-function formatDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleString('ru-RU');
-  } catch {
-    return iso;
-  }
-}
 
 type DetailTab = 'comments' | 'history' | 'equipment' | 'detention';
 
@@ -96,191 +74,23 @@ export function IncidentDetailPage({
   const navigate = useNavigate();
   const incidentId = idParam ? Number(idParam) : NaN;
 
-  const [incident, setIncident] = useState<IncidentResponse | null>(null);
   const [editorScope, setEditorScope] = useState<string | null>(null);
   const [editorRevision, setEditorRevision] = useState(0);
   const editScope = JSON.stringify([token, incidentId]);
+  const { incident, setIncident, linkedAlien, setLinkedAlien, cleanupReport, setCleanupReport, loading, error, setError } =
+    useIncidentDetails(token, incidentId, canReadAliens, canReadCleanupReport);
   const editable = canEdit && (incident?.status === 'DRAFT' || incident?.status === 'CLARIFICATION_REQUIRED');
-  const [linkedAlien, setLinkedAlien] = useState<Alien | null>(null);
-  const [cleanupReport, setCleanupReport] = useState<CleanupReportResponse | null>(null);
-  const [cleanupDrawerOpen, setCleanupDrawerOpen] = useState(false);
-  const [cleanupDrawerMode, setCleanupDrawerMode] = useState<'create' | 'view'>('view');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
 
   const [alienDrawerOpen, setAlienDrawerOpen] = useState(false);
   const [linkLoading, setLinkLoading] = useState(false);
+  useEffect(() => { setLinkLoading(false); setAlienDrawerOpen(false); }, [incidentId, token]);
 
   const [activeTab, setActiveTab] = useState<DetailTab>('comments');
-  const [comments, setComments] = useState<IncidentComment[]>([]);
-  const [commentsLoading, setCommentsLoading] = useState(false);
-  const [commentText, setCommentText] = useState('');
-  const [commentSubmitting, setCommentSubmitting] = useState(false);
-
-  const [historyEntries, setHistoryEntries] = useState<IncidentHistoryEntry[]>([]);
-  const [historyLoading, setHistoryLoading] = useState(false);
-  const [historyLoaded, setHistoryLoaded] = useState(false);
-  const historyRequest = useRef(0);
-  const historyScope = useRef('');
-  historyScope.current = JSON.stringify([incidentId, token]);
-
-  useEffect(() => () => { historyRequest.current += 1; }, []);
-  const [alienNames, setAlienNames] = useState<Record<number, string>>({});
-  const [usersMap, setUsersMap] = useState<Map<number, string>>(new Map());
-  const [usersLoading, setUsersLoading] = useState(false);
-
-  const [responsiblePickerOpen, setResponsiblePickerOpen] = useState(false);
-  const [executorPickerOpen, setExecutorPickerOpen] = useState(false);
-  const [assignmentLoading, setAssignmentLoading] = useState(false);
-  const [responsibleEditing, setResponsibleEditing] = useState(false);
-  const [responsibleDraftId, setResponsibleDraftId] = useState<number | null>(null);
-  const [responsibleRemoved, setResponsibleRemoved] = useState(false);
-  const [executorsEditing, setExecutorsEditing] = useState(false);
-  const [executorDraftIds, setExecutorDraftIds] = useState<number[]>([]);
-  const [executorRemovedIds, setExecutorRemovedIds] = useState<Set<number>>(() => new Set());
-  const responsibleEditRef = useRef<HTMLDivElement>(null);
-  const executorEditRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setLinkLoading(false);
-    setResponsibleEditing(false);
-    setResponsiblePickerOpen(false);
-    setResponsibleDraftId(null);
-    setResponsibleRemoved(false);
-    setExecutorsEditing(false);
-    setExecutorPickerOpen(false);
-    setExecutorDraftIds([]);
-    setExecutorRemovedIds(new Set());
-  }, [incidentId]);
-
-  const canEditAssignment = canAssign && (
-    incident?.status === 'READY_FOR_EXECUTION'
-    || incident?.status === 'PREPARATION_FOR_EXECUTION'
-  );
-
-  const showCleanupBlock = incident?.status === 'EXECUTING'
-    || incident?.status === 'EXECUTION_COMPLETED';
-
-  const showCleanupStatusRow = showCleanupBlock && (
-    incident?.cleanupStatus != null || canChangeCleanupStatus
-  );
-
-  const showCleanupReportRow = showCleanupBlock && (
-    incident?.cleanupReportId != null || canCreateCleanupReport
-  );
-
-  const showResponsibleRow = canEditAssignment || incident?.responsibleUserId != null;
-  const showExecutorsRow = canEditAssignment || (incident?.executorUserIds ?? []).length > 0;
-  const responsibleDraftAssigned = responsibleDraftId != null && !responsibleRemoved;
-
-  const loadComments = useCallback(async () => {
-    if (!Number.isFinite(incidentId)) {
-      return;
-    }
-    setCommentsLoading(true);
-    try {
-      const response = await api.listIncidentComments(token, incidentId);
-      setComments(response.items);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Не удалось загрузить комментарии';
-      setError(message);
-    } finally {
-      setCommentsLoading(false);
-    }
-  }, [incidentId, token]);
-
-  const loadHistory = useCallback(async () => {
-    if (!Number.isFinite(incidentId)) {
-      return;
-    }
-    const request = ++historyRequest.current;
-    const scope = JSON.stringify([incidentId, token]);
-    const isCurrent = () => historyRequest.current === request && historyScope.current === scope;
-    setHistoryLoading(true);
-    try {
-      const response = await api.listIncidentHistory(token, incidentId);
-      if (!isCurrent()) { return; }
-      const entries = [...response.items];
-      for (let page = 1; page < response.totalPages; page += 1) {
-        const next = await api.listIncidentHistory(token, incidentId, page, response.size);
-        if (!isCurrent()) { return; }
-        entries.push(...next.items);
-      }
-      setHistoryEntries(entries);
-      setHistoryLoaded(true);
-    } catch (err: unknown) {
-      if (isCurrent()) {
-        const message = err instanceof Error ? err.message : 'Не удалось загрузить историю';
-        setError(message);
-      }
-    } finally {
-      if (isCurrent()) { setHistoryLoading(false); }
-    }
-  }, [incidentId, token]);
-
-  useEffect(() => {
-    historyRequest.current += 1;
-    setHistoryLoading(false);
-    if (!Number.isFinite(incidentId)) {
-      setError('Некорректный идентификатор инцидента');
-      setIncident(null);
-      setLinkedAlien(null);
-      setCleanupReport(null);
-      setLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-    setHistoryLoaded(false);
-    setHistoryEntries([]);
-    setComments([]);
-
-    (async () => {
-      try {
-        const data = await api.getIncident(token, incidentId);
-        if (cancelled) {
-          return;
-        }
-        setIncident(data);
-        if (canReadAliens && data.alienId != null) {
-          const alien = await api.getAlien(token, data.alienId);
-          if (!cancelled) {
-            setLinkedAlien(alien);
-          }
-        } else {
-          setLinkedAlien(null);
-        }
-        if (canReadCleanupReport && data.cleanupReportId != null) {
-          const report = await api.getCleanupReport(token, incidentId);
-          if (!cancelled) {
-            setCleanupReport(report);
-          }
-        } else {
-          setCleanupReport(null);
-        }
-      } catch (err: unknown) {
-        if (cancelled) {
-          return;
-        }
-        const message = err instanceof Error ? err.message : 'Не удалось загрузить инцидент';
-        setError(message);
-        setIncident(null);
-        setLinkedAlien(null);
-        setCleanupReport(null);
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [canReadAliens, canReadCleanupReport, incidentId, token]);
+  const { historyEntries, historyLoading, historyLoaded, loadHistory, invalidateHistory } =
+    useIncidentHistory(token, incidentId, setError);
+  const commentState = useIncidentComments(token, incidentId, incident, setError);
+  const { comments, loadComments } = commentState;
 
   useEffect(() => {
     if (!incident || loading) {
@@ -295,116 +105,13 @@ export function IncidentDetailPage({
     }
   }, [activeTab, historyLoaded, incident, loading, loadHistory]);
 
-  const historyDiffs = useMemo(
-    () => buildIncidentHistoryDiffs(historyEntries, usersMap),
-    [historyEntries, usersMap],
-  );
+  const { users: usersMap, setUsers: setUsersMap, loading: usersLoading } = useUsersMapState(token,
+    collectIncidentUserIds(incident, historyEntries, comments));
 
-  const collectedUserIds = useMemo(
-    () => collectIncidentUserIds(incident, historyEntries, comments),
-    [incident, historyEntries, comments],
-  );
-
-  const collectedUserIdsKey = useMemo(
-    () => collectedUserIds.slice().sort((a, b) => a - b).join(','),
-    [collectedUserIds],
-  );
-
-  useEffect(() => {
-    if (collectedUserIds.length === 0) {
-      setUsersMap(new Map());
-      return;
-    }
-    let cancelled = false;
-    setUsersLoading(true);
-    loadUsersMap(token, collectedUserIds, api.batchUsers)
-      .then((map) => {
-        if (!cancelled) {
-          setUsersMap(map);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setUsersMap(new Map());
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setUsersLoading(false);
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [collectedUserIdsKey, token]);
-
-  useEffect(() => {
-    if (!canReadAliens || historyEntries.length === 0) {
-      return;
-    }
-    const alienIds = new Set<number>();
-    historyEntries.forEach((entry) => {
-      if (entry.snapshot.alienId != null) {
-        alienIds.add(entry.snapshot.alienId);
-      }
-    });
-    const missing = Array.from(alienIds).filter((id) => alienNames[id] == null);
-    if (missing.length === 0) {
-      return;
-    }
-    let cancelled = false;
-    (async () => {
-      const resolved: Record<number, string> = {};
-      await Promise.all(
-        missing.map(async (alienId) => {
-          try {
-            const alien = await api.getAlien(token, alienId);
-            resolved[alienId] = alien.name;
-          } catch {
-            resolved[alienId] = `#${alienId}`;
-          }
-        }),
-      );
-      if (!cancelled) {
-        setAlienNames((prev) => ({ ...prev, ...resolved }));
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [alienNames, canReadAliens, historyEntries, token]);
-
-  const formatAlienLabel = (alienId: number | null | undefined): string => {
-    if (alienId == null) {
-      return '—';
-    }
-    const name = alienNames[alienId];
-    return name ? `${name} (#${alienId})` : `#${alienId}`;
-  };
-
-  const enrichAlienDiffValue = (label: string, value: string): string => {
-    if (label !== 'Тип инопланетянина' || value === '—') {
-      return value;
-    }
-    const match = value.match(/^#(\d+)$/);
-    if (!match) {
-      return value;
-    }
-    return formatAlienLabel(Number(match[1]));
-  };
-
-  const renderHistoryValue = (label: string, value: string, snapshot?: IncidentHistorySnapshot): React.ReactNode => {
-    if (label === 'Ответственный') {
-      return snapshot?.responsibleUserId != null
-        ? <UserChip login={userLoginFromMap(snapshot.responsibleUserId, usersMap)} size={24} /> : '—';
-    }
-    if (label === 'Исполнители') {
-      return snapshot?.executorUserIds?.length ? snapshot.executorUserIds.map((userId) => (
-        <UserChip key={userId} login={userLoginFromMap(userId, usersMap)} size={24} />
-      )) : '—';
-    }
-    return enrichAlienDiffValue(label, value);
-  };
+  const handleIncidentChanged = useCallback((updated: IncidentResponse) => {
+    setIncident(updated);
+    if (historyLoaded) { loadHistory(); }
+  }, [setIncident, historyLoaded, loadHistory]);
 
   const handleDownload = async (fileId: number, fileName?: string) => {
     setDownloadingId(fileId);
@@ -441,239 +148,29 @@ export function IncidentDetailPage({
     }
   };
 
-  const handleSelectResponsibleFromPicker = (user: UserSummary) => {
-    setUsersMap((prev) => {
-      const next = new Map(prev);
-      next.set(user.id, user.login);
-      return next;
-    });
-    setResponsibleDraftId(user.id);
-    setResponsibleRemoved(false);
-    setResponsiblePickerOpen(false);
-  };
-
-  const startResponsibleEdit = () => {
-    if (!incident || !canEditAssignment || assignmentLoading) {
-      return;
-    }
-    setResponsibleDraftId(incident.responsibleUserId ?? null);
-    setResponsibleRemoved(false);
-    setResponsibleEditing(true);
-  };
-
-  const commitResponsibleEdit = useCallback(async () => {
-    if (!incident || !responsibleEditing) {
-      return;
-    }
-
-    const finalId = responsibleDraftId != null && !responsibleRemoved ? responsibleDraftId : null;
-    const currentId = incident.responsibleUserId ?? null;
-
-    setResponsibleEditing(false);
-    setResponsiblePickerOpen(false);
-
-    if (finalId === currentId) {
-      return;
-    }
-
-    setAssignmentLoading(true);
-    setError(null);
-    try {
-      const updated = await api.setIncidentResponsible(token, incident.id, finalId);
-      setIncident(updated);
-      if (historyLoaded) {
-        loadHistory();
-      }
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Не удалось обновить ответственного';
-      setError(message);
-      setResponsibleDraftId(incident.responsibleUserId ?? null);
-      setResponsibleRemoved(false);
-      setResponsibleEditing(true);
-    } finally {
-      setAssignmentLoading(false);
-    }
-  }, [
-    incident,
-    responsibleEditing,
-    responsibleDraftId,
-    responsibleRemoved,
-    token,
-    historyLoaded,
-    loadHistory,
-  ]);
-
-  const toggleResponsibleRemoved = () => {
-    setResponsibleRemoved((prev) => !prev);
-  };
-
-  const handleAddExecutorsFromPicker = (users: UserSummary[]) => {
-    if (users.length === 0) {
-      return;
-    }
-
-    setUsersMap((prev) => {
-      const next = new Map(prev);
-      users.forEach((user) => next.set(user.id, user.login));
-      return next;
-    });
-
-    setExecutorDraftIds((prev) => {
-      const next = [...prev];
-      users.forEach((user) => {
-        if (!next.includes(user.id)) {
-          next.push(user.id);
-        }
-      });
-      return next;
-    });
-    setExecutorRemovedIds((prev) => {
-      const next = new Set(prev);
-      users.forEach((user) => next.delete(user.id));
-      return next;
-    });
-    setExecutorPickerOpen(false);
-  };
-
-  const startExecutorEdit = () => {
-    if (!incident || !canEditAssignment || assignmentLoading) {
-      return;
-    }
-    setExecutorDraftIds([...(incident.executorUserIds ?? [])]);
-    setExecutorRemovedIds(new Set());
-    setExecutorsEditing(true);
-  };
-
-  const commitExecutorEdit = useCallback(async () => {
-    if (!incident || !executorsEditing) {
-      return;
-    }
-
-    const finalIds = executorDraftIds.filter((id) => !executorRemovedIds.has(id));
-    const currentIds = incident.executorUserIds ?? [];
-
-    setExecutorsEditing(false);
-    setExecutorPickerOpen(false);
-
-    if (sameUserIdSets(finalIds, currentIds)) {
-      return;
-    }
-
-    setAssignmentLoading(true);
-    setError(null);
-    try {
-      const updated = await api.setIncidentExecutors(token, incident.id, finalIds);
-      setIncident(updated);
-      if (historyLoaded) {
-        loadHistory();
-      }
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Не удалось обновить исполнителей';
-      setError(message);
-      setExecutorDraftIds([...(incident.executorUserIds ?? [])]);
-      setExecutorRemovedIds(new Set());
-      setExecutorsEditing(true);
-    } finally {
-      setAssignmentLoading(false);
-    }
-  }, [
-    executorsEditing,
-    executorDraftIds,
-    executorRemovedIds,
-    incident,
-    token,
-    historyLoaded,
-    loadHistory,
-  ]);
-
-  useEffect(() => {
-    if (!executorsEditing && !responsibleEditing) {
-      return;
-    }
-
-    const onMouseDown = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (document.querySelector('.drawer-overlay')?.contains(target)) {
-        return;
-      }
-      if (executorsEditing && !executorEditRef.current?.contains(target)) {
-        void commitExecutorEdit();
-      }
-      if (responsibleEditing && !responsibleEditRef.current?.contains(target)) {
-        void commitResponsibleEdit();
-      }
-    };
-
-    document.addEventListener('mousedown', onMouseDown);
-    return () => document.removeEventListener('mousedown', onMouseDown);
-  }, [
-    commitExecutorEdit,
-    commitResponsibleEdit,
-    executorsEditing,
-    responsibleEditing,
-  ]);
-
-  const toggleExecutorRemoved = (userId: number) => {
-    setExecutorRemovedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(userId)) {
-        next.delete(userId);
-      } else {
-        next.add(userId);
-      }
-      return next;
-    });
-  };
-
-  const handleAddComment = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!incident || !commentText.trim() || commentSubmitting) {
-      return;
-    }
-    setCommentSubmitting(true);
-    setError(null);
-    try {
-      const created = await api.createIncidentComment(token, incident.id, commentText.trim());
-      setComments((prev) => [...prev, created]);
-      setCommentText('');
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Не удалось добавить комментарий';
-      setError(message);
-    } finally {
-      setCommentSubmitting(false);
-    }
-  };
-
   return (
-    <section className="card incident-detail-page">
-      <div className="card__header">
+    <Card className="incident-detail-page">
+      <CardHeader>
         <h2>{incident ? `Инцидент #${incident.id}` : 'Инцидент'}</h2>
-        <div className="tender-actions">
+        <div className="page-actions">
           {!loading && editable && <Button variant="ghost" className="icon-button"
             aria-label="Редактировать инцидент" title="Редактировать инцидент" onClick={() => setEditorScope(editScope)}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
-              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="m16 3 5 5M3 21l5-1L21 7a2.1 2.1 0 0 0-5-5L3 15z" />
-            </svg>
+            <EditIcon />
           </Button>}
           <Link to="/incidents" className="btn btn--outline">← К списку</Link>
         </div>
-      </div>
+      </CardHeader>
 
       {incident && !loading && editable && editorScope === editScope && <IncidentEditorModal
         key={editScope} token={token} open incident={incident} onClose={() => setEditorScope(null)}
         onConflict={(updated) => {
-          historyRequest.current += 1;
-          setHistoryLoading(false);
           setIncident(updated);
-          setHistoryLoaded(false);
+          invalidateHistory();
           setEditorRevision((previous) => previous + 1);
         }}
         onSaved={(updated) => {
-          historyRequest.current += 1;
-          setHistoryLoading(false);
           setIncident(updated);
-          setHistoryLoaded(false);
+          invalidateHistory();
           setEditorRevision((previous) => previous + 1);
           setError(null);
         }} />}
@@ -752,7 +249,7 @@ export function IncidentDetailPage({
                         onAccepted={(updated, alien) => {
                           setIncident(updated);
                           setLinkedAlien(alien);
-                          setHistoryLoaded(false);
+                          invalidateHistory();
                         }} />
                     )}
                   </dd>
@@ -765,213 +262,24 @@ export function IncidentDetailPage({
                   <IncidentThreatAssessment key={`${incidentId}:${editorRevision}`} token={token} incident={incident}
                     canCalculate={canCalculateThreat} alienThreatLevel={linkedAlien?.threatLevel} disabled={linkLoading}
                     onUpdated={(updated) => {
-                      historyRequest.current += 1;
-                      setHistoryLoading(false);
                       setIncident(updated);
-                      setHistoryLoaded(false);
+                      invalidateHistory();
                     }} />
                 </dd>
               </div>
 
-              {showCleanupStatusRow && (
-                <div className="data-list__row">
-                  <dt>Статус очистки</dt>
-                  <dd>
-                    <CleanupStatusSelect
-                      token={token}
-                      incident={incident}
-                      canChange={canChangeCleanupStatus}
-                      className="status-select-wrap status-select-wrap--modal"
-                      onStatusChanged={(updated) => {
-                        setIncident(updated);
-                        if (historyLoaded) {
-                          loadHistory();
-                        }
-                      }}
-                    />
-                  </dd>
-                </div>
-              )}
+              <IncidentCleanupSection key={`${token}:${incident.id}`} token={token} incident={incident} canReadCleanupReport={canReadCleanupReport}
+                canCreateCleanupReport={canCreateCleanupReport} canChangeCleanupStatus={canChangeCleanupStatus}
+                cleanupReport={cleanupReport} onChanged={handleIncidentChanged} handleDownload={handleDownload}
+                downloadingId={downloadingId} onCreated={(created) => {
+                  setCleanupReport(created);
+                  setIncident((prev) => prev ? { ...prev, cleanupReportId: created.id } : prev);
+                  if (historyLoaded) { loadHistory(); }
+                }} />
 
-              {showCleanupReportRow && (
-                <div className="data-list__row">
-                  <dt>Отчёт об очистке</dt>
-                  <dd>
-                    {incident.cleanupReportId != null ? (
-                      <button
-                        type="button"
-                        className="btn btn--outline"
-                        onClick={() => {
-                          setCleanupDrawerMode('view');
-                          setCleanupDrawerOpen(true);
-                        }}
-                      >
-                        Открыть
-                      </button>
-                    ) : canCreateCleanupReport ? (
-                      <button
-                        type="button"
-                        className="btn btn--outline"
-                        onClick={() => {
-                          setCleanupDrawerMode('create');
-                          setCleanupDrawerOpen(true);
-                        }}
-                      >
-                        Прикрепить отчёт
-                      </button>
-                    ) : (
-                      '—'
-                    )}
-                  </dd>
-                </div>
-              )}
-
-              {showResponsibleRow && (
-                <div className="data-list__row">
-                  <dt>Ответственный</dt>
-                  <dd
-                    className={
-                      canEditAssignment && !responsibleEditing
-                        ? 'executors-field executors-field--clickable'
-                        : 'executors-field'
-                    }
-                    onClick={canEditAssignment && !responsibleEditing ? startResponsibleEdit : undefined}
-                    onKeyDown={
-                      canEditAssignment && !responsibleEditing
-                        ? (event) => {
-                          if (event.key === 'Enter' || event.key === ' ') {
-                            event.preventDefault();
-                            startResponsibleEdit();
-                          }
-                        }
-                        : undefined
-                    }
-                    role={canEditAssignment && !responsibleEditing ? 'button' : undefined}
-                    tabIndex={canEditAssignment && !responsibleEditing ? 0 : undefined}
-                  >
-                    {usersLoading && incident.responsibleUserId != null && !responsibleEditing && (
-                      <Spinner size="sm" label="Загрузка пользователя" />
-                    )}
-                    {responsibleEditing ? (
-                      <div ref={responsibleEditRef} className="executors-edit-box">
-                        <div className="user-chip-group">
-                          {responsibleDraftAssigned && responsibleDraftId != null ? (
-                            <UserChip
-                              login={userLoginFromMap(responsibleDraftId, usersMap)}
-                              removable
-                              removed={responsibleRemoved}
-                              onRemove={toggleResponsibleRemoved}
-                            />
-                          ) : (
-                            <span className="text-muted">Назначьте ответственного</span>
-                          )}
-                        </div>
-                        {!responsibleDraftAssigned && (
-                          <button
-                            type="button"
-                            className="executors-add-btn"
-                            aria-label="Выбрать ответственного"
-                            disabled={assignmentLoading}
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              setResponsiblePickerOpen(true);
-                            }}
-                          >
-                            +
-                          </button>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="user-chip-group">
-                        {incident.responsibleUserId != null ? (
-                          <UserChip login={userLoginFromMap(incident.responsibleUserId, usersMap)} />
-                        ) : (
-                          canEditAssignment && (
-                            <span className="text-muted">Нажмите, чтобы назначить ответственного</span>
-                          )
-                        )}
-                      </div>
-                    )}
-                  </dd>
-                </div>
-              )}
-
-              {showExecutorsRow && (
-                <div className="data-list__row">
-                  <dt>Исполнители</dt>
-                <dd
-                  className={
-                    canEditAssignment && !executorsEditing
-                      ? 'executors-field executors-field--clickable'
-                      : 'executors-field'
-                  }
-                  onClick={canEditAssignment && !executorsEditing ? startExecutorEdit : undefined}
-                  onKeyDown={
-                    canEditAssignment && !executorsEditing
-                      ? (event) => {
-                        if (event.key === 'Enter' || event.key === ' ') {
-                          event.preventDefault();
-                          startExecutorEdit();
-                        }
-                      }
-                      : undefined
-                  }
-                  role={canEditAssignment && !executorsEditing ? 'button' : undefined}
-                  tabIndex={canEditAssignment && !executorsEditing ? 0 : undefined}
-                >
-                  {usersLoading && (incident.executorUserIds ?? []).length > 0 && !executorsEditing && (
-                    <Spinner size="sm" label="Загрузка исполнителей" />
-                  )}
-                  {executorsEditing ? (
-                    <div ref={executorEditRef} className="executors-edit-box">
-                      <div className="user-chip-group">
-                        {executorDraftIds.length === 0 && (
-                          <span className="text-muted">Добавьте исполнителей</span>
-                        )}
-                        {executorDraftIds.map((userId) => (
-                          <UserChip
-                            key={userId}
-                            login={userLoginFromMap(userId, usersMap)}
-                            removable
-                            removed={executorRemovedIds.has(userId)}
-                            onRemove={() => toggleExecutorRemoved(userId)}
-                          />
-                        ))}
-                      </div>
-                      <button
-                        type="button"
-                        className="executors-add-btn"
-                        aria-label="Добавить исполнителя"
-                        disabled={assignmentLoading}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          setExecutorPickerOpen(true);
-                        }}
-                      >
-                        +
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="user-chip-group">
-                      {(incident.executorUserIds ?? []).length === 0 ? (
-                        canEditAssignment ? (
-                          <span className="text-muted">Нажмите, чтобы назначить исполнителей</span>
-                        ) : (
-                          '—'
-                        )
-                      ) : (
-                        (incident.executorUserIds ?? []).map((userId) => (
-                          <UserChip
-                            key={userId}
-                            login={userLoginFromMap(userId, usersMap)}
-                          />
-                        ))
-                      )}
-                    </div>
-                  )}
-                </dd>
-              </div>
-              )}
+              <IncidentAssignments key={incident.id} token={token} incident={incident} canAssign={canAssign}
+                usersMap={usersMap} usersLoading={usersLoading} setUsersMap={setUsersMap}
+                onChanged={handleIncidentChanged} onError={setError} />
 
               <div className="data-list__row">
                 <dt>Вложения</dt>
@@ -1042,42 +350,7 @@ export function IncidentDetailPage({
                 role="tabpanel"
                 aria-labelledby="incident-tab-comments"
               >
-                {commentsLoading && <LoadingBlock label="Загрузка комментариев…" inline />}
-                {!commentsLoading && comments.length === 0 && (
-                  <EmptyState title="Комментариев пока нет" />
-                )}
-                <ul className="comment-list">
-                  {comments.map((comment) => (
-                    <li key={comment.id} className="comment-list__item">
-                      <div className="comment-list__meta">
-                        <UserChip login={userLoginFromMap(comment.authorUserId, usersMap)} size={24} />
-                        <span className="text-muted">{formatDate(comment.createdAt)}</span>
-                      </div>
-                      <p className="comment-list__text">{comment.text}</p>
-                    </li>
-                  ))}
-                </ul>
-
-                {canComment && (
-                  <form className="comment-form" onSubmit={handleAddComment}>
-                    <FormField label="Добавить комментарий">
-                      <textarea
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        rows={3}
-                        disabled={commentSubmitting}
-                      />
-                    </FormField>
-                    <Button
-                      type="submit"
-                      variant="primary"
-                      loading={commentSubmitting}
-                      disabled={!commentText.trim()}
-                    >
-                      Отправить
-                    </Button>
-                  </form>
-                )}
+                <IncidentComments {...commentState} canComment={canComment} usersMap={usersMap} />
               </div>
             )}
 
@@ -1106,70 +379,14 @@ export function IncidentDetailPage({
                 role="tabpanel"
                 aria-labelledby="incident-tab-history"
               >
-                {historyLoading && <LoadingBlock label="Загрузка истории…" inline />}
-                {!historyLoading && historyDiffs.length === 0 && (
-                  <EmptyState title="История изменений пуста" />
-                )}
-                <ol className="history-timeline">
-                  {historyDiffs.map((block, blockIndex) => (
-                    <li key={block.entry.id} className="history-timeline__item">
-                      <div className="history-timeline__header">
-                        {block.isCreation ? 'Создание инцидента · ' : ''}
-                        <span className="history-timeline__when">{formatDate(block.entry.changedAt)}</span>
-                        <span aria-hidden>·</span>
-                        <UserChip
-                          login={userLoginFromMap(block.entry.changedByUserId, usersMap)}
-                          size={24}
-                        />
-                      </div>
-                      {block.rows.length === 0 && !block.isCreation && (
-                        <p className="text-muted">Без изменений полей</p>
-                      )}
-                      <ul className="history-diff-list">
-                        {block.rows.map((row) => (
-                          <li key={`${block.entry.id}-${row.label}`} className="history-diff__row">
-                            <span className="history-diff__label">{row.label}:</span>
-                            {block.isCreation ? (
-                              <span>{renderHistoryValue(row.label, row.newValue, block.entry.snapshot)}</span>
-                            ) : (
-                              <span>
-                                {renderHistoryValue(row.label, row.oldValue, historyEntries[blockIndex - 1]?.snapshot)}
-                                {' → '}
-                                {renderHistoryValue(row.label, row.newValue, block.entry.snapshot)}
-                              </span>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </li>
-                  ))}
-                </ol>
+                <IncidentHistory token={token} canReadAliens={canReadAliens} historyEntries={historyEntries}
+                  usersMap={usersMap} historyLoading={historyLoading} />
               </div>
             )}
           </div>
           </section>
         </>
       )}
-
-      <UserPickerDrawer
-        token={token}
-        open={responsiblePickerOpen && canEditAssignment && responsibleEditing}
-        title="Назначить ответственного"
-        selecting={assignmentLoading}
-        onClose={() => setResponsiblePickerOpen(false)}
-        onSelect={handleSelectResponsibleFromPicker}
-      />
-
-      <UserPickerDrawer
-        token={token}
-        open={executorPickerOpen && canEditAssignment && executorsEditing}
-        title="Добавить исполнителей"
-        selecting={assignmentLoading}
-        multiple
-        excludeUserIds={executorDraftIds.filter((id) => !executorRemovedIds.has(id))}
-        onClose={() => setExecutorPickerOpen(false)}
-        onSelectMany={handleAddExecutorsFromPicker}
-      />
 
       <AlienPickerDrawer
         token={token}
@@ -1184,28 +401,6 @@ export function IncidentDetailPage({
         onSelect={handleLinkAlien}
       />
 
-      {incident && (
-        <CleanupReportDrawer
-          token={token}
-          incidentId={incident.id}
-          open={cleanupDrawerOpen}
-          mode={cleanupDrawerMode}
-          report={cleanupReport}
-          onClose={() => setCleanupDrawerOpen(false)}
-          onCreated={(created) => {
-            setCleanupReport(created);
-            setIncident((prev) => (
-              prev ? { ...prev, cleanupReportId: created.id } : prev
-            ));
-            if (historyLoaded) {
-              loadHistory();
-            }
-          }}
-          onDownloadFile={handleDownload}
-          downloadingId={downloadingId}
-        />
-      )}
-
       {!loading && !incident && !error && (
         <>
           <p className="text-muted incident-not-found">Инцидент не найден.</p>
@@ -1214,6 +409,6 @@ export function IncidentDetailPage({
           </button>
         </>
       )}
-    </section>
+    </Card>
   );
 }

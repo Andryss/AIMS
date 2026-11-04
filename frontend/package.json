@@ -26,6 +26,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:backend": "npm run build && node scripts/copy-build-to-backend.mjs",
+    "lint": "eslint src scripts --ext .js,.jsx,.ts,.tsx,.mjs --max-warnings=0",
     "test": "react-scripts test",
     "test:coverage": "react-scripts test --coverage --watchAll=false",
     "eject": "react-scripts eject"

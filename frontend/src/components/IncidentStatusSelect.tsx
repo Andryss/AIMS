@@ -1,8 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as api from '../api/client';
-import { useFocusTrap } from '../hooks/useFocusTrap';
-import { STATUS_LABELS, STATUS_TRANSITIONS } from '../incidentLabels';
+import { incidentTransitions } from '../domain/incidentTransitions';
+import { useMutation } from '../hooks/useMutation';
+import { STATUS_LABELS } from '../incidentLabels';
 import { IncidentResponse, IncidentStatus } from '../types';
+import { ConfirmReasonDialog } from './ui/ConfirmReasonDialog';
+import { StatusSelect } from './ui/StatusSelect';
 
 interface IncidentStatusSelectProps {
   token: string;
@@ -15,198 +18,51 @@ interface IncidentStatusSelectProps {
   className?: string;
 }
 
-function hasRole(roles: string[], name: string): boolean {
-  return roles.includes(name) || roles.includes('ADMIN');
-}
-
-function isResponsibleAgent(incident: IncidentResponse, currentUserId?: number): boolean {
-  return incident.responsibleUserId != null
-    && currentUserId != null
-    && incident.responsibleUserId === currentUserId;
-}
-
-function allowedTargetsForUser(
-  status: IncidentStatus,
-  roles: string[],
-  incident: IncidentResponse,
-  currentUserId?: number,
-): IncidentStatus[] {
-  const fromGraph = STATUS_TRANSITIONS[status];
-  if (status === 'DRAFT') {
-    return hasRole(roles, 'OPERATOR') ? fromGraph : [];
-  }
-  if (status === 'READY_FOR_ANALYSIS') {
-    return hasRole(roles, 'ANALYST') ? fromGraph : [];
-  }
-  if (status === 'CLARIFICATION_REQUIRED') {
-    return hasRole(roles, 'OPERATOR') ? fromGraph : [];
-  }
-  if (status === 'REANALYSIS_REQUIRED') {
-    return hasRole(roles, 'ANALYST') ? fromGraph : [];
-  }
-  if (status === 'PREPARED_FOR_EXECUTION' || status === 'EXECUTING') {
-    if (!hasRole(roles, 'AGENT')) {
-      return [];
-    }
-    return isResponsibleAgent(incident, currentUserId) ? fromGraph : [];
-  }
-  if (status === 'READY_FOR_EXECUTION' || status === 'PREPARATION_FOR_EXECUTION') {
-    return hasRole(roles, 'AGENT') ? fromGraph : [];
-  }
-  return [];
-}
-
-export function IncidentStatusSelect({
-  token,
-  incident,
-  roles,
-  currentUserId,
-  canChange,
-  showErrorText = false,
-  onStatusChanged,
-  className,
-}: IncidentStatusSelectProps) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
+export function IncidentStatusSelect({ token, incident, roles, currentUserId, canChange, showErrorText = false,
+  onStatusChanged, className }: IncidentStatusSelectProps) {
   const [pendingStatus, setPendingStatus] = useState<IncidentStatus | null>(null);
   const [commentText, setCommentText] = useState('');
-  const trapRef = useFocusTrap(modalOpen);
-
-  const allowedTargets = useMemo(
-    () => allowedTargetsForUser(incident.status, roles, incident, currentUserId),
-    [incident, roles, currentUserId],
-  );
-  const options: IncidentStatus[] = [incident.status, ...allowedTargets];
-
-  const commentRequired =
-    pendingStatus === 'CLARIFICATION_REQUIRED' || pendingStatus === 'REANALYSIS_REQUIRED';
-  const canConfirm = !commentRequired || commentText.trim().length > 0;
-
+  const scopeKey = JSON.stringify([token, incident.id, incident.status]);
+  const mutation = useMutation(scopeKey);
+  const { busy: loading, error, setError } = mutation;
+  const allowedTargets = incidentTransitions(incident.status, roles, incident, currentUserId);
+  useEffect(() => { setPendingStatus(null); setCommentText(''); }, [scopeKey]);
+  const close = () => {
+    if (!mutation.isBusy()) { setPendingStatus(null); setCommentText(''); }
+  };
   const applyStatusChange = async (nextStatus: IncidentStatus, comment?: string) => {
-    setLoading(true);
-    setError(null);
-
+    if (!canChange || !allowedTargets.includes(nextStatus)) { return; }
+    const session = mutation.start();
+    if (!session) { return; }
     try {
-      const updated = await api.changeIncidentStatus(
-        token,
-        incident.id,
-        nextStatus,
-        comment,
-      );
+      const updated = await api.changeIncidentStatus(token, incident.id, nextStatus, comment);
+      if (!session.isCurrent()) { return; }
       onStatusChanged(updated);
-      setModalOpen(false);
       setPendingStatus(null);
       setCommentText('');
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Не удалось изменить статус';
-      setError(message);
+      session.fail(err, 'Не удалось изменить статус');
     } finally {
-      setLoading(false);
+      session.finish();
     }
   };
 
-  const handleStatusChange = (nextStatus: IncidentStatus) => {
-    if (nextStatus === incident.status || loading || !allowedTargets.includes(nextStatus)) {
-      return;
-    }
-    if (nextStatus === 'CLARIFICATION_REQUIRED' || nextStatus === 'REANALYSIS_REQUIRED') {
-      setPendingStatus(nextStatus);
-      setCommentText('');
-      setError(null);
-      setModalOpen(true);
-      return;
-    }
-    void applyStatusChange(nextStatus);
-  };
-
-  const closeModal = () => {
-    if (loading) {
-      return;
-    }
-    setModalOpen(false);
-    setPendingStatus(null);
-    setCommentText('');
-  };
-
-  const confirmStatusChange = () => {
-    if (!pendingStatus || !canConfirm || loading) {
-      return;
-    }
-    void applyStatusChange(pendingStatus, commentText.trim());
-  };
-
-  const wrapClassName = className
-    ? `status-select-wrap ${className}`
-    : 'status-select-wrap';
-
-  const canEdit = canChange && allowedTargets.length > 0;
-
-  return (
-    <div className={wrapClassName} onClick={(e) => e.stopPropagation()}>
-      <select
-        className={`status-select status-chip--${incident.status.toLowerCase()}${loading ? ' is-loading' : ''}`}
-        value={incident.status}
-        disabled={loading || !canEdit}
-        onChange={(e) => handleStatusChange(e.target.value as IncidentStatus)}
-        aria-label={`Статус инцидента #${incident.id}`}
-      >
-        {options.map((status) => (
-          <option key={status} value={status}>
-            {STATUS_LABELS[status]}
-          </option>
-        ))}
-      </select>
-      {loading && <span className="status-select__loading">…</span>}
-      {error && !modalOpen && (showErrorText
-        ? <div className="alert alert--error" role="alert">{error}</div>
-        : <span className="status-select__error" title={error}>!</span>)}
-
-      {modalOpen && pendingStatus && (
-        <div className="status-change-modal-backdrop" role="presentation" onClick={closeModal}>
-          <div
-            ref={trapRef}
-            className="status-change-modal"
-            role="dialog"
-            aria-labelledby="status-change-title"
-            aria-modal="true"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 id="status-change-title">
-              Смена статуса на «{STATUS_LABELS[pendingStatus]}»
-            </h3>
-            <label className="status-change-modal__label" htmlFor="status-change-comment">
-              Комментарий (обязательно)
-            </label>
-            <textarea
-              id="status-change-comment"
-              className="status-change-modal__input"
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              rows={4}
-              disabled={loading}
-            />
-            {error && (
-              <div className="alert alert--error" role="alert" aria-live="polite">
-                {error}
-              </div>
-            )}
-            <div className="status-change-modal__actions">
-              <button type="button" className="btn btn--secondary" onClick={closeModal} disabled={loading}>
-                Отмена
-              </button>
-              <button
-                type="button"
-                className="btn btn--primary"
-                onClick={confirmStatusChange}
-                disabled={loading || !canConfirm}
-              >
-                {loading ? 'Сохранение…' : 'Подтвердить'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+  return <div className={`status-select-wrap${className ? ` ${className}` : ''}`} onClick={(event) => event.stopPropagation()}>
+    <StatusSelect value={incident.status} options={allowedTargets} labels={STATUS_LABELS}
+      label={`Статус инцидента #${incident.id}`} disabled={!canChange || !allowedTargets.length} busy={loading}
+      onChange={(nextStatus) => {
+        if (nextStatus === 'CLARIFICATION_REQUIRED' || nextStatus === 'REANALYSIS_REQUIRED') {
+          setPendingStatus(nextStatus); setCommentText(''); setError(null);
+        } else { void applyStatusChange(nextStatus); }
+      }} />
+    {loading && <span className="status-select__loading">…</span>}
+    {error && !pendingStatus && (showErrorText
+      ? <div className="alert alert--error" role="alert">{error}</div>
+      : <span className="status-select__error" title={error}>!</span>)}
+    <ConfirmReasonDialog open={pendingStatus != null} title={pendingStatus ? `Смена статуса на «${STATUS_LABELS[pendingStatus]}»` : ''}
+      label="Комментарий (обязательно)" maxLength={null} disableEmpty reason={commentText} onReasonChange={setCommentText} error={error}
+      busy={loading} onClose={close} onConfirm={() => {
+        if (pendingStatus && commentText.trim()) { void applyStatusChange(pendingStatus, commentText.trim()); }
+      }} />
+  </div>;
 }

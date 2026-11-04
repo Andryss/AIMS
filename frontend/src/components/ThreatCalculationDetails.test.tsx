@@ -22,7 +22,7 @@ it('shows the criteria in rows and their sum after a short hover', () => {
   expect(within(tooltip).getAllByRole('term').map((element) => element.textContent))
     .toEqual(['Угроза вида', 'Нападение на людей', 'Пострадавшие']);
   expect(within(tooltip).getAllByRole('definition').map((element) => element.textContent)).toEqual(['+4', '+2', '+1']);
-  expect(within(tooltip).getByText('Сумма').parentElement).toHaveTextContent('7');
+  expect(tooltip).toHaveTextContent(/Сумма\s*7$/);
   fireEvent.mouseLeave(trigger);
   fireEvent.mouseEnter(tooltip);
   act(() => { jest.advanceTimersByTime(200); });
@@ -66,7 +66,7 @@ it('formats the default base, negative and zero adjustments', () => {
   const tooltip = screen.getByRole('tooltip');
   expect(within(tooltip).getByText('Базовая угроза')).toBeInTheDocument();
   expect(within(tooltip).getAllByRole('definition').map((element) => element.textContent)).toEqual(['+3', '−1', '0']);
-  expect(within(tooltip).getByText('Сумма').parentElement).toHaveTextContent('2');
+  expect(tooltip).toHaveTextContent(/Сумма\s*2$/);
 });
 
 it('keeps the raw sum distinct from a score limited to the domain scale', () => {
@@ -75,6 +75,6 @@ it('keeps the raw sum distinct from a score limited to the domain scale', () => 
       { criterion: 'VICTIMS', adjustment: 3 }] }} />);
   fireEvent.click(screen.getByRole('button', { name: 'Показать причины оценки' }));
   const tooltip = screen.getByRole('tooltip');
-  expect(within(tooltip).getByText('Сумма').parentElement).toHaveTextContent('15');
-  expect(within(tooltip).getByText('В пределах 1–10').parentElement).toHaveTextContent('10');
+  expect(tooltip).toHaveTextContent(/Сумма\s*15/);
+  expect(tooltip).toHaveTextContent(/В пределах 1–10\s*10$/);
 });

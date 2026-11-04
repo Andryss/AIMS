@@ -11,10 +11,10 @@ describe('UserChip', () => {
   });
 
   it('applies removed and custom classes', () => {
-    const { container } = render(
+    render(
       <UserChip login="analyst" removed className="picker-chip" />,
     );
-    expect(container.querySelector('.user-chip.user-chip--removed.picker-chip')).toBeInTheDocument();
+    expect(screen.getByTestId('user-chip')).toHaveClass('user-chip', 'user-chip--removed', 'picker-chip');
   });
 
   it('calls onRemove when removable', async () => {

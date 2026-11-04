@@ -13,6 +13,7 @@ external UI library.
 | `layout.css` | App shell, header, login, profile, mobile incident cards |
 | `overlays.css` | Drawers, modals, notifications, file upload |
 | `data-display.css` | Tables, tabs, comments, history, pickers, chips |
+| `analytics.css` | Analytics widgets, summaries, charts and filters |
 
 Import order in `index.tsx`: `tokens` → `primitives` → `status` → `layout` → `overlays` → `data-display`.
 
@@ -27,6 +28,10 @@ In development, open `/dev/ui` for a live catalog of buttons, status chips, form
 - `FormField` — label, control, error, a11y ids
 - `StatusChip` — read-only status display
 - `Spinner`, `LoadingBlock`, `EmptyState`
+- `Modal`, `ConfirmReasonDialog` — focus, Escape, backdrop and busy close behavior
+- `StatusSelect` — shared status display; transitions remain in domain functions
+- `Pagination`, `HistoryTimeline`, `HistoryDiffList`
+- `EditIcon` — shared edit action icon
 
 ## Tokens
 
@@ -59,6 +64,13 @@ Prefer the `Button` React component for new code.
 
 - `card` + `card__header` — page/list containers
 - `section` + `section__title` — grouped content blocks
+
+### Shared data layout
+
+- `data-table-wrapper`, `data-table`, `data-table__row` — tables across modules
+- `filter-bar`, `filter-search-field` — list filters
+- `page-actions` — action groups
+- `entity-link` — links to related records
 
 ### Forms
 

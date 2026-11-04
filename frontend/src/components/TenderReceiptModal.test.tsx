@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as api from '../api/client';
 import { mockEquipment, mockTender } from '../test/testData';
@@ -52,12 +52,15 @@ it('rejects duplicate normalized serials and does not submit twice', async () =>
   fireEvent.change(screen.getByLabelText('Модель 2'), { target: { value: 'B' } });
   fireEvent.change(screen.getByLabelText('Серийный номер 1'), { target: { value: 'SN' } });
   fireEvent.change(screen.getByLabelText('Серийный номер 2'), { target: { value: ' sn ' } });
-  const form = screen.getByRole('button', { name: 'Принять поставку' }).closest('form')!;
-  fireEvent.submit(form);
+  await userEvent.click(screen.getByRole('button', { name: 'Принять поставку' }));
   expect(screen.getByRole('alert')).toHaveTextContent('Серийные номера не должны повторяться');
   expect(api.receiveTender).not.toHaveBeenCalled();
   fireEvent.change(screen.getByLabelText('Серийный номер 2'), { target: { value: 'OTHER' } });
-  fireEvent.submit(form);
-  fireEvent.submit(form);
+  const receiveButton = screen.getByRole('button', { name: 'Принять поставку' });
+  act(() => {
+    receiveButton.click();
+    expect(receiveButton).toBeEnabled();
+    receiveButton.click();
+  });
   expect(api.receiveTender).toHaveBeenCalledTimes(1);
 });

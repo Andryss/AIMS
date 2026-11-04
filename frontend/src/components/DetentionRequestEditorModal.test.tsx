@@ -17,6 +17,7 @@ it('creates with the fixed incident and preselected species', async () => {
   const saved = jest.fn();
   render(<DetentionRequestEditorModal token="tok" open incidentId={8} initialAlienId={1}
     onClose={jest.fn()} onSaved={saved} />);
+  expect(await screen.findByText('Слизень')).toBeInTheDocument();
   fireEvent.change(screen.getByLabelText(/Имя или обозначение/), { target: { value: '  Субъект 7  ' } });
   fireEvent.change(screen.getByLabelText(/Описание субъекта/), { target: { value: '  Задержан у вокзала  ' } });
   expect(screen.getByLabelText(/Инцидент-основание/)).toBeDisabled();
@@ -33,11 +34,12 @@ it('prefills editing, requires a changed-duration reason and preserves the draft
     onClose={jest.fn()} onSaved={jest.fn()} />);
   expect(screen.getByLabelText(/Имя или обозначение/)).toHaveValue('Субъект 7');
   fireEvent.change(screen.getByLabelText(/Срок заключения/), { target: { value: '15' } });
-  const form = screen.getByRole('button', { name: 'Сохранить' }).closest('form')!;
-  fireEvent.submit(form);
+  fireEvent.change(screen.getByLabelText(/Причина/), { target: { value: '   ' } });
+  await userEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
   expect(api.updateDetentionRequest).not.toHaveBeenCalled();
+  expect(screen.getByRole('alert')).toHaveTextContent('Укажите причину изменения срока');
   fireEvent.change(screen.getByLabelText(/Причина/), { target: { value: 'Пересмотр срока' } });
-  fireEvent.submit(form);
+  await userEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
   expect(await screen.findByRole('alert')).toHaveTextContent('Конфликт состояния');
   expect(screen.getByLabelText(/Срок заключения/)).toHaveValue(15);
 });
@@ -52,8 +54,12 @@ it('keeps a same-ID draft and ignores the save after unmounting', async () => {
   view.rerender(<DetentionRequestEditorModal token="tok" open incidentId={8}
     request={mockDetentionRequest({ subjectDescription: 'Серверное обновление' })} onClose={close} onSaved={saved} />);
   expect(screen.getByLabelText(/Описание субъекта/)).toHaveValue('Мой черновик');
-  const form = screen.getByRole('button', { name: 'Сохранить' }).closest('form')!;
-  fireEvent.submit(form); fireEvent.submit(form);
+  const saveButton = screen.getByRole('button', { name: 'Сохранить' });
+  act(() => {
+    saveButton.click();
+    expect(saveButton).toBeEnabled();
+    saveButton.click();
+  });
   expect(api.updateDetentionRequest).toHaveBeenCalledTimes(1);
   await userEvent.keyboard('{Escape}'); expect(close).not.toHaveBeenCalled();
   view.unmount(); await act(async () => resolve(mockDetentionRequest()));
@@ -63,7 +69,8 @@ it('keeps a same-ID draft and ignores the save after unmounting', async () => {
 it('searches species and can clear the choice', async () => {
   render(<DetentionRequestEditorModal token="tok" open incidentId={8} onClose={jest.fn()} onSaved={jest.fn()} />);
   fireEvent.change(screen.getByLabelText('Поиск вида'), { target: { value: 'сли' } });
-  await userEvent.click(await screen.findByRole('button', { name: /Выбрать.*Слизень/ }));
+  const selectSpecies = await screen.findByRole('button', { name: /Выбрать.*Слизень/ });
+  await act(async () => selectSpecies.click());
   expect(screen.getByRole('button', { name: 'Убрать вид' })).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Убрать вид' }));
   expect(screen.queryByRole('button', { name: 'Убрать вид' })).not.toBeInTheDocument();
@@ -71,9 +78,12 @@ it('searches species and can clear the choice', async () => {
 
 it('omits an unselected species in the full replacement payload', async () => {
   (api.updateDetentionRequest as jest.Mock).mockResolvedValue(mockDetentionRequest());
+  const saved = jest.fn();
   render(<DetentionRequestEditorModal token="tok" open incidentId={8} request={mockDetentionRequest({ alienId: 1 })}
-    onClose={jest.fn()} onSaved={jest.fn()} />);
+    onClose={jest.fn()} onSaved={saved} />);
+  expect(await screen.findByText('Слизень')).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Убрать вид' }));
-  await act(async () => fireEvent.submit(screen.getByRole('button', { name: 'Сохранить' }).closest('form')!));
+  await userEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
+  await waitFor(() => expect(saved).toHaveBeenCalledTimes(1));
   expect((api.updateDetentionRequest as jest.Mock).mock.calls[0][2]).not.toHaveProperty('alienId');
 });

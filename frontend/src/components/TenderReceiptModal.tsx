@@ -1,10 +1,11 @@
-import React, { FormEvent, useEffect, useId, useRef, useState } from 'react';
+import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import * as api from '../api/client';
 import { EQUIPMENT_TYPE_LABELS } from '../equipmentLabels';
-import { useFocusTrap } from '../hooks/useFocusTrap';
+import { useMutation } from '../hooks/useMutation';
 import { TenderReceiptResponse, TenderResponse } from '../types';
 import { Button } from './ui/Button';
 import { FormField } from './ui/FormField';
+import { Modal } from './ui/Modal';
 
 const MAX_INITIAL_ROWS = 10;
 interface ReceiptRow { key: number; model: string; serialNumber: string; }
@@ -14,71 +15,51 @@ interface TenderReceiptModalProps {
 }
 
 export function TenderReceiptModal({ token, open, tender, onClose, onSaved }: TenderReceiptModalProps) {
-  const titleId = useId();
-  const trapRef = useFocusTrap(open);
-  const scope = useRef(0);
-  const busy = useRef(false);
   const nextKey = useRef(0);
   const [rows, setRows] = useState<ReceiptRow[]>([]);
   const [comment, setComment] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const mutation = useMutation(JSON.stringify([token, open, tender.id, tender.quantity]));
+  const { busy: saving, error, setError } = mutation;
 
   useEffect(() => {
-    scope.current += 1;
-    busy.current = false;
-    setSaving(false);
     if (open) {
       setRows(Array.from({ length: Math.min(tender.quantity, MAX_INITIAL_ROWS) }, () =>
         ({ key: nextKey.current++, model: '', serialNumber: '' })));
       setComment('');
       setError(null);
     }
-    return () => { scope.current += 1; };
-  }, [open, token, tender.id, tender.quantity]);
-
-  useEffect(() => {
-    if (!open) { return; }
-    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape' && !busy.current) { onClose(); } };
-    document.addEventListener('keydown', escape);
-    return () => document.removeEventListener('keydown', escape);
-  }, [open, onClose]);
+  }, [open, token, tender.id, tender.quantity, setError]);
 
   if (!open) { return null; }
-  const close = () => { if (!busy.current) { onClose(); } };
+  const close = () => { if (!mutation.isBusy()) { onClose(); } };
   const editRow = (key: number, field: 'model' | 'serialNumber', value: string) => {
     setRows((previous) => previous.map((row) => row.key === key ? { ...row, [field]: value } : row));
   };
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    if (busy.current) { return; }
+    if (mutation.isBusy()) { return; }
     if (rows.length !== tender.quantity) { setError(`Необходимо указать ${tender.quantity} экземпляров`); return; }
     const equipment = rows.map(({ model, serialNumber }) => ({ model: model.trim(), serialNumber: serialNumber.trim() }));
     if (equipment.some((item) => !item.model || !item.serialNumber)) { setError('Заполните модель и серийный номер каждого экземпляра'); return; }
     if (new Set(equipment.map((item) => item.serialNumber.toLowerCase())).size !== equipment.length) {
       setError('Серийные номера не должны повторяться'); return;
     }
-    const version = scope.current;
-    busy.current = true;
-    setSaving(true);
-    setError(null);
+    const session = mutation.start();
+    if (!session) { return; }
     try {
       const response = await api.receiveTender(token, tender.id, { equipment, ...(comment.trim() ? { comment: comment.trim() } : {}) });
-      if (scope.current !== version) { return; }
+      if (!session.isCurrent()) { return; }
       onSaved(response);
       onClose();
     } catch (err: unknown) {
-      if (scope.current === version) { setError(err instanceof Error ? err.message : 'Не удалось принять поставку'); }
+      session.fail(err, 'Не удалось принять поставку');
     } finally {
-      if (scope.current === version) { busy.current = false; setSaving(false); }
+      session.finish();
     }
   };
 
-  return <div className="modal-overlay" role="presentation" onClick={close}>
-    <div className="modal" ref={trapRef} role="dialog" aria-modal="true" aria-labelledby={titleId}
-      onClick={(event) => event.stopPropagation()}>
-      <div className="modal__header"><h2 id={titleId}>Приёмка поставки</h2>
-        <Button variant="ghost" aria-label="Закрыть" disabled={saving} onClick={close}>×</Button></div>
+  return (
+    <Modal open={open} title="Приёмка поставки" onClose={close} busy={saving}>
       <p>{EQUIPMENT_TYPE_LABELS[tender.equipmentType]} · Необходимо принять: {tender.quantity}</p>
       {error && <div className="alert alert--error" role="alert">{error}</div>}
       <form className="form" onSubmit={submit}>
@@ -100,6 +81,6 @@ export function TenderReceiptModal({ token, open, tender, onClose, onSaved }: Te
         <div className="modal-actions"><Button variant="secondary" onClick={close} disabled={saving}>Отмена</Button>
           <Button type="submit" loading={saving}>Принять поставку</Button></div>
       </form>
-    </div>
-  </div>;
+    </Modal>
+  );
 }

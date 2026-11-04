@@ -1,15 +1,16 @@
-import React, { FormEvent, useEffect, useId, useRef, useState } from 'react';
+import { formatUserLabel } from '../utils/users';
+import React, { FormEvent, useEffect, useState } from 'react';
 import * as api from '../api/client';
 import { EQUIPMENT_PAGE_SIZE, outstandingEquipment } from '../equipmentLabels';
-import { useFocusTrap } from '../hooks/useFocusTrap';
+import { useMutation } from '../hooks/useMutation';
 import { useUsersMap } from '../hooks/useUsersMap';
-import { EquipmentListResponse, EquipmentMovementResponse, EquipmentResponse,
-  SaveEquipmentMovementRequest, UserSummary } from '../types';
-import { formatUserLabel } from '../utils/incidentUsers';
+import { EquipmentListResponse, EquipmentMovementResponse, EquipmentResponse, SaveEquipmentMovementRequest, UserSummary } from '../types';
+
 import { EmployeeSearch } from './EmployeeSearch';
 import { UserChip } from './UserChip';
 import { Button } from './ui/Button';
 import { FormField } from './ui/FormField';
+import { Modal } from './ui/Modal';
 import { LoadingBlock } from './ui/LoadingBlock';
 import { Pagination } from './ui/Pagination';
 
@@ -25,9 +26,6 @@ interface EquipmentMovementEditorModalProps {
 
 export function EquipmentMovementEditorModal({ token, open, incidentId, movement = null,
   sourceIssue = null, onClose, onSaved }: EquipmentMovementEditorModalProps) {
-  const titleId = useId();
-  const trapRef = useFocusTrap(open);
-  const submittingRef = useRef(false);
   const returning = movement?.operation === 'RETURN' || sourceIssue != null;
   const [source, setSource] = useState<EquipmentMovementResponse | null>(sourceIssue);
   const [responsible, setResponsible] = useState<UserSummary | null>(null);
@@ -39,8 +37,8 @@ export function EquipmentMovementEditorModal({ token, open, incidentId, movement
   const [result, setResult] = useState<EquipmentListResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const mutation = useMutation(JSON.stringify([token, open, incidentId, movement?.id, sourceIssue?.id]));
+  const { busy: submitting, error, setError } = mutation;
   const [revision, setRevision] = useState(0);
   const users = useUsersMap(token, [responsible?.id, source?.responsibleUserId]);
   const sourceId = sourceIssue?.id ?? movement?.sourceIssueMovementId;
@@ -54,7 +52,7 @@ export function EquipmentMovementEditorModal({ token, open, incidentId, movement
     setSource(sourceIssue);
     setInput(''); setQ(''); setPage(0);
     setResult(null); setError(null); setLoadError(null);
-  }, [open, movement, sourceIssue]);
+  }, [open, token, incidentId, movement, sourceIssue, setError]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => { setQ(input.trim()); setPage(0); }, 300);
@@ -94,15 +92,6 @@ export function EquipmentMovementEditorModal({ token, open, incidentId, movement
     return () => { cancelled = true; };
   }, [token, open, returning, input, q, page, revision]);
 
-  useEffect(() => {
-    if (!open) { return; }
-    const escape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !submittingRef.current) { onClose(); }
-    };
-    document.addEventListener('keydown', escape);
-    return () => document.removeEventListener('keydown', escape);
-  }, [open, onClose]);
-
   if (!open) { return null; }
 
   const available = returning ? (source ? outstandingEquipment(source.equipment, source.id) : []) : result?.items ?? [];
@@ -112,7 +101,7 @@ export function EquipmentMovementEditorModal({ token, open, incidentId, movement
   const candidates = (returning ? matches.slice(page * EQUIPMENT_PAGE_SIZE, (page + 1) * EQUIPMENT_PAGE_SIZE) : matches)
     .filter((item) => !selected.has(item.id));
   const holderId = returning ? source?.responsibleUserId : responsible?.id;
-  const close = () => { if (!submittingRef.current) { onClose(); } };
+  const close = () => { if (!mutation.isBusy()) { onClose(); } };
   const add = (item: EquipmentResponse) => setSelected((previous) => new Map(previous).set(item.id, item));
   const remove = (id: number) => setSelected((previous) => {
     const next = new Map(previous);
@@ -122,7 +111,7 @@ export function EquipmentMovementEditorModal({ token, open, incidentId, movement
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    if (submittingRef.current) { return; }
+    if (mutation.isBusy()) { return; }
     if (!holderId || selected.size === 0) {
       setError('Укажите ответственного и выберите оборудование');
       return;
@@ -137,21 +126,20 @@ export function EquipmentMovementEditorModal({ token, open, incidentId, movement
       responsibleUserId: holderId, sourceIssueMovementId: returning ? source!.id : null,
       equipmentIds: Array.from(selected.keys()), ...(comment.trim() ? { comment: comment.trim() } : {}),
     };
-    submittingRef.current = true;
-    setSubmitting(true);
-    setError(null);
+    const session = mutation.start();
+    if (!session) { return; }
 
     try {
       const saved = movement
         ? await api.updateEquipmentMovement(token, movement.id, payload)
         : await api.createEquipmentMovement(token, payload);
+      if (!session.isCurrent()) { return; }
       onSaved(saved);
       onClose();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Не удалось сохранить заявку');
+      session.fail(err, 'Не удалось сохранить заявку');
     } finally {
-      submittingRef.current = false;
-      setSubmitting(false);
+      session.finish();
     }
   };
 
@@ -159,68 +147,61 @@ export function EquipmentMovementEditorModal({ token, open, incidentId, movement
     login: responsible.login.startsWith('#') ? formatUserLabel(responsible.id, users) : responsible.login } : null;
 
   return (
-    <div className="modal-overlay" role="presentation" onClick={close}>
-      <div ref={trapRef} className="modal modal--equipment" role="dialog" aria-modal="true"
-        aria-labelledby={titleId} onClick={(event) => event.stopPropagation()}>
-        <div className="modal__header">
-          <h2 id={titleId}>{movement ? 'Редактировать заявку' : returning ? 'Заявка на возврат' : 'Заявка на выдачу'}</h2>
-          <Button variant="ghost" onClick={close} disabled={submitting} aria-label="Закрыть">×</Button>
+    <Modal open={open} title={movement ? 'Редактировать заявку' : returning ? 'Заявка на возврат' : 'Заявка на выдачу'} onClose={close} busy={submitting} className="modal--equipment">
+      <p>Инцидент #{returning ? source?.incidentId ?? incidentId : incidentId}
+        {returning && sourceId ? ` · По выдаче #${sourceId}` : ''}</p>
+      {error && <div className="alert alert--error" role="alert">{error}</div>}
+      <form className="form" onSubmit={submit}>
+        {returning ? <div className="field"><span className="field__label">Ответственный</span>
+          <UserChip login={formatUserLabel(source?.responsibleUserId, users)} /></div>
+          : <EmployeeSearch token={token} label="Ответственный" required value={selectedUser}
+            onChange={setResponsible} disabled={submitting} />}
+        <div className="field">
+          <input className="field__control" type="search" aria-label="Поиск оборудования"
+            placeholder="Найти по модели или серийному номеру" value={input} disabled={submitting}
+            onChange={(event) => { setInput(event.target.value); setPage(0); }} />
         </div>
-        <p>Инцидент #{returning ? source?.incidentId ?? incidentId : incidentId}
-          {returning && sourceId ? ` · По выдаче #${sourceId}` : ''}</p>
-        {error && <div className="alert alert--error" role="alert">{error}</div>}
-        <form className="form" onSubmit={submit}>
-          {returning ? <div className="field"><span className="field__label">Ответственный</span>
-            <UserChip login={formatUserLabel(source?.responsibleUserId, users)} /></div>
-            : <EmployeeSearch token={token} label="Ответственный" required value={selectedUser}
-              onChange={setResponsible} disabled={submitting} />}
-          <div className="field">
-            <input className="field__control" type="search" aria-label="Поиск оборудования"
-              placeholder="Найти по модели или серийному номеру" value={input} disabled={submitting}
-              onChange={(event) => { setInput(event.target.value); setPage(0); }} />
-          </div>
-          {loadError && <div className="alert alert--error" role="alert">{loadError}</div>}
-          {loading && <LoadingBlock label="Загрузка доступного оборудования…" inline />}
-          {input.trim().length < 2 && <p className="field__help">Введите минимум 2 символа для поиска оборудования</p>}
-          {searching && !loading && !loadError && candidates.length > 0 && (
-            <ul className="equipment-search-results" aria-label="Найденное оборудование">
-              {candidates.map((item) => <li key={item.id}>
-                <Button variant="ghost" aria-label={`Добавить ${item.serialNumber}`} disabled={submitting}
-                  onClick={() => add(item)}>{item.model} · {item.serialNumber}</Button>
-              </li>)}
-            </ul>
-          )}
-          {searching && !loading && !loadError && candidates.length === 0 && <p className="field__help">
-            {matches.length > 0 ? 'Найденное оборудование уже выбрано' : 'Доступное оборудование не найдено'}
-          </p>}
-          {searching && !loadError && (returning ? matches.length > EQUIPMENT_PAGE_SIZE : result && result.totalPages > 1) && (
-            <Pagination page={page} totalPages={returning ? Math.ceil(matches.length / EQUIPMENT_PAGE_SIZE) : result!.totalPages}
-              totalElements={returning ? matches.length : result!.totalElements} loading={loading || submitting} onChange={setPage} />
-          )}
-          <section aria-label="Выбранное оборудование" className="equipment-selection">
-            <h3>Выбрано: {selected.size}</h3>
-            {selected.size === 0 && <p className="field__help">Добавьте оборудование из результатов поиска</p>}
-            {Array.from(selected.values()).map((item) => <div key={item.id} className="equipment-selection__item">
-              <span>{item.model} · {item.serialNumber}</span>
-              <Button variant="ghost" size="sm" disabled={submitting} aria-label={`Убрать ${item.serialNumber}`}
-                onClick={() => remove(item.id)}>×</Button>
-            </div>)}
-          </section>
-          {(error || loadError) && <Button variant="outline" onClick={() => setRevision((value) => value + 1)} disabled={loading || submitting}>
-            Обновить доступность
-          </Button>}
-          <FormField label="Комментарий">
-            <textarea value={comment} maxLength={4000} rows={3} disabled={submitting}
-              onChange={(event) => setComment(event.target.value)} />
-          </FormField>
-          <div className="modal-actions">
-            <Button variant="secondary" onClick={close} disabled={submitting}>Отмена</Button>
-            <Button type="submit" loading={submitting} disabled={loading || Boolean(loadError)}>
-              {movement ? 'Сохранить' : 'Создать заявку'}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+        {loadError && <div className="alert alert--error" role="alert">{loadError}</div>}
+        {loading && <LoadingBlock label="Загрузка доступного оборудования…" inline />}
+        {input.trim().length < 2 && <p className="field__help">Введите минимум 2 символа для поиска оборудования</p>}
+        {searching && !loading && !loadError && candidates.length > 0 && (
+          <ul className="equipment-search-results" aria-label="Найденное оборудование">
+            {candidates.map((item) => <li key={item.id}>
+              <Button variant="ghost" aria-label={`Добавить ${item.serialNumber}`} disabled={submitting}
+                onClick={() => add(item)}>{item.model} · {item.serialNumber}</Button>
+            </li>)}
+          </ul>
+        )}
+        {searching && !loading && !loadError && candidates.length === 0 && <p className="field__help">
+          {matches.length > 0 ? 'Найденное оборудование уже выбрано' : 'Доступное оборудование не найдено'}
+        </p>}
+        {searching && !loadError && (returning ? matches.length > EQUIPMENT_PAGE_SIZE : result && result.totalPages > 1) && (
+          <Pagination page={page} totalPages={returning ? Math.ceil(matches.length / EQUIPMENT_PAGE_SIZE) : result!.totalPages}
+            totalElements={returning ? matches.length : result!.totalElements} loading={loading || submitting} onChange={setPage} />
+        )}
+        <section aria-label="Выбранное оборудование" className="equipment-selection">
+          <h3>Выбрано: {selected.size}</h3>
+          {selected.size === 0 && <p className="field__help">Добавьте оборудование из результатов поиска</p>}
+          {Array.from(selected.values()).map((item) => <div key={item.id} className="equipment-selection__item">
+            <span>{item.model} · {item.serialNumber}</span>
+            <Button variant="ghost" size="sm" disabled={submitting} aria-label={`Убрать ${item.serialNumber}`}
+              onClick={() => remove(item.id)}>×</Button>
+          </div>)}
+        </section>
+        {(error || loadError) && <Button variant="outline" onClick={() => setRevision((value) => value + 1)} disabled={loading || submitting}>
+          Обновить доступность
+        </Button>}
+        <FormField label="Комментарий">
+          <textarea value={comment} maxLength={4000} rows={3} disabled={submitting}
+            onChange={(event) => setComment(event.target.value)} />
+        </FormField>
+        <div className="modal-actions">
+          <Button variant="secondary" onClick={close} disabled={submitting}>Отмена</Button>
+          <Button type="submit" loading={submitting} disabled={loading || Boolean(loadError)}>
+            {movement ? 'Сохранить' : 'Создать заявку'}
+          </Button>
+        </div>
+      </form>
+    </Modal>
   );
 }

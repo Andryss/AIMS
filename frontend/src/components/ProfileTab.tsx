@@ -1,3 +1,4 @@
+import { Card } from './ui/Card';
 import React from 'react';
 import { ROLE_LABELS } from '../constants';
 import { AuthMeResponse } from '../types';
@@ -17,7 +18,7 @@ interface ProfileTabProps {
 
 export function ProfileTab({ profile, onSignOut }: ProfileTabProps) {
   return (
-    <section className="card">
+    <Card>
       <div className="profile-header">
         <UserAvatar login={profile.login} size={80} className="profile-avatar" />
         <div>
@@ -44,6 +45,6 @@ export function ProfileTab({ profile, onSignOut }: ProfileTabProps) {
           Выйти
         </button>
       </div>
-    </section>
+    </Card>
   );
 }

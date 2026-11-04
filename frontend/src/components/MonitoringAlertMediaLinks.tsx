@@ -24,7 +24,8 @@ export function MonitoringAlertMediaLinks({ urls, compact = false }: MonitoringA
   }
 
   return (
-    <div className={compact ? 'monitoring-alert-media monitoring-alert-media--compact' : 'monitoring-alert-media'}>
+    <div className={compact ? 'monitoring-alert-media monitoring-alert-media--compact' : 'monitoring-alert-media'}
+      data-testid="monitoring-alert-media">
       <p className="monitoring-alert-media__title">Медиа от внешней системы</p>
       <ul className="monitoring-alert-media__list">
         {urls.map((url, index) => (

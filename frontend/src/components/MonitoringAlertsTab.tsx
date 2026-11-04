@@ -1,10 +1,14 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { Card, CardHeader } from './ui/Card';
+import React, { useEffect, useState } from 'react';
 import * as api from '../api/client';
+import { usePaginatedResource } from '../hooks/usePaginatedResource';
+import { formatDateTime } from '../utils/dateTime';
 import { CreateIncidentInitialValues, IncidentResponse, MonitoringAlert } from '../types';
 import { IncidentEditorModal } from './IncidentEditorModal';
 import { MonitoringAlertCard } from './MonitoringAlertCard';
 import { EmptyState } from './ui/EmptyState';
 import { LoadingBlock } from './ui/LoadingBlock';
+import { Pagination } from './ui/Pagination';
 
 const PAGE_SIZE = 12;
 
@@ -14,42 +18,24 @@ interface MonitoringAlertsTabProps {
 }
 
 export function MonitoringAlertsTab({ token, canCreate }: MonitoringAlertsTabProps) {
-  const [page, setPage] = useState(0);
-  const [items, setItems] = useState<MonitoringAlert[]>([]);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalElements, setTotalElements] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [paging, setPaging] = useState({ token, page: 0 });
+  const page = paging.token === token ? paging.page : 0;
+  const setPage = (nextPage: number) => setPaging({ token, page: nextPage });
+  useEffect(() => setPaging({ token, page: 0 }), [token]);
+  const { result, loading, error, reload } = usePaginatedResource({
+    scopeKey: token, page,
+    load: (requestedPage) => api.listMonitoringAlerts(token, requestedPage, PAGE_SIZE),
+    errorMessage: 'Не удалось загрузить алерты', onPageCorrection: setPage,
+  });
+  const items = result?.items ?? [];
+  const totalPages = result?.totalPages ?? 0;
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [createInitialValues, setCreateInitialValues] =
     useState<CreateIncidentInitialValues | null>(null);
 
-  const loadPage = useCallback(
-    async (pageNumber: number) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await api.listMonitoringAlerts(token, pageNumber, PAGE_SIZE);
-        setItems(response.items);
-        setPage(response.page);
-        setTotalPages(response.totalPages);
-        setTotalElements(response.totalElements);
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Не удалось загрузить алерты';
-        setError(message);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [token],
-  );
-
-  useEffect(() => {
-    loadPage(0);
-  }, [loadPage]);
-
   const handleCreated = (_incident: IncidentResponse) => {
-    loadPage(0);
+    setPage(0);
+    reload();
   };
 
   const openCreateFromAlert = (alert: MonitoringAlert) => {
@@ -64,24 +50,16 @@ export function MonitoringAlertsTab({ token, canCreate }: MonitoringAlertsTabPro
     setCreateModalOpen(true);
   };
 
-  const formatDate = (iso: string) => {
-    try {
-      return new Date(iso).toLocaleString('ru-RU');
-    } catch {
-      return iso;
-    }
-  };
-
   return (
-    <section className="card" aria-busy={loading}>
-      <div className="card__header">
+    <Card  aria-busy={loading}>
+      <CardHeader>
         <div>
           <h2>Входящие алерты</h2>
           <p className="card__subtitle">
             События от внешней системы мониторинга. Откройте медиа-ссылки или зарегистрируйте инцидент.
           </p>
         </div>
-      </div>
+      </CardHeader>
 
       {error && (
         <div className="alert alert--error" role="alert" aria-live="polite">
@@ -106,35 +84,14 @@ export function MonitoringAlertsTab({ token, canCreate }: MonitoringAlertsTabPro
               alert={alert}
               canCreate={canCreate}
               onRegisterIncident={openCreateFromAlert}
-              formatDate={formatDate}
+              formatDate={formatDateTime}
             />
           ))}
         </div>
       )}
 
-      {totalPages > 1 && (
-        <div className="pagination">
-          <button
-            type="button"
-            className="btn btn--secondary"
-            disabled={page <= 0 || loading}
-            onClick={() => loadPage(page - 1)}
-          >
-            ← Предыдущая
-          </button>
-          <span className="pagination__info">
-            Страница {page + 1} из {totalPages} ({totalElements} всего)
-          </span>
-          <button
-            type="button"
-            className="btn btn--secondary"
-            disabled={page >= totalPages - 1 || loading}
-            onClick={() => loadPage(page + 1)}
-          >
-            Следующая →
-          </button>
-        </div>
-      )}
+      {totalPages > 1 && result && <Pagination page={result.page} totalPages={totalPages}
+        totalElements={result.totalElements} loading={loading} onChange={setPage} />}
 
       <IncidentEditorModal
         token={token}
@@ -146,6 +103,6 @@ export function MonitoringAlertsTab({ token, canCreate }: MonitoringAlertsTabPro
         onSaved={handleCreated}
         initialValues={createInitialValues}
       />
-    </section>
+    </Card>
   );
 }

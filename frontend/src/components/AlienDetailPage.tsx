@@ -1,3 +1,5 @@
+import { Card, CardHeader } from './ui/Card';
+import { EditIcon } from './ui/EditIcon';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import * as api from '../api/client';
@@ -59,22 +61,19 @@ export function AlienDetailPage({ token, canWrite, canBrowseList = true }: Alien
   };
 
   return (
-    <section className="card" aria-busy={loading}>
-      <div className="card__header">
+    <Card  aria-busy={loading}>
+      <CardHeader>
         <h2>{alien?.name ?? 'Карточка вида'}</h2>
         <div className="card__actions" role="group" aria-label="Действия вида">
           {!loading && alien && canWrite && (
             <Button variant="ghost" className="icon-button" aria-label="Редактировать вид"
               title="Редактировать вид" onClick={() => setEditorOpen(true)}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
-                strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="m16 3 5 5M3 21l5-1L21 7a2.1 2.1 0 0 0-5-5L3 15z" />
-              </svg>
+              <EditIcon />
             </Button>
           )}
           <Button variant="outline" to={backTo}>{backLabel}</Button>
         </div>
-      </div>
+      </CardHeader>
       {error && <div className="alert alert--error" role="alert" aria-live="polite">{error}</div>}
       {loading && <LoadingBlock label="Загрузка вида…" skeleton rows={3} />}
       {!loading && alien && (
@@ -93,6 +92,6 @@ export function AlienDetailPage({ token, canWrite, canBrowseList = true }: Alien
       )}
       {alien && <AlienEditorModal token={token} open={editorOpen && canWrite} alien={alien}
         onClose={() => setEditorOpen(false)} onSaved={setAlien} />}
-    </section>
+    </Card>
   );
 }

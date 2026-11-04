@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as api from '../api/client';
+import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 import { UserSummary } from '../types';
 import { PickerDrawerShell } from './PickerDrawerShell';
 import { UserAvatar } from './UserAvatar';
@@ -41,75 +42,33 @@ export function UserPickerDrawer(props: UserPickerDrawerProps) {
     multiple = false,
   } = props;
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<UserSummary[]>([]);
-  const [searchLoading, setSearchLoading] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [selectedUsers, setSelectedUsers] = useState<Map<number, UserSummary>>(() => new Map());
 
   const excludeKey = excludeUserIds.join(',');
-  const excludeSet = useMemo(() => new Set(excludeUserIds), [excludeKey]);
+  const excludeSet = new Set(excludeUserIds);
 
   useEffect(() => {
     if (!open) {
       setSearchQuery('');
-      setSearchResults([]);
-      setSearchLoading(false);
       setSelectedUserId(null);
       setSelectedUsers(new Map());
     }
   }, [open]);
 
+  const { results: searchResults, loading: searchLoading } = useDebouncedSearch({
+    scopeKey: JSON.stringify([token, excludeKey, multiple]), query: searchQuery, enabled: open, retainResults: true,
+    load: async (query) => (await api.searchUsers(token, query, 'AGENT')).items
+      .filter((user) => !excludeSet.has(user.id)),
+    errorMessage: 'Не удалось найти агентов',
+  });
+
   useEffect(() => {
-    if (!open) {
-      return;
+    if (!multiple) {
+      setSelectedUserId((previous) => searchQuery.trim().length >= 2 && previous != null
+        && searchResults.some((user) => user.id === previous) ? previous : null);
     }
-
-    const query = searchQuery.trim();
-    if (query.length < 2) {
-      setSearchResults([]);
-      setSearchLoading(false);
-      if (!multiple) {
-        setSelectedUserId(null);
-      }
-      return;
-    }
-
-    let cancelled = false;
-    const timer = window.setTimeout(() => {
-      setSearchLoading(true);
-      api
-        .searchUsers(token, query, 'AGENT')
-        .then((response) => {
-          if (!cancelled) {
-            const visible = response.items.filter((user) => !excludeSet.has(user.id));
-            setSearchResults(visible);
-            if (!multiple) {
-              setSelectedUserId((prev) => (
-                prev != null && visible.some((user) => user.id === prev) ? prev : null
-              ));
-            }
-          }
-        })
-        .catch(() => {
-          if (!cancelled) {
-            setSearchResults([]);
-            if (!multiple) {
-              setSelectedUserId(null);
-            }
-          }
-        })
-        .finally(() => {
-          if (!cancelled) {
-            setSearchLoading(false);
-          }
-        });
-    }, 300);
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(timer);
-    };
-  }, [excludeKey, multiple, open, searchQuery, token]);
+  }, [searchResults, searchQuery, multiple]);
 
   const selectedUser = searchResults.find((user) => user.id === selectedUserId) ?? null;
   const selectedCount = multiple ? selectedUsers.size : (selectedUser ? 1 : 0);

@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
-import * as api from './api/client';
-import { clearFileCache } from './utils/fileCache';
+import { AuthProvider } from './auth/AuthContext';
+import { deriveAccess } from './auth/access';
+import { useAuthSession } from './hooks/useAuthSession';
 import { AnalyticsTab } from './components/AnalyticsTab';
 import { AppHeader } from './components/AppHeader';
 import { AlienKnowledgeBaseTab } from './components/AlienKnowledgeBaseTab';
@@ -15,137 +16,32 @@ import { EquipmentDetailPage } from './components/EquipmentDetailPage';
 import { EquipmentMovementsTab } from './components/EquipmentMovementsTab';
 import { EquipmentMovementDetailPage } from './components/EquipmentMovementDetailPage';
 import { DevStyleguidePage } from './components/DevStyleguidePage';
-import { IncidentDetailPage } from './components/IncidentDetailPage';
+import { IncidentRoute } from './components/IncidentRoute';
 import { IncidentsTab } from './components/IncidentsTab';
 import { LoginPage } from './components/LoginPage';
 import { MonitoringAlertsTab } from './components/MonitoringAlertsTab';
 import { ProfileTab } from './components/ProfileTab';
 import { LoadingBlock } from './components/ui/LoadingBlock';
-import { INCIDENTS_TAB_ROLES, KNOWLEDGE_BASE_TAB_ROLES, MONITORING_ALERTS_TAB_ROLES, TOKEN_STORAGE_KEY } from './constants';
-import { AuthMeResponse } from './types';
 
 function App() {
   const navigate = useNavigate();
-  const [accessToken, setAccessToken] = useState<string | null>(
-    () => localStorage.getItem(TOKEN_STORAGE_KEY),
-  );
-  const [profile, setProfile] = useState<AuthMeResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const session = useAuthSession();
+  const { accessToken, profile, error, loading, unreadCount, setUnreadCount } = session;
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-
-  const showIncidentsTab = useMemo(
-    () =>
-      profile?.roles.some((role) =>
-        INCIDENTS_TAB_ROLES.includes(role as (typeof INCIDENTS_TAB_ROLES)[number]),
-      ) ?? false,
-    [profile],
-  );
-
-  const canReadAnalytics = profile?.permissions.includes('ANALYTICS_READ') ?? false;
-  const canReadDetentions = profile?.permissions.includes('DETENTION_READ') ?? false;
-  const canCreateDetentions = profile?.permissions.includes('DETENTION_CREATE') ?? false;
-  const canReadTenders = profile?.permissions.includes('TENDER_READ') ?? false;
-  const canCreateTenders = profile?.permissions.includes('TENDER_CREATE') ?? false;
-  const canReadEquipment = profile?.permissions.includes('EQUIPMENT_READ') ?? false;
-  const canWriteEquipment = profile?.permissions.includes('EQUIPMENT_WRITE') ?? false;
-  const canReadMovements = profile?.permissions.includes('EQUIPMENT_MOVEMENT_READ') ?? false;
-  const canCreateMovements = profile?.permissions.includes('EQUIPMENT_MOVEMENT_CREATE') ?? false;
-  const canProcessMovements = (profile?.permissions.includes('EQUIPMENT_MOVEMENT_PROCESS') ?? false)
-    && (profile?.roles.some((role) => role === 'STOREKEEPER' || role === 'ADMIN') ?? false);
-
-  const canCreateIncident = profile?.permissions.includes('INCIDENT_CREATE') ?? false;
-  const canEditIncident = profile?.permissions.includes('INCIDENT_EDIT') ?? false;
-  const canReadMonitoringAlerts = useMemo(
-    () =>
-      (profile?.permissions.includes('MONITORING_ALERT_READ') ?? false) &&
-      (profile?.roles.some((role) =>
-        MONITORING_ALERTS_TAB_ROLES.includes(role as (typeof MONITORING_ALERTS_TAB_ROLES)[number]),
-      ) ??
-        false),
-    [profile],
-  );
-  const canChangeIncidentStatus = profile?.permissions.includes('INCIDENT_STATUS_CHANGE') ?? false;
-  const canReadAliens = profile?.permissions.includes('ALIEN_READ') ?? false;
-  const canWriteAliens = profile?.permissions.includes('ALIEN_WRITE') ?? false;
-  const showKnowledgeBaseTab = canReadAliens && (profile?.roles.some((role) =>
-    KNOWLEDGE_BASE_TAB_ROLES.includes(role as (typeof KNOWLEDGE_BASE_TAB_ROLES)[number])) ?? false);
-  const canClassifyAlien = profile?.permissions.includes('INCIDENT_ALIEN_CLASSIFY') ?? false;
-  const canCalculateThreat = profile?.permissions.includes('INCIDENT_THREAT_CALCULATE') ?? false;
-  const canLinkAlien = profile?.permissions.includes('INCIDENT_ALIEN_LINK') ?? false;
-  const canComment = profile?.permissions.includes('INCIDENT_COMMENT') ?? false;
-  const canAssign = profile?.permissions.includes('INCIDENT_ASSIGN') ?? false;
-  const canReadCleanupReport = profile?.permissions.includes('CLEANUP_REPORT_READ') ?? false;
-  const canCreateCleanupReport = profile?.permissions.includes('CLEANUP_REPORT_CREATE') ?? false;
-  const canChangeCleanupStatus = profile?.permissions.includes('CLEANUP_STATUS_CHANGE') ?? false;
+  const access = deriveAccess(profile);
+  const { showIncidentsTab, canReadAnalytics, canReadDetentions,
+    canReadTenders, canCreateTenders, canReadEquipment, canWriteEquipment, canReadMovements,
+    canCreateMovements, canProcessMovements, canCreateIncident, canReadMonitoringAlerts,
+    canChangeIncidentStatus, canReadAliens, canWriteAliens, showKnowledgeBaseTab, defaultPath } = access;
   const roles = profile?.roles ?? [];
   const currentUserId = profile?.userId;
-  const defaultPath = roles.includes('MANAGEMENT') && canReadAnalytics ? '/analytics'
-    : roles.includes('PRISON_GUARD') && canReadDetentions ? '/detention-requests'
-    : roles.includes('TENDER_MANAGER') && canReadTenders ? '/tenders'
-    : roles.includes('STOREKEEPER') && canReadEquipment ? '/equipment'
-    : showIncidentsTab ? '/incidents' : '/profile';
-
-  const loadProfile = useCallback(async (token: string) => {
-    const me = await api.getAuthMe(token);
-    setProfile(me);
-    return me;
-  }, []);
-
-  const refreshUnreadCount = useCallback(async (token: string) => {
-    try {
-      const response = await api.getUnreadNotificationsCount(token);
-      setUnreadCount(response.count);
-    } catch {
-      setUnreadCount(0);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!accessToken) {
-      setProfile(null);
-      setUnreadCount(0);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    Promise.all([loadProfile(accessToken), refreshUnreadCount(accessToken)])
-      .catch((err: unknown) => {
-        const message = err instanceof Error ? err.message : 'Не удалось загрузить профиль';
-        setError(message);
-        clearFileCache();
-        setAccessToken(null);
-        localStorage.removeItem(TOKEN_STORAGE_KEY);
-      })
-      .finally(() => setLoading(false));
-  }, [accessToken, loadProfile, refreshUnreadCount]);
 
   const handleSignIn = async (login: string, password: string) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await api.signIn({ login, password });
-      setAccessToken(response.accessToken);
-      localStorage.setItem(TOKEN_STORAGE_KEY, response.accessToken);
-      navigate('/');
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Ошибка входа';
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
+    if (await session.signIn(login, password)) { navigate('/'); }
   };
-
   const handleSignOut = () => {
-    clearFileCache();
-    setAccessToken(null);
-    setProfile(null);
-    setUnreadCount(0);
+    session.signOut();
     setNotificationsOpen(false);
-    localStorage.removeItem(TOKEN_STORAGE_KEY);
     navigate('/');
   };
 
@@ -175,6 +71,7 @@ function App() {
   }
 
   return (
+    <AuthProvider value={{ token: accessToken, profile, access }}>
     <div className="app app--authenticated">
       <a href="#main-content" className="skip-link">
         Перейти к содержимому
@@ -185,18 +82,8 @@ function App() {
       </div>
 
       <AppHeader
-        token={accessToken}
-        login={profile?.login ?? ''}
         unreadCount={unreadCount}
         notificationsOpen={notificationsOpen}
-        showIncidentsTab={showIncidentsTab}
-        showMonitoringAlertsTab={canReadMonitoringAlerts}
-        showKnowledgeBaseTab={showKnowledgeBaseTab}
-        showTendersTab={canReadTenders}
-        showDetentionsTab={canReadDetentions}
-        showAnalyticsTab={canReadAnalytics}
-        showEquipmentTab={canReadEquipment}
-        showEquipmentMovementsTab={canReadMovements}
         onToggleNotifications={() => setNotificationsOpen((prev) => !prev)}
         onCloseNotifications={() => setNotificationsOpen(false)}
         onUnreadChange={setUnreadCount}
@@ -220,26 +107,22 @@ function App() {
           <Route
             path="/profile"
             element={
-              profile ? (
-                <ProfileTab profile={profile} onSignOut={handleSignOut} />
-              ) : (
-                <LoadingBlock label="Загрузка профиля…" />
-              )
+              <ProfileTab profile={profile} onSignOut={handleSignOut} />
             }
           />
           {canReadAnalytics && <Route path="/analytics" element={<AnalyticsTab key={accessToken}
             token={accessToken} permissions={profile.permissions} />} />}
           {canReadDetentions && <>
             <Route path="/detention-requests" element={<DetentionRequestsTab token={accessToken}
-              canReadIncidents={showIncidentsTab && profile.permissions.includes('INCIDENT_READ')} />} />
+              canReadIncidents={access.canReadIncidents} />} />
             <Route path="/detention-requests/:id" element={<DetentionRequestDetailPage token={accessToken}
               permissions={profile.permissions} currentUserId={currentUserId} canReadAliens={canReadAliens}
-              canReadIncidents={showIncidentsTab && profile.permissions.includes('INCIDENT_READ')} />} />
+              canReadIncidents={access.canReadIncidents} />} />
           </>}
           {canReadTenders && <>
             <Route path="/tenders" element={<TendersTab token={accessToken} canCreate={canCreateTenders} />} />
             <Route path="/tenders/:id" element={<TenderDetailPage token={accessToken} permissions={profile.permissions}
-              currentUserId={currentUserId} canReadIncidents={showIncidentsTab && profile.permissions.includes('INCIDENT_READ')} canReadEquipment={canReadEquipment} />} />
+              currentUserId={currentUserId} canReadIncidents={access.canReadIncidents} canReadEquipment={canReadEquipment} />} />
           </>}
           {canReadEquipment && <>
             <Route path="/equipment" element={<EquipmentTab token={accessToken} canWrite={canWriteEquipment} canCreateTenders={canReadTenders && canCreateTenders} />} />
@@ -286,26 +169,7 @@ function App() {
               <Route
                 path="/incidents/:id"
                 element={
-                  <IncidentDetailPage
-                    token={accessToken}
-                    roles={roles}
-                    currentUserId={currentUserId}
-                    canChangeStatus={canChangeIncidentStatus}
-                    canReadAliens={canReadAliens}
-                    canLinkAlien={canLinkAlien}
-                    canClassifyAlien={canClassifyAlien}
-                    canCalculateThreat={canCalculateThreat}
-                    canEdit={canEditIncident}
-                    canComment={canComment}
-                    canAssign={canAssign}
-                    canReadCleanupReport={canReadCleanupReport}
-                    canCreateCleanupReport={canCreateCleanupReport}
-                    canChangeCleanupStatus={canChangeCleanupStatus}
-                    canReadEquipmentMovements={canReadMovements}
-                    canCreateEquipmentMovements={canCreateMovements}
-                    canReadDetentions={canReadDetentions}
-                    canCreateDetentions={canCreateDetentions}
-                  />
+                  <IncidentRoute />
                 }
               />
             </>
@@ -322,6 +186,7 @@ function App() {
         </Routes>
       </main>
     </div>
+    </AuthProvider>
   );
 }
 

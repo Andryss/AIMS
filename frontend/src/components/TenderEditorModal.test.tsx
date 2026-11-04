@@ -45,7 +45,7 @@ it('blocks duplicate saves and ignores completion after unmount', async () => {
   const onClose = jest.fn();
   const view = render(<TenderEditorModal token="tok" open tender={mockTender()} hasOffers={false}
     onClose={onClose} onSaved={onSaved} />);
-  const form = screen.getByRole('button', { name: 'Сохранить' }).closest('form')!;
+  const form = screen.getByRole('form', { name: 'Редактировать тендер' });
   fireEvent.submit(form);
   fireEvent.submit(form);
   expect(api.updateTender).toHaveBeenCalledTimes(1);
@@ -65,7 +65,7 @@ it.each([false, true])('keeps the draft and submit guard through a same-ID refre
   const view = render(<TenderEditorModal token="tok" open tender={mockTender()} hasOffers={false}
     onClose={onClose} onSaved={onSaved} />);
   fireEvent.change(screen.getByLabelText(/Условия закупки/), { target: { value: 'Мой черновик' } });
-  const form = screen.getByRole('button', { name: 'Сохранить' }).closest('form')!;
+  const form = screen.getByRole('form', { name: 'Редактировать тендер' });
   if (pending) { fireEvent.submit(form); }
   view.rerender(<TenderEditorModal token="tok" open tender={mockTender({ conditions: 'Серверное обновление' })}
     hasOffers={false} onClose={onClose} onSaved={onSaved} />);

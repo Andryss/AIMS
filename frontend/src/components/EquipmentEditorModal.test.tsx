@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as api from '../api/client';
 import { mockEquipment } from '../test/testData';
@@ -44,7 +44,7 @@ it('rejects whitespace and blocks repeat submissions while saving', async () => 
   render(<EquipmentEditorModal token="tok" open equipment={mockEquipment()}
     onClose={onClose} onSaved={jest.fn()} />);
   fireEvent.change(screen.getByLabelText(/Модель/), { target: { value: '  ' } });
-  fireEvent.submit(screen.getByRole('button', { name: 'Сохранить' }).closest('form')!);
+  fireEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
   expect(screen.getByRole('alert')).toHaveTextContent('Укажите тип, модель и серийный номер');
   expect(updateEquipment).not.toHaveBeenCalled();
   fireEvent.change(screen.getByLabelText(/Модель/), { target: { value: 'Модель' } });
@@ -52,4 +52,46 @@ it('rejects whitespace and blocks repeat submissions while saving', async () => 
   expect(screen.getByRole('button', { name: 'Сохранить' })).toBeDisabled();
   await userEvent.keyboard('{Escape}');
   expect(onClose).not.toHaveBeenCalled();
+});
+
+it('ignores a previous equipment save after switching the editor to another card', async () => {
+  let resolve!: (value: ReturnType<typeof mockEquipment>) => void;
+  updateEquipment.mockImplementationOnce(() => new Promise((done) => { resolve = done; }));
+  const onSaved = jest.fn();
+  const onClose = jest.fn();
+  const { rerender } = render(<EquipmentEditorModal token="tok" open equipment={mockEquipment()}
+    onClose={onClose} onSaved={onSaved} />);
+  fireEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
+  rerender(<EquipmentEditorModal token="next-token" open equipment={mockEquipment({ id: 2, model: 'Другая карточка' })}
+    onClose={onClose} onSaved={onSaved} />);
+  expect(screen.getByRole('button', { name: 'Сохранить' })).toBeEnabled();
+  await act(async () => { resolve(mockEquipment()); });
+  expect(onSaved).not.toHaveBeenCalled();
+  expect(onClose).not.toHaveBeenCalled();
+  expect(screen.getByLabelText(/Модель/)).toHaveValue('Другая карточка');
+});
+
+it('blocks two submit events in the same render and all close paths during saving', () => {
+  updateEquipment.mockImplementation(() => new Promise(() => {}));
+  const onClose = jest.fn();
+  render(<EquipmentEditorModal token="tok" open equipment={mockEquipment()} onClose={onClose} onSaved={jest.fn()} />);
+  const save = screen.getByRole('button', { name: 'Сохранить' });
+  act(() => { save.click(); save.click(); });
+  fireEvent.click(screen.getByRole('presentation'));
+  fireEvent.keyDown(document, { key: 'Escape' });
+  expect(updateEquipment).toHaveBeenCalledTimes(1);
+  expect(onClose).not.toHaveBeenCalled();
+});
+
+it('restores focus to the opener after closing the editor', () => {
+  const opener = document.createElement('button');
+  document.body.appendChild(opener);
+  opener.focus();
+  const { rerender } = render(<EquipmentEditorModal token="tok" open equipment={mockEquipment()}
+    onClose={jest.fn()} onSaved={jest.fn()} />);
+  expect(screen.getByRole('button', { name: 'Закрыть' })).toHaveFocus();
+  rerender(<EquipmentEditorModal token="tok" open={false} equipment={mockEquipment()}
+    onClose={jest.fn()} onSaved={jest.fn()} />);
+  expect(opener).toHaveFocus();
+  opener.remove();
 });

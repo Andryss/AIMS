@@ -29,7 +29,7 @@ it('shows only changed equipment fields as old and new values', async () => {
   listHistory.mockResolvedValue({ items: [registered, updated], page: 0, size: 10, totalElements: 2, totalPages: 1 });
   render(<MemoryRouter><EquipmentHistory token="tok" equipmentId={1} canReadMovements /></MemoryRouter>);
   const entries = await screen.findAllByRole('listitem');
-  const update = entries.find((entry) => entry.textContent?.includes('Изменены реквизиты'))!;
+  const update = entries.find((entry) => within(entry).queryByText('Изменены реквизиты'))!;
   expect(within(update).getByText(/Нейралайзер Н-1 → Нейралайзер Н-2/)).toBeInTheDocument();
   expect(within(update).getByText(/SN-001 → SN-002/)).toBeInTheDocument();
   expect(within(update).queryByText('Тип:')).not.toBeInTheDocument();
@@ -67,17 +67,20 @@ it('shows request changes without repeating unchanged fields or equipment metada
   } };
   listMovementHistory.mockResolvedValue({ items: [created, updated, processed, rejected],
     page: 0, size: 10, totalElements: 4, totalPages: 1 });
-  const { container } = render(<MemoryRouter><EquipmentMovementHistory token="tok" movementId={7} revision={0} /></MemoryRouter>);
+  render(<MemoryRouter><EquipmentMovementHistory token="tok" movementId={7} revision={0} /></MemoryRouter>);
   await screen.findByText('В ожидании → Обрабатывается');
-  const entries = container.querySelectorAll('.history-timeline__item');
-  expect(within(entries[1] as HTMLElement).getByText('Обследование склада → Новый комментарий')).toBeInTheDocument();
-  expect(await within(entries[1] as HTMLElement).findByRole('img', { name: 'Аватар agent' })).toBeInTheDocument();
-  expect(within(entries[1] as HTMLElement).getByRole('img', { name: 'Аватар agent2' })).toBeInTheDocument();
-  expect(within(entries[1] as HTMLElement).getByText(/SN-001/)).toBeInTheDocument();
-  expect(within(entries[1] as HTMLElement).getByText(/SN-002/)).toBeInTheDocument();
-  expect(within(entries[2] as HTMLElement).queryByText('Оборудование:')).not.toBeInTheDocument();
-  expect(within(entries[2] as HTMLElement).queryByText('Ответственный:')).not.toBeInTheDocument();
-  expect(within(entries[3] as HTMLElement).getByText('Причина: Выдача не нужна')).toBeInTheDocument();
+  const entries = within(screen.getByRole('region', { name: 'История заявки' })).getAllByRole('listitem');
+  const update = entries.find((entry) => within(entry).queryByText('Обследование склада → Новый комментарий'))!;
+  const processing = entries.find((entry) => within(entry).queryByText('В ожидании → Обрабатывается'))!;
+  const rejection = entries.find((entry) => within(entry).queryByText('Причина: Выдача не нужна'))!;
+  expect(within(update).getByText('Обследование склада → Новый комментарий')).toBeInTheDocument();
+  expect(await within(update).findByRole('img', { name: 'Аватар agent' })).toBeInTheDocument();
+  expect(within(update).getByRole('img', { name: 'Аватар agent2' })).toBeInTheDocument();
+  expect(within(update).getByText(/SN-001/)).toBeInTheDocument();
+  expect(within(update).getByText(/SN-002/)).toBeInTheDocument();
+  expect(within(processing).queryByText('Оборудование:')).not.toBeInTheDocument();
+  expect(within(processing).queryByText('Ответственный:')).not.toBeInTheDocument();
+  expect(within(rejection).getByText('Причина: Выдача не нужна')).toBeInTheDocument();
 });
 
 it('uses the previous page when comparing request history statuses', async () => {
@@ -94,18 +97,19 @@ it('uses the previous page when comparing request history statuses', async () =>
 });
 
 
-it.each([true, false])('renders receipt provenance with tender permission=%s', async (canReadTenders) => {
+it.each([
+  { canReadTenders: true, href: '/tenders/6' },
+  { canReadTenders: false, href: undefined },
+])('renders receipt provenance with tender permission=$canReadTenders', async ({ canReadTenders, href }) => {
   listHistory.mockResolvedValue({ items: [{ ...created, snapshot: { event: 'RECEIVED',
     equipment: mockEquipment({ sourceTenderId: 6 }) } }], page: 0, size: 10, totalElements: 1, totalPages: 1 });
   render(<MemoryRouter><EquipmentHistory token="tok" equipmentId={1} canReadMovements
     canReadTenders={canReadTenders} /></MemoryRouter>);
   expect(await screen.findByText('Поступление по тендеру')).toBeInTheDocument();
-  if (canReadTenders) {
-    expect(screen.getByRole('link', { name: 'Тендер #6' })).toHaveAttribute('href', '/tenders/6');
-  } else {
-    expect(screen.getByText('Тендер #6')).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Тендер #6' })).not.toBeInTheDocument();
-  }
+  expect(screen.getByText('Тендер #6')).toBeInTheDocument();
+  const link = screen.queryByRole('link', { name: 'Тендер #6' });
+  expect(Boolean(link)).toBe(canReadTenders);
+  expect(link?.getAttribute('href')).toBe(href);
 });
 
 it('treats a missing source in old snapshots and an explicit null as the same value', async () => {
@@ -113,6 +117,8 @@ it('treats a missing source in old snapshots and an explicit null as the same va
     equipment: mockEquipment({ model: 'Новое название', sourceTenderId: null }) } }],
     page: 0, size: 10, totalElements: 2, totalPages: 1 });
   render(<MemoryRouter><EquipmentHistory token="tok" equipmentId={1} canReadMovements /></MemoryRouter>);
-  const changed = await screen.findByText('Изменены реквизиты');
-  expect(within(changed.closest('li')!).queryByText('Тендер-основание:')).not.toBeInTheDocument();
+  await screen.findByText('Изменены реквизиты');
+  const entries = within(screen.getByRole('region', { name: 'История оборудования' })).getAllByRole('listitem');
+  const update = entries.find((entry) => within(entry).queryByText('Изменены реквизиты'))!;
+  expect(within(update).queryByText('Тендер-основание:')).not.toBeInTheDocument();
 });

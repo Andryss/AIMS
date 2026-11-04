@@ -1,10 +1,11 @@
+import { formatDateTime } from '../utils/dateTime';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import * as api from '../api/client';
 import { ASSIGNED_TERM_LABELS, REMAINING_TIME_LABELS } from '../analyticsLabels';
 import { DETENTION_STATUS_LABELS } from '../detentionLabels';
 import { DetentionAnalyticsQuery } from '../types';
-import { formatAnalyticsDate } from '../utils/analyticsFormatting';
+
 import { AnalyticsGroups } from './AnalyticsGroups';
 import { AnalyticsSummary } from './AnalyticsSummary';
 import { AnalyticsTrendChart } from './AnalyticsTrendChart';
@@ -33,7 +34,7 @@ export function DetentionAnalyticsDashboard({ token, query, permissions }: Deten
         <DurationPercentiles value={data.percentiles} />
       }</AnalyticsWidget>
     </div>
-    <h3 className="analytics-section-title">Состояние на {formatAnalyticsDate(query.to)}</h3>
+    <h3 className="analytics-section-title">Состояние на {formatDateTime(query.to)}</h3>
     <div className="analytics-summary-grid">
       <AnalyticsSummary {...props} title="Ожидают прибытия" load={api.getDetentionAwaitingAtTo} />
       <AnalyticsSummary {...props} title="Под стражей" load={api.getDetentionInCustodyAtTo} />
@@ -55,16 +56,16 @@ export function DetentionAnalyticsDashboard({ token, query, permissions }: Deten
     </div>
     <AnalyticsWidget {...props} title="Ближайшие освобождения" load={api.getDetentionUpcomingReleases}>{(data) => <>
       <p className="analytics-note">{data.totalCount > 10 ? `Показаны первые 10 из ${data.totalCount}` : `Всего: ${data.totalCount}`}</p>
-      {data.items.length ? <div className="incidents-table-wrapper"><table className="incidents-table">
+      {data.items.length ? <div className="data-table-wrapper"><table className="data-table">
         <thead><tr><th>Заявка</th><th>Субъект</th><th>Вид</th><th>Инцидент</th><th>Плановое освобождение</th></tr></thead>
         <tbody>{data.items.map((item) => <tr key={item.requestId}>
-          <td>{permissions.includes('DETENTION_READ') ? <Link to={`/detention-requests/${item.requestId}`} className="knowledge-base__name">
+          <td>{permissions.includes('DETENTION_READ') ? <Link to={`/detention-requests/${item.requestId}`} className="entity-link">
             Заявка #{item.requestId}</Link> : `Заявка #${item.requestId}`}</td><td>{item.subjectName}</td>
-          <td>{item.alienId && permissions.includes('ALIEN_READ') ? <Link to={`/aliens/${item.alienId}`} className="knowledge-base__name">
+          <td>{item.alienId && permissions.includes('ALIEN_READ') ? <Link to={`/aliens/${item.alienId}`} className="entity-link">
             {item.alienName ?? `Вид #${item.alienId}`}</Link> : item.alienName ?? 'Не определён'}</td>
-          <td>{permissions.includes('INCIDENT_READ') ? <Link to={`/incidents/${item.incidentId}`} className="knowledge-base__name">
+          <td>{permissions.includes('INCIDENT_READ') ? <Link to={`/incidents/${item.incidentId}`} className="entity-link">
             Инцидент #{item.incidentId}</Link> : `Инцидент #${item.incidentId}`}</td>
-          <td>{formatAnalyticsDate(item.plannedReleaseAt)}</td>
+          <td>{formatDateTime(item.plannedReleaseAt)}</td>
         </tr>)}</tbody>
       </table></div> : <EmptyState title="Ближайших освобождений нет" />}
     </>}</AnalyticsWidget>

@@ -1,10 +1,15 @@
+import { formatDateTime } from '../utils/dateTime';
+import { positiveId } from '../utils/params';
+import { formatUserLabel } from '../utils/users';
+import { Card, CardHeader } from './ui/Card';
+import { EditIcon } from './ui/EditIcon';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import * as api from '../api/client';
-import { EQUIPMENT_STATUS_LABELS, EQUIPMENT_TYPE_LABELS, formatEquipmentDate, positiveId } from '../equipmentLabels';
+import { EQUIPMENT_STATUS_LABELS, EQUIPMENT_TYPE_LABELS } from '../equipmentLabels';
 import { useUsersMap } from '../hooks/useUsersMap';
 import { EquipmentResponse } from '../types';
-import { formatUserLabel } from '../utils/incidentUsers';
+
 import { EquipmentEditorModal } from './EquipmentEditorModal';
 import { EquipmentHistory } from './EquipmentHistory';
 import { UserChip } from './UserChip';
@@ -55,16 +60,13 @@ export function EquipmentDetailPage({ token, canWrite, canReadMovements, canRead
   }, [token, equipmentId]);
 
   return (
-    <section className="card" aria-busy={loading}>
-      <div className="card__header">
+    <Card  aria-busy={loading}>
+      <CardHeader>
         <h2>{equipment?.model ?? 'Карточка оборудования'}</h2>
         <div className="card__actions" role="group" aria-label="Действия оборудования">
           {!loading && equipment && canWrite && <Button variant="ghost" className="icon-button"
             aria-label="Редактировать оборудование" title="Редактировать оборудование" onClick={() => setEditorOpen(true)}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
-              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="m16 3 5 5M3 21l5-1L21 7a2.1 2.1 0 0 0-5-5L3 15z" />
-            </svg>
+            <EditIcon />
           </Button>}
           {!loading && equipment && canReadMovements && <Button variant="outline"
             to={`/equipment-movements?equipmentId=${equipment.id}`}>Все движения оборудования</Button>}
@@ -72,7 +74,7 @@ export function EquipmentDetailPage({ token, canWrite, canReadMovements, canRead
             {movementId ? '← К заявке' : '← К списку'}
           </Button>
         </div>
-      </div>
+      </CardHeader>
       {error && <div className="alert alert--error" role="alert">{error}</div>}
       {loading && <LoadingBlock label="Загрузка оборудования…" skeleton rows={4} />}
       {!loading && equipment && <>
@@ -93,7 +95,7 @@ export function EquipmentDetailPage({ token, canWrite, canReadMovements, canRead
               {canReadTenders ? <Link to={`/tenders/${equipment.sourceTenderId}`}>Тендер #{equipment.sourceTenderId}</Link>
                 : `Тендер #${equipment.sourceTenderId}`}
             </dd></div>}
-            <div className="data-list__row"><dt>Добавлено</dt><dd>{formatEquipmentDate(equipment.createdAt)}</dd></div>
+            <div className="data-list__row"><dt>Добавлено</dt><dd>{formatDateTime(equipment.createdAt)}</dd></div>
           </dl>
         </section>
         <HistoryTab>
@@ -109,6 +111,6 @@ export function EquipmentDetailPage({ token, canWrite, canReadMovements, canRead
           setEquipment(saved);
           setRevision((value) => value + 1);
         }} />}
-    </section>
+    </Card>
   );
 }

@@ -13,6 +13,18 @@ See also: [project README](../README.md) · [backend README](../backend/README.m
 For local API calls during development, run the [backend](../backend/README.md) on port 8080 (`proxy` in `package.json`
 forwards to it).
 
+## Source organization
+
+- `api/`: shared HTTP transport and explicit API functions grouped by domain. `api/client.ts` is the public compatibility barrel.
+- `types/`: domain contracts plus shared `Page<T>`, `PageQuery`, and `HistoryEntry<TSnapshot>`. `types.ts` preserves existing imports.
+- `auth/`: session context, access checks and navigation; entity ownership/status rules live in `domain/`.
+- `hooks/`: shared URL filters, debounced search, scoped requests/mutations and history loading.
+- `components/incident/`: independent detail sections; `IncidentDetailPage` composes them.
+- `components/ui/`: shared cards, dialogs, status controls, history rendering, pagination and form primitives.
+- `utils/`: neutral date/URL/user helpers and domain-specific history field definitions.
+
+Keep API paths and editable fields explicit in their domain. Reuse the shared request lifecycle and UI primitives when adding another list or editor. Include the account and entity/filter identity in request scope keys so delayed responses cannot update a different screen.
+
 ## Scripts
 
 | Command | Description |
@@ -22,6 +34,7 @@ forwards to it).
 | `npm run test:coverage` | Tests with coverage thresholds (`CI=true` for non-interactive) |
 | `npm run build` | Production bundle to `build/` |
 | `npm run build:backend` | Build and copy static assets into `backend/src/main/resources/static/public/` |
+| `npm run lint` | ESLint for frontend source, tests and scripts; warnings also fail the check |
 
 ## Technology stack
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import * as api from '../api/client';
-import { Alien } from '../types';
+import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 import { PickerDrawerShell } from './PickerDrawerShell';
 
 interface AlienPickerDrawerProps {
@@ -19,63 +19,25 @@ export function AlienPickerDrawer({
   onSelect,
 }: AlienPickerDrawerProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<Alien[]>([]);
-  const [searchLoading, setSearchLoading] = useState(false);
   const [selectedAlienId, setSelectedAlienId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!open) {
       setSearchQuery('');
-      setSearchResults([]);
-      setSearchLoading(false);
       setSelectedAlienId(null);
     }
   }, [open]);
 
+  const { results: searchResults, loading: searchLoading } = useDebouncedSearch({
+    scopeKey: token, query: searchQuery, enabled: open, retainResults: true,
+    load: async (query) => (await api.searchAliens(token, query)).items,
+    errorMessage: 'Не удалось найти виды',
+  });
+
   useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const query = searchQuery.trim();
-    if (query.length < 2) {
-      setSearchResults([]);
-      setSearchLoading(false);
-      setSelectedAlienId(null);
-      return;
-    }
-
-    let cancelled = false;
-    const timer = window.setTimeout(() => {
-      setSearchLoading(true);
-      api
-        .searchAliens(token, query)
-        .then((response) => {
-          if (!cancelled) {
-            setSearchResults(response.items);
-            setSelectedAlienId((prev) => (
-              prev != null && response.items.some((alien) => alien.id === prev) ? prev : null
-            ));
-          }
-        })
-        .catch(() => {
-          if (!cancelled) {
-            setSearchResults([]);
-            setSelectedAlienId(null);
-          }
-        })
-        .finally(() => {
-          if (!cancelled) {
-            setSearchLoading(false);
-          }
-        });
-    }, 300);
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(timer);
-    };
-  }, [open, searchQuery, token]);
+    setSelectedAlienId((previous) => searchQuery.trim().length >= 2 && previous != null
+      && searchResults.some((alien) => alien.id === previous) ? previous : null);
+  }, [searchResults, searchQuery]);
 
   const handleConfirm = () => {
     if (selectedAlienId != null) {

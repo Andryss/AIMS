@@ -1,11 +1,16 @@
+import { formatDateTime } from '../utils/dateTime';
+import { positiveId } from '../utils/params';
+import { formatUserLabel } from '../utils/users';
+import { Card, CardHeader } from './ui/Card';
+import { EditIcon } from './ui/EditIcon';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import * as api from '../api/client';
-import { EQUIPMENT_TYPE_LABELS, formatEquipmentDate, positiveId } from '../equipmentLabels';
+import { EQUIPMENT_TYPE_LABELS } from '../equipmentLabels';
 import { useUsersMap } from '../hooks/useUsersMap';
 import { canEditTender } from '../tenderLabels';
 import { TenderResponse } from '../types';
-import { formatUserLabel } from '../utils/incidentUsers';
+
 import { TenderEditorModal } from './TenderEditorModal';
 import { TenderHistory } from './TenderHistory';
 import { TenderParticipants } from './TenderParticipants';
@@ -24,7 +29,7 @@ export function TenderDetailPage(props: TenderDetailPageProps) {
   const { id } = useParams<{ id: string }>();
   const tenderId = positiveId(id);
   return tenderId ? <TenderCard key={`${props.token}:${tenderId}`} {...props} id={tenderId} />
-    : <section className="card"><div className="alert alert--error" role="alert">Некорректный идентификатор тендера</div></section>;
+    : <Card><div className="alert alert--error" role="alert">Некорректный идентификатор тендера</div></Card>;
 }
 
 function TenderCard({ token, permissions, currentUserId, id, canReadIncidents = true, canReadEquipment = true }:
@@ -71,17 +76,16 @@ function TenderCard({ token, permissions, currentUserId, id, canReadIncidents = 
   const receivable = tender?.status === 'AWAITING_DELIVERY' && tender.winnerParticipantId != null
     && permissions.includes('TENDER_RECEIVE');
 
-  return <section className="card" aria-busy={loading}>
-    <div className="card__header">
+  return <Card  aria-busy={loading}>
+    <CardHeader>
       <h2>{tender ? `Тендер #${tender.id}` : 'Карточка тендера'}</h2>
       <div className="card__actions" role="group" aria-label="Действия тендера">
       {editable && <Button variant="ghost" className="icon-button" aria-label="Редактировать тендер" title="Редактировать тендер"
-        onClick={() => setEditorOpen(true)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
-          strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m16 3 5 5M3 21l5-1L21 7a2.1 2.1 0 0 0-5-5L3 15z" /></svg></Button>}
+        onClick={() => setEditorOpen(true)}><EditIcon /></Button>}
         {receivable && <Button onClick={() => setReceiptOpen(true)}>Принять поставку</Button>}
         <Button variant="outline" to={`/tenders${location.search}`}>← К списку</Button>
       </div>
-    </div>
+    </CardHeader>
     {loading && <LoadingBlock label="Загрузка тендера…" />}
     {error && <div className="alert alert--error" role="alert">{error}</div>}
     {!loading && tender && <>
@@ -98,9 +102,9 @@ function TenderCard({ token, permissions, currentUserId, id, canReadIncidents = 
             ? canReadIncidents ? <Link to={`/incidents/${tender.incidentId}`}>Инцидент #{tender.incidentId}</Link> : `Инцидент #${tender.incidentId}` : '—'}</dd></div>
           <div className="data-list__row"><dt>Автор</dt><dd><UserChip login={formatUserLabel(tender.createdByUserId, users)} size={24} /></dd></div>
           <div className="data-list__row"><dt>Победитель</dt><dd>{tender.winnerParticipantId != null
-            ? <a href="#participants" className="knowledge-base__name">Участник #{tender.winnerParticipantId}</a> : '—'}</dd></div>
-          <div className="data-list__row"><dt>Создан</dt><dd>{formatEquipmentDate(tender.createdAt)}</dd></div>
-          {tender.completedAt && <div className="data-list__row"><dt>Завершён</dt><dd>{formatEquipmentDate(tender.completedAt)}</dd></div>}
+            ? <a href="#participants" className="entity-link">Участник #{tender.winnerParticipantId}</a> : '—'}</dd></div>
+          <div className="data-list__row"><dt>Создан</dt><dd>{formatDateTime(tender.createdAt)}</dd></div>
+          {tender.completedAt && <div className="data-list__row"><dt>Завершён</dt><dd>{formatDateTime(tender.completedAt)}</dd></div>}
         </dl>
         {receivedIds.length > 0 && <div className="alert alert--success" role="status">Поставка принята.{' '}
           {receivedIds.map((value, index) => <React.Fragment key={value}>{index > 0 && ', '}
@@ -120,5 +124,5 @@ function TenderCard({ token, permissions, currentUserId, id, canReadIncidents = 
           setReceivedIds(response.equipment.map((item) => item.id)); changed(response.tender);
         }} />
     </>}
-  </section>;
+  </Card>;
 }

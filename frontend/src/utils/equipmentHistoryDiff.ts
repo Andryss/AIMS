@@ -1,24 +1,15 @@
-import { EQUIPMENT_STATUS_LABELS, EQUIPMENT_TYPE_LABELS, MOVEMENT_OPERATION_LABELS,
-  MOVEMENT_STATUS_LABELS, formatEquipmentDate } from '../equipmentLabels';
+import { formatDateTime } from './dateTime';
+import { EQUIPMENT_STATUS_LABELS, EQUIPMENT_TYPE_LABELS, MOVEMENT_OPERATION_LABELS, MOVEMENT_STATUS_LABELS } from '../equipmentLabels';
 import { EquipmentMovementResponse, EquipmentResponse } from '../types';
+import { compareHistoryFields, HistoryDiffRow } from './historyDiff';
 
 export type EquipmentHistoryValue = string
   | { kind: 'user' | 'movement' | 'incident' | 'tender'; id: number | null }
   | { kind: 'equipment'; items: Array<Pick<EquipmentResponse, 'id' | 'model' | 'serialNumber'>> };
 
-export interface EquipmentHistoryDiffRow {
-  label: string;
-  oldValue?: EquipmentHistoryValue;
-  newValue: EquipmentHistoryValue;
-}
+export type EquipmentHistoryDiffRow = HistoryDiffRow<EquipmentHistoryValue>;
 
 type Fields = Record<string, EquipmentHistoryValue>;
-
-function compareFields(current: Fields, previous?: Fields): EquipmentHistoryDiffRow[] {
-  return Object.entries(current)
-    .filter(([label, value]) => !previous || JSON.stringify(previous[label]) !== JSON.stringify(value))
-    .map(([label, value]) => ({ label, oldValue: previous?.[label], newValue: value }));
-}
 
 function equipmentFields(item: EquipmentResponse): Fields {
   return {
@@ -42,15 +33,15 @@ function movementFields(movement: EquipmentMovementResponse): Fields {
     'Оборудование': { kind: 'equipment', items: [...movement.equipment].sort((a, b) => a.id - b.id)
       .map(({ id, model, serialNumber }) => ({ id, model, serialNumber })) },
     'Комментарий': movement.comment || '—',
-    'Выполнена': movement.completedAt ? formatEquipmentDate(movement.completedAt) : '—',
+    'Выполнена': movement.completedAt ? formatDateTime(movement.completedAt) : '—',
   };
 }
 
 export function buildEquipmentHistoryDiff(current: EquipmentResponse, previous?: EquipmentResponse): EquipmentHistoryDiffRow[] {
-  return compareFields(equipmentFields(current), previous ? equipmentFields(previous) : undefined);
+  return compareHistoryFields(equipmentFields(current), previous ? equipmentFields(previous) : undefined);
 }
 
 export function buildEquipmentMovementHistoryDiff(current: EquipmentMovementResponse,
   previous?: EquipmentMovementResponse): EquipmentHistoryDiffRow[] {
-  return compareFields(movementFields(current), previous ? movementFields(previous) : undefined);
+  return compareHistoryFields(movementFields(current), previous ? movementFields(previous) : undefined);
 }

@@ -11,7 +11,10 @@ const updateAlien = api.updateAlien as jest.MockedFunction<typeof api.updateAlie
 
 beforeEach(() => jest.clearAllMocks());
 
-it.each([false, true])('saves a species with editing=%s', async (editing) => {
+it.each([
+  { mode: 'creation', editing: false },
+  { mode: 'editing', editing: true },
+])('saves a species during $mode', async ({ editing }) => {
   const alien = mockAlien();
   const saved = mockAlien({ name: 'Новый вид', description: 'Признаки', threatLevel: 6 });
   createAlien.mockResolvedValue(saved);
@@ -29,13 +32,8 @@ it.each([false, true])('saves a species with editing=%s', async (editing) => {
   await userEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
   const payload = { name: 'Новый вид', description: 'Признаки', threatLevel: 6 };
   await waitFor(() => expect(onSaved).toHaveBeenCalledWith(saved));
-  if (editing) {
-    expect(updateAlien).toHaveBeenCalledWith('tok', alien.id, payload);
-    expect(createAlien).not.toHaveBeenCalled();
-  } else {
-    expect(createAlien).toHaveBeenCalledWith('tok', payload);
-    expect(updateAlien).not.toHaveBeenCalled();
-  }
+  expect(updateAlien.mock.calls).toEqual(editing ? [['tok', alien.id, payload]] : []);
+  expect(createAlien.mock.calls).toEqual(editing ? [] : [['tok', payload]]);
   expect(onClose).toHaveBeenCalledTimes(1);
 });
 
@@ -43,7 +41,7 @@ it.each(['0', '11', '1.5'])('rejects invalid threat level %s', async (level) => 
   render(<AlienEditorModal token="tok" open alien={mockAlien()}
     onSaved={jest.fn()} onClose={jest.fn()} />);
   fireEvent.change(screen.getByLabelText(/Уровень угрозы/), { target: { value: level } });
-  fireEvent.submit(screen.getByRole('button', { name: 'Сохранить' }).closest('form')!);
+  fireEvent.submit(screen.getByRole('form', { name: 'Редактировать вид' }));
   expect(await screen.findByRole('alert')).toHaveTextContent(/целым числом/);
   expect(updateAlien).not.toHaveBeenCalled();
 });
@@ -52,7 +50,7 @@ it('rejects whitespace-only text', () => {
   render(<AlienEditorModal token="tok" open alien={mockAlien()}
     onSaved={jest.fn()} onClose={jest.fn()} />);
   fireEvent.change(screen.getByLabelText(/Название/), { target: { value: '   ' } });
-  fireEvent.submit(screen.getByRole('button', { name: 'Сохранить' }).closest('form')!);
+  fireEvent.submit(screen.getByRole('form', { name: 'Редактировать вид' }));
   expect(screen.getByRole('alert')).toHaveTextContent(/название и описание/);
   expect(updateAlien).not.toHaveBeenCalled();
 });
@@ -84,7 +82,7 @@ it('closes on Escape and restores the launcher focus', async () => {
   const { rerender } = render(<><button>Открыть</button><AlienEditorModal {...props} open={false} /></>);
   screen.getByRole('button', { name: 'Открыть' }).focus();
   rerender(<><button>Открыть</button><AlienEditorModal {...props} open /></>);
-  expect(screen.getByRole('dialog')).toContainElement(document.activeElement as HTMLElement);
+  expect(screen.getByRole('button', { name: 'Закрыть' })).toHaveFocus();
   await userEvent.keyboard('{Escape}');
   expect(onClose).toHaveBeenCalledTimes(1);
   rerender(<><button>Открыть</button><AlienEditorModal {...props} open={false} /></>);

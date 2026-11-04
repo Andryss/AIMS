@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface PickerDrawerShellProps {
@@ -22,12 +22,23 @@ export function PickerDrawerShell({
 }: PickerDrawerShellProps) {
   const trapRef = useFocusTrap(open);
 
+  useEffect(() => {
+    if (!open) { return; }
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !selecting) { onClose(); }
+    };
+    document.addEventListener('keydown', escape);
+    return () => document.removeEventListener('keydown', escape);
+  }, [open, selecting, onClose]);
+
+  const close = () => { if (!selecting) { onClose(); } };
+
   if (!open) {
     return null;
   }
 
   return (
-    <div className="drawer-overlay" onClick={onClose} role="presentation">
+    <div className="drawer-overlay" onClick={close} role="presentation">
       <div
         ref={trapRef}
         className="drawer"
@@ -42,7 +53,7 @@ export function PickerDrawerShell({
             <button
               type="button"
               className="btn btn--ghost"
-              onClick={onClose}
+              onClick={close}
               disabled={selecting}
               aria-label="Закрыть"
             >

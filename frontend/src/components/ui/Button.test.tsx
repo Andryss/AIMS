@@ -1,13 +1,14 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { Button } from './Button';
 
 describe('Button', () => {
   it('renders button with variant and size classes', () => {
-    const { container } = render(<Button variant="outline" size="sm">Save</Button>);
-    expect(container.querySelector('.btn.btn--outline.btn--sm')).toHaveTextContent('Save');
+    render(<Button variant="outline" size="sm">Save</Button>);
+    const button = screen.getByRole('button', { name: 'Save' });
+    expect(button).toHaveTextContent('Save');
+    expect(button).toHaveClass('btn', 'btn--outline', 'btn--sm');
   });
 
   it('renders loading state', () => {

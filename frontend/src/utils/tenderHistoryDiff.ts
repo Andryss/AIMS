@@ -1,10 +1,12 @@
-import { EQUIPMENT_TYPE_LABELS, formatEquipmentDate } from '../equipmentLabels';
+import { formatDateTime } from './dateTime';
+import { EQUIPMENT_TYPE_LABELS } from '../equipmentLabels';
 import { TENDER_PARTICIPANT_STATUS_LABELS, TENDER_STATUS_LABELS } from '../tenderLabels';
 import { TenderHistorySnapshot } from '../types';
+import { compareHistoryFields, HistoryDiffRow } from './historyDiff';
 
 export type TenderHistoryValue = string | { kind: 'user' | 'incident'; id: number | null }
   | { kind: 'equipment'; ids: number[] };
-export interface TenderHistoryDiffRow { label: string; oldValue?: TenderHistoryValue; newValue: TenderHistoryValue; }
+export type TenderHistoryDiffRow = HistoryDiffRow<TenderHistoryValue>;
 
 function fields(snapshot: TenderHistorySnapshot): Record<string, TenderHistoryValue> {
   const tender = snapshot.tender;
@@ -17,7 +19,7 @@ function fields(snapshot: TenderHistorySnapshot): Record<string, TenderHistoryVa
     'Статус': TENDER_STATUS_LABELS[tender.status],
     'Автор': { kind: 'user', id: tender.createdByUserId },
     'Победитель': winner?.name ?? (tender.winnerParticipantId ? `Участник #${tender.winnerParticipantId}` : '—'),
-    'Завершён': tender.completedAt ? formatEquipmentDate(tender.completedAt) : '—',
+    'Завершён': tender.completedAt ? formatDateTime(tender.completedAt) : '—',
     'Полученное оборудование': { kind: 'equipment', ids: snapshot.receivedEquipmentIds },
   };
   snapshot.participants.forEach((item) => {
@@ -30,8 +32,5 @@ function fields(snapshot: TenderHistorySnapshot): Record<string, TenderHistoryVa
 }
 
 export function buildTenderHistoryDiff(current: TenderHistorySnapshot, previous?: TenderHistorySnapshot): TenderHistoryDiffRow[] {
-  const before = previous ? fields(previous) : undefined;
-  return Object.entries(fields(current))
-    .filter(([label, value]) => !before || JSON.stringify(before[label]) !== JSON.stringify(value))
-    .map(([label, value]) => ({ label, oldValue: before?.[label], newValue: value }));
+  return compareHistoryFields(fields(current), previous ? fields(previous) : undefined);
 }

@@ -13,7 +13,7 @@ function Wrapper({ disabled = false }: { disabled?: boolean }) {
 describe('FileUploadField', () => {
   it('adds and removes files', async () => {
     render(<Wrapper />);
-    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const input = screen.getByLabelText('Вложения');
     const file = new File(['data'], 'photo.jpg', { type: 'image/jpeg' });
 
     await userEvent.upload(input, file);
@@ -41,7 +41,7 @@ describe('FileUploadField', () => {
 
   it('shows kilobyte size and ignores duplicate files', async () => {
     render(<Wrapper />);
-    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const input = screen.getByLabelText('Вложения');
     const file = new File([new ArrayBuffer(2048)], 'large.bin', { type: 'application/octet-stream' });
 
     await userEvent.upload(input, file);
@@ -81,7 +81,7 @@ describe('FileUploadField', () => {
 
   it('shows byte size label for tiny files', async () => {
     render(<Wrapper />);
-    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const input = screen.getByLabelText('Вложения');
     await userEvent.upload(input, new File([new ArrayBuffer(10)], 'tiny.bin'));
     expect(screen.getByText(/10 Б/)).toBeInTheDocument();
   });
@@ -121,7 +121,7 @@ it('shows an image preview from the selected original and releases its URL', asy
   URL.revokeObjectURL = jest.fn();
   const { unmount } = render(<Wrapper />);
   const file = new File(['photo'], 'preview.png', { type: 'image/png' });
-  await userEvent.upload(document.querySelector('input[type="file"]') as HTMLInputElement, file);
+  await userEvent.upload(screen.getByLabelText('Вложения'), file);
   expect(await screen.findByAltText('preview.png')).toHaveAttribute('src', 'blob:original');
   unmount();
   expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:original');
@@ -132,7 +132,7 @@ it('rejects a selection exceeding the configured attachment count', async () => 
   const onChange = jest.fn();
   const files = ['one.png', 'two.png', 'three.png'].map((name) => new File(['photo'], name, { type: 'image/png' }));
   render(<FileUploadField label="Вложения" files={[]} onChange={onChange} maxFiles={2} />);
-  const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+  const input = screen.getByLabelText('Вложения');
   await userEvent.upload(input, files);
   expect(onChange).not.toHaveBeenCalled();
   expect(screen.getByRole('alert')).toHaveTextContent('Можно прикрепить не более 2 файлов');

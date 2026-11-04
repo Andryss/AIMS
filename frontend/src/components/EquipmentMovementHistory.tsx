@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { formatDateTime } from '../utils/dateTime';
+import { formatUserLabel } from '../utils/users';
+import React from 'react';
 import * as api from '../api/client';
-import { EQUIPMENT_PAGE_SIZE, formatEquipmentDate } from '../equipmentLabels';
+import { EQUIPMENT_PAGE_SIZE } from '../equipmentLabels';
+import { usePagedHistory } from '../hooks/usePagedHistory';
 import { useUsersMap } from '../hooks/useUsersMap';
-import { EquipmentMovementHistoryEntry, EquipmentMovementHistoryListResponse } from '../types';
-import { formatUserLabel } from '../utils/incidentUsers';
+
 import { UserChip } from './UserChip';
 import { EmptyState } from './ui/EmptyState';
+import { HistoryTimeline } from './ui/HistoryTimeline';
 import { LoadingBlock } from './ui/LoadingBlock';
 import { Pagination } from './ui/Pagination';
 import { buildEquipmentMovementHistoryDiff } from '../utils/equipmentHistoryDiff';
@@ -14,30 +17,12 @@ import { EquipmentHistoryChanges } from './EquipmentHistoryChanges';
 interface EquipmentMovementHistoryProps { token: string; movementId: number; revision: number; }
 
 export function EquipmentMovementHistory({ token, movementId, revision }: EquipmentMovementHistoryProps) {
-  const [page, setPage] = useState(0);
-  const [result, setResult] = useState<EquipmentMovementHistoryListResponse | null>(null);
-  const [previousEntry, setPreviousEntry] = useState<EquipmentMovementHistoryEntry | undefined>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { page, setPage, result, previousEntry, loading, error } = usePagedHistory({
+    scopeKey: JSON.stringify([token, movementId]), revision, errorMessage: 'Не удалось загрузить историю заявки',
+    loadPage: (nextPage) => api.listEquipmentMovementHistory(token, movementId, nextPage, EQUIPMENT_PAGE_SIZE),
+  });
   const users = useUsersMap(token, [...(result?.items ?? []), ...(previousEntry ? [previousEntry] : [])].flatMap((entry) =>
     [entry.changedByUserId, entry.snapshot.movement.responsibleUserId]));
-
-  useEffect(() => setPage(0), [movementId]);
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true); setError(null);
-    Promise.all([
-      api.listEquipmentMovementHistory(token, movementId, page, EQUIPMENT_PAGE_SIZE),
-      page > 0 ? api.listEquipmentMovementHistory(token, movementId, page - 1, EQUIPMENT_PAGE_SIZE) : Promise.resolve(null),
-    ]).then(([response, previous]) => {
-      if (!cancelled) { setResult(response); setPreviousEntry(previous?.items[previous.items.length - 1]); }
-    })
-      .catch((err: unknown) => {
-        if (!cancelled) { setError(err instanceof Error ? err.message : 'Не удалось загрузить историю заявки'); }
-      })
-      .finally(() => { if (!cancelled) { setLoading(false); } });
-    return () => { cancelled = true; };
-  }, [token, movementId, revision, page]);
 
   return (
     <section aria-label="История заявки" aria-busy={loading}>
@@ -45,17 +30,17 @@ export function EquipmentMovementHistory({ token, movementId, revision }: Equipm
       {error && <div className="alert alert--error" role="alert">{error}</div>}
       {!loading && !error && result?.items.length === 0 && <EmptyState title="История пока пуста" />}
       {!loading && !error && result && <>
-        <ol className="history-timeline">{result.items.map((entry, index) => <li key={entry.id} className="history-timeline__item">
-          <div className="history-timeline__header">
-            {page === 0 && index === 0 ? 'Создание заявки · ' : ''}
-            <span className="history-timeline__when">{formatEquipmentDate(entry.changedAt)}</span>
-            <span aria-hidden>·</span>
-            <UserChip login={formatUserLabel(entry.changedByUserId, users)} size={24} />
-          </div>
-          <EquipmentHistoryChanges rows={buildEquipmentMovementHistoryDiff(entry.snapshot.movement,
-            (index > 0 ? result.items[index - 1] : previousEntry)?.snapshot.movement)} users={users} />
-          {entry.snapshot.transitionComment && <p className="text-pre-wrap">Причина: {entry.snapshot.transitionComment}</p>}
-        </li>)}</ol>
+        <HistoryTimeline entries={result.items} previousEntry={previousEntry} renderHeader={(entry, index) => <>
+          {page === 0 && index === 0 ? 'Создание заявки · ' : ''}
+          <span className="history-timeline__when">{formatDateTime(entry.changedAt)}</span>
+          <span aria-hidden>·</span>
+          <UserChip login={formatUserLabel(entry.changedByUserId, users)} size={24} />
+        </>}>
+          {(entry, previous) => <>
+            <EquipmentHistoryChanges rows={buildEquipmentMovementHistoryDiff(entry.snapshot.movement, previous?.snapshot.movement)} users={users} />
+            {entry.snapshot.transitionComment && <p className="text-pre-wrap">Причина: {entry.snapshot.transitionComment}</p>}
+          </>}
+        </HistoryTimeline>
         <Pagination page={page} totalPages={result.totalPages} totalElements={result.totalElements} onChange={setPage} />
       </>}
     </section>

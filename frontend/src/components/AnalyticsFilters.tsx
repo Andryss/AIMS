@@ -1,11 +1,13 @@
+import { positiveId } from '../utils/params';
+import { formatUserLabel } from '../utils/users';
 import React, { useEffect, useState } from 'react';
 import * as api from '../api/client';
 import { AnalyticsDashboard } from '../analyticsLabels';
 import { DETENTION_STATUS_LABELS } from '../detentionLabels';
-import { EQUIPMENT_TYPE_LABELS, positiveId } from '../equipmentLabels';
+import { EQUIPMENT_TYPE_LABELS } from '../equipmentLabels';
 import { EVENT_TYPE_LABELS } from '../incidentLabels';
 import { useUsersMap } from '../hooks/useUsersMap';
-import { formatUserLabel } from '../utils/incidentUsers';
+
 import { AlienPickerDrawer } from './AlienPickerDrawer';
 import { EmployeeSearch } from './EmployeeSearch';
 import { Button } from './ui/Button';

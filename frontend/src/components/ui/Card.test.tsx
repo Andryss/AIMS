@@ -4,18 +4,18 @@ import { Card, CardHeader } from './Card';
 
 describe('Card', () => {
   it('renders children with default card class', () => {
-    const { container } = render(<Card>Body</Card>);
-    expect(container.querySelector('.card')).toHaveTextContent('Body');
-    expect(container.querySelector('.card--flat')).not.toBeInTheDocument();
+    render(<Card>Body</Card>);
+    expect(screen.getByText('Body')).toHaveClass('card');
+    expect(screen.getByText('Body')).not.toHaveClass('card--flat');
   });
 
   it('supports flat and custom class names', () => {
-    const { container } = render(
+    render(
       <Card flat className="extra">
         Flat
       </Card>,
     );
-    expect(container.querySelector('.card.card--flat.extra')).toBeInTheDocument();
+    expect(screen.getByText('Flat')).toHaveClass('card', 'card--flat', 'extra');
   });
 });
 

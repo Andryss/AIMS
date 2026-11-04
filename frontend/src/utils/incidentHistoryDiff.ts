@@ -1,3 +1,4 @@
+import { formatDateTime as formatDate } from './dateTime';
 import { EVENT_TYPE_LABELS, CLEANUP_STATUS_LABELS, STATUS_LABELS } from '../incidentLabels';
 import { IncidentHistoryEntry, IncidentHistorySnapshot } from '../types';
 
@@ -19,14 +20,6 @@ type SnapshotField = {
   format: (snapshot: IncidentHistorySnapshot, usersMap: Map<number, string>) => string;
   compare: (prev: IncidentHistorySnapshot, curr: IncidentHistorySnapshot) => boolean;
 };
-
-function formatDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleString('ru-RU');
-  } catch {
-    return iso;
-  }
-}
 
 function formatAttachments(ids: number[]): string {
   if (ids.length === 0) {

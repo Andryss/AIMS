@@ -1,8 +1,10 @@
+import { formatUserLabel } from '../utils/users';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { EquipmentHistoryDiffRow, EquipmentHistoryValue } from '../utils/equipmentHistoryDiff';
-import { formatUserLabel } from '../utils/incidentUsers';
+
 import { UserChip } from './UserChip';
+import { HistoryDiffList } from './ui/HistoryDiffList';
 
 interface EquipmentHistoryChangesProps {
   rows: EquipmentHistoryDiffRow[];
@@ -28,14 +30,5 @@ export function EquipmentHistoryChanges({ rows, users, canReadMovements = true, 
       Заявка #{value.id}</Link> : `Заявка #${value.id}`;
   };
 
-  return rows.length === 0 ? <p className="text-muted">Без изменений полей</p> : (
-    <ul className="history-diff-list">
-      {rows.map((row) => <li key={row.label} className="history-diff__row">
-        <span className="history-diff__label">{row.label}:</span>
-        <span className="text-pre-wrap">
-          {row.oldValue !== undefined && <>{renderValue(row.oldValue)}{' → '}</>}{renderValue(row.newValue)}
-        </span>
-      </li>)}
-    </ul>
-  );
+  return <HistoryDiffList rows={rows} renderValue={renderValue} emptyMessage="Без изменений полей" />;
 }

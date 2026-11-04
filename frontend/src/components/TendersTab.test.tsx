@@ -75,12 +75,16 @@ it('corrects a stale page and then loads the next page', async () => {
   await waitFor(() => expect(api.listTenders).toHaveBeenLastCalledWith('tok', expect.objectContaining({ page: 0 })));
 });
 
-it.each([false, true])('shows a list empty result or error, failed=%s', async (failed) => {
-  if (failed) { (api.listTenders as jest.Mock).mockRejectedValue(new Error('Нет соединения')); }
-  else { (api.listTenders as jest.Mock).mockResolvedValue({ ...page, items: [], totalElements: 0, totalPages: 0 }); }
+it('shows a list empty result', async () => {
+  (api.listTenders as jest.Mock).mockResolvedValue({ ...page, items: [], totalElements: 0, totalPages: 0 });
   open();
-  if (failed) { expect(await screen.findByRole('alert')).toHaveTextContent('Нет соединения'); }
-  else { expect(await screen.findByText('Тендеры не найдены')).toBeInTheDocument(); }
+  expect(await screen.findByText('Тендеры не найдены')).toBeInTheDocument();
+});
+
+it('shows a list loading error', async () => {
+  (api.listTenders as jest.Mock).mockRejectedValue(new Error('Нет соединения'));
+  open();
+  expect(await screen.findByRole('alert')).toHaveTextContent('Нет соединения');
 });
 
 

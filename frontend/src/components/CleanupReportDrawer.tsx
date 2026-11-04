@@ -1,5 +1,6 @@
 import React, { FormEvent, useId, useState } from 'react';
 import * as api from '../api/client';
+import { useMutation } from '../hooks/useMutation';
 import { CleanupReportResponse } from '../types';
 import { FileUploadField } from './FileUploadField';
 import { AttachmentDownloadList } from './AttachmentDownloadList';
@@ -34,8 +35,8 @@ export function CleanupReportDrawer({
   const titleId = useId();
   const [description, setDescription] = useState('');
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const mutation = useMutation(JSON.stringify([token, incidentId, open, mode]));
+  const { busy: submitting, error, setError } = mutation;
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -52,21 +53,22 @@ export function CleanupReportDrawer({
       return;
     }
 
-    setSubmitting(true);
-    setError(null);
+    const request = mutation.start();
+    if (!request) { return; }
     try {
       const uploaded = await api.uploadFiles(token, attachmentFiles);
+      if (!request.isCurrent()) { return; }
       const fileIds = uploaded.map((f) => f.id);
       const created = await api.createCleanupReport(token, incidentId, trimmed, fileIds);
+      if (!request.isCurrent()) { return; }
       setDescription('');
       setAttachmentFiles([]);
       onCreated(created);
       onClose();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Не удалось сохранить отчёт';
-      setError(message);
+      request.fail(err, 'Не удалось сохранить отчёт');
     } finally {
-      setSubmitting(false);
+      request.finish();
     }
   };
 

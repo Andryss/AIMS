@@ -1,7 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import * as api from '../api/client';
-import { CLEANUP_STATUS_LABELS, CLEANUP_STATUS_TRANSITIONS } from '../incidentLabels';
+import { cleanupTransitions } from '../domain/incidentTransitions';
+import { useMutation } from '../hooks/useMutation';
+import { CLEANUP_STATUS_LABELS } from '../incidentLabels';
 import { CleanupStatus, IncidentResponse } from '../types';
+import { StatusSelect } from './ui/StatusSelect';
 
 interface CleanupStatusSelectProps {
   token: string;
@@ -11,98 +14,33 @@ interface CleanupStatusSelectProps {
   className?: string;
 }
 
-function allowedCleanupTargets(current: CleanupStatus | null | undefined): CleanupStatus[] {
-  const key = current ?? 'null';
-  return CLEANUP_STATUS_TRANSITIONS[key];
-}
-
-export function CleanupStatusSelect({
-  token,
-  incident,
-  canChange,
-  onStatusChanged,
-  className,
-}: CleanupStatusSelectProps) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const allowedTargets = useMemo(
-    () => allowedCleanupTargets(incident.cleanupStatus),
-    [incident.cleanupStatus],
-  );
-
+export function CleanupStatusSelect({ token, incident, canChange, onStatusChanged, className }: CleanupStatusSelectProps) {
+  const mutation = useMutation(JSON.stringify([token, incident.id, incident.cleanupStatus]));
+  const { busy: loading, error } = mutation;
+  const allowedTargets = cleanupTransitions(incident.cleanupStatus);
   const displayStatus = incident.cleanupStatus;
-  const options: (CleanupStatus | '')[] = displayStatus
-    ? [displayStatus, ...allowedTargets]
-    : ['', ...allowedTargets];
-
-  const handleChange = async (nextRaw: string) => {
-    if (!nextRaw || loading) {
-      return;
-    }
-    const nextStatus = nextRaw as CleanupStatus;
-    if (nextStatus === incident.cleanupStatus) {
-      return;
-    }
-    if (!allowedTargets.includes(nextStatus)) {
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
+  const canEdit = canChange && allowedTargets.length > 0;
+  const handleChange = async (nextStatus: CleanupStatus | '') => {
+    if (!canChange || !nextStatus || !allowedTargets.includes(nextStatus)) { return; }
+    const session = mutation.start();
+    if (!session) { return; }
     try {
       const updated = await api.changeCleanupStatus(token, incident.id, nextStatus);
-      onStatusChanged(updated);
+      if (session.isCurrent()) { onStatusChanged(updated); }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Не удалось изменить статус очистки';
-      setError(message);
+      session.fail(err, 'Не удалось изменить статус очистки');
     } finally {
-      setLoading(false);
+      session.finish();
     }
   };
-
-  const wrapClassName = className
-    ? `status-select-wrap ${className}`
-    : 'status-select-wrap';
-
-  const canEdit = canChange && allowedTargets.length > 0;
-
-  if (displayStatus == null && !canEdit) {
-    return <span className="text-muted">—</span>;
-  }
-
-  const statusClass = displayStatus
-    ? `status-chip--cleanup_${displayStatus.toLowerCase()}`
-    : '';
-
-  return (
-    <div className={wrapClassName} onClick={(e) => e.stopPropagation()}>
-      {canEdit ? (
-        <select
-          className={`status-select ${statusClass}${loading ? ' is-loading' : ''}`}
-          value={displayStatus ?? ''}
-          disabled={loading}
-          onChange={(e) => void handleChange(e.target.value)}
-          aria-label={`Статус очистки инцидента #${incident.id}`}
-        >
-          {displayStatus == null && (
-            <option value="" disabled>
-              Выберите статус
-            </option>
-          )}
-          {options.filter((s) => s !== '').map((status) => (
-            <option key={status} value={status}>
-              {CLEANUP_STATUS_LABELS[status as CleanupStatus]}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <span className={`status-chip ${statusClass}`}>
-          {displayStatus != null ? CLEANUP_STATUS_LABELS[displayStatus] : '—'}
-        </span>
-      )}
-      {loading && <span className="status-select__loading">…</span>}
-      {error && <span className="status-select__error" title={error}>!</span>}
-    </div>
-  );
+  if (displayStatus == null && !canEdit) { return <span className="text-muted">—</span>; }
+  const statusClass = displayStatus ? `status-chip--cleanup_${displayStatus.toLowerCase()}` : '';
+  return <div className={`status-select-wrap${className ? ` ${className}` : ''}`} onClick={(event) => event.stopPropagation()}>
+    {canEdit ? <StatusSelect<CleanupStatus | ''> label={`Статус очистки инцидента #${incident.id}`}
+      value={displayStatus ?? ''} options={allowedTargets} labels={{ ...CLEANUP_STATUS_LABELS, '': '' }}
+      busy={loading} statusClassName={statusClass} placeholder="Выберите статус" onChange={(next) => { void handleChange(next); }} />
+      : <span className={`status-chip ${statusClass}`}>{displayStatus != null ? CLEANUP_STATUS_LABELS[displayStatus] : '—'}</span>}
+    {loading && <span className="status-select__loading">…</span>}
+    {error && <span className="status-select__error" title={error}>!</span>}
+  </div>;
 }

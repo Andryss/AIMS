@@ -44,11 +44,9 @@ describe('UserPickerDrawer', () => {
       expect(searchUsers).toHaveBeenCalledWith('tok', 'agent', 'AGENT');
     });
 
-    await waitFor(() => {
-      expect(screen.getByText('agent.one')).toBeInTheDocument();
-      expect(screen.getByText('agent.two')).toBeInTheDocument();
-      expect(screen.queryByText('agent.three')).not.toBeInTheDocument();
-    });
+    expect(await screen.findByText('agent.one')).toBeInTheDocument();
+    expect(screen.getByText('agent.two')).toBeInTheDocument();
+    expect(screen.queryByText('agent.three')).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: /agent\.one/ }));
     await userEvent.click(screen.getByRole('button', { name: /agent\.two/ }));

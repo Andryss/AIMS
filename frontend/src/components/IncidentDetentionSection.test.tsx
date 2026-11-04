@@ -31,11 +31,17 @@ it('keeps existing requests visible after incident completion without creation',
   expect(screen.queryByRole('button', { name: 'Создать заявку на заключение' })).not.toBeInTheDocument();
 });
 
-it.each([false, true])('respects read access without creation, canRead=%s', async (canRead) => {
+it('loads requests for read access without creation', async () => {
   render(<MemoryRouter><IncidentDetentionSection token="tok" incidentId={8} incidentStatus="EXECUTING"
-    canRead={canRead} canCreate={false} /></MemoryRouter>);
-  if (canRead) { await screen.findByText('Заявок на заключение пока нет'); }
-  else { expect(api.listDetentionRequests).not.toHaveBeenCalled(); }
+    canRead canCreate={false} /></MemoryRouter>);
+  await screen.findByText('Заявок на заключение пока нет');
+  expect(screen.queryByRole('button', { name: 'Создать заявку на заключение' })).not.toBeInTheDocument();
+});
+
+it('does not load requests without read access or creation', () => {
+  render(<MemoryRouter><IncidentDetentionSection token="tok" incidentId={8} incidentStatus="EXECUTING"
+    canRead={false} canCreate={false} /></MemoryRouter>);
+  expect(api.listDetentionRequests).not.toHaveBeenCalled();
   expect(screen.queryByRole('button', { name: 'Создать заявку на заключение' })).not.toBeInTheDocument();
 });
 

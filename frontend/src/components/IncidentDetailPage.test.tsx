@@ -85,6 +85,13 @@ function renderAt(
   );
 }
 
+/** A description list pairs terms and definitions in their semantic reading order. */
+function incidentDefinition(label: string): HTMLElement {
+  const index = screen.getAllByRole('term').findIndex((term) => term.textContent === label);
+  if (index < 0) { throw new Error(`Поле «${label}» не найдено`); }
+  return screen.getAllByRole('definition')[index];
+}
+
 it('places detention after equipment and opens the incident request list', async () => {
   getIncident.mockResolvedValue(mockIncident({ id: 8, status: 'EXECUTING', alienId: undefined }));
   batchUsers.mockResolvedValue({ items: [] });
@@ -226,10 +233,8 @@ describe('IncidentDetailPage', () => {
 
     renderAt('/incidents/7');
 
-    await waitFor(() => {
-      expect(screen.getByText('analyst')).toBeInTheDocument();
-      expect(screen.getByText('Проверено')).toBeInTheDocument();
-    });
+    expect(await screen.findByText('analyst')).toBeInTheDocument();
+    expect(screen.getByText('Проверено')).toBeInTheDocument();
     expect(listIncidentHistory).not.toHaveBeenCalled();
 
     await userEvent.click(screen.getByRole('tab', { name: 'История' }));
@@ -559,9 +564,9 @@ describe('incident threat assessment', () => {
     'displays victim count %s without an edit action', async (victimCount, expected) => {
       getIncident.mockResolvedValue(mockIncident({ victimCount, threatLevel: 6 }));
       renderAt('/incidents/1');
-      const label = await screen.findByText('Количество пострадавших');
-      expect(within(label.closest('.data-list__row') as HTMLElement).getByText(expected)).toBeInTheDocument();
-      const threat = screen.getByText('Уровень угрозы').closest('.data-list__row') as HTMLElement;
+      await screen.findByText('Количество пострадавших');
+      expect(within(incidentDefinition('Количество пострадавших')).getByText(expected)).toBeInTheDocument();
+      const threat = incidentDefinition('Уровень угрозы');
       expect(within(threat).getByText('6')).toBeInTheDocument();
       expect(within(threat).queryByRole('button')).not.toBeInTheDocument();
     });
@@ -586,7 +591,7 @@ describe('incident threat assessment', () => {
     expect(api.setIncidentThreatLevel).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole('button', { name: 'Принять' }));
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Принять' })).not.toBeInTheDocument());
-    const threat = screen.getByText('Уровень угрозы').closest('.data-list__row') as HTMLElement;
+    const threat = incidentDefinition('Уровень угрозы');
     expect(within(threat).getByText('8')).toBeInTheDocument();
     expect(api.setIncidentThreatLevel).toHaveBeenCalledWith('tok', 8, 8);
     await waitFor(() => expect(listIncidentHistory).toHaveBeenCalledTimes(2));
@@ -664,7 +669,7 @@ describe('threat history refresh', () => {
     renderAt('/incidents/8', { canCalculateThreat: true });
     await screen.findByRole('button', { name: 'Рассчитать угрозу' });
     await calculateAndAccept();
-    const threat = screen.getByText('Уровень угрозы').closest('.data-list__row') as HTMLElement;
+    const threat = incidentDefinition('Уровень угрозы');
     await within(threat).findByText('6');
     expect(screen.queryByRole('button', { name: 'Рассчитать угрозу' })).not.toBeInTheDocument();
   });

@@ -1,11 +1,16 @@
+import { formatDateTime } from '../utils/dateTime';
+import { positiveId } from '../utils/params';
+import { formatUserLabel } from '../utils/users';
+import { Card, CardHeader } from './ui/Card';
+import { EditIcon } from './ui/EditIcon';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import * as api from '../api/client';
 import { canEditDetentionRequest, isDetentionOverdue } from '../detentionLabels';
-import { formatEquipmentDate, positiveId } from '../equipmentLabels';
+
 import { useUsersMap } from '../hooks/useUsersMap';
 import { DetentionRequestResponse } from '../types';
-import { formatUserLabel } from '../utils/incidentUsers';
+
 import { DetentionRequestEditorModal } from './DetentionRequestEditorModal';
 import { DetentionRequestHistory } from './DetentionRequestHistory';
 import { DetentionRequestStatusSelect } from './DetentionRequestStatusSelect';
@@ -22,7 +27,7 @@ export function DetentionRequestDetailPage(props: DetentionRequestDetailPageProp
   const { id } = useParams<{ id: string }>();
   const requestId = positiveId(id);
   return requestId ? <DetentionCard key={`${props.token}:${requestId}`} {...props} id={requestId} />
-    : <section className="card"><div className="alert alert--error" role="alert">Некорректный идентификатор заявки</div></section>;
+    : <Card><div className="alert alert--error" role="alert">Некорректный идентификатор заявки</div></Card>;
 }
 
 function DetentionCard({ token, permissions, currentUserId, canReadIncidents = false, canReadAliens = false, id }:
@@ -65,17 +70,16 @@ function DetentionCard({ token, permissions, currentUserId, canReadIncidents = f
   };
   const editable = request != null && canEditDetentionRequest(request, permissions, currentUserId);
 
-  return <section className="card" aria-busy={loading}>
-    <div className="card__header"><h2>{request ? `Заявка на заключение #${request.id}` : 'Заявка на заключение'}</h2>
+  return <Card  aria-busy={loading}>
+    <CardHeader><h2>{request ? `Заявка на заключение #${request.id}` : 'Заявка на заключение'}</h2>
       <div className="card__actions" role="group" aria-label="Действия заявки">
         {editable && <Button variant="ghost" className="icon-button" aria-label="Редактировать заявку" title="Редактировать заявку"
           disabled={changingStatus}
-          onClick={() => setEditorOpen(true)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
-            strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m16 3 5 5M3 21l5-1L21 7a2.1 2.1 0 0 0-5-5L3 15z" /></svg></Button>}
+          onClick={() => setEditorOpen(true)}><EditIcon /></Button>}
         {fromIncidentId && canReadIncidents ? <Button variant="outline" to={`/incidents/${fromIncidentId}`}>← К инциденту</Button>
           : <Button variant="outline" to={`/detention-requests${location.search}`}>← К списку</Button>}
       </div>
-    </div>
+    </CardHeader>
     {loading && <LoadingBlock label="Загрузка заявки…" />}
     {error && <div className="alert alert--error" role="alert">{error}</div>}
     {!loading && request && <>
@@ -93,10 +97,10 @@ function DetentionCard({ token, permissions, currentUserId, canReadIncidents = f
         <div className="data-list__row"><dt>Автор</dt><dd><UserChip login={formatUserLabel(request.createdByUserId, users)} size={24} /></dd></div>
         <div className="data-list__row"><dt>Рассмотрел</dt><dd>{request.reviewedByUserId != null
           ? <UserChip login={formatUserLabel(request.reviewedByUserId, users)} size={24} /> : '—'}</dd></div>
-        <div className="data-list__row"><dt>Создана</dt><dd>{formatEquipmentDate(request.createdAt)}</dd></div>
-        <div className="data-list__row"><dt>Дата прибытия</dt><dd>{request.admittedAt ? formatEquipmentDate(request.admittedAt) : '—'}</dd></div>
-        <div className="data-list__row"><dt>Плановое освобождение</dt><dd>{request.plannedReleaseAt ? formatEquipmentDate(request.plannedReleaseAt) : '—'}</dd></div>
-        <div className="data-list__row"><dt>Фактическое освобождение</dt><dd>{request.releasedAt ? formatEquipmentDate(request.releasedAt) : '—'}</dd></div>
+        <div className="data-list__row"><dt>Создана</dt><dd>{formatDateTime(request.createdAt)}</dd></div>
+        <div className="data-list__row"><dt>Дата прибытия</dt><dd>{request.admittedAt ? formatDateTime(request.admittedAt) : '—'}</dd></div>
+        <div className="data-list__row"><dt>Плановое освобождение</dt><dd>{request.plannedReleaseAt ? formatDateTime(request.plannedReleaseAt) : '—'}</dd></div>
+        <div className="data-list__row"><dt>Фактическое освобождение</dt><dd>{request.releasedAt ? formatDateTime(request.releasedAt) : '—'}</dd></div>
       </dl>
         {isDetentionOverdue(request) && <div className="alert alert--error" role="status">Срок заключения истёк</div>}
       </section>
@@ -105,5 +109,5 @@ function DetentionCard({ token, permissions, currentUserId, canReadIncidents = f
       <DetentionRequestEditorModal token={token} open={editorOpen && editable} incidentId={request.incidentId} request={request}
         canReadAliens={canReadAliens} onClose={() => setEditorOpen(false)} onSaved={changed} />
     </>}
-  </section>;
+  </Card>;
 }

@@ -25,7 +25,7 @@ export function UserChip({
   ].filter(Boolean).join(' ');
 
   return (
-    <span className={classes}>
+    <span className={classes} data-testid="user-chip">
       <UserAvatar login={login} size={size} className="user-chip__avatar" />
       <span className="user-chip__login">{login}</span>
       {removable && (

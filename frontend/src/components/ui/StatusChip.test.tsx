@@ -4,15 +4,15 @@ import { StatusChip } from './StatusChip';
 
 describe('StatusChip', () => {
   it('renders label with status modifier', () => {
-    const { container } = render(<StatusChip status="in-progress" label="В работе" />);
+    render(<StatusChip status="in-progress" label="В работе" />);
     expect(screen.getByText('В работе')).toBeInTheDocument();
-    expect(container.querySelector('.status-chip.status-chip--in_progress')).toBeInTheDocument();
+    expect(screen.getByText('В работе')).toHaveClass('status-chip', 'status-chip--in_progress');
   });
 
   it('applies custom class name', () => {
-    const { container } = render(
+    render(
       <StatusChip status="new" label="Новый" className="detail-status" />,
     );
-    expect(container.querySelector('.status-chip.status-chip--new.detail-status')).toBeInTheDocument();
+    expect(screen.getByText('Новый')).toHaveClass('status-chip', 'status-chip--new', 'detail-status');
   });
 });

@@ -1,3 +1,4 @@
+import { CardHeader } from './ui/Card';
 import React, { useEffect, useState } from 'react';
 import * as api from '../api/client';
 import { DETENTION_PAGE_SIZE } from '../detentionLabels';
@@ -41,7 +42,7 @@ function IncidentDetentions({ token, incidentId, incidentStatus, initialAlienId,
   }, [token, incidentId, incidentStatus, revision, page]);
 
   return <section className="section" aria-label="Заключение по инциденту" aria-busy={loading}>
-    {creatable && <div className="card__header"><Button onClick={() => setOpen(true)}>Создать заявку на заключение</Button></div>}
+    {creatable && <CardHeader><Button onClick={() => setOpen(true)}>Создать заявку на заключение</Button></CardHeader>}
     {loading && <LoadingBlock label="Загрузка заявок…" inline />}
     {error && <div className="alert alert--error" role="alert">{error}</div>}
     {!loading && !error && result && <>

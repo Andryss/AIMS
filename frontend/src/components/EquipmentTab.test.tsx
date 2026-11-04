@@ -77,7 +77,7 @@ it.each([true, false])('shows create/edit controls only for canWrite=%s', async 
   await screen.findByRole('heading', { name: 'Нейралайзер Н-1' });
   expect(Boolean(screen.queryByRole('button', { name: 'Редактировать оборудование' }))).toBe(canWrite);
   await userEvent.click(screen.getByRole('link', { name: /К списку/ }));
-  expect(Boolean(await screen.queryByRole('button', { name: 'Добавить оборудование' }))).toBe(canWrite);
+  expect(Boolean(screen.queryByRole('button', { name: 'Добавить оборудование' }))).toBe(canWrite);
 });
 
 it('loads the next history page with movement and actor information', async () => {

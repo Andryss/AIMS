@@ -1,8 +1,10 @@
+import { positiveId } from '../utils/params';
+import { Card, CardHeader } from './ui/Card';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ANALYTICS_DASHBOARDS, AnalyticsDashboard } from '../analyticsLabels';
 import { DETENTION_STATUS_LABELS } from '../detentionLabels';
-import { EQUIPMENT_TYPE_LABELS, positiveId } from '../equipmentLabels';
+import { EQUIPMENT_TYPE_LABELS } from '../equipmentLabels';
 import { EVENT_TYPE_LABELS } from '../incidentLabels';
 import { AnalyticsPeriodQuery, DetentionRequestStatus, EquipmentType, IncidentEventType } from '../types';
 import { defaultAnalyticsPeriod, validateAnalyticsQuery } from '../utils/analyticsFormatting';
@@ -64,8 +66,8 @@ function AnalyticsContent({ token, permissions }: AnalyticsTabProps) {
     const next = new URLSearchParams(previous); next.set('dashboard', value); return next;
   });
 
-  return <section className="card analytics">
-    <div className="card__header"><h2>Аналитика</h2></div>
+  return <Card className="analytics">
+    <CardHeader><h2>Аналитика</h2></CardHeader>
     <AnalyticsPeriodFilter from={from} to={to} onChange={changePeriod} onValidityChange={setValidDraft} periodError={error} />
     <div className="tabs__bar analytics-tabs" role="tablist" aria-label="Раздел аналитики">
       {(Object.entries(ANALYTICS_DASHBOARDS) as Array<[AnalyticsDashboard, string]>).map(([value, label], index, entries) =>
@@ -106,5 +108,5 @@ function AnalyticsContent({ token, permissions }: AnalyticsTabProps) {
           incidentId: positiveId(scoped('incidentId')) }} />}
       </>}
     </div>
-  </section>;
+  </Card>;
 }

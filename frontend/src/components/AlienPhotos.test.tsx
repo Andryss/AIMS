@@ -25,7 +25,7 @@ it('reuses successful uploads after a save failure', async () => {
   mockApi.uploadFile.mockResolvedValue({ id: 12, fileName: 'photo.png', contentType: 'image/png', fileSize: 5, createdAt: '' });
   mockApi.updateAlien.mockRejectedValueOnce(new Error('Не удалось сохранить')).mockResolvedValueOnce(mockAlien());
   render(<AlienEditorModal token="tok" open alien={mockAlien()} onClose={jest.fn()} onSaved={jest.fn()} />);
-  const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+  const input = screen.getByLabelText('Фотографии');
   await userEvent.upload(input, new File(['photo'], 'photo.png', { type: 'image/png' }));
   expect(await screen.findByAltText('photo.png')).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Сохранить' }));

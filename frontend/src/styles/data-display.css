@@ -11,12 +11,12 @@
   gap: var(--space-2);
 }
 
-.knowledge-base__name {
+.entity-link {
   color: inherit;
   text-decoration: none;
 }
 
-.knowledge-base__name:focus-visible {
+.entity-link:focus-visible {
   outline: var(--focus-ring);
   outline-offset: var(--focus-ring-offset);
 }
@@ -35,30 +35,30 @@
 }
 
 /* Tables */
-.incidents-table-wrapper {
+.data-table-wrapper {
   overflow-x: auto;
 }
 
-.incidents-table {
+.data-table {
   width: 100%;
   border-collapse: collapse;
   font-size: var(--font-size-md);
 }
 
-.incidents-table th,
-.incidents-table td {
+.data-table th,
+.data-table td {
   padding: var(--space-2) var(--space-3);
   text-align: left;
   border-bottom: 1px solid var(--color-border-subtle);
 }
 
-.incidents-table thead {
+.data-table thead {
   position: sticky;
   top: 0;
   z-index: 1;
 }
 
-.incidents-table th {
+.data-table th {
   font-size: var(--font-size-sm);
   font-weight: 600;
   color: var(--color-text-muted);
@@ -67,17 +67,17 @@
   background: var(--color-bg-surface);
 }
 
-.incidents-table__row {
+.data-table__row {
   cursor: pointer;
 }
 
-.incidents-table tbody tr:hover,
-.incidents-table__row:focus-within {
+.data-table tbody tr:hover,
+.data-table__row:focus-within {
   background: var(--color-primary-subtle);
 }
 
 /* Equipment inventory and movement forms */
-.equipment-filters {
+.filter-bar {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
   align-items: start;
@@ -106,12 +106,12 @@
 .equipment-search-results { list-style: none; padding: 0; margin: var(--space-2) 0; }
 .equipment-search-results li { border-bottom: 1px solid var(--color-border-subtle); }
 .equipment-search-results .btn { width: 100%; justify-content: flex-start; }
-.equipment-search-field { padding-top: var(--space-6); }
+.filter-search-field { padding-top: var(--space-6); }
 .equipment-status { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); }
 
 @media (max-width: 640px) {
-  .equipment-filters { grid-template-columns: 1fr; }
-  .equipment-search-field { padding-top: 0; }
+  .filter-bar { grid-template-columns: 1fr; }
+  .filter-search-field { padding-top: 0; }
 }
 
 /* Tabs (incident detail) */
@@ -755,7 +755,7 @@
 }
 
 
-.tender-actions {
+.page-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;

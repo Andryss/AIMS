@@ -60,7 +60,7 @@ describe('AlienPickerDrawer', () => {
   });
 
   it('closes on overlay click', async () => {
-    const { container } = render(
+    render(
       <AlienPickerDrawer
         token="tok"
         open
@@ -70,9 +70,9 @@ describe('AlienPickerDrawer', () => {
       />,
     );
 
-    const overlay = container.querySelector('.drawer-overlay');
-    expect(overlay).not.toBeNull();
-    await userEvent.click(overlay!);
+    const overlay = screen.getByRole('presentation');
+    expect(overlay).toHaveClass('drawer-overlay');
+    await userEvent.click(overlay);
     expect(onClose).toHaveBeenCalled();
   });
 });

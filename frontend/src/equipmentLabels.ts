@@ -25,14 +25,8 @@ export const MOVEMENT_STATUS_LABELS: Record<EquipmentMovementStatus, string> = {
   REJECTED: 'Отклонена',
 };
 
-export function formatEquipmentDate(value: string): string {
-  return new Date(value).toLocaleString('ru-RU');
-}
-
-export function positiveId(value: string | null | undefined): number | undefined {
-  const id = Number(value);
-  return Number.isSafeInteger(id) && id > 0 ? id : undefined;
-}
+export { formatDateTime as formatEquipmentDate } from './utils/dateTime';
+export { positiveId } from './utils/params';
 
 export function outstandingEquipment(equipment: EquipmentResponse[], issueId: number): EquipmentResponse[] {
   return equipment.filter((item) => item.status === 'ISSUED' && item.currentIssueMovementId === issueId);

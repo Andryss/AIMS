@@ -9,7 +9,7 @@ describe('UserAvatar', () => {
   });
 
   it('applies custom class name', () => {
-    const { container } = render(<UserAvatar login="admin" className="profile-avatar" />);
-    expect(container.querySelector('.user-avatar.profile-avatar')).toBeInTheDocument();
+    render(<UserAvatar login="admin" className="profile-avatar" />);
+    expect(screen.getByRole('img', { name: 'Аватар admin' })).toHaveClass('user-avatar', 'profile-avatar');
   });
 });

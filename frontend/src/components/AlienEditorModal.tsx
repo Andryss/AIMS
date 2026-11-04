@@ -1,9 +1,10 @@
-import React, { FormEvent, useEffect, useId, useRef, useState } from 'react';
+import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import * as api from '../api/client';
-import { useFocusTrap } from '../hooks/useFocusTrap';
+import { useMutation } from '../hooks/useMutation';
 import { Alien, SaveAlienRequest } from '../types';
 import { Button } from './ui/Button';
 import { FormField } from './ui/FormField';
+import { Modal } from './ui/Modal';
 import { FileUploadField } from './FileUploadField';
 import { AttachmentDownloadList } from './AttachmentDownloadList';
 
@@ -16,8 +17,6 @@ interface AlienEditorModalProps {
 }
 
 export function AlienEditorModal({ token, open, alien, onClose, onSaved }: AlienEditorModalProps) {
-  const titleId = useId();
-  const trapRef = useFocusTrap(open);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [threatLevel, setThreatLevel] = useState('');
@@ -25,8 +24,8 @@ export function AlienEditorModal({ token, open, alien, onClose, onSaved }: Alien
   const [files, setFiles] = useState<File[]>([]);
   const [photosChanged, setPhotosChanged] = useState(false);
   const uploaded = useRef(new Map<File, number>());
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const mutation = useMutation(JSON.stringify([token, open, alien?.id]));
+  const { busy: submitting, error, setError } = mutation;
 
   useEffect(() => {
     if (open) {
@@ -39,34 +38,21 @@ export function AlienEditorModal({ token, open, alien, onClose, onSaved }: Alien
       uploaded.current.clear();
       setError(null);
     }
-  }, [open, alien]);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !submitting) {
-        onClose();
-      }
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [open, submitting, onClose]);
+  }, [open, token, alien, setError]);
 
   if (!open) {
     return null;
   }
 
   const close = () => {
-    if (!submitting) {
+    if (!mutation.isBusy()) {
       onClose();
     }
   };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (submitting) {
+    if (mutation.isBusy()) {
       return;
     }
     const payload: SaveAlienRequest = { name: name.trim(), description: description.trim(),
@@ -87,12 +73,13 @@ export function AlienEditorModal({ token, open, alien, onClose, onSaved }: Alien
       setError('Выберите PNG или JPEG размером до 10 МиБ');
       return;
     }
-    setSubmitting(true);
-    setError(null);
+    const session = mutation.start();
+    if (!session) { return; }
     try {
       for (const file of files) {
         if (!uploaded.current.has(file)) {
           const response = await api.uploadFile(token, file);
+          if (!session.isCurrent()) { return; }
           uploaded.current.set(file, response.id);
         }
       }
@@ -102,48 +89,42 @@ export function AlienEditorModal({ token, open, alien, onClose, onSaved }: Alien
       const saved = alien
         ? await api.updateAlien(token, alien.id, payload)
         : await api.createAlien(token, payload);
+      if (!session.isCurrent()) { return; }
       onSaved(saved);
       onClose();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Не удалось сохранить вид');
+      session.fail(err, 'Не удалось сохранить вид');
     } finally {
-      setSubmitting(false);
+      session.finish();
     }
   };
 
   return (
-    <div className="modal-overlay" onClick={close} role="presentation">
-      <div ref={trapRef} className="modal" role="dialog" aria-modal="true"
-        aria-labelledby={titleId} onClick={(event) => event.stopPropagation()}>
-        <div className="modal__header">
-          <h2 id={titleId}>{alien ? 'Редактировать вид' : 'Добавить вид'}</h2>
-          <Button variant="ghost" onClick={close} disabled={submitting} aria-label="Закрыть">×</Button>
+    <Modal open={open} title={alien ? 'Редактировать вид' : 'Добавить вид'} onClose={close} busy={submitting}>
+      {error && <div className="alert alert--error" role="alert" aria-live="polite">{error}</div>}
+      <form className="form" aria-label={alien ? 'Редактировать вид' : 'Добавить вид'} onSubmit={handleSubmit}>
+        <FormField label="Название" required>
+          <input value={name} onChange={(event) => setName(event.target.value)}
+            maxLength={200} disabled={submitting} required />
+        </FormField>
+        <FormField label="Описание" required>
+          <textarea value={description} onChange={(event) => setDescription(event.target.value)}
+            maxLength={4000} rows={5} disabled={submitting} required />
+        </FormField>
+        <FormField label="Уровень угрозы" required help="От 1 до 10">
+          <input type="number" min={1} max={10} step={1} value={threatLevel}
+            onChange={(event) => setThreatLevel(event.target.value)} disabled={submitting} required />
+        </FormField>
+        <AttachmentDownloadList token={token} fileIds={photoIds} downloadingId={null} disabled={submitting}
+          onDownload={(id, fileName) => { api.downloadFile(token, id, fileName).catch((err) => setError(err.message)); }}
+          onRemove={(id) => { setPhotoIds((ids) => ids.filter((value) => value !== id)); setPhotosChanged(true); }} />
+        <FileUploadField label="Фотографии" files={files} disabled={submitting} accept="image/png,image/jpeg"
+          onChange={(next) => { setFiles(next); setPhotosChanged(true); }} />
+        <div className="modal-actions">
+          <Button variant="secondary" onClick={close} disabled={submitting}>Отмена</Button>
+          <Button type="submit" loading={submitting}>Сохранить</Button>
         </div>
-        {error && <div className="alert alert--error" role="alert" aria-live="polite">{error}</div>}
-        <form className="form" onSubmit={handleSubmit}>
-          <FormField label="Название" required>
-            <input value={name} onChange={(event) => setName(event.target.value)}
-              maxLength={200} disabled={submitting} required />
-          </FormField>
-          <FormField label="Описание" required>
-            <textarea value={description} onChange={(event) => setDescription(event.target.value)}
-              maxLength={4000} rows={5} disabled={submitting} required />
-          </FormField>
-          <FormField label="Уровень угрозы" required help="От 1 до 10">
-            <input type="number" min={1} max={10} step={1} value={threatLevel}
-              onChange={(event) => setThreatLevel(event.target.value)} disabled={submitting} required />
-          </FormField>
-          <AttachmentDownloadList token={token} fileIds={photoIds} downloadingId={null} disabled={submitting}
-            onDownload={(id, fileName) => { api.downloadFile(token, id, fileName).catch((err) => setError(err.message)); }}
-            onRemove={(id) => { setPhotoIds((ids) => ids.filter((value) => value !== id)); setPhotosChanged(true); }} />
-          <FileUploadField label="Фотографии" files={files} disabled={submitting} accept="image/png,image/jpeg"
-            onChange={(next) => { setFiles(next); setPhotosChanged(true); }} />
-          <div className="modal-actions">
-            <Button variant="secondary" onClick={close} disabled={submitting}>Отмена</Button>
-            <Button type="submit" loading={submitting}>Сохранить</Button>
-          </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </Modal>
   );
 }

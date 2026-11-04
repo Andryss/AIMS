@@ -3,7 +3,7 @@ import { AnalyticsPeriodQuery } from '../types';
 export const formatAnalyticsNumber = (value: number): string =>
   new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 3 }).format(value);
 
-export const formatAnalyticsDate = (value: string): string => new Date(value).toLocaleString('ru-RU');
+export { formatDateTime as formatAnalyticsDate } from './dateTime';
 
 export function formatAnalyticsDuration(seconds: number | null | undefined): string {
   if (seconds == null) { return '—'; }

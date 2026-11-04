@@ -71,7 +71,7 @@ it('debounces a valid period and does not request invalid or future dates', asyn
 it.each(['bad', '2025-05-01T00:00:00Z', '2099-01-01T00:00:00Z',
   '2025-05-02T00:00:00', '2025-05-02T00:00:00.000000001Z'])('rejects invalid URL end %s', async (to) => {
   mount('/analytics?' + new URLSearchParams({ from: analyticsPeriod.from, to }));
-  await act(async () => {});
+  await act(async () => { await new Promise((resolve) => setTimeout(resolve, 350)); });
   expect(screen.getByRole('alert')).toBeInTheDocument();
   expect(api.getIncidentCreatedCount).not.toHaveBeenCalled();
 });
@@ -156,6 +156,6 @@ it.each([
   fireEvent.change(screen.getByLabelText(label), { target: { value: invalid } });
   expect(screen.getByRole('alert')).toHaveTextContent('целый положительный');
   expect(screen.queryByRole('region', { name: dashboard === 'detentions' ? 'Создано заявок' : 'Зарегистрировано' })).not.toBeInTheDocument();
-  await act(async () => {});
+  await act(async () => { await new Promise((resolve) => setTimeout(resolve, 350)); });
   expect(load).toHaveBeenCalledTimes(1);
 });

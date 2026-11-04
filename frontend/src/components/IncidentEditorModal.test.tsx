@@ -55,7 +55,7 @@ describe('IncidentEditorModal', () => {
     render(<IncidentEditorModal token="tok" open onClose={onClose} onSaved={onSaved} />);
 
     const file = new File(['data'], 'evidence.jpg', { type: 'image/jpeg' });
-    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const input = screen.getByLabelText(/вложения/i);
     await userEvent.upload(input, file);
 
     await userEvent.type(screen.getByLabelText(/Место/i), 'Roswell');
@@ -82,16 +82,16 @@ describe('IncidentEditorModal', () => {
       fireEvent.change(screen.getByLabelText(/Место/i), { target: { value: 'Место' } });
       fireEvent.change(screen.getByLabelText(/Описание/i), { target: { value: 'Описание' } });
       fireEvent.change(screen.getByLabelText(/Время обнаружения/i), { target: { value: '2025-06-01T12:00' } });
-      await userEvent.upload(document.querySelector('input[type="file"]') as HTMLInputElement,
+      await userEvent.upload(screen.getByLabelText(/вложения/i),
         new File(['image'], 'photo.jpg', { type: 'image/jpeg' }));
       await userEvent.click(screen.getByRole('button', { name: 'Создать' }));
       await waitFor(() => expect(createIncident).toHaveBeenCalledWith('tok', expect.objectContaining({ victimCount: expected })));
     });
 
   it.each(['-1', '1.5', '2147483648'])('rejects invalid victim count %s before uploading', (value) => {
-    const { container } = render(<IncidentEditorModal token="tok" open onClose={onClose} onSaved={onSaved} />);
+    render(<IncidentEditorModal token="tok" open onClose={onClose} onSaved={onSaved} />);
     fireEvent.change(screen.getByLabelText('Количество пострадавших'), { target: { value } });
-    fireEvent.submit(container.querySelector('form')!);
+    fireEvent.submit(screen.getByRole('form', { name: 'Создать инцидент' }));
     expect(screen.getByRole('alert')).toHaveTextContent('Укажите целое неотрицательное количество пострадавших');
     expect(uploadFiles).not.toHaveBeenCalled();
     expect(createIncident).not.toHaveBeenCalled();
@@ -113,7 +113,7 @@ describe('IncidentEditorModal', () => {
     render(<IncidentEditorModal token="tok" open onClose={onClose} onSaved={onSaved} />);
 
     const file = new File(['data'], 'evidence.jpg', { type: 'image/jpeg' });
-    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const input = screen.getByLabelText(/вложения/i);
     await userEvent.upload(input, file);
     await userEvent.type(screen.getByLabelText(/Место/i), 'Roswell');
     fireEvent.change(screen.getByLabelText(/Время обнаружения/i), {
@@ -156,11 +156,9 @@ describe('IncidentEditorModal', () => {
   });
 
   it('closes on overlay click', async () => {
-    const { container } = render(
-      <IncidentEditorModal token="tok" open onClose={onClose} onSaved={onSaved} />,
-    );
+    render(<IncidentEditorModal token="tok" open onClose={onClose} onSaved={onSaved} />);
 
-    const overlay = container.querySelector('.modal-overlay');
+    const overlay = screen.getByRole('presentation');
     expect(overlay).not.toBeNull();
     await userEvent.click(overlay!);
     expect(onClose).toHaveBeenCalled();
@@ -220,7 +218,7 @@ describe('editing incident details', () => {
   it('uploads only newly selected files and converts an edited local time to UTC', async () => {
     edit();
     const file = new File(['photo'], 'new.jpg', { type: 'image/jpeg' });
-    await userEvent.upload(document.querySelector('input[type="file"]') as HTMLInputElement, file);
+    await userEvent.upload(screen.getByLabelText(/вложения/i), file);
     fireEvent.change(screen.getByLabelText(/Время обнаружения/), { target: { value: '2025-05-02T15:45' } });
     await userEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
     await waitFor(() => expect(updateIncident).toHaveBeenCalledWith('tok', incident.id, expect.objectContaining({
@@ -231,7 +229,7 @@ describe('editing incident details', () => {
 
   it('counts existing attachments against the limit', async () => {
     edit({ incident: { ...incident, attachmentFileIds: [1, 2, 3, 4, 5, 6, 7, 8, 9] } });
-    await userEvent.upload(document.querySelector('input[type="file"]') as HTMLInputElement,
+    await userEvent.upload(screen.getByLabelText(/вложения/i),
       [new File(['a'], 'a.jpg'), new File(['b'], 'b.jpg')]);
     expect(screen.getByRole('alert')).toHaveTextContent('не более 1 файлов');
     expect(uploadFiles).not.toHaveBeenCalled();
@@ -241,7 +239,7 @@ describe('editing incident details', () => {
     const props = { token: 'tok', incident, onSaved, onClose };
     const view = render(<IncidentEditorModal {...props} open />);
     fireEvent.change(screen.getByLabelText(/Описание/), { target: { value: 'Черновик правок' } });
-    await userEvent.upload(document.querySelector('input[type="file"]') as HTMLInputElement, new File(['a'], 'new.jpg'));
+    await userEvent.upload(screen.getByLabelText(/вложения/i), new File(['a'], 'new.jpg'));
     await userEvent.click(screen.getByRole('button', { name: 'Отмена' }));
     expect(updateIncident).not.toHaveBeenCalled();
     view.rerender(<IncidentEditorModal {...props} open={false} />);
@@ -267,7 +265,7 @@ describe('editing incident details', () => {
     const metadata = { fileName: 'new.jpg', contentType: 'image/jpeg', fileSize: 4, createdAt: '2025-06-01T12:00:00Z' };
     uploadFiles.mockResolvedValueOnce([{ ...metadata, id: 10 }]).mockResolvedValueOnce([{ ...metadata, id: 11 }]);
     edit();
-    await userEvent.upload(document.querySelector('input[type="file"]') as HTMLInputElement,
+    await userEvent.upload(screen.getByLabelText(/вложения/i),
       new File(['photo'], 'new.jpg', { type: 'image/jpeg' }));
     await userEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
     await screen.findByRole('alert');
@@ -280,7 +278,7 @@ describe('editing incident details', () => {
 
   it('counts unique existing ids when accepting another photo', async () => {
     edit({ incident: { ...incident, attachmentFileIds: Array(10).fill(1) } });
-    await userEvent.upload(document.querySelector('input[type="file"]') as HTMLInputElement,
+    await userEvent.upload(screen.getByLabelText(/вложения/i),
       new File(['photo'], 'new.jpg', { type: 'image/jpeg' }));
     await userEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
     await waitFor(() => expect(updateIncident).toHaveBeenCalledWith('tok', incident.id,
@@ -300,7 +298,7 @@ describe('editing incident details', () => {
     }
     render(<Editor />);
     fireEvent.change(screen.getByLabelText(/Описание/), { target: { value: 'Несохранённое уточнение' } });
-    await userEvent.upload(document.querySelector('input[type="file"]') as HTMLInputElement,
+    await userEvent.upload(screen.getByLabelText(/вложения/i),
       new File(['photo'], 'new.jpg', { type: 'image/jpeg' }));
     await userEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
     expect(await screen.findByRole('button', { name: 'Скачать Вложение №10' })).toBeInTheDocument();

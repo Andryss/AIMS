@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import * as api from '../api/client';
 import { EmployeeSearch } from './EmployeeSearch';
 import { UserSummary } from '../types';
 
@@ -22,4 +23,15 @@ it('keeps the typed query when editing clears the selected employee', () => {
   render(<Search />);
   fireEvent.change(screen.getByLabelText('Держатель'), { target: { value: 'a' } });
   expect(screen.getByLabelText('Держатель')).toHaveValue('a');
+});
+
+it('dismisses the result immediately when choosing the matching login', async () => {
+  (api.searchUsers as jest.Mock).mockResolvedValue({ items: [agent] });
+  const onChange = jest.fn();
+  render(<EmployeeSearch token="tok" label="Держатель" value={null} onChange={onChange} />);
+  fireEvent.change(screen.getByLabelText('Держатель'), { target: { value: 'agent' } });
+  fireEvent.click(await screen.findByRole('button', { name: 'agent' }));
+  expect(onChange).toHaveBeenCalledWith(agent);
+  await waitFor(() => expect(screen.queryByRole('list', { name: 'Найденные сотрудники' })).not.toBeInTheDocument());
+  expect(screen.getByLabelText('Держатель')).toHaveValue('agent');
 });

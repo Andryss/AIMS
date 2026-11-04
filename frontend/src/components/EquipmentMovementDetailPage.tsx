@@ -1,11 +1,15 @@
+import { formatDateTime } from '../utils/dateTime';
+import { positiveId } from '../utils/params';
+import { formatUserLabel } from '../utils/users';
+import { Card, CardHeader } from './ui/Card';
+import { EditIcon } from './ui/EditIcon';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import * as api from '../api/client';
-import { EQUIPMENT_STATUS_LABELS, MOVEMENT_OPERATION_LABELS, formatEquipmentDate, outstandingEquipment,
-  positiveId } from '../equipmentLabels';
+import { EQUIPMENT_STATUS_LABELS, MOVEMENT_OPERATION_LABELS, outstandingEquipment } from '../equipmentLabels';
 import { useUsersMap } from '../hooks/useUsersMap';
 import { EquipmentMovementResponse, IncidentResponse } from '../types';
-import { formatUserLabel } from '../utils/incidentUsers';
+
 import { EquipmentMovementEditorModal } from './EquipmentMovementEditorModal';
 import { EquipmentMovementHistory } from './EquipmentMovementHistory';
 import { EquipmentMovementStatusSelect } from './EquipmentMovementStatusSelect';
@@ -77,21 +81,18 @@ export function EquipmentMovementDetailPage({ token, canCreate, canProcess, curr
     && movement.status === 'COMPLETED' && remaining.length > 0;
 
   return (
-    <section className="card" aria-busy={loading}>
-      <div className="card__header">
+    <Card  aria-busy={loading}>
+      <CardHeader>
         <h2>{movement ? `Заявка #${movement.id} — ${MOVEMENT_OPERATION_LABELS[movement.operation]}` : 'Заявка на оборудование'}</h2>
         <div className="card__actions" role="group" aria-label="Действия заявки">
           {canEdit && <Button variant="ghost" className="icon-button" aria-label="Редактировать заявку"
             title="Редактировать заявку" onClick={() => setEditor('edit')}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
-              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="m16 3 5 5M3 21l5-1L21 7a2.1 2.1 0 0 0-5-5L3 15z" />
-            </svg>
+            <EditIcon />
           </Button>}
           {canReturn && <Button onClick={() => setEditor('return')}>Оформить возврат</Button>}
           <Button variant="outline" to={backTo}>{backLabel}</Button>
         </div>
-      </div>
+      </CardHeader>
       {error && <div className="alert alert--error" role="alert">{error}</div>}
       {loading && <LoadingBlock label="Загрузка заявки…" skeleton rows={4} />}
       {!loading && movement && <>
@@ -114,9 +115,9 @@ export function EquipmentMovementDetailPage({ token, canCreate, canProcess, curr
             <div className="data-list__row"><dt>Автор</dt><dd>
               <UserChip login={formatUserLabel(movement.createdByUserId, users)} />
             </dd></div>
-            <div className="data-list__row"><dt>Создана</dt><dd>{formatEquipmentDate(movement.createdAt)}</dd></div>
+            <div className="data-list__row"><dt>Создана</dt><dd>{formatDateTime(movement.createdAt)}</dd></div>
             {movement.completedAt && <div className="data-list__row"><dt>Выполнена</dt><dd>
-              {formatEquipmentDate(movement.completedAt)}</dd></div>}
+              {formatDateTime(movement.completedAt)}</dd></div>}
             {movement.sourceIssueMovementId && <div className="data-list__row"><dt>Исходная выдача</dt><dd>
               <Link to={`/equipment-movements/${movement.sourceIssueMovementId}`}>
                 Заявка #{movement.sourceIssueMovementId}</Link></dd></div>}
@@ -125,11 +126,11 @@ export function EquipmentMovementDetailPage({ token, canCreate, canProcess, curr
           </dl>
         </section>
         <section className="section"><h3>Оборудование · {movement.equipment.length}</h3>
-          <div className="incidents-table-wrapper"><table className="incidents-table">
+          <div className="data-table-wrapper"><table className="data-table">
             <thead><tr><th>Модель</th><th>Серийный номер</th><th>Текущее состояние</th></tr></thead>
             <tbody>{movement.equipment.map((item) => <tr key={item.id}>
               <td>{canReadEquipment ? <Link to={`/equipment/${item.id}`} state={{ movementId: movement.id }}
-                className="knowledge-base__name">{item.model}</Link> : item.model}</td>
+                className="entity-link">{item.model}</Link> : item.model}</td>
               <td>{item.serialNumber}</td><td>{EQUIPMENT_STATUS_LABELS[item.status]}</td>
             </tr>)}</tbody>
           </table></div>
@@ -148,6 +149,6 @@ export function EquipmentMovementDetailPage({ token, canCreate, canProcess, curr
             else { navigate(`/equipment-movements/${saved.id}`, { state: { sourceIssueId: movement.id } }); }
           }} />}
       </>}
-    </section>
+    </Card>
   );
 }

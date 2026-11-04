@@ -37,7 +37,7 @@ it('shows a proposal beside the calculation button and saves only after explicit
   const level = await screen.findByLabelText('Уровень угрозы');
   expect(level).toHaveTextContent('7');
   expect(screen.getByRole('button', { name: 'Показать причины оценки' })).toHaveTextContent('?');
-  expect(level.closest('button')).toBeNull();
+  screen.getAllByRole('button').forEach((button) => expect(button).not.toContainElement(level));
   expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   expect(screen.queryByText('Угроза вида')).not.toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Изменить угрозу' })).toHaveTextContent('Изменить');
