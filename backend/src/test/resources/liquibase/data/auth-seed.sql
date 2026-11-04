@@ -6,6 +6,7 @@ insert into permission (code, description) values
     ('INCIDENT_CREATE', 'Создание инцидентов'),
     ('INCIDENT_STATUS_CHANGE', 'Смена статуса инцидента'),
     ('INCIDENT_COMMENT', 'Добавление комментариев к инциденту'),
+    ('INCIDENT_ALIEN_CLASSIFY', 'Предложение вида по изображению инцидента'),
     ('INCIDENT_ALIEN_LINK', 'Привязка типа инопланетянина к инциденту'),
     ('ALIEN_READ', 'Просмотр и поиск в справочнике инопланетян'),
     ('ALIEN_WRITE', 'Создание и редактирование записей справочника инопланетян'),
@@ -62,7 +63,7 @@ select r.id, p.id
 from role r, permission p
 where r.name = 'ANALYST' and p.code in (
     'INCIDENT_READ', 'INCIDENT_STATUS_CHANGE', 'INCIDENT_COMMENT',
-    'INCIDENT_ALIEN_LINK', 'ALIEN_READ', 'ALIEN_WRITE',
+    'INCIDENT_ALIEN_CLASSIFY', 'INCIDENT_ALIEN_LINK', 'ALIEN_READ', 'ALIEN_WRITE',
     'USER_READ', 'EQUIPMENT_READ', 'EQUIPMENT_MOVEMENT_READ',
     'EQUIPMENT_MOVEMENT_CREATE', 'CLEANUP_REPORT_READ', 'FILE_UPLOAD',
     'FILE_READ', 'NOTIFICATION_READ'
@@ -73,7 +74,7 @@ select r.id, p.id
 from role r, permission p
 where r.name = 'ADMIN' and p.code in (
     'INCIDENT_READ', 'INCIDENT_CREATE', 'INCIDENT_STATUS_CHANGE',
-    'INCIDENT_COMMENT', 'INCIDENT_ALIEN_LINK', 'ALIEN_READ',
+    'INCIDENT_COMMENT', 'INCIDENT_ALIEN_CLASSIFY', 'INCIDENT_ALIEN_LINK', 'ALIEN_READ',
     'ALIEN_WRITE', 'USER_READ', 'INCIDENT_ASSIGN',
     'EQUIPMENT_READ', 'EQUIPMENT_WRITE', 'EQUIPMENT_MOVEMENT_READ',
     'EQUIPMENT_MOVEMENT_CREATE', 'EQUIPMENT_MOVEMENT_PROCESS',

@@ -52,6 +52,7 @@ def test_export_preserves_all_class_indices_dynamic_batches_and_java_reference_b
     assert manifest["decision"]["unknownRejectionValidated"] is False
     assert manifest["input"] == {"name": "images", "dtype": "float32", "shape": ["batch", 3, 224, 224]}
     labels = json.loads((output / "labels.json").read_text())
+    assert all(set(row) == {"index", "classificationKey"} for row in labels)
     assert labels[0]["classificationKey"] == "starfield_angler"
     assert labels[-1]["classificationKey"] == "starfield_windbag"
     assert [row["index"] for row in labels] == list(range(50))
@@ -151,3 +152,39 @@ def test_verification_accepts_fp32_rounding_but_rejects_large_errors_and_changed
     else:
         with pytest.raises(ValueError):
             verify_outputs(model, session, np.zeros((1, 1), dtype=np.float32))
+
+
+def test_backend_bundle_contains_only_runtime_metadata(tmp_path):
+    source = tmp_path / "export"
+    source.mkdir()
+    labels = [{"index": index, **item} for index, item in enumerate(load_catalog())]
+    (source / "model.onnx").write_bytes(b"test model")
+    write_json(source / "labels.json", labels)
+    write_json(source / "preprocessing.json", PREPROCESSING)
+    manifest = {"formatVersion": 1, "modelVersion": "test", "classCount": 50, "bestEpoch": 59,
+                "input": {"name": "images", "dtype": "float32", "shape": ["batch", 3, 224, 224]},
+                "output": {"name": "logits", "dtype": "float32", "shape": ["batch", 50]},
+                "decision": {"type": "softmax-max", "threshold": 0.4, "calibrationSplit": "validation"},
+                "verification": {"referenceCases": 7}, "files": {
+                    name: hashlib.sha256((source / name).read_bytes()).hexdigest()
+                    for name in ("model.onnx", "labels.json", "preprocessing.json")}}
+    manifest["files"]["references/example.input.f32"] = "unused research artifact"
+    write_json(source / "model-manifest.json", manifest)
+    destination = tmp_path / "backend"
+
+    export_module.export_backend_bundle(source, destination)
+
+    assert {p.name for p in destination.iterdir()} == {
+        "model.onnx", "labels.json", "preprocessing.json", "model-manifest.json"}
+    actual = json.loads((destination / "labels.json").read_text())
+    assert actual == [{"index": row["index"], "classificationKey": row["classificationKey"]} for row in labels]
+    result = json.loads((destination / "model-manifest.json").read_text())
+    assert set(result) == {"formatVersion", "classCount", "input", "output", "decision", "files"}
+    assert result["input"] == {"name": "images"}
+    assert result["output"] == {"name": "logits"}
+    assert result["decision"] == {"type": "softmax-max", "threshold": 0.4}
+    assert set(result["files"]) == {"model.onnx", "labels.json", "preprocessing.json"}
+    for name, digest in result["files"].items():
+        assert hashlib.sha256((destination / name).read_bytes()).hexdigest() == digest
+    assert (destination / "model.onnx").read_bytes() == b"test model"
+    assert (destination / "preprocessing.json").read_bytes() == (source / "preprocessing.json").read_bytes()

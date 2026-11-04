@@ -156,6 +156,14 @@ public final class Errors {
     }
 
     /**
+     * Локальная модель выключена, недоступна или занята.
+     */
+    public static BaseException classifierUnavailable() {
+        return BaseException.builder().code(503).message("alien_classifier.unavailable")
+                .humanMessage("Распознавание сейчас недоступно. Повторите попытку позже").build();
+    }
+
+    /**
      * Пустой или отсутствующий файл в запросе.
      */
     public static BaseException fileEmpty() {

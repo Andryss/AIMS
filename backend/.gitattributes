@@ -1,2 +1,6 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
+
+# Model weights and numeric reference arrays are binary artifacts.
+*.onnx binary
+*.f32 binary

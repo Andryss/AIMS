@@ -83,6 +83,51 @@ pathItems:
         500:
           $ref: ../common.yaml#/components/responses/InternalServerError
 
+  IncidentsByIdAlienClassification:
+    post:
+      summary: Suggest alien species from an incident image without saving
+      operationId: classifyIncidentAlien
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassifyIncidentAlienRequest"
+      responses:
+        200:
+          description: Suggested species or no match
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentAlienClassificationResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+        404:
+          $ref: ../common.yaml#/components/responses/NotFound
+        503:
+          description: Classifier unavailable or busy
+          content:
+            application/json:
+              schema:
+                $ref: ../common.yaml#/components/schemas/ErrorObject
+        500:
+          $ref: ../common.yaml#/components/responses/InternalServerError
+
   IncidentsByIdAlien:
     put:
       summary: Link alien type to incident
@@ -467,6 +512,38 @@ pathItems:
 
 components:
   schemas:
+    ClassifyIncidentAlienRequest:
+      type: object
+      required:
+        - fileId
+      properties:
+        fileId:
+          type: integer
+          format: int64
+          minimum: 1
+
+    IncidentAlienClassificationResponse:
+      type: object
+      required:
+        - status
+        - confidence
+      properties:
+        status:
+          type: string
+          enum:
+            - MATCH
+            - NO_MATCH
+        confidence:
+          description: Model score for the best candidate as a percentage
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+        alien:
+          nullable: true
+          allOf:
+            - $ref: ./aliens.yaml#/components/schemas/AlienResponse
+
     IncidentStatusApi:
       type: string
       enum:

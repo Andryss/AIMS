@@ -1,6 +1,7 @@
 """Export a completed run's selected checkpoint and verify a portable CPU inference bundle."""
 
 import argparse
+import hashlib
 import importlib.metadata
 import json
 import math
@@ -166,7 +167,8 @@ def export_run(run_dir, output, image_paths):
         onnx.checker.check_model(str(model_path))
         session = cpu_session(model_path)
         verification = verify_bundle(model, session, image_paths, staging)
-        write_json(staging / "labels.json", labels)
+        write_json(staging / "labels.json", [{"index": item["index"], "classificationKey": item["classificationKey"]}
+                                             for item in labels])
         write_json(staging / "preprocessing.json", {**PREPROCESSING, "layout": "NCHW", "dtype": "float32",
                    "resizeRounding": "floor", "centerCropRounding": "ties-to-even",
                    "alpha": "discard", "grayscale": "repeat-to-RGB", "resizeImplementation": "Pillow BILINEAR with antialias"})
@@ -191,14 +193,52 @@ def export_run(run_dir, output, image_paths):
             shutil.rmtree(staging)
 
 
+def export_backend_bundle(bundle, output):
+    """Copy inference files with only the metadata consumed by the backend."""
+    bundle, output = Path(bundle), Path(output)
+    manifest = json.loads((bundle / "model-manifest.json").read_text(encoding="utf-8"))
+    names = ("model.onnx", "labels.json", "preprocessing.json")
+    artifacts = {name: (bundle / name).read_bytes() for name in names}
+    for name, content in artifacts.items():
+        if hashlib.sha256(content).hexdigest() != manifest["files"][name]:
+            raise ValueError("Exported artifact checksum mismatch: " + name)
+    labels = [{"index": item["index"], "classificationKey": item["classificationKey"]}
+              for item in json.loads(artifacts["labels.json"])]
+    if ([item["index"] for item in labels] != list(range(manifest["classCount"]))
+            or len({item["classificationKey"] for item in labels}) != len(labels)):
+        raise ValueError("Invalid exported class indices or keys")
+    artifacts["labels.json"] = (json.dumps(labels, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    runtime = {"formatVersion": manifest["formatVersion"], "classCount": manifest["classCount"],
+               "input": {"name": manifest["input"]["name"]}, "output": {"name": manifest["output"]["name"]},
+               "decision": {"type": manifest["decision"]["type"], "threshold": manifest["decision"]["threshold"]},
+               "files": {name: hashlib.sha256(content).hexdigest() for name, content in artifacts.items()}}
+    output.mkdir(parents=True, exist_ok=True)
+    for name, content in artifacts.items():
+        (output / name).write_bytes(content)
+    write_json(output / "model-manifest.json", runtime)
+    return runtime
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--run-dir", type=Path, required=True, help="Completed training run containing best.pt and metrics")
+    parser.add_argument("--run-dir", type=Path, help="Completed training run containing best.pt and metrics")
     parser.add_argument("--output", type=Path, help="New bundle directory; defaults to <run-dir>/onnx")
-    parser.add_argument("--images", type=Path, nargs="+", required=True, help="Up to 8 real PNG/JPEG images for verification")
+    parser.add_argument("--images", type=Path, nargs="+", help="Up to 8 real PNG/JPEG images for verification")
+    parser.add_argument("--bundle", type=Path, help="Prepare backend resources from an existing export")
+    parser.add_argument("--backend-output", type=Path, help="Backend resource directory for the inference bundle")
     args = parser.parse_args()
+    if args.bundle is not None:
+        if args.backend_output is None or args.run_dir is not None or args.images is not None or args.output is not None:
+            parser.error("--bundle requires --backend-output and cannot be combined with export options")
+        manifest = export_backend_bundle(args.bundle, args.backend_output)
+        print(json.dumps({"backendBundle": str(args.backend_output), "classCount": manifest["classCount"]}))
+        return
+    if args.run_dir is None or args.images is None:
+        parser.error("Export requires --run-dir and --images")
     output = args.output if args.output is not None else args.run_dir / "onnx"
     manifest = export_run(args.run_dir, output, args.images)
+    if args.backend_output is not None:
+        export_backend_bundle(output, args.backend_output)
     print(json.dumps({"bundle": str(output), "modelBytes": manifest["modelBytes"],
                       "verification": manifest["verification"]}, ensure_ascii=False))
 

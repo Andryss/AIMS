@@ -1,0 +1,29 @@
+{
+  "color": "RGB",
+  "exifTranspose": true,
+  "resizeShortSide": 256,
+  "crop": [
+    224,
+    224
+  ],
+  "interpolation": "bilinear",
+  "antialias": true,
+  "scale": 0.00392156862745098,
+  "mean": [
+    0.485,
+    0.456,
+    0.406
+  ],
+  "std": [
+    0.229,
+    0.224,
+    0.225
+  ],
+  "layout": "NCHW",
+  "dtype": "float32",
+  "resizeRounding": "floor",
+  "centerCropRounding": "ties-to-even",
+  "alpha": "discard",
+  "grayscale": "repeat-to-RGB",
+  "resizeImplementation": "Pillow BILINEAR with antialias"
+}

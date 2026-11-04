@@ -28,6 +28,7 @@
         <openapi-generator-plugin.package>gov.mib.aims.backend.generated</openapi-generator-plugin.package>
         <jacoco-plugin.version>0.8.11</jacoco-plugin.version>
         <jacoco.minimum.line.coverage>0.80</jacoco.minimum.line.coverage>
+        <onnxruntime.version>1.31.1</onnxruntime.version>
         <db-queue.version>15.1.0</db-queue.version>
     </properties>
 
@@ -133,6 +134,12 @@
             <groupId>ru.yoomoney.tech</groupId>
             <artifactId>db-queue-spring</artifactId>
             <version>${db-queue.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.microsoft.onnxruntime</groupId>
+            <artifactId>onnxruntime</artifactId>
+            <version>${onnxruntime.version}</version>
         </dependency>
 
         <!-- TEST DEPENDENCIES -->

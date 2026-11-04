@@ -135,3 +135,26 @@ onnx/references/          # изображения, входные тензор�
 pip install -r requirements-test.txt
 python -m pytest tests -q
 ```
+
+## Модель в бэкенде
+
+Классификатор включён постоянно. Готовый комплект находится в `backend/src/main/resources/alien-classifier/` и входит в JAR. Путь задан как `aims.alien-classifier.model-path=classpath:alien-classifier/model.onnx`; параметры окружения не нужны. Метки, манифест и параметры подготовки читаются рядом с моделью. Preprocessing хранится в одном файле; тестовый комплект также использует его.
+
+После экспорта новой выбранной модели, из `ml/alien_classifier`:
+
+```sh
+python export.py --bundle artifacts/run-001/onnx \
+  --backend-output ../../backend/src/main/resources/alien-classifier/
+```
+
+Команда проверяет хеши экспорта, оставляет в метках только индексы и ключи классов, а в манифесте — используемые бэкендом поля и хеши трёх файлов. Исследовательские `references/*` остаются в ML-экспорте.
+
+Из `backend/`:
+
+```sh
+./mvnw verify # в том числе семь эталонов Python и загрузка модели из JAR-ресурса
+```
+
+Приложение не скачивает модель и не запускает обучение. Повреждённый комплект оставляет распознавание недоступным (503), остальные функции работают. Число CPU-потоков и одновременных запросов настраиваются через `aims.alien-classifier.threads` и `aims.alien-classifier.max-concurrent-requests` (по умолчанию 2 и 1). Датасет, фотографии демо и файлы обучения в JAR не входят.
+
+Эталоны тестов бэкенда — обычные `.f32`: массивы float32 little-endian без сжатия. `.input.f32` хранит подготовленный вход сети, `.logits.f32` — выходы Python до softmax. Рядом лежат исходные PNG/JPEG.

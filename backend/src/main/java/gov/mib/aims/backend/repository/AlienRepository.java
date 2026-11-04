@@ -1,6 +1,8 @@
 package gov.mib.aims.backend.repository;
 
 import gov.mib.aims.backend.entity.AlienEntity;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +13,11 @@ import org.springframework.data.repository.query.Param;
  * Репозиторий справочника инопланетян.
  */
 public interface AlienRepository extends JpaRepository<AlienEntity, Long> {
+
+    /**
+     * Находит вид по внутреннему ключу обученной модели.
+     */
+    Optional<AlienEntity> findByClassificationKey(String classificationKey);
 
     /**
      * Поиск по названию и описанию (name-match выше description-match).

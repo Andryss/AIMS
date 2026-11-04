@@ -108,6 +108,9 @@ paths:
   "/api/v1/aliens/{id}":
     $ref: ./domains/aliens.yaml#/pathItems/AliensById
 
+  "/api/v1/incidents/{id}/alien-classification":
+    $ref: ./domains/incidents.yaml#/pathItems/IncidentsByIdAlienClassification
+
   "/api/v1/incidents/{id}/alien":
     $ref: ./domains/incidents.yaml#/pathItems/IncidentsByIdAlien
 

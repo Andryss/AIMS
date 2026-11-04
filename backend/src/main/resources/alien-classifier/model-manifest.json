@@ -1,0 +1,19 @@
+{
+  "formatVersion": 1,
+  "classCount": 50,
+  "input": {
+    "name": "images"
+  },
+  "output": {
+    "name": "logits"
+  },
+  "decision": {
+    "type": "softmax-max",
+    "threshold": 0.22285473346710205
+  },
+  "files": {
+    "model.onnx": "eb657e405a4f3b25ce9b9d0708af779ce3cb4b0fb45fc7ff557edb9762acd613",
+    "labels.json": "7eaa318bf14a91a61073af849edd9c737d5741723748a214f46ac49f401efcf9",
+    "preprocessing.json": "bf44179c7c4e9cff2c9ca19e780fae7563f54b78fdcee09799cf4cf0edf6f1b7"
+  }
+}

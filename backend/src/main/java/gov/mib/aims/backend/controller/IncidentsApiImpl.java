@@ -19,6 +19,9 @@ import gov.mib.aims.backend.services.CleanupService;
 import gov.mib.aims.backend.services.EntityHistoryQueryService;
 import gov.mib.aims.backend.services.IncidentCommentService;
 import gov.mib.aims.backend.services.IncidentService;
+import gov.mib.aims.backend.generated.model.ClassifyIncidentAlienRequest;
+import gov.mib.aims.backend.generated.model.IncidentAlienClassificationResponse;
+import gov.mib.aims.backend.services.IncidentAlienClassificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class IncidentsApiImpl implements IncidentsApi {
 
+    private final IncidentAlienClassificationService classificationService;
     private final IncidentService incidentService;
     private final IncidentCommentService incidentCommentService;
     private final EntityHistoryQueryService entityHistoryQueryService;
@@ -71,6 +75,15 @@ public class IncidentsApiImpl implements IncidentsApi {
     ) {
         log.info("POST /api/v1/incidents/{}/status", id);
         return incidentService.changeStatus(id, changeIncidentStatusRequest);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('INCIDENT_ALIEN_CLASSIFY')")
+    public IncidentAlienClassificationResponse classifyIncidentAlien(
+            Long id, @Valid ClassifyIncidentAlienRequest request
+    ) {
+        log.info("POST /api/v1/incidents/{}/alien-classification fileId={}", id, request.getFileId());
+        return classificationService.classify(id, request.getFileId());
     }
 
     @Override
