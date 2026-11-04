@@ -67,6 +67,7 @@ public class IncidentServiceImpl implements IncidentService {
                 .location(request.getLocation().trim())
                 .detectedAt(chronoService.toLocalDateTime(request.getDetectedAt()))
                 .description(request.getDescription().trim())
+                .victimCount(request.getVictimCount())
                 .attachmentFileIds(request.getAttachmentFileIds())
                 .executorUserIds(new ArrayList<>())
                 .createdByUserId(currentUserService.getCurrentUserId())
@@ -134,7 +135,8 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    @Transactional
+    @Retryable(interceptor = "retryInterceptor")
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public IncidentResponse linkAlien(Long id, LinkIncidentAlienRequest request) {
         IncidentEntity entity = incidentRepository.findById(id)
                 .orElseThrow(Errors::incidentNotFound);
@@ -172,7 +174,8 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    @Transactional
+    @Retryable(interceptor = "retryInterceptor")
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public IncidentResponse setResponsible(Long id, SetIncidentResponsibleRequest request) {
         IncidentEntity entity = incidentRepository.findById(id)
                 .orElseThrow(Errors::incidentNotFound);
@@ -192,7 +195,8 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    @Transactional
+    @Retryable(interceptor = "retryInterceptor")
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public IncidentResponse setExecutors(Long id, SetIncidentExecutorsRequest request) {
         IncidentEntity entity = incidentRepository.findById(id)
                 .orElseThrow(Errors::incidentNotFound);

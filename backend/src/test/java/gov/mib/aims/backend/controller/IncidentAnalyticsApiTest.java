@@ -1,10 +1,12 @@
 package gov.mib.aims.backend.controller;
 
 import gov.mib.aims.backend.support.AnalyticsTestFixtures;
+import gov.mib.aims.backend.generated.model.IncidentEventTypeApi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.http.HttpHeaders;
 
 import java.time.Instant;
@@ -29,6 +31,24 @@ class IncidentAnalyticsApiTest extends BaseApiTest {
     @BeforeEach
     void prepareFixtures() {
         data = new AnalyticsTestFixtures(jdbcTemplate, objectMapper, fixtures, mockMvc);
+    }
+
+    @ParameterizedTest
+    @EnumSource(IncidentEventTypeApi.class)
+    void countsEveryEventTypeInFilteredAndUnfilteredGroups(IncidentEventTypeApi type) throws Exception {
+        long id = data.incident();
+        var snapshot = data.snapshot("INCIDENT", id);
+        data.clearHistory("INCIDENT", id);
+        snapshot.put("eventType", type.getValue());
+        data.history("INCIDENT", id, FROM, snapshot);
+
+        report("by-event-type").andExpect(status().isOk())
+                .andExpect(jsonPath("$.groups.length()").value(10))
+                .andExpect(jsonPath("$.groups[?(@.key=='" + type.getValue() + "')].count").value(hasItem(1)));
+        mockMvc.perform(get(URL + "/by-event-type").param("from", FROM.toString()).param("to", TO.toString())
+                        .param("eventType", type.getValue()).header(HttpHeaders.AUTHORIZATION, token()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.groups[?(@.key=='" + type.getValue() + "')].count").value(hasItem(1)));
     }
 
     @Test

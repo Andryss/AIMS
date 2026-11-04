@@ -18,6 +18,8 @@ import gov.mib.aims.backend.services.mapping.IncidentMapper;
 import gov.mib.aims.backend.services.validation.AttachmentValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -41,7 +43,8 @@ public class CleanupServiceImpl implements CleanupService {
     private final ChronoService chronoService;
 
     @Override
-    @Transactional
+    @Retryable(interceptor = "retryInterceptor")
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public CleanupReportResponse createReport(Long incidentId, CreateCleanupReportRequest request) {
         IncidentEntity incident = incidentRepository.findById(incidentId)
                 .orElseThrow(Errors::incidentNotFound);
@@ -80,7 +83,8 @@ public class CleanupServiceImpl implements CleanupService {
     }
 
     @Override
-    @Transactional
+    @Retryable(interceptor = "retryInterceptor")
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public IncidentResponse changeCleanupStatus(Long incidentId, ChangeCleanupStatusRequest request) {
         IncidentEntity incident = incidentRepository.findById(incidentId)
                 .orElseThrow(Errors::incidentNotFound);

@@ -8,6 +8,8 @@ create table incident (
     location text not null,
     detected_at timestamp not null,
     description text not null,
+    victim_count integer,
+    threat_level integer,
     attachment_file_ids jsonb not null default '[]',
     created_by_user_id bigint not null references app_user(id),
     responsible_user_id bigint references app_user(id),

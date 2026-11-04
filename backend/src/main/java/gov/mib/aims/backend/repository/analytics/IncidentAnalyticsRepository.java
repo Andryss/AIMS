@@ -188,7 +188,11 @@ public interface IncidentAnalyticsRepository extends Repository<IncidentEntity, 
                     ('ILLEGAL_UFO_LANDING'),
                     ('MEMORY_ANOMALY'),
                     ('ALIEN_ARTIFACT'),
-                    ('ALIEN_CAPTURE')) codes(key))
+                    ('ALIEN_CAPTURE'),
+                    ('ATTACK_ON_PEOPLE'),
+                    ('PROPERTY_DAMAGE'),
+                    ('BIOLOGICAL_CONTAMINATION'),
+                    ('CRITICAL_INFRASTRUCTURE_DISRUPTION')) codes(key))
             ) AS text)
             """, nativeQuery = true)
     String byEventType(@Param("from") Instant from, @Param("to") Instant to,

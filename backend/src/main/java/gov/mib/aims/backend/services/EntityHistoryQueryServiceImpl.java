@@ -76,6 +76,8 @@ public class EntityHistoryQueryServiceImpl implements EntityHistoryQueryService 
                 .location(entity.getLocation())
                 .detectedAt(chronoService.toOffsetDateTime(entity.getDetectedAt()))
                 .description(entity.getDescription())
+                .victimCount(entity.getVictimCount())
+                .threatLevel(entity.getThreatLevel())
                 .attachmentFileIds(new ArrayList<>(entity.getAttachmentFileIds()))
                 .alienId(entity.getAlienId())
                 .responsibleUserId(entity.getResponsibleUserId())

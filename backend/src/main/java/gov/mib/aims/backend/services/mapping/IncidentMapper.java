@@ -41,6 +41,8 @@ public class IncidentMapper {
                 .location(entity.getLocation())
                 .detectedAt(chronoService.toOffsetDateTime(entity.getDetectedAt()))
                 .description(entity.getDescription())
+                .victimCount(entity.getVictimCount())
+                .threatLevel(entity.getThreatLevel())
                 .attachmentFileIds(new ArrayList<>(entity.getAttachmentFileIds()))
                 .createdAt(chronoService.toOffsetDateTime(entity.getCreatedAt()))
                 .updatedAt(chronoService.toOffsetDateTime(entity.getUpdatedAt()))
@@ -63,6 +65,10 @@ public class IncidentMapper {
             case MEMORY_ANOMALY -> IncidentEventType.MEMORY_ANOMALY;
             case ALIEN_ARTIFACT -> IncidentEventType.ALIEN_ARTIFACT;
             case ALIEN_CAPTURE -> IncidentEventType.ALIEN_CAPTURE;
+            case ATTACK_ON_PEOPLE -> IncidentEventType.ATTACK_ON_PEOPLE;
+            case PROPERTY_DAMAGE -> IncidentEventType.PROPERTY_DAMAGE;
+            case BIOLOGICAL_CONTAMINATION -> IncidentEventType.BIOLOGICAL_CONTAMINATION;
+            case CRITICAL_INFRASTRUCTURE_DISRUPTION -> IncidentEventType.CRITICAL_INFRASTRUCTURE_DISRUPTION;
         };
     }
 
@@ -111,6 +117,10 @@ public class IncidentMapper {
             case MEMORY_ANOMALY -> IncidentEventTypeApi.MEMORY_ANOMALY;
             case ALIEN_ARTIFACT -> IncidentEventTypeApi.ALIEN_ARTIFACT;
             case ALIEN_CAPTURE -> IncidentEventTypeApi.ALIEN_CAPTURE;
+            case ATTACK_ON_PEOPLE -> IncidentEventTypeApi.ATTACK_ON_PEOPLE;
+            case PROPERTY_DAMAGE -> IncidentEventTypeApi.PROPERTY_DAMAGE;
+            case BIOLOGICAL_CONTAMINATION -> IncidentEventTypeApi.BIOLOGICAL_CONTAMINATION;
+            case CRITICAL_INFRASTRUCTURE_DISRUPTION -> IncidentEventTypeApi.CRITICAL_INFRASTRUCTURE_DISRUPTION;
         };
     }
 

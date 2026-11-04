@@ -19,6 +19,9 @@ import gov.mib.aims.backend.services.CleanupService;
 import gov.mib.aims.backend.services.EntityHistoryQueryService;
 import gov.mib.aims.backend.services.IncidentCommentService;
 import gov.mib.aims.backend.services.IncidentService;
+import gov.mib.aims.backend.services.IncidentThreatService;
+import gov.mib.aims.backend.generated.model.IncidentThreatCalculationResponse;
+import gov.mib.aims.backend.generated.model.SetIncidentThreatLevelRequest;
 import gov.mib.aims.backend.generated.model.IncidentAlienClassificationResponse;
 import gov.mib.aims.backend.services.IncidentAlienClassificationService;
 import jakarta.validation.Valid;
@@ -39,6 +42,7 @@ public class IncidentsApiImpl implements IncidentsApi {
 
     private final IncidentAlienClassificationService classificationService;
     private final IncidentService incidentService;
+    private final IncidentThreatService threatService;
     private final IncidentCommentService incidentCommentService;
     private final EntityHistoryQueryService entityHistoryQueryService;
     private final CleanupService cleanupService;
@@ -116,6 +120,20 @@ public class IncidentsApiImpl implements IncidentsApi {
         int pageSize = size != null ? size : 50;
         log.info("GET /api/v1/incidents/{}/history page={} size={}", id, pageNumber, pageSize);
         return entityHistoryQueryService.listIncidentHistory(id, pageNumber, pageSize);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('INCIDENT_THREAT_CALCULATE')")
+    public IncidentThreatCalculationResponse calculateIncidentThreat(Long id) {
+        log.info("POST /api/v1/incidents/{}/threat-calculation", id);
+        return threatService.calculate(id);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('INCIDENT_THREAT_CALCULATE')")
+    public IncidentResponse setIncidentThreatLevel(Long id, @Valid SetIncidentThreatLevelRequest request) {
+        log.info("PUT /api/v1/incidents/{}/threat-level level={}", id, request.getThreatLevel());
+        return threatService.setThreatLevel(id, request);
     }
 
     @Override

@@ -58,6 +58,12 @@ public class IncidentEntity {
     @Column(nullable = false)
     private String description;
 
+    @Column(name = "victim_count")
+    private Integer victimCount;
+
+    @Column(name = "threat_level")
+    private Integer threatLevel;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "attachment_file_ids", nullable = false)
     @Builder.Default

@@ -96,6 +96,12 @@ paths:
   /api/v1/incidents:
     $ref: ./domains/incidents.yaml#/pathItems/Incidents
 
+  "/api/v1/incidents/{id}/threat-calculation":
+    $ref: ./domains/incidents.yaml#/pathItems/IncidentsByIdThreatCalculation
+
+  "/api/v1/incidents/{id}/threat-level":
+    $ref: ./domains/incidents.yaml#/pathItems/IncidentsByIdThreatLevel
+
   "/api/v1/incidents/{id}":
     $ref: ./domains/incidents.yaml#/pathItems/IncidentsById
 

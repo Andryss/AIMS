@@ -52,6 +52,82 @@ pathItems:
         500:
           $ref: ../common.yaml#/components/responses/InternalServerError
 
+  IncidentsByIdThreatCalculation:
+    post:
+      summary: Calculate incident threat
+      operationId: calculateIncidentThreat
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Calculate incident threat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentThreatCalculationResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+        404:
+          $ref: ../common.yaml#/components/responses/NotFound
+        409:
+          $ref: ../common.yaml#/components/responses/Conflict
+        500:
+          $ref: ../common.yaml#/components/responses/InternalServerError
+
+  IncidentsByIdThreatLevel:
+    put:
+      summary: Set accepted incident threat level
+      operationId: setIncidentThreatLevel
+      tags:
+        - incidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetIncidentThreatLevelRequest"
+      responses:
+        200:
+          description: Set accepted incident threat level
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentResponse"
+        400:
+          $ref: ../common.yaml#/components/responses/BadRequest
+        401:
+          $ref: ../common.yaml#/components/responses/Unauthorized
+        403:
+          $ref: ../common.yaml#/components/responses/Forbidden
+        404:
+          $ref: ../common.yaml#/components/responses/NotFound
+        409:
+          $ref: ../common.yaml#/components/responses/Conflict
+        500:
+          $ref: ../common.yaml#/components/responses/InternalServerError
+
   IncidentsById:
     get:
       summary: Get incident by id
@@ -585,6 +661,10 @@ components:
         - MEMORY_ANOMALY
         - ALIEN_ARTIFACT
         - ALIEN_CAPTURE
+        - ATTACK_ON_PEOPLE
+        - PROPERTY_DAMAGE
+        - BIOLOGICAL_CONTAMINATION
+        - CRITICAL_INFRASTRUCTURE_DISRUPTION
 
     CreateIncidentRequest:
       type: object
@@ -595,6 +675,11 @@ components:
         - description
         - attachmentFileIds
       properties:
+        victimCount:
+          type: integer
+          format: int32
+          minimum: 0
+          nullable: true
         eventType:
           $ref: "#/components/schemas/IncidentEventTypeApi"
         location:
@@ -617,6 +702,50 @@ components:
           type: integer
           format: int64
           description: Optional link to inbound monitoring alert
+
+    IncidentThreatContribution:
+      type: object
+      required:
+        - criterion
+        - adjustment
+      properties:
+        criterion:
+          type: string
+          enum:
+            - ALIEN_THREAT
+            - DEFAULT_THREAT
+            - EVENT_TYPE
+            - VICTIMS
+        adjustment:
+          type: integer
+          format: int32
+
+    IncidentThreatCalculationResponse:
+      type: object
+      required:
+        - calculatedThreatLevel
+        - contributions
+      properties:
+        calculatedThreatLevel:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+        contributions:
+          type: array
+          items:
+            $ref: "#/components/schemas/IncidentThreatContribution"
+
+    SetIncidentThreatLevelRequest:
+      type: object
+      required:
+        - threatLevel
+      properties:
+        threatLevel:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
 
     ChangeIncidentStatusRequest:
       type: object
@@ -757,6 +886,17 @@ components:
         - attachmentFileIds
         - executorUserIds
       properties:
+        victimCount:
+          type: integer
+          format: int32
+          minimum: 0
+          nullable: true
+        threatLevel:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+          nullable: true
         status:
           $ref: "#/components/schemas/IncidentStatusApi"
         eventType:
@@ -854,6 +994,17 @@ components:
         - createdAt
         - updatedAt
       properties:
+        victimCount:
+          type: integer
+          format: int32
+          minimum: 0
+          nullable: true
+        threatLevel:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+          nullable: true
         id:
           type: integer
           format: int64

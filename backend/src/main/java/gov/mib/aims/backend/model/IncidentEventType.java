@@ -16,5 +16,13 @@ public enum IncidentEventType {
     /** Обнаружение инопланетного артефакта. */
     ALIEN_ARTIFACT,
     /** Захват или транспортировка инопланетянина. */
-    ALIEN_CAPTURE
+    ALIEN_CAPTURE,
+    /** Нападение на людей. */
+    ATTACK_ON_PEOPLE,
+    /** Повреждение имущества. */
+    PROPERTY_DAMAGE,
+    /** Биологическое заражение. */
+    BIOLOGICAL_CONTAMINATION,
+    /** Нарушение работы критической инфраструктуры. */
+    CRITICAL_INFRASTRUCTURE_DISRUPTION
 }

@@ -9,6 +9,13 @@ public final class Errors {
     }
 
     /**
+     * Конфликт состояния инцидента.
+     */
+    public static BaseException incidentConflict(String message) {
+        return BaseException.builder().code(409).message("incident.conflict").humanMessage(message).build();
+    }
+
+    /**
      * Экземпляр оборудования не найден.
      */
     public static BaseException equipmentNotFound() {
