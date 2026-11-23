@@ -305,57 +305,5 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>db-tests</id>
-            <properties>
-                <db-tests.output-directory>${project.build.directory}/custom-tests/db-test</db-tests.output-directory>
-                <db-tests.results-directory>${db-tests.output-directory}/results</db-tests.results-directory>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>io.qameta.allure</groupId>
-                    <artifactId>allure-jupiter</artifactId>
-                    <version>3.0.0</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <includes>
-                                <include>**/db/**/*DbTest.java</include>
-                            </includes>
-                            <reportsDirectory>${db-tests.results-directory}</reportsDirectory>
-                            <useFile>false</useFile>
-                            <statelessTestsetReporter>
-                                <disable>true</disable>
-                            </statelessTestsetReporter>
-                            <systemPropertyVariables>
-                                <allure.results.directory>${db-tests.results-directory}</allure.results.directory>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>io.qameta.allure</groupId>
-                        <artifactId>allure-maven</artifactId>
-                        <version>3.1.0</version>
-                        <configuration>
-                            <reportVersion>2.46.1</reportVersion>
-                            <resultsDirectory>${db-tests.results-directory}</resultsDirectory>
-                            <reportDirectory>${db-tests.output-directory}/report</reportDirectory>
-                            <executorInfo>
-                                <reportName>Отчёт о тестировании базы данных</reportName>
-                                <buildOrder>${env.GITHUB_RUN_NUMBER}</buildOrder>
-                            </executorInfo>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>

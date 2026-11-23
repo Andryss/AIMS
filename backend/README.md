@@ -118,28 +118,18 @@ This runs Checkstyle, unit/integration tests (embedded PostgreSQL + Liquibase), 
 
 ### Database tests
 
-From `backend`, run the direct SQL tests with JDK 17:
+Run the pgTAP tests for `app_user` and `stored_file` from `backend`:
 
 ```bash
-./mvnw -Pdb-tests clean test
-./mvnw -Pdb-tests allure:report
+./src/test/pg/run.sh
 ```
 
-Run the second command even when tests fail. The Allure JUnit adapter saves results in `target/custom-tests/db-test/results/`.
-Open the generated report with `allure open target/custom-tests/db-test/report`. The Allure Maven plugin downloads
-and caches the report generator on its first run.
+See [SQL test instructions](src/test/pg/README.md) for Podman, report viewing commands, and the directory layout.
 
-GitHub Actions uploads the full report as the `backend-db-allure-report-<attempt>` artifact and caches Allure history
+GitHub Actions workflow [db-test.yml](../.github/workflows/db-test.yml) runs the pgTAP script,
+uploads the full report as the `backend-db-allure-report-<attempt>` artifact and caches Allure history
 between runs on the same branch, including runs with failed database tests. To view the downloaded report, extract the
 artifact and run `allure open <report-directory>`.
-
-For a new table, add a `*DbTest` class in the `db` test package and extend `BaseDbTest`. Set the class display name to
-`Тестирование таблицы <name>`. In separate `@Test` methods, call `TableSchemaQueries` assertions with the table name
-and the expected columns or keys. Prefix display names with `[Схема]` for metadata checks and `[Сценарий]` for SQL
-behavior checks. Order the tests by display name.
-
-`TableCoverageDbTest` checks that each application table in `public` has a matching DB test class. It reports missing
-tables by name and skips the Liquibase bookkeeping tables, `queue_tasks`, and Quartz tables with the `QRTZ_` prefix.
 
 ## API contract
 

@@ -1,0 +1,63 @@
+name: aims-db-tests
+
+services:
+  db:
+    image: aims-pgtap-db:16.16
+    build:
+      context: .
+      dockerfile: docker/postgres.Dockerfile
+    environment:
+      POSTGRES_DB: aims_db_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d aims_db_test"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  migrations:
+    image: liquibase/liquibase:4.31.1
+    volumes:
+      - ../../main/resources/liquibase:/liquibase/changelog:ro
+    command:
+      - --url=jdbc:postgresql://db:5432/aims_db_test
+      - --username=postgres
+      - --password=postgres
+      - --search-path=/liquibase/changelog
+      - --changelog-file=db-changelog.xml
+      - update
+
+  tests:
+    image: aims-pgtap-runner:2.46.1
+    build:
+      context: .
+      dockerfile: docker/runner.Dockerfile
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: aims_db_test
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGOPTIONS: -c search_path=public,test_support
+      PYTHONDONTWRITEBYTECODE: "1"
+      TEST_COMMIT: ${TEST_COMMIT}
+    user: "${TEST_UID}:${TEST_GID}"
+    volumes:
+      - .:/work/pg:ro
+      - ../../../pom.xml:/work/pom.xml:ro
+      - ../../../target/custom-tests/db-test:/output
+    command: python -m pytest -q -p no:cacheprovider tools/test_database.py --alluredir=/output/results
+
+  report:
+    image: aims-pgtap-runner:2.46.1
+    user: "${TEST_UID}:${TEST_GID}"
+    volumes:
+      - .:/work/pg:ro
+      - ../../../target/custom-tests/db-test:/output
+    command: bash tools/report.sh
+
+volumes:
+  database:

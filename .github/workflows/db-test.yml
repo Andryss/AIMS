@@ -1,0 +1,48 @@
+name: DB Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/src/main/resources/liquibase/**'
+      - '.github/workflows/db-test.yml'
+
+concurrency:
+  group: backend-tests
+  queue: max
+
+jobs:
+  db-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Restore Allure history
+        id: allure-history
+        uses: actions/cache/restore@v5
+        with:
+          path: backend/target/custom-tests/db-test/history
+          key: backend-db-allure-history-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            backend-db-allure-history-${{ github.ref_name }}-
+
+      - name: Run database tests and generate Allure report
+        run: ./backend/src/test/pg/run.sh
+
+      - name: Save Allure history
+        if: (success() || failure()) && steps.allure-history.outcome == 'success'
+        uses: actions/cache/save@v5
+        with:
+          path: backend/target/custom-tests/db-test/history
+          key: ${{ steps.allure-history.outputs.cache-primary-key }}
+
+      - name: Upload Allure report
+        if: success() || failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-db-allure-report-${{ github.run_attempt }}
+          path: backend/target/custom-tests/db-test/report/
+          if-no-files-found: error
