@@ -5,6 +5,7 @@ import subprocess
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from pathlib import Path
+from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 
@@ -13,6 +14,7 @@ REPORT_TIMEZONE = ZoneInfo("Europe/Moscow")
 
 def pytest_sessionstart(session):
     started_at = datetime.now(REPORT_TIMEZONE)
+    run_id = str(uuid4())
     session.db_tests_started_at = started_at
     version = ET.parse("/work/pom.xml").getroot().findtext("{*}version")
     database = subprocess.check_output(
@@ -30,6 +32,7 @@ def pytest_sessionstart(session):
         "Git.commit": os.environ["TEST_COMMIT"],
         "Container": platform.platform(),
         **json.loads(database),
+        "Run.id": run_id,
         "Run.started_at": started_at.isoformat(timespec="milliseconds"),
         "Run.timezone": REPORT_TIMEZONE.key,
     }
@@ -40,7 +43,7 @@ def pytest_sessionstart(session):
     (output / "executor.json").write_text(json.dumps({
         "name": "Docker Compose",
         "type": "local",
-        "buildName": started_at.isoformat(timespec="milliseconds"),
+        "buildName": run_id,
         "buildOrder": int(started_at.timestamp() * 1000),
         "reportName": "Отчёт о тестировании базы данных",
     }, ensure_ascii=False))

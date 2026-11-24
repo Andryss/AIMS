@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Экземпляр, включенный в заявку на движение.
@@ -16,6 +17,7 @@ import lombok.Setter;
 @Table(name = "equipment_movement_item")
 @Getter
 @Setter
+@ToString
 public class EquipmentMovementItemEntity {
 
     @Id

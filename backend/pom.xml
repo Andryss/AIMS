@@ -30,6 +30,7 @@
         <jacoco.minimum.line.coverage>0.80</jacoco.minimum.line.coverage>
         <onnxruntime.version>1.31.1</onnxruntime.version>
         <db-queue.version>15.1.0</db-queue.version>
+        <allure.version>3.0.0</allure.version>
     </properties>
 
     <dependencies>
@@ -145,6 +146,13 @@
         <!-- TEST DEPENDENCIES -->
 
         <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-jupiter</artifactId>
+            <version>${allure.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
@@ -257,6 +265,16 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco-plugin.version}</version>
@@ -306,4 +324,80 @@
     </build>
 
 
+    <profiles>
+        <profile>
+            <id>functional-tests</id>
+            <properties>
+                <functional.output>${project.build.directory}/custom-tests/functional-test</functional.output>
+                <functional.revision>unknown</functional.revision>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>prepare-functional-tests</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <configuration>
+                                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                                    <filesets>
+                                        <fileset>
+                                            <directory>${functional.output}/results</directory>
+                                        </fileset>
+                                        <fileset>
+                                            <directory>${functional.output}/coverage</directory>
+                                        </fileset>
+                                        <fileset>
+                                            <directory>${functional.output}/logs/surefire</directory>
+                                        </fileset>
+                                        <fileset>
+                                            <directory>${project.build.testOutputDirectory}</directory>
+                                        </fileset>
+                                    </filesets>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <failIfNoTests>true</failIfNoTests>
+                            <includes>
+                                <include>**/IncidentStatusWorkflowTest.java</include>
+                                <include>**/IncidentServiceImplTest.java</include>
+                                <include>**/CleanupServiceImplTest.java</include>
+                            </includes>
+                            <argLine>@{argLine} "-javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar"</argLine>
+                            <reportsDirectory>${functional.output}/logs/surefire</reportsDirectory>
+                            <systemPropertyVariables>
+                                <allure.results.directory>${functional.output}/results</allure.results.directory>
+                                <aims.functional.enabled>true</aims.functional.enabled>
+                                <aims.functional.version>${project.version}</aims.functional.version>
+                                <aims.functional.revision>${functional.revision}</aims.functional.revision>
+                                <aims.functional.junit>${junit-jupiter.version}</aims.functional.junit>
+                                <aims.functional.mockito>${mockito.version}</aims.functional.mockito>
+                                <aims.functional.allure>${allure.version}</aims.functional.allure>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <configuration>
+                            <destFile>${functional.output}/coverage/jacoco.exec</destFile>
+                            <dataFile>${functional.output}/coverage/jacoco.exec</dataFile>
+                            <outputDirectory>${functional.output}/coverage</outputDirectory>
+                            <append>false</append>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

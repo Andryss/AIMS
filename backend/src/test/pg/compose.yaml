@@ -55,9 +55,9 @@ services:
     image: aims-pgtap-runner:2.46.1
     user: "${TEST_UID}:${TEST_GID}"
     volumes:
-      - .:/work/pg:ro
+      - ../scripts:/work/scripts:ro
       - ../../../target/custom-tests/db-test:/output
-    command: bash tools/report.sh
+    command: bash /work/scripts/report.sh /output
 
 volumes:
   database:

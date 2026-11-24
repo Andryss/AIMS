@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.Generated;
 import org.hibernate.generator.EventType;
 
@@ -23,6 +24,7 @@ import java.time.Instant;
 @Table(name = "tender_participant")
 @Getter
 @Setter
+@ToString
 public class TenderParticipantEntity {
 
     @Id

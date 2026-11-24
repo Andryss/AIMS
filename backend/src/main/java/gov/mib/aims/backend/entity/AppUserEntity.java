@@ -12,6 +12,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Пользователь приложения.
@@ -20,6 +21,7 @@ import lombok.Setter;
 @Table(name = "app_user")
 @Getter
 @Setter
+@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,6 +34,7 @@ public class AppUserEntity {
 
     private String login;
 
+    @ToString.Exclude
     @Column(name = "password_hash")
     private String passwordHash;
 }
