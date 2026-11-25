@@ -149,9 +149,9 @@ export function IncidentDetailPage({
   };
 
   return (
-    <Card className="incident-detail-page">
+    <Card id="incident-details" className="incident-detail-page">
       <CardHeader>
-        <h2>{incident ? `Инцидент #${incident.id}` : 'Инцидент'}</h2>
+        <h2 id="incident-title">{incident ? `Инцидент #${incident.id}` : 'Инцидент'}</h2>
         <div className="page-actions">
           {!loading && editable && <Button variant="ghost" className="icon-button"
             aria-label="Редактировать инцидент" title="Редактировать инцидент" onClick={() => setEditorScope(editScope)}>
@@ -188,7 +188,7 @@ export function IncidentDetailPage({
             <dl className="data-list">
               <div className="data-list__row">
                 <dt>Статус</dt>
-                <dd>
+                <dd id="incident-status">
                   <IncidentStatusSelect
                     token={token}
                     incident={incident}
@@ -212,19 +212,19 @@ export function IncidentDetailPage({
               </div>
               <div className="data-list__row">
                 <dt>Тип события</dt>
-                <dd>{EVENT_TYPE_LABELS[incident.eventType] ?? incident.eventType}</dd>
+                <dd id="incident-event-type">{EVENT_TYPE_LABELS[incident.eventType] ?? incident.eventType}</dd>
               </div>
               <div className="data-list__row">
                 <dt>Место</dt>
-                <dd>{incident.location}</dd>
+                <dd id="incident-location">{incident.location}</dd>
               </div>
               <div className="data-list__row">
                 <dt>Время обнаружения</dt>
-                <dd>{formatDate(incident.detectedAt)}</dd>
+                <dd id="incident-detected-at">{formatDate(incident.detectedAt)}</dd>
               </div>
               <div className="data-list__row">
                 <dt>Описание</dt>
-                <dd className="text-pre-wrap">{incident.description}</dd>
+                <dd id="incident-description" className="text-pre-wrap">{incident.description}</dd>
               </div>
 
               <div className="data-list__row">
@@ -235,11 +235,12 @@ export function IncidentDetailPage({
               {(canReadAliens && (canLinkAlien || canClassifyAlien || linkedAlien)) && (
                 <div className="data-list__row">
                   <dt>Тип инопланетянина</dt>
-                  <dd className="incident-alien-field">
+                  <dd id="incident-alien" className="incident-alien-field">
                     {linkedAlien ? <AlienSummary token={token} alien={linkedAlien} incidentId={incident.id} />
                       : !(canLinkAlien && incident.status === 'READY_FOR_ANALYSIS') && <span>—</span>}
                     {canLinkAlien && incident.status === 'READY_FOR_ANALYSIS' && (
-                      <Button size="sm" variant="outline" disabled={linkLoading} onClick={() => setAlienDrawerOpen(true)}>
+                      <Button id="incident-alien-select" size="sm" variant="outline" disabled={linkLoading}
+                        onClick={() => setAlienDrawerOpen(true)}>
                         {linkedAlien ? 'Изменить вид' : 'Выбрать'}
                       </Button>
                     )}
@@ -283,7 +284,7 @@ export function IncidentDetailPage({
 
               <div className="data-list__row">
                 <dt>Вложения</dt>
-                <dd>
+                <dd id="incident-attachments">
                   {incident.attachmentFileIds.length === 0 ? (
                     '—'
                   ) : (

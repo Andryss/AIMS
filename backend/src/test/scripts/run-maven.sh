@@ -18,9 +18,10 @@ mkdir -p "$output/logs"
 mkdir "$output/.run.lock"
 trap 'task_exit=$?; rmdir "$output/.run.lock"; exit "$task_exit"' EXIT
 
+rm -rf "$output/results" "$output/report"
 revision=$(git rev-parse HEAD)
 set +e
-./mvnw -B -P"$profile" -Dfunctional.revision="$revision" "$@" "$phase" \
+./mvnw -B -P"$profile" -Daims.test.revision="$revision" "$@" "$phase" \
     2>&1 | tee "$output/logs/maven.log"
 test_exit=("${PIPESTATUS[@]}")
 bash "$backend_dir/src/test/scripts/report.sh" "$output" \

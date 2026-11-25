@@ -22,7 +22,7 @@ export function LoginPage({ loading, onSignIn }: LoginPageProps) {
       <div className="login-card">
         <h1 className="login-card__title">{SYSTEM_NAME}</h1>
         <form onSubmit={handleSubmit} className="form">
-          <FormField label="Логин" required>
+          <FormField label="Логин" htmlFor="login-username" required>
             <input
               value={login}
               onChange={(e) => setLogin(e.target.value)}
@@ -30,7 +30,7 @@ export function LoginPage({ loading, onSignIn }: LoginPageProps) {
               required
             />
           </FormField>
-          <FormField label="Пароль" required>
+          <FormField label="Пароль" htmlFor="login-password" required>
             <input
               type="password"
               value={password}
@@ -39,7 +39,7 @@ export function LoginPage({ loading, onSignIn }: LoginPageProps) {
               required
             />
           </FormField>
-          <Button type="submit" variant="primary" block loading={loading}>
+          <Button id="login-submit" type="submit" variant="primary" block loading={loading}>
             Войти
           </Button>
         </form>

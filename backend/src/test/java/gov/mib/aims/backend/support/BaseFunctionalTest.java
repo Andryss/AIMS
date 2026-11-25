@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 /**
  * Общая настройка Mockito, Allure и метаданных функционального прогона.
  */
-@ExtendWith({AllureJupiter.class, MockitoExtension.class, FunctionalTestRunExtension.class})
+@ExtendWith({AllureJupiter.class, MockitoExtension.class, AllureRunMetadataExtension.class})
 @Epic("Функциональное тестирование")
 public abstract class BaseFunctionalTest {
 }

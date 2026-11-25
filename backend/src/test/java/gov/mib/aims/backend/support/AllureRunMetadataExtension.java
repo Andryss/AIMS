@@ -19,19 +19,17 @@ import java.util.Properties;
 import java.util.UUID;
 
 /**
- * Записывает метаданные Allure один раз для всех функциональных классов в прогоне JUnit.
+ * Записывает метаданные Allure один раз для всех тестовых классов в прогоне JUnit.
  */
-public class FunctionalTestRunExtension implements BeforeAllCallback {
+public class AllureRunMetadataExtension implements BeforeAllCallback {
 
     private static final ExtensionContext.Namespace NAMESPACE =
-            ExtensionContext.Namespace.create(FunctionalTestRunExtension.class);
+            ExtensionContext.Namespace.create(AllureRunMetadataExtension.class);
 
     @Override
     public void beforeAll(ExtensionContext context) {
-        if (Boolean.getBoolean("aims.functional.enabled")) {
-            context.getRoot().getStore(NAMESPACE)
-                    .getOrComputeIfAbsent(RunMetadata.class, key -> new RunMetadata(), RunMetadata.class);
-        }
+        context.getRoot().getStore(NAMESPACE)
+                .getOrComputeIfAbsent(RunMetadata.class, key -> new RunMetadata(), RunMetadata.class);
     }
 
     private static final class RunMetadata implements ExtensionContext.Store.CloseableResource {
@@ -43,32 +41,35 @@ public class FunctionalTestRunExtension implements BeforeAllCallback {
 
         private RunMetadata() {
             String runId = UUID.randomUUID().toString();
-            environment.setProperty("Application.version", System.getProperty("aims.functional.version", "unknown"));
-            String revision = System.getProperty("aims.functional.revision", "unknown");
+            environment.setProperty("Application.version", System.getProperty("aims.test.version", "unknown"));
+            String revision = System.getProperty("aims.test.revision", "unknown");
             if (!revision.equals("unknown")) {
                 environment.setProperty("Git.commit", revision);
             }
             environment.setProperty("JDK", System.getProperty("java.runtime.version"));
-            environment.setProperty("JUnit.version", System.getProperty("aims.functional.junit", "unknown"));
-            environment.setProperty("Mockito.version", System.getProperty("aims.functional.mockito", "unknown"));
-            environment.setProperty("Allure.Java.version", System.getProperty("aims.functional.allure", "unknown"));
+            environment.setProperty("JUnit.version", System.getProperty("aims.test.junit", "unknown"));
+            String mockitoVersion = System.getProperty("aims.test.mockito");
+            if (mockitoVersion != null) {
+                environment.setProperty("Mockito.version", mockitoVersion);
+            }
+            environment.setProperty("Allure.Java.version", System.getProperty("aims.test.allure", "unknown"));
             environment.setProperty("OS", System.getProperty("os.name") + " " + System.getProperty("os.version")
                     + " " + System.getProperty("os.arch"));
             environment.setProperty("Run.id", runId);
             environment.setProperty("Run.started_at", startedAt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
             environment.setProperty("Run.timezone", REPORT_ZONE.getId());
-            var executor = new LinkedHashMap<String, Object>();
+            LinkedHashMap<String, Object> executor = new LinkedHashMap<>();
             executor.put("name", "Maven / JUnit Jupiter");
             executor.put("buildName", runId);
             executor.put("buildOrder", startedAt.toInstant().toEpochMilli());
-            executor.put("reportName", "Функциональное тестирование AIMS");
+            executor.put("reportName", System.getProperty("aims.test.report-name", "Тестирование AIMS"));
             try {
                 Files.createDirectories(results);
                 writeEnvironment();
                 new ObjectMapper().writerWithDefaultPrettyPrinter()
                         .writeValue(results.resolve("executor.json").toFile(), executor);
             } catch (IOException error) {
-                throw new UncheckedIOException("Не удалось записать метаданные функционального прогона", error);
+                throw new UncheckedIOException("Не удалось записать метаданные тестового прогона", error);
             }
         }
 
@@ -76,18 +77,22 @@ public class FunctionalTestRunExtension implements BeforeAllCallback {
         public void close() {
             ZonedDateTime finishedAt = ZonedDateTime.now(REPORT_ZONE);
             environment.setProperty("Run.finished_at", finishedAt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
-            environment.setProperty("Run.duration_ms", Long.toString(Duration.between(startedAt, finishedAt).toMillis()));
+            environment.setProperty("Run.duration_ms",
+                    Long.toString(Duration.between(startedAt, finishedAt).toMillis()));
             try {
                 writeEnvironment();
             } catch (IOException error) {
-                throw new UncheckedIOException("Не удалось завершить метаданные функционального прогона", error);
+                throw new UncheckedIOException("Не удалось завершить метаданные тестового прогона", error);
             }
         }
 
         private void writeEnvironment() throws IOException {
+            String prefix = "aims.test.environment.";
+            System.getProperties().stringPropertyNames().stream().filter(key -> key.startsWith(prefix))
+                    .forEach(key -> environment.setProperty(key.substring(prefix.length()), System.getProperty(key)));
             Path destination = results.resolve("environment.properties");
             try (Writer output = Files.newBufferedWriter(destination, StandardCharsets.UTF_8)) {
-                environment.store(output, "AIMS functional test run");
+                environment.store(output, "AIMS test run");
             }
         }
     }

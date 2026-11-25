@@ -12,27 +12,34 @@ import io.qameta.allure.AttachmentOptions;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
+import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Шаги сравнения и независимые JSON-снимки функциональных проверок.
+ * Записывает шаги проверок, ожидаемые и фактические значения и вложения тестов в Allure.
  */
-public final class FunctionalTestReport {
+public final class AllureTestDataWriter {
 
     private static final ObjectMapper JSON = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-    private FunctionalTestReport() {
+    private AllureTestDataWriter() {
     }
 
     /** Записывает наблюдаемые значения до выполнения сравнения. */
     public static void equal(String name, Object expected, Object actual) {
+        equal(name, expected, () -> actual);
+    }
+
+    /** Читает фактическое значение внутри шага, сохраняя контекст ошибки чтения. */
+    public static void equal(String name, Object expected, Supplier<?> readActual) {
         Allure.step(name, step -> {
             step.parameter("Ожидалось", expected);
+            Object actual = readActual == null ? null : readActual.get();
             step.parameter("Получено", actual);
-            var comparison = new LinkedHashMap<String, Object>();
+            LinkedHashMap<String, Object> comparison = new LinkedHashMap<>();
             comparison.put("Ожидалось", expected);
             comparison.put("Получено", actual);
             snapshot("Результат проверки", comparison);
@@ -53,7 +60,7 @@ public final class FunctionalTestReport {
 
     /** Сохраняет поля ожидаемого исключения, включая отсутствующие значения. */
     public static void exception(BaseException error) {
-        var details = new LinkedHashMap<String, Object>();
+        LinkedHashMap<String, Object> details = new LinkedHashMap<>();
         details.put("code", error.getCode());
         details.put("message", error.getMessage());
         details.put("humanMessage", error.getHumanMessage());
@@ -65,8 +72,14 @@ public final class FunctionalTestReport {
         attach(name, "text/plain", ".txt", content);
     }
 
+    /** Прикрепляет PNG к текущему шагу или тесту. */
+    public static void png(String name, byte[] content) {
+        Allure.getLifecycle().addAttachment(name, "image/png", new ByteArrayInputStream(content),
+                AttachmentOptions.withFileExtension(".png"));
+    }
+
     private static void attach(String name, String type, String extension, String content) {
-        var input = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+        ByteArrayInputStream input = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
         Allure.getLifecycle().addAttachment(name, type, input, AttachmentOptions.withFileExtension(extension));
     }
 }

@@ -35,10 +35,10 @@ import java.util.function.Supplier;
 
 import static gov.mib.aims.backend.support.FunctionalTestFixtures.NOW;
 import static gov.mib.aims.backend.support.FunctionalTestFixtures.incident;
-import static gov.mib.aims.backend.support.FunctionalTestReport.equal;
-import static gov.mib.aims.backend.support.FunctionalTestReport.exception;
-import static gov.mib.aims.backend.support.FunctionalTestReport.snapshot;
-import static gov.mib.aims.backend.support.FunctionalTestReport.text;
+import static gov.mib.aims.backend.support.AllureTestDataWriter.equal;
+import static gov.mib.aims.backend.support.AllureTestDataWriter.exception;
+import static gov.mib.aims.backend.support.AllureTestDataWriter.snapshot;
+import static gov.mib.aims.backend.support.AllureTestDataWriter.text;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -73,7 +73,7 @@ class CleanupServiceImplTest extends BaseFunctionalTest {
 
     @Test
     @DisplayName("Отчёт сохраняется с автором, вложениями и ссылкой из инцидента")
-    @Description("Отчёт содержит данные запроса, автора и дату. Изменение попадает в историю.")
+    @Description("Для исполняемого инцидента создаётся отчёт об очистке с описанием выполненных работ и вложениями.")
     void shouldCreateCleanupReport() {
         // Подготовка исходных данных и поведения зависимостей.
         Allure.parameter("Требование", "SRS 3.1.6.1; SRS 3.1.6.2");
@@ -87,18 +87,18 @@ class CleanupServiceImplTest extends BaseFunctionalTest {
         });
         when(incidents.save(any())).thenAnswer(call -> call.getArgument(0));
         when(time.localDateTimeNow()).thenReturn(NOW);
-        var mapped = new CleanupReportResponse().id(900L);
+        CleanupReportResponse mapped = new CleanupReportResponse().id(900L);
         when(mapper.toReportResponse(any())).thenReturn(mapped);
         snapshot("Ответы зависимостей", Map.of("existingReport", false, "authorId", 7, "returnedReportId", 900));
 
         // Вызов проверяемого метода.
-        var response = act("Создать отчёт об очистке инцидента 42 с вложениями 101 и 102",
+        CleanupReportResponse response = act("Создать отчёт об очистке инцидента 42 с вложениями 101 и 102",
                 () -> service.createReport(42L, request));
 
         // Проверки результата, сохранённого состояния и вызовов зависимостей.
         snapshot("Ответ сервиса", response);
-        var reportCaptor = ArgumentCaptor.forClass(CleanupReportEntity.class);
-        var incidentCaptor = ArgumentCaptor.forClass(IncidentEntity.class);
+        ArgumentCaptor<CleanupReportEntity> reportCaptor = ArgumentCaptor.forClass(CleanupReportEntity.class);
+        ArgumentCaptor<IncidentEntity> incidentCaptor = ArgumentCaptor.forClass(IncidentEntity.class);
         Allure.step("Проверить сохранения и историю", () -> {
             verify(attachments, times(1)).assertAllExist(request.getAttachmentFileIds());
             verify(reports, times(1)).save(reportCaptor.capture());
@@ -107,8 +107,8 @@ class CleanupServiceImplTest extends BaseFunctionalTest {
             verify(mapper).toReportResponse(same(reportCaptor.getValue()));
         });
         snapshot("Сохранённый отчёт", reportCaptor.getValue());
-        var report = reportCaptor.getValue();
-        var expectedIncident = incident(IncidentStatus.EXECUTING);
+        CleanupReportEntity report = reportCaptor.getValue();
+        IncidentEntity expectedIncident = incident(IncidentStatus.EXECUTING);
         expectedIncident.setCleanupStatus(CleanupStatus.EXECUTION);
         expectedIncident.setCleanupReportId(900L);
         expectedIncident.setUpdatedAt(NOW);
@@ -126,7 +126,7 @@ class CleanupServiceImplTest extends BaseFunctionalTest {
 
     @Test
     @DisplayName("Повторный отчёт об очистке отклоняется")
-    @Description("Для одного инцидента создаётся один отчёт. Повторная операция даёт cleanup_report.already_exists.")
+    @Description("Предпринимается повторное создание отчёта об очистке для инцидента, у которого отчёт уже есть.")
     void shouldRejectDuplicateCleanupReport() {
         // Подготовка исходных данных и поведения зависимостей.
         prepare(IncidentStatus.EXECUTING);
@@ -134,7 +134,7 @@ class CleanupServiceImplTest extends BaseFunctionalTest {
         snapshot("Ответ зависимости", Map.of("existingReport", true));
 
         // Вызов проверяемого метода.
-        var error = act("Попытаться создать повторный отчёт об очистке инцидента 42",
+        BaseException error = act("Попытаться создать повторный отчёт об очистке инцидента 42",
                 () -> assertThrows(BaseException.class, () -> service.createReport(42L, request)));
 
         // Проверки отказа и отсутствия побочных изменений.
@@ -143,13 +143,13 @@ class CleanupServiceImplTest extends BaseFunctionalTest {
 
     @Test
     @DisplayName("Создание отчёта для черновика отклоняется")
-    @Description("Создание отчёта требует допустимого статуса инцидента. DRAFT даёт cleanup.not_allowed.")
+    @Description("Предпринимается создание отчёта об очистке для инцидента в состоянии черновика.")
     void shouldRejectCleanupReportForDraftIncident() {
         // Подготовка исходных данных и поведения зависимостей.
         prepare(IncidentStatus.DRAFT);
 
         // Вызов проверяемого метода.
-        var error = act("Попытаться создать отчёт об очистке инцидента 42 в статусе DRAFT",
+        BaseException error = act("Попытаться создать отчёт об очистке инцидента 42 в статусе DRAFT",
                 () -> assertThrows(BaseException.class, () -> service.createReport(42L, request)));
 
         // Проверки отказа и отсутствия побочных изменений.

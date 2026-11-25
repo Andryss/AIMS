@@ -16,6 +16,7 @@ function fileKey(file: File): string {
 }
 
 interface FileUploadFieldProps {
+  id?: string;
   label: string;
   files: File[];
   onChange: (files: File[]) => void;
@@ -25,6 +26,7 @@ interface FileUploadFieldProps {
 }
 
 export function FileUploadField({
+  id,
   label,
   files,
   onChange,
@@ -43,7 +45,8 @@ export function FileUploadField({
     return () => urls.forEach((url) => URL.revokeObjectURL(url));
   }, [files]);
 
-  const inputId = useId();
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
 

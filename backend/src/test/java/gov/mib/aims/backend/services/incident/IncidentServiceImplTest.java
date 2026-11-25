@@ -27,6 +27,7 @@ import io.qameta.allure.Story;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -35,10 +36,10 @@ import java.util.function.Supplier;
 
 import static gov.mib.aims.backend.support.FunctionalTestFixtures.NOW;
 import static gov.mib.aims.backend.support.FunctionalTestFixtures.incident;
-import static gov.mib.aims.backend.support.FunctionalTestReport.equal;
-import static gov.mib.aims.backend.support.FunctionalTestReport.exception;
-import static gov.mib.aims.backend.support.FunctionalTestReport.snapshot;
-import static gov.mib.aims.backend.support.FunctionalTestReport.text;
+import static gov.mib.aims.backend.support.AllureTestDataWriter.equal;
+import static gov.mib.aims.backend.support.AllureTestDataWriter.exception;
+import static gov.mib.aims.backend.support.AllureTestDataWriter.snapshot;
+import static gov.mib.aims.backend.support.AllureTestDataWriter.text;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -77,32 +78,32 @@ class IncidentServiceImplTest extends BaseFunctionalTest {
     @Test
     @Story("UC2. Классификация инопланетянина")
     @DisplayName("Существующий вид привязывается к готовому к анализу инциденту")
-    @Description("Привязка обновляет вид и время изменения, сохраняет остальные бизнес-поля и историю.")
+    @Description("К инциденту, готовому к анализу, привязывается выбранный вид из справочника.")
     void shouldLinkAlienForIncidentReadyForAnalysis() {
         // Подготовка исходных данных и поведения зависимостей.
         Allure.parameter("Требование", "SRS 3.1.2.4");
         prepare(IncidentStatus.READY_FOR_ANALYSIS, "IncidentServiceImpl.linkAlien");
-        var request = new LinkIncidentAlienRequest().alienId(100L);
+        LinkIncidentAlienRequest request = new LinkIncidentAlienRequest().alienId(100L);
         snapshot("Запрос привязки", request);
         when(aliens.existsById(100L)).thenReturn(true);
         when(incidents.save(any())).thenAnswer(call -> call.getArgument(0));
         when(time.localDateTimeNow()).thenReturn(NOW);
-        var mapped = new IncidentResponse().id(42L);
+        IncidentResponse mapped = new IncidentResponse().id(42L);
         when(mapper.toResponse(any())).thenReturn(mapped);
 
         // Вызов проверяемого метода.
-        var response = act("Привязать вид 100 к инциденту 42 в статусе READY_FOR_ANALYSIS",
+        IncidentResponse response = act("Привязать вид 100 к инциденту 42 в статусе READY_FOR_ANALYSIS",
                 () -> service.linkAlien(42L, request));
 
         // Проверки результата, сохранённого состояния и вызовов зависимостей.
         snapshot("Ответ сервиса", response);
-        var captured = ArgumentCaptor.forClass(IncidentEntity.class);
+        ArgumentCaptor<IncidentEntity> captured = ArgumentCaptor.forClass(IncidentEntity.class);
         Allure.step("Проверить сохранение и историю", () -> {
             verify(incidents, times(1)).save(captured.capture());
             verify(history, times(1)).record(same(captured.getValue()));
             verify(mapper).toResponse(same(captured.getValue()));
         });
-        var expected = incident(IncidentStatus.READY_FOR_ANALYSIS);
+        IncidentEntity expected = incident(IncidentStatus.READY_FOR_ANALYSIS);
         expected.setAlienId(100L);
         expected.setUpdatedAt(NOW);
         assertAll(
@@ -114,15 +115,15 @@ class IncidentServiceImplTest extends BaseFunctionalTest {
     @Test
     @Story("UC2. Классификация инопланетянина")
     @DisplayName("Привязка вида отклоняется для черновика")
-    @Description("Привязка разрешена в READY_FOR_ANALYSIS. Отказ сохраняет исходное состояние и историю.")
+    @Description("Предпринимается привязка вида к инциденту, который ещё находится в состоянии черновика.")
     void shouldRejectAlienLinkForDraftIncident() {
         // Подготовка исходных данных и поведения зависимостей.
         prepare(IncidentStatus.DRAFT, "IncidentServiceImpl.linkAlien");
-        var request = new LinkIncidentAlienRequest().alienId(100L);
+        LinkIncidentAlienRequest request = new LinkIncidentAlienRequest().alienId(100L);
         snapshot("Запрос привязки", request);
 
         // Вызов проверяемого метода.
-        var error = act("Попытаться привязать вид 100 к инциденту 42 в статусе DRAFT",
+        BaseException error = act("Попытаться привязать вид 100 к инциденту 42 в статусе DRAFT",
                 () -> assertThrows(BaseException.class, () -> service.linkAlien(42L, request)));
 
         // Проверки отказа и отсутствия побочных изменений.
@@ -133,17 +134,17 @@ class IncidentServiceImplTest extends BaseFunctionalTest {
     @Test
     @Story("UC2. Классификация инопланетянина")
     @DisplayName("Привязка неизвестного вида отклоняется")
-    @Description("Отсутствующий вид даёт alien.not_found и сохраняет исходное состояние инцидента.")
+    @Description("К инциденту, готовому к анализу, пытаются привязать отсутствующий в справочнике вид.")
     void shouldRejectLinkToUnknownAlien() {
         // Подготовка исходных данных и поведения зависимостей.
         Allure.parameter("Требование", "SRS 3.1.2.4");
         prepare(IncidentStatus.READY_FOR_ANALYSIS, "IncidentServiceImpl.linkAlien");
-        var request = new LinkIncidentAlienRequest().alienId(100L);
+        LinkIncidentAlienRequest request = new LinkIncidentAlienRequest().alienId(100L);
         snapshot("Запрос привязки", request);
         when(aliens.existsById(100L)).thenReturn(false);
 
         // Вызов проверяемого метода.
-        var error = act("Попытаться привязать неизвестный вид 100 к инциденту 42",
+        BaseException error = act("Попытаться привязать неизвестный вид 100 к инциденту 42",
                 () -> assertThrows(BaseException.class, () -> service.linkAlien(42L, request)));
 
         // Проверки отказа и отсутствия побочных изменений.
@@ -153,17 +154,17 @@ class IncidentServiceImplTest extends BaseFunctionalTest {
     @Test
     @Story("UC3. Назначение ответственных")
     @DisplayName("Новый статус сохраняется перед историей и post-action")
-    @Description("Действие уведомления получает сохранённое состояние после записи истории.")
+    @Description("Подготовленный инцидент переводится в готовность к выполнению с обработкой уведомлений.")
     void shouldSaveStatusBeforeHistoryAndPostAction() {
         // Подготовка исходных данных и поведения зависимостей.
         Allure.parameter("Требование", "SRS 3.1.1.2");
         prepare(IncidentStatus.PREPARATION_FOR_EXECUTION, "IncidentServiceImpl.changeStatus");
-        var changed = incident(IncidentStatus.PREPARED_FOR_EXECUTION);
+        IncidentEntity changed = incident(IncidentStatus.PREPARED_FOR_EXECUTION);
         changed.setUpdatedAt(NOW);
-        var saved = incident(IncidentStatus.PREPARED_FOR_EXECUTION);
+        IncidentEntity saved = incident(IncidentStatus.PREPARED_FOR_EXECUTION);
         saved.setUpdatedAt(NOW.plusNanos(1_000));
         String comment = "Готов к выполнению";
-        var request = new ChangeIncidentStatusRequest().status(IncidentStatusApi.PREPARED_FOR_EXECUTION)
+        ChangeIncidentStatusRequest request = new ChangeIncidentStatusRequest().status(IncidentStatusApi.PREPARED_FOR_EXECUTION)
                 .comment(comment);
         snapshot("Запрос смены статуса", request);
         snapshot("Результат, возвращаемый сохранением", saved);
@@ -171,18 +172,18 @@ class IncidentServiceImplTest extends BaseFunctionalTest {
                 .thenReturn(IncidentStatus.PREPARED_FOR_EXECUTION);
         when(workflow.changeStatus(entity, IncidentStatus.PREPARED_FOR_EXECUTION, comment)).thenReturn(changed);
         when(incidents.save(changed)).thenReturn(saved);
-        var mapped = new IncidentResponse().id(42L);
+        IncidentResponse mapped = new IncidentResponse().id(42L);
         when(mapper.toResponse(saved)).thenReturn(mapped);
 
         // Вызов проверяемого метода.
-        var response = act("Перевести инцидент 42 из PREPARATION_FOR_EXECUTION в PREPARED_FOR_EXECUTION",
+        IncidentResponse response = act("Перевести инцидент 42 из PREPARATION_FOR_EXECUTION в PREPARED_FOR_EXECUTION",
                 () -> service.changeStatus(42L, request));
 
         // Проверки результата, порядка сохранения и вызовов зависимостей.
         snapshot("Ответ сервиса", response);
-        var captured = ArgumentCaptor.forClass(IncidentEntity.class);
+        ArgumentCaptor<IncidentEntity> captured = ArgumentCaptor.forClass(IncidentEntity.class);
         Allure.step("Проверить порядок save → история → post-action", () -> {
-            var order = inOrder(incidents, history, workflow);
+            InOrder order = inOrder(incidents, history, workflow);
             order.verify(workflow).changeStatus(entity, IncidentStatus.PREPARED_FOR_EXECUTION, comment);
             order.verify(incidents).save(captured.capture());
             order.verify(history).record(same(saved));
@@ -208,11 +209,11 @@ class IncidentServiceImplTest extends BaseFunctionalTest {
     @Test
     @Story("UC3. Назначение ответственных")
     @DisplayName("Отклонённый переход останавливает сохранение, историю и уведомление")
-    @Description("Ошибка workflow передаётся вызывающему коду, побочные действия смены статуса отклоняются.")
+    @Description("Предпринимается перевод инцидента в готовность к выполнению без выполнения условий подготовки.")
     void shouldStopStatusChangeWhenWorkflowRejectsTransition() {
         // Подготовка исходных данных и поведения зависимостей.
         prepare(IncidentStatus.PREPARATION_FOR_EXECUTION, "IncidentServiceImpl.changeStatus");
-        var request = new ChangeIncidentStatusRequest().status(IncidentStatusApi.PREPARED_FOR_EXECUTION)
+        ChangeIncidentStatusRequest request = new ChangeIncidentStatusRequest().status(IncidentStatusApi.PREPARED_FOR_EXECUTION)
                 .comment("Проверить готовность");
         snapshot("Запрос смены статуса", request);
         when(mapper.toModelStatus(IncidentStatusApi.PREPARED_FOR_EXECUTION))
@@ -221,7 +222,7 @@ class IncidentServiceImplTest extends BaseFunctionalTest {
                 .thenThrow(Errors.validationError("Responsible agent must be assigned"));
 
         // Вызов проверяемого метода.
-        var error = act("Попытаться перевести инцидент 42 в PREPARED_FOR_EXECUTION при отказе workflow",
+        BaseException error = act("Попытаться перевести инцидент 42 в PREPARED_FOR_EXECUTION при отказе workflow",
                 () -> assertThrows(BaseException.class, () -> service.changeStatus(42L, request)));
 
         // Проверки отказа и отсутствия побочных изменений.

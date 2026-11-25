@@ -51,11 +51,11 @@ export function IncidentsTab({ token, roles, canCreate, canChangeStatus }: Incid
   };
 
   return (
-    <Card  aria-busy={loading}>
+    <Card id="incidents-page" aria-busy={loading}>
       <CardHeader>
         <h2>Инциденты</h2>
         {canCreate && (
-          <Button type="button" variant="primary" onClick={() => setCreateModalOpen(true)}>
+          <Button id="incident-create" type="button" variant="primary" onClick={() => setCreateModalOpen(true)}>
             Создать инцидент
           </Button>
         )}

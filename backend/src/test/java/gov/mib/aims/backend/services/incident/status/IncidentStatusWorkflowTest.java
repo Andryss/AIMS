@@ -23,6 +23,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -33,10 +34,10 @@ import java.util.stream.Stream;
 
 import static gov.mib.aims.backend.support.FunctionalTestFixtures.NOW;
 import static gov.mib.aims.backend.support.FunctionalTestFixtures.incident;
-import static gov.mib.aims.backend.support.FunctionalTestReport.equal;
-import static gov.mib.aims.backend.support.FunctionalTestReport.exception;
-import static gov.mib.aims.backend.support.FunctionalTestReport.snapshot;
-import static gov.mib.aims.backend.support.FunctionalTestReport.text;
+import static gov.mib.aims.backend.support.AllureTestDataWriter.equal;
+import static gov.mib.aims.backend.support.AllureTestDataWriter.exception;
+import static gov.mib.aims.backend.support.AllureTestDataWriter.snapshot;
+import static gov.mib.aims.backend.support.AllureTestDataWriter.text;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,10 +66,10 @@ class IncidentStatusWorkflowTest extends BaseFunctionalTest {
     @Test
     @DisplayName("Смена статуса обновляет время, post-action ожидает afterSave")
     @Story("UC2. Классификация инопланетянина")
-    @Description("Workflow проверяет предусловие и меняет статус и updatedAt. Post-action вызывается в afterSave.")
+    @Description("Готовый к анализу инцидент направляется на уточнение с комментарием о необходимых сведениях.")
     void changingStatusMutatesWithoutPersistenceOrNotification() {
         // Подготовка исходных данных и поведения зависимостей.
-        var entity = incident(IncidentStatus.READY_FOR_ANALYSIS);
+        IncidentEntity entity = incident(IncidentStatus.READY_FOR_ANALYSIS);
         snapshot("Исходный инцидент", entity);
         allow(IncidentStatus.READY_FOR_ANALYSIS, IncidentStatus.CLARIFICATION_REQUIRED, transition);
         when(time.localDateTimeNow()).thenReturn(NOW);
@@ -94,11 +95,11 @@ class IncidentStatusWorkflowTest extends BaseFunctionalTest {
     @Test
     @DisplayName("Чередующиеся переходы передают post-action собственные комментарии")
     @Stories({@Story("UC2. Классификация инопланетянина"), @Story("UC3. Назначение ответственных")})
-    @Description("Workflow передаёт каждому post-action исходный комментарий соответствующего инцидента.")
+    @Description("Инциденты направляются на уточнение и повторный анализ с собственными комментариями.")
     void afterSaveUsesEachIncidentsExplicitCommentWhenTransitionsAreInterleaved() {
         // Подготовка исходных данных и поведения зависимостей.
-        var first = incident(IncidentStatus.READY_FOR_ANALYSIS);
-        var second = incident(IncidentStatus.READY_FOR_EXECUTION);
+        IncidentEntity first = incident(IncidentStatus.READY_FOR_ANALYSIS);
+        IncidentEntity second = incident(IncidentStatus.READY_FOR_EXECUTION);
         second.setId(43L);
         String firstComment = "  Need a clearer location  ";
         String secondComment = "a".repeat(121);
@@ -125,10 +126,10 @@ class IncidentStatusWorkflowTest extends BaseFunctionalTest {
             workflow.afterSave(first, IncidentStatus.READY_FOR_ANALYSIS, firstComment);
         });
         // Проверки порядка вызовов и переданных контекстов.
-        var firstContext = ArgumentCaptor.forClass(IncidentTransitionContext.class);
-        var secondContext = ArgumentCaptor.forClass(IncidentTransitionContext.class);
+        ArgumentCaptor<IncidentTransitionContext> firstContext = ArgumentCaptor.forClass(IncidentTransitionContext.class);
+        ArgumentCaptor<IncidentTransitionContext> secondContext = ArgumentCaptor.forClass(IncidentTransitionContext.class);
         Allure.step("Проверить порядок вызова post-action и получить переданные контексты", () -> {
-            var order = inOrder(postAction, otherPostAction);
+            InOrder order = inOrder(postAction, otherPostAction);
             order.verify(otherPostAction).execute(secondContext.capture());
             order.verify(postAction).execute(firstContext.capture());
             order.verifyNoMoreInteractions();
@@ -150,12 +151,12 @@ class IncidentStatusWorkflowTest extends BaseFunctionalTest {
     @MethodSource("absentComments")
     @DisplayName("Пустой комментарий передаётся post-action независимо от предыдущего перехода")
     @Story("UC2. Классификация инопланетянина")
-    @Description("Workflow передаёт исходное значение комментария в контекст текущего инцидента.")
+    @Description("Последовательно на уточнение направляются инциденты с комментарием и без него.")
     void absentCommentDoesNotReuseAnotherTransitionsComment(String comment) {
         // Подготовка исходных данных и поведения зависимостей.
         Allure.parameter("Комментарий", comment);
-        var first = incident(IncidentStatus.READY_FOR_ANALYSIS);
-        var second = incident(IncidentStatus.READY_FOR_ANALYSIS);
+        IncidentEntity first = incident(IncidentStatus.READY_FOR_ANALYSIS);
+        IncidentEntity second = incident(IncidentStatus.READY_FOR_ANALYSIS);
         second.setId(43L);
         snapshot("Исходные инциденты", List.of(first, second));
         allow(IncidentStatus.READY_FOR_ANALYSIS, IncidentStatus.CLARIFICATION_REQUIRED, transition);
@@ -170,11 +171,11 @@ class IncidentStatusWorkflowTest extends BaseFunctionalTest {
             workflow.afterSave(second, IncidentStatus.READY_FOR_ANALYSIS, comment);
         });
         // Проверки контекстов, переданных в post-action.
-        var captured = ArgumentCaptor.forClass(IncidentTransitionContext.class);
+        ArgumentCaptor<IncidentTransitionContext> captured = ArgumentCaptor.forClass(IncidentTransitionContext.class);
         Allure.step("Проверить два вызова post-action и получить переданные контексты", () ->
                 verify(postAction, times(2)).execute(captured.capture()));
         snapshot("Переданные контексты", captured.getAllValues());
-        var context = captured.getAllValues().get(1);
+        IncidentTransitionContext context = captured.getAllValues().get(1);
         assertAll(
                 () -> equal("Сравнить ID нового инцидента с 43", 43L, context.incident().getId()),
                 () -> equal("Сравнить переданный комментарий с исходным значением", comment, context.comment())
@@ -184,14 +185,14 @@ class IncidentStatusWorkflowTest extends BaseFunctionalTest {
     @Test
     @DisplayName("Неразрешённый переход сохраняет исходное состояние")
     @Story("Допустимые переходы инцидента")
-    @Description("Отсутствующий переход в графе даёт incident.invalid_status_transition и сохраняет бизнес-поля.")
+    @Description("Предпринимается перевод черновика сразу в исполнение, минуя обязательные этапы подготовки.")
     void invalidTransitionDoesNotMutateOrNotify() {
         // Подготовка исходных данных и поведения зависимостей.
-        var entity = incident(IncidentStatus.DRAFT);
-        var before = snapshot("Исходный инцидент", entity);
+        IncidentEntity entity = incident(IncidentStatus.DRAFT);
+        JsonNode before = snapshot("Исходный инцидент", entity);
 
         // Вызов проверяемого метода.
-        var error = act("Попытаться перевести инцидент 42 из DRAFT в EXECUTING без перехода в графе", entity,
+        BaseException error = act("Попытаться перевести инцидент 42 из DRAFT в EXECUTING без перехода в графе", entity,
                 () -> assertThrows(BaseException.class,
                         () -> workflow.changeStatus(entity, IncidentStatus.EXECUTING, "Invalid")));
 
@@ -210,10 +211,10 @@ class IncidentStatusWorkflowTest extends BaseFunctionalTest {
     @Test
     @DisplayName("Успешное предусловие позволяет подготовить инцидент")
     @Story("UC3. Назначение ответственных")
-    @Description("Workflow применяет переход после успешного предусловия и откладывает post-action до afterSave.")
+    @Description("Инцидент с назначенными ответственным и исполнителями переводится в готовность к выполнению.")
     void shouldPrepareAssignedIncident() {
         // Подготовка исходных данных и поведения зависимостей.
-        var entity = incident(IncidentStatus.PREPARATION_FOR_EXECUTION);
+        IncidentEntity entity = incident(IncidentStatus.PREPARATION_FOR_EXECUTION);
         entity.setResponsibleUserId(7L);
         entity.setExecutorUserIds(new ArrayList<>(List.of(8L)));
         snapshot("Исходный инцидент", entity);
@@ -240,7 +241,7 @@ class IncidentStatusWorkflowTest extends BaseFunctionalTest {
                 workflow.afterSave(entity, IncidentStatus.PREPARATION_FOR_EXECUTION, null));
 
         // Проверки post-action и переданного контекста.
-        var captured = ArgumentCaptor.forClass(IncidentTransitionContext.class);
+        ArgumentCaptor<IncidentTransitionContext> captured = ArgumentCaptor.forClass(IncidentTransitionContext.class);
         Allure.step("Проверить вызов post-action и получить переданный контекст", () ->
                 verify(postAction).execute(captured.capture()));
         snapshot("Контекст post-action", captured.getValue());
@@ -250,16 +251,16 @@ class IncidentStatusWorkflowTest extends BaseFunctionalTest {
     @Test
     @DisplayName("Ошибка предусловия об отсутствующем ответственном сохраняет исходное состояние")
     @Story("UC3. Назначение ответственных")
-    @Description("Workflow распространяет ошибку предусловия назначения ответственного и сохраняет бизнес-поля.")
+    @Description("Предпринимается подготовка инцидента к выполнению без назначенного ответственного.")
     void shouldRejectPreparationWithoutResponsible() {
         // Подготовка исходных данных и поведения зависимостей.
-        var entity = incident(IncidentStatus.PREPARATION_FOR_EXECUTION);
+        IncidentEntity entity = incident(IncidentStatus.PREPARATION_FOR_EXECUTION);
         entity.setExecutorUserIds(new ArrayList<>(List.of(8L)));
         String message = "Responsible agent must be assigned";
-        var before = prepareRejection(entity, message);
+        JsonNode before = prepareRejection(entity, message);
 
         // Вызов проверяемого метода.
-        var error = rejectPreparation(entity);
+        BaseException error = rejectPreparation(entity);
 
         // Проверки отказа и отсутствия побочных изменений.
         assertPreparationRejected(entity, before, error, message);
@@ -269,25 +270,25 @@ class IncidentStatusWorkflowTest extends BaseFunctionalTest {
     @MethodSource("missingExecutors")
     @DisplayName("Ошибка предусловия об исполнителях сохраняет исходное состояние")
     @Story("UC3. Назначение ответственных")
-    @Description("Workflow распространяет ошибку предусловия и сохраняет исходные статус и время изменения.")
+    @Description("Предпринимается подготовка инцидента к выполнению без назначенных исполнителей.")
     void shouldRejectPreparationWithoutExecutors(List<Long> executorIds) {
         // Подготовка исходных данных и поведения зависимостей.
         Allure.parameter("Исполнители", executorIds);
-        var entity = incident(IncidentStatus.PREPARATION_FOR_EXECUTION);
+        IncidentEntity entity = incident(IncidentStatus.PREPARATION_FOR_EXECUTION);
         entity.setResponsibleUserId(7L);
         entity.setExecutorUserIds(executorIds);
         String message = "At least one executor must be assigned";
-        var before = prepareRejection(entity, message);
+        JsonNode before = prepareRejection(entity, message);
 
         // Вызов проверяемого метода.
-        var error = rejectPreparation(entity);
+        BaseException error = rejectPreparation(entity);
 
         // Проверки отказа и отсутствия побочных изменений.
         assertPreparationRejected(entity, before, error, message);
     }
 
     private JsonNode prepareRejection(IncidentEntity entity, String humanMessage) {
-        var before = snapshot("Исходный инцидент", entity);
+        JsonNode before = snapshot("Исходный инцидент", entity);
         when(graph.getTransition(IncidentStatus.PREPARATION_FOR_EXECUTION, IncidentStatus.PREPARED_FOR_EXECUTION))
                 .thenReturn(transition);
         when(transition.getPreconditions()).thenReturn(List.of(precondition));

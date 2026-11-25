@@ -189,8 +189,8 @@ export function IncidentEditorModal({
           {error}
         </div>
       )}
-      <form onSubmit={handleSubmit} className="form" aria-label={title}>
-        <FormField label="Тип события" required>
+      <form id="incident-form" onSubmit={handleSubmit} className="form" aria-label={title}>
+        <FormField label="Тип события" htmlFor="incident-event-type-input" required>
           <select
             disabled={loading}
             value={eventType}
@@ -203,7 +203,7 @@ export function IncidentEditorModal({
             ))}
           </select>
         </FormField>
-        <FormField label="Место" required>
+        <FormField label="Место" htmlFor="incident-location-input" required>
           <input
             disabled={loading}
             value={location}
@@ -211,7 +211,7 @@ export function IncidentEditorModal({
             required
           />
         </FormField>
-        <FormField label="Время обнаружения" required>
+        <FormField label="Время обнаружения" htmlFor="incident-detected-at-input" required>
           <input
             disabled={loading}
             type="datetime-local"
@@ -224,7 +224,7 @@ export function IncidentEditorModal({
           <input type="number" min={0} max={MAX_VICTIM_COUNT} step={1} inputMode="numeric" disabled={loading}
             placeholder="Неизвестно" value={victimCount} onChange={(event) => setVictimCount(event.target.value)} />
         </FormField>
-        <FormField label="Описание" required>
+        <FormField label="Описание" htmlFor="incident-description-input" required>
           <textarea
             disabled={loading}
             value={description}
@@ -255,6 +255,7 @@ export function IncidentEditorModal({
             });
           }} />}
         <FileUploadField
+          id="incident-attachment-input"
           label={incident ? 'Добавить вложения' : 'Вложения'}
           files={attachmentFiles}
           maxFiles={remainingFiles}
@@ -265,7 +266,7 @@ export function IncidentEditorModal({
           <Button type="button" variant="secondary" onClick={close} disabled={loading}>
             Отмена
           </Button>
-          <Button type="submit" variant="primary" loading={loading}>
+          <Button id="incident-save" type="submit" variant="primary" loading={loading}>
             {incident ? 'Сохранить' : 'Создать'}
           </Button>
         </div>

@@ -56,6 +56,7 @@ export function AlienPickerDrawer({
         <div className="drawer__footer">
           <button
             type="button"
+            id="alien-picker-confirm"
             className="btn btn--primary btn--block"
             disabled={selecting || selectedAlienId == null}
             onClick={handleConfirm}
