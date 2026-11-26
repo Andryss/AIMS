@@ -38,32 +38,33 @@ class IncidentRegistrationE2ETest extends BaseE2ETest {
         Account operator = fixtures.account("operator", "operator");
         IncidentInput input = fixtures.incidentInput();
         snapshot("Исходные данные регистрации", input);
+        IncidentsPage list = new LoginPage(driver, baseUrl()).signIn(operator);
+        Allure.step("Выполнен вход под оператором (" + operator.login() + ")");
 
-        // Действие: вход оператором и регистрация инцидента.
-        IncidentsPage list = Allure.step("Войти оператором", () ->
-                new LoginPage(driver, baseUrl()).signIn(operator));
-        IncidentDetailsPage card = Allure.step("Зарегистрировать инцидент с изображением", () -> {
-            IncidentCreateForm form = list.openCreateForm();
-            form.fill(input);
-            form.upload(fixtures.imagePath());
-            attachScreenshot("Заполненная форма регистрации");
-            return form.save().openByLocation(input.location());
-        });
+        // Действие: регистрация инцидента.
+        IncidentCreateForm form = uiStep("Открыть форму регистрации инцидента", list::openCreateForm);
+        uiStep("Указать основные сведения об инциденте", () -> form.fill(input));
+        uiStep("Прикрепить изображение к инциденту", () -> form.upload(fixtures.imagePath()));
+        IncidentsPage savedList = uiStep("Сохранить инцидент", form::save);
+        IncidentDetailsPage card = uiStep("Открыть зарегистрированный инцидент", () ->
+                savedList.openByLocation(input.location()));
         long incidentId = card.readId();
 
         // Проверка результата регистрации.
         equal("Начальный статус инцидента", IncidentStatus.DRAFT, card::readStatus);
 
         // Действие: отправка инцидента на анализ.
-        Allure.step("Отправить инцидент на анализ", () ->
+        uiStep("Отправить инцидент на анализ", () ->
                 card.changeStatus(IncidentStatus.READY_FOR_ANALYSIS));
 
         // Проверки сохранённых данных и истории изменений.
-        Allure.step("Повторно открыть карточку и проверить сохранённые данные", () -> {
-            card.reopen(incidentId);
-            State actual = card.readState();
+        uiStep("Вернуться к списку инцидентов", card::backToList);
+        State actual = uiStep("Повторно открыть карточку инцидента", () -> {
+            card.open(incidentId);
+            return card.readState();
+        });
+        Allure.step("Проверить сохранённые данные регистрации", () -> {
             snapshot("Сохранённая карточка", actual);
-            attachScreenshot("Карточка после отправки на анализ");
             assertAll(
                     () -> equal("Номер инцидента", incidentId, actual.id()),
                     () -> equal("Статус", IncidentStatus.READY_FOR_ANALYSIS, actual.status()),
@@ -75,8 +76,8 @@ class IncidentRegistrationE2ETest extends BaseE2ETest {
                     () -> equal("PNG загружен и декодирован браузером", 32, actual.attachmentPreviewWidth())
             );
         });
+        List<HistoryEntry> history = uiStep("Открыть историю регистрации инцидента", () -> card.readHistory(2));
         Allure.step("Проверить историю создания и отправки на анализ", () -> {
-            List<HistoryEntry> history = card.readHistory(2);
             snapshot("История инцидента", history);
             assertAll(
                     () -> equal("Количество записей истории", 2, history.size()),
@@ -87,7 +88,6 @@ class IncidentRegistrationE2ETest extends BaseE2ETest {
                     () -> equal("Автор создания", operator.login(), history.get(0).author()),
                     () -> equal("Автор отправки на анализ", operator.login(), history.get(1).author())
             );
-            attachScreenshot("История регистрации");
         });
     }
 }

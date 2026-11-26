@@ -54,7 +54,8 @@ allure open target/custom-tests/e2e-test/report
 2. Добавьте `@ParameterizedTest` и `@MethodSource("browsers")`. Перед действиями в браузере вызовите `startBrowser(browser)`.
 3. Укажите действия участников в `@Description`, а требования — через `Allure.parameter("Связанные требования", ...)`.
 4. Получайте общие данные через `fixtures.account(...)` и `fixtures.alien(...)`. Для предусловий используйте `fixtures.storeFile(...)` и `fixtures.createIncident(...)`, задавая нужный статус, данные и вложения.
-5. Используйте существующие Page Objects или добавьте новый класс в `src/test/java/gov/mib/aims/e2e/pages`.
+5. Оформляйте действия самого прецедента через `uiStep("Название действия", ...)`, чтобы прикладывать скриншот результата к шагу Allure. Выполняйте авторизацию при подготовке через `LoginPage.signIn(account)`, если она не является предметом прецедента.
+6. Используйте существующие Page Objects или добавьте новый класс в `src/test/java/gov/mib/aims/e2e/pages`.
 
 Чтобы добавить браузер, реализуйте его создание в `E2EBrowser` и добавьте его в список `BROWSERS` в `BaseE2ETest`.
 

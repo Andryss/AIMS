@@ -21,6 +21,7 @@ public class IncidentsPage {
         this.driver = driver;
         this.baseUrl = baseUrl;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        wait.until(ExpectedConditions.attributeToBe(By.id("incidents-page"), "aria-busy", "false"));
     }
 
     /** Открывает форму создания инцидента. */
@@ -42,7 +43,8 @@ public class IncidentsPage {
             match.get().click();
             return true;
         });
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("incident-location")));
-        return new IncidentDetailsPage(driver, baseUrl);
+        IncidentDetailsPage card = new IncidentDetailsPage(driver, baseUrl);
+        card.waitUntilLoaded();
+        return card;
     }
 }

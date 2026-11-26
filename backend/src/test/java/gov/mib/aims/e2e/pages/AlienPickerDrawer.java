@@ -18,24 +18,34 @@ public class AlienPickerDrawer {
     public AlienPickerDrawer(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("alien-picker-search")));
     }
 
-    /** Находит запись по полному имени и подтверждает выбор. */
-    public void select(String name) {
+    /** Вводит имя вида и ожидает его появления в результатах поиска. */
+    public void search(String name) {
         WebElement search = wait.until(ExpectedConditions.elementToBeClickable(By.id("alien-picker-search")));
         search.clear();
         search.sendKeys(name);
-        wait.until(browser -> {
-            Optional<WebElement> match = browser.findElements(By.cssSelector(".alien-picker-card")).stream()
-                    .filter(card -> card.findElement(By.cssSelector(".alien-card__name")).getText().equals(name))
-                    .findFirst();
-            if (match.isEmpty()) {
-                return false;
-            }
-            match.get().click();
-            return true;
-        });
+        wait.until(browser -> findAlien(name).isPresent());
+    }
+
+    /** Выбирает найденную запись и ожидает её выделения. */
+    public void select(String name) {
+        WebElement card = wait.until(browser -> findAlien(name).orElse(null));
+        card.click();
+        wait.until(browser -> findAlien(name)
+                .filter(result -> "true".equals(result.getDomAttribute("aria-pressed"))).isPresent());
+    }
+
+    /** Подтверждает выбор и ожидает закрытия дровера. */
+    public void confirm() {
         wait.until(ExpectedConditions.elementToBeClickable(By.id("alien-picker-confirm"))).click();
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("alien-picker-search")));
+    }
+
+    private Optional<WebElement> findAlien(String name) {
+        return driver.findElements(By.cssSelector(".alien-picker-card")).stream()
+                .filter(card -> card.findElement(By.cssSelector(".alien-card__name")).getText().equals(name))
+                .findFirst();
     }
 }

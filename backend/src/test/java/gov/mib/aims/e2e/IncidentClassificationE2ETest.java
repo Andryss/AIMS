@@ -47,34 +47,47 @@ class IncidentClassificationE2ETest extends BaseE2ETest {
         long incidentId = prepared.id();
         snapshot("Исходное состояние для классификации", prepared);
 
-        // Подготовка исходной страницы: вход аналитиком и открытие инцидента.
-        Allure.step("Войти аналитиком", () -> new LoginPage(driver, baseUrl()).signIn(analyst));
+        // Подготовка авторизованной сессии.
+        new LoginPage(driver, baseUrl()).signIn(analyst);
+        Allure.step("Выполнен вход под аналитиком (" + analyst.login() + ")");
+
+        // Действие: открытие инцидента для анализа.
         IncidentDetailsPage card = new IncidentDetailsPage(driver, baseUrl());
-        card.open(incidentId);
-
-        // Проверка исходного состояния.
-        equal("Исходный статус", IncidentStatus.READY_FOR_ANALYSIS, card::readStatus);
-
-        // Действие: ручная классификация инцидента.
-        Allure.step("Найти и выбрать вид в справочнике", () -> {
-            AlienPickerDrawer picker = card.openAlienPicker();
-            picker.select(alien.getName());
-
-            // Проверка результата выбора вида.
-            equal("Выбранный вид", alien.getName(), card::readAlienName);
-            attachScreenshot("Результат ручной классификации");
+        State initial = uiStep("Открыть инцидент без классификации", () -> {
+            card.open(incidentId);
+            return card.readState();
         });
 
+        // Проверка исходного состояния.
+        snapshot("Исходная карточка инцидента", initial);
+        equal("Исходный статус", IncidentStatus.READY_FOR_ANALYSIS, initial.status());
+        equal("Классификация ещё не задана", null, initial.alienName());
+
+        // Действие: ручная классификация инцидента.
+        AlienPickerDrawer picker = uiStep("Открыть дровер выбора вида", card::openAlienPicker);
+        uiStep("Ввести название вида и получить результаты поиска", () -> picker.search(alien.getName()));
+        uiStep("Выбрать найденный вид", () -> picker.select(alien.getName()));
+        String selectedAlien = uiStep("Подтвердить выбор вида и вернуться к инциденту", () -> {
+            picker.confirm();
+            return card.readAlienName();
+        });
+
+        // Проверка результата выбора вида.
+        equal("Выбранный вид", alien.getName(), selectedAlien);
+
         // Действие: отправка инцидента на выполнение.
-        Allure.step("Отправить инцидент на выполнение", () ->
+        uiStep("Отправить инцидент на выполнение", () ->
                 card.changeStatus(IncidentStatus.READY_FOR_EXECUTION));
 
         // Проверки сохранённых данных и истории изменений.
-        Allure.step("Повторно открыть инцидент и проверить результат", () -> {
-            card.reopen(incidentId);
-            State actual = card.readState();
+        uiStep("Вернуться к списку инцидентов", card::backToList);
+        State actual = uiStep("Повторно открыть инцидент с сохранённой классификацией", () -> {
+            card.open(incidentId);
+            card.readAlienName();
+            return card.readState();
+        });
+        Allure.step("Проверить сохранённые данные классификации", () -> {
             snapshot("Карточка после классификации", actual);
-            attachScreenshot("Сохранённая классификация");
             assertAll(
                     () -> equal("Номер инцидента", incidentId, actual.id()),
                     () -> equal("Статус", IncidentStatus.READY_FOR_EXECUTION, actual.status()),
@@ -87,8 +100,8 @@ class IncidentClassificationE2ETest extends BaseE2ETest {
                     () -> equal("PNG загружен и декодирован браузером", 32, actual.attachmentPreviewWidth())
             );
         });
+        List<HistoryEntry> history = uiStep("Открыть историю классификации инцидента", () -> card.readHistory(3));
         Allure.step("Проверить историю классификации и отправки на выполнение", () -> {
-            List<HistoryEntry> history = card.readHistory(3);
             snapshot("История классификации", history);
             assertAll(
                     () -> equal("Количество записей истории", 3, history.size()),
@@ -100,7 +113,6 @@ class IncidentClassificationE2ETest extends BaseE2ETest {
                             history.get(2).changes().get("Статус")),
                     () -> equal("Автор отправки на выполнение", analyst.login(), history.get(2).author())
             );
-            attachScreenshot("История классификации");
         });
     }
 }

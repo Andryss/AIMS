@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -116,7 +117,24 @@ public abstract class BaseE2ETest {
         return "http://localhost:" + port + "/public";
     }
 
-    protected void attachScreenshot(String name) {
+    /** Записывает UI-действие и снимок его результата в один шаг Allure. */
+    protected void uiStep(String name, Runnable action) {
+        uiStep(name, () -> {
+            action.run();
+            return null;
+        });
+    }
+
+    /** Возвращает результат UI-действия после сохранения скриншота в Allure. */
+    protected <T> T uiStep(String name, Supplier<T> action) {
+        return Allure.step(name, () -> {
+            T result = action.get();
+            attachScreenshot(name);
+            return result;
+        });
+    }
+
+    private void attachScreenshot(String name) {
         AllureTestDataWriter.png(name, ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES));
     }
 }

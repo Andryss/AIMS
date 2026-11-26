@@ -39,14 +39,23 @@ public class IncidentDetailsPage {
     /** Открывает карточку по номеру и ждёт загрузки полей. */
     public void open(long id) {
         driver.get(baseUrl + "/incidents/" + id);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("incident-location")));
+        waitUntilLoaded();
     }
 
-    /** Возвращается к списку и заново загружает карточку с сервера. */
-    public void reopen(long id) {
-        driver.get(baseUrl + "/incidents");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("incidents-page")));
-        open(id);
+    /** Возвращается к списку по ссылке из карточки. */
+    public IncidentsPage backToList() {
+        wait.until(ExpectedConditions.elementToBeClickable(By.linkText("← К списку"))).click();
+        return new IncidentsPage(driver, baseUrl);
+    }
+
+    /** Ждёт загрузки полей и превью вложений перед дальнейшими действиями. */
+    void waitUntilLoaded() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("incident-location")));
+        wait.until(browser -> browser.findElements(By.cssSelector(
+                "#incident-attachments .attachment-card__name")).stream()
+                .noneMatch(file -> file.getText().startsWith("Вложение №")));
+        wait.until(browser -> browser.findElements(By.cssSelector("#incident-attachments img")).stream()
+                .allMatch(image -> Integer.parseInt(image.getDomProperty("naturalWidth")) > 0));
     }
 
     /** Читает номер из заголовка карточки. */

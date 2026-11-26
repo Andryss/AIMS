@@ -12,21 +12,37 @@ import java.time.Duration;
 public class LoginPage {
     private final WebDriver driver;
     private final String baseUrl;
+    private final WebDriverWait wait;
 
     /** Создаёт Page Object для адреса пользовательского интерфейса. */
     public LoginPage(WebDriver driver, String baseUrl) {
         this.driver = driver;
         this.baseUrl = baseUrl;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
-    /** Входит через форму и ожидает появления списка инцидентов. */
+    /** Подготавливает авторизованную сессию перед шагами прецедента. */
     public IncidentsPage signIn(Account account) {
+        open();
+        fill(account);
+        return signIn();
+    }
+
+    /** Открывает форму входа. */
+    public void open() {
         driver.get(baseUrl + "/incidents");
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("login-username")));
+    }
+
+    /** Заполняет учётные данные. */
+    public void fill(Account account) {
         wait.until(ExpectedConditions.elementToBeClickable(By.id("login-username"))).sendKeys(account.login());
         driver.findElement(By.id("login-password")).sendKeys(account.password());
+    }
+
+    /** Отправляет форму и ожидает загрузки списка инцидентов. */
+    public IncidentsPage signIn() {
         driver.findElement(By.id("login-submit")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("incidents-page")));
         return new IncidentsPage(driver, baseUrl);
     }
 }
