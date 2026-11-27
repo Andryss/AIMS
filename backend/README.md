@@ -16,6 +16,12 @@ JDK 17, Allure CLI 2 (`allure` в `PATH`). Для тестов БД — Docker C
 ./mvnw verify
 ```
 
+## API, обработчики очереди и классификация
+
+```bash
+./mvnw -Pbackend-tests clean verify
+```
+
 ## Функциональные тесты
 
 ```bash

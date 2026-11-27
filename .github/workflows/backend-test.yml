@@ -1,0 +1,51 @@
+name: Backend Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-test.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-tests-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+
+      - name: Run API, queue processor and classifier tests
+        run: ./mvnw --batch-mode --no-transfer-progress -Pbackend-tests clean verify
+
+      - name: Upload test and coverage reports
+        if: success() || failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-test-reports-${{ github.run_attempt }}
+          path: |
+            backend/target/surefire-reports/
+            backend/target/site/jacoco/
+          if-no-files-found: error

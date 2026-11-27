@@ -334,6 +334,32 @@
 
     <profiles>
         <profile>
+            <id>backend-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <failIfNoTests>true</failIfNoTests>
+                            <includes>
+                                <include>**/*ApiTest.java</include>
+                                <include>**/services/dbqueue/processor/*Test.java</include>
+                                <include>**/services/classification/*Test.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <configuration>
+                            <append>false</append>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>functional-tests</id>
             <properties>
                 <functional.output>${project.build.directory}/custom-tests/functional-test</functional.output>
